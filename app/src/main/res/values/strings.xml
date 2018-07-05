@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name" translatable="false">Codec Info</string>
+    <string name="appbarlayout_scrolling_view_behavior" translatable="false">
+        com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
+
+    <string name="share">Share</string>
+
+    <string name="audio">Audio</string>
+    <string name="video">Video</string>
+
+    <string name="codec_details">Codec details</string>
+    
+    <string name="frames_per_second">fps</string>
+    <string name="unknown">Unknown</string>
+
+    <string name="profile_levels">Profile levels</string>
+
+    <string name="max_instances">Max supported instances</string>
+
+    <string name="bitrate_range">Bitrate range</string>
+    <string name="input_channels">Input channels</string>
+    <string name="sample_rates">Sample rates</string>
+
+    <string name="max_resolution">Max resolution</string>
+    <string name="max_bitrate">Max bitrate</string>
+    <string name="frame_rate">Frame rate</string>
+    <string name="max_frame_rate_per_resolution">Max frame rate per resolution</string>
+    <string name="color_profiles">Color profiles</string>
+
+    <string name="adaptive_playback">Adaptive playback</string>
+    <string name="intra_refresh">Intra refresh</string>
+    <string name="partial_frames">Partial frames queuing</string>
+    <string name="secure_playback">Secure playback decryption</string>
+    <string name="tunneled_playback">Tunneled playback</string>
+    
+    <string name="bitrate_modes">Bitrate modes</string>
+    <string name="cbr" translatable="false">Constant bitrate (CBR)</string>
+    <string name="cq" translatable="false">Constant quality (CQ)</string>
+    <string name="vbr" translatable="false">Variable bitrate (VBR)</string>
+
+    <string name="more_info">Tap to see more info…</string>
+
+</resources>

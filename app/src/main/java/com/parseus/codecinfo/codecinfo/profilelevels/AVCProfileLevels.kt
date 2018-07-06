@@ -9,6 +9,14 @@ enum class AVCProfiles(val value: Int) {
     AVCProfileHigh10(0x10),
     AVCProfileHigh422(0x20),
     AVCProfileHigh444(0x40),
+    AVCProfileHigh10Ultra(0x100),
+    AVCProfileHigh422Ultra(0x200),
+    AVCProfileHigh444Ultra(0x400),
+    AVCProfileHighCAVLC444Ultra(0x800),
+    AVCProfileHigh444Predictive(0x1000),
+    AVCProfileScalableBaseline(0x2000),
+    AVCProfileScalableHigh(0x4000),
+    AVCProfileScalableHighIntra(0x8000),
     AVCProfileConstrainedBaseline(0x10000),
     AVCProfileConstrainedHigh(0x80000);
 

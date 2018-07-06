@@ -291,7 +291,7 @@ object CodecUtils {
                     profile = MPEG4Profiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = MPEG4Levels.from(it.level) ?: "$unknownString (${it.level})"
                 }
-                codecId.contains("vc1", true) -> {
+                codecId.contains("vc1", true) || codecId.contains("wmv9") -> {
                     profile = VC1Profiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = VC1Levels.from(it.level) ?: "$unknownString (${it.level})"
                 }

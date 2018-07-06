@@ -7,7 +7,9 @@ enum class VC1Profiles(val value: Int) {
     QOMX_VIDEO_VC1ProfileSimple(0x01),
     QOMX_VIDEO_VC1ProfileMain(0x02),
     QOMX_VIDEO_VC1ProfileAdvanced(0x04),
-    QOMX_VIDEO_VC1ProfileMax(0x7FFFFFFF);
+    WMV9ProfileSimple(0x08),
+    WMV9ProfileMain(0x10),
+    WMV9ProfileComplex(0x20);
 
     companion object {
         fun from(findValue: Int): String? = try {

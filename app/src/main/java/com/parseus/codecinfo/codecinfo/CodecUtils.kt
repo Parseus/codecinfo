@@ -291,6 +291,10 @@ object CodecUtils {
                     profile = MPEG4Profiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = MPEG4Levels.from(it.level) ?: "$unknownString (${it.level})"
                 }
+                codecId.contains("vc1", true) -> {
+                    profile = VC1Profiles.from(it.profile) ?: "$unknownString (${it.profile})"
+                    level = VC1Levels.from(it.level) ?: "$unknownString (${it.level})"
+                }
                 codecId.contains("vp8", true) -> {
                     profile = VP8Profiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = VP8Levels.from(it.level) ?: "$unknownString (${it.level})"

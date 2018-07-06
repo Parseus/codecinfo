@@ -132,7 +132,7 @@ object CodecUtils {
             codecInfoMap[context.getString(R.string.bitrate_modes)] = bitrateModesString
         }
 
-        getProfileLevels(context, codecName, capabilities)?.let {
+        getProfileLevels(context, codecId, capabilities)?.let {
             codecInfoMap[context.getString(R.string.profile_levels)] = it
         }
 
@@ -244,7 +244,7 @@ object CodecUtils {
         return capabilities.toString()
     }
 
-    private fun getProfileLevels(context: Context, codecName: String, capabilities: MediaCodecInfo.CodecCapabilities): String? {
+    private fun getProfileLevels(context: Context, codecId: String, capabilities: MediaCodecInfo.CodecCapabilities): String? {
         val profileLevels = capabilities.profileLevels
 
         if (profileLevels == null || profileLevels.isEmpty()) {
@@ -260,42 +260,42 @@ object CodecUtils {
         profileLevels.sortedWith(comparator)
         profileLevels.forEach {
             when {
-                codecName.contains("aac") -> {
+                codecId.contains("mp4a-latm", true) -> {
                     profile = AACProfiles.from(it.profile) ?: "$unknownString (${it.profile})"
                 }
-                codecName.contains("avc") || codecName.contains("h264") -> {
+                codecId.contains("avc", true) -> {
                     profile = AVCProfiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = AVCLevels.from(it.level) ?: "$unknownString (${it.level})"
                 }
-                codecName.contains("divx") -> {
+                codecId.contains("divx", true) -> {
                     profile = DivXProfiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = "$unknownString (${it.level})"
                 }
-                codecName.contains("dolby-vision") -> {
+                codecId.contains("dolby-vision", true) -> {
                     profile = DolbyVisionProfiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = DolbyVisionLevels.from(it.level) ?: "$unknownString (${it.level})"
                 }
-                codecName.contains("h263") -> {
+                codecId.contains("3gpp", true) || codecId.contains("sorenson", true) -> {
                     profile = H263Profiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = H263Levels.from(it.level) ?: "$unknownString (${it.level})"
                 }
-                codecName.contains("hevc") -> {
+                codecId.contains("hevc", true) -> {
                     profile = HEVCProfiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = HEVCLevels.from(it.level) ?: "$unknownString (${it.level})"
                 }
-                codecName.contains("mpeg2") -> {
+                codecId.contains("mpeg2", true) -> {
                     profile = MPEG2Profiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = MPEG2Levels.from(it.level) ?: "$unknownString (${it.level})"
                 }
-                codecName.contains("mpeg4") -> {
+                codecId.contains("mp4v-es", true) -> {
                     profile = MPEG4Profiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = MPEG4Levels.from(it.level) ?: "$unknownString (${it.level})"
                 }
-                codecName.contains("vp8") -> {
+                codecId.contains("vp8", true) -> {
                     profile = VP8Profiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = VP8Levels.from(it.level) ?: "$unknownString (${it.level})"
                 }
-                codecName.contains("vp9") -> {
+                codecId.contains("vp9", true) -> {
                     profile = VP9Profiles.from(it.profile) ?: "$unknownString (${it.profile})"
                     level = VP9Levels.from(it.level) ?: "$unknownString (${it.level})"
                 }

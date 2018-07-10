@@ -22,3 +22,7 @@ fun Int.toBytesPerSecond(): String {
         else -> this.toString() + " bps"
     }
 }
+
+fun Int.toHexHstring(): String {
+    return "0x${this.toString(16).toUpperCase()}"
+}

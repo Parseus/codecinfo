@@ -60,6 +60,7 @@ enum class ColorFormat(val value: Int) {
     QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka(0x7FA30C03),
     QOMX_COLOR_FORMATYUV420PackedSemiPlanar32m(0x7FA30C04),
     QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mMultiView(0x7FA30C05),
+    OMX_COLOR_FormatMax(0x7FFFFFFF),
     //TODO: Find info about 0x7FA30C06
 
     // Samsung
@@ -70,6 +71,7 @@ enum class ColorFormat(val value: Int) {
     OMX_SEC_COLOR_FormatNV21LPhysicalAddress(0x7F000010),
     OMX_SEC_COLOR_FormatNV21Linear(0x7F000011),
     //TODO: Find info about 0x7F000012
+    OMX_SEC_COLOR_FormatNV12Tiled(0x7FC00002),
     OMX_SEC_COLOR_FormatNV12Tiled_SBS_LR(0x7FC00003),
     OMX_SEC_COLOR_FormatNV12Tiled_SBS_RL(0x7FC00004),
     OMX_SEC_COLOR_FormatNV12Tiled_TB_LR(0x7FC00005),

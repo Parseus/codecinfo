@@ -5,7 +5,8 @@ enum class HEVCProfiles(val value: Int) {
     HEVCProfileMain(0x01),
     HEVCProfileMain10(0x02),
     HEVCProfileStillImage(0x04),
-    HEVCProfileMain10HDR10(0x1000);
+    HEVCProfileMain10HDR10(0x1000),
+    HEVCProfileMax(0x7FFFFFFF);
 
     companion object {
         fun from(findValue: Int): String? = try {
@@ -44,7 +45,8 @@ enum class HEVCLevels(val value: Int) {
     HEVCMainTierLevel61(0x400000),
     HEVCHighTierLevel61(0x800000),
     HEVCMainTierLevel62(0x1000000),
-    HEVCHighTierLevel62(0x2000000);
+    HEVCHighTierLevel62(0x2000000),
+    HEVCLevelMax(0x7FFFFFFF);
 
     companion object {
         fun from(findValue: Int): String? = try {

@@ -18,7 +18,8 @@ enum class AVCProfiles(val value: Int) {
     AVCProfileScalableHigh(0x4000),
     AVCProfileScalableHighIntra(0x8000),
     AVCProfileConstrainedBaseline(0x10000),
-    AVCProfileConstrainedHigh(0x80000);
+    AVCProfileConstrainedHigh(0x80000),
+    AVCProfileMax(0x7FFFFFFF);
 
     companion object {
         fun from(findValue: Int): String? = try {
@@ -48,7 +49,8 @@ enum class AVCLevels (val value: Int) {
     AVCLevel42(0x2000),
     AVCLevel5(0x4000),
     AVCLevel51(0x8000),
-    AVCLevel52(0x10000);
+    AVCLevel52(0x10000),
+    AVCLevelMax(0x7FFFFFFF);
 
     companion object {
         fun from(findValue: Int): String? = try {

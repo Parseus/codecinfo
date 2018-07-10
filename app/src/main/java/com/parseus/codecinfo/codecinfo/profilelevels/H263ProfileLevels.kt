@@ -10,7 +10,8 @@ enum class H263Profiles(val value: Int) {
     H263ProfileHighCompression(0x20),
     H263ProfileInternet(0x40),
     H263ProfileInterlace(0x80),
-    H263ProfileHighLatency(0x100);
+    H263ProfileHighLatency(0x100),
+    H263ProfileMax(0x7FFFFFFF);
 
     companion object {
         fun from(findValue: Int): String? = try {
@@ -31,7 +32,8 @@ enum class H263Levels(val value: Int) {
     H263Level45(0x10),
     H263Level50(0x20),
     H263Level60(0x40),
-    H263Level70(0x80);
+    H263Level70(0x80),
+    H263LevelMax(0x7FFFFFFF);
 
     companion object {
         fun from(findValue: Int): String? = try {

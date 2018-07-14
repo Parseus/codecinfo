@@ -133,7 +133,7 @@ object CodecUtils {
             codecInfoMap[context.getString(R.string.bitrate_modes)] = bitrateModesString
         }
 
-        getProfileLevels(context, codecId, capabilities)?.let {
+        getProfileLevels(context, codecId, codecName, capabilities)?.let {
             codecInfoMap[context.getString(R.string.profile_levels)] = it
         }
 
@@ -245,7 +245,7 @@ object CodecUtils {
         return capabilities.toString()
     }
 
-    private fun getProfileLevels(context: Context, codecId: String, capabilities: MediaCodecInfo.CodecCapabilities): String? {
+    private fun getProfileLevels(context: Context, codecId: String, codecName: String, capabilities: MediaCodecInfo.CodecCapabilities): String? {
         val profileLevels = capabilities.profileLevels
 
         if (profileLevels == null || profileLevels.isEmpty()) {
@@ -289,8 +289,16 @@ object CodecUtils {
                     level = MPEG2Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("mp4v-es", true) -> {
+                    var extension = ""
+
+                    if (codecName.contains("QOMX", true)) {
+                        extension = "QOMX"
+                    } else if (codecName.contains("OMX.SEC", true)) {
+                        extension = "OMX.SEC"
+                    }
+
                     profile = MPEG4Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = MPEG4Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                    level = MPEG4Levels.from(it.level, extension) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("vc1", true) || codecId.contains("wmv") -> {
                     profile = VC1Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"

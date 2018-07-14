@@ -1,3 +1,5 @@
+@file:Suppress("EnumEntryName")
+
 package com.parseus.codecinfo.codecinfo.profilelevels
 
 enum class MPEG4Profiles(val value: Int) {
@@ -42,11 +44,24 @@ enum class MPEG4Levels(val value: Int) {
     MPEG4Level4a(0x40),
     MPEG4Level5(0x80),
     MPEG4Level6(0x100),
+
+    // Qualcomm extensions
+    QOMX_VIDEO_MPEG4Level6(0x7F000001),
+    QOMX_VIDEO_MPEG4Level7(0x7F000002),
+    QOMX_VIDEO_MPEG4Level8(0x7F000003),
+    QOMX_VIDEO_MPEG4Level9(0x7F000004),
+
+    // Samsung extensions
+    OMX_SEC_VIDEO_MPEG4Level6(0x7F000001),
+    OMX_SEC_VIDEO_MPEG4Level7(0x7F000002),
+    OMX_SEC_VIDEO_MPEG4Level8(0x7F000003),
+    OMX_SEC_VIDEO_MPEG4Level9(0x7F000004),
+
     MPEG4LevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            MPEG4Levels.values().first { it.value == findValue }.name
+        fun from(findValue: Int, extension: String = ""): String? = try {
+            MPEG4Levels.values().first { it.value == findValue && it.name.contains(extension, true) }.name
         } catch (e: Exception) {
             null
         }

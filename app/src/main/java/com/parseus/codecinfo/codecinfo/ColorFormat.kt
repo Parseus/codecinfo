@@ -54,6 +54,9 @@ enum class ColorFormat(val value: Int) {
 
     // Color formats that are not defined in the MediaCodec class.
 
+    // Sony
+    OMX_STE_COLOR_FormatYUV420PackedSemiPlanarMB(0x7FA00000),
+
     // Qualcomm
     QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka(0x7FA30C01),
     QOMX_COLOR_FormatYUV420PackedSemiPlanar16m2ka(0x7FA30C02),

@@ -292,7 +292,7 @@ object CodecUtils {
                     profile = MPEG4Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = MPEG4Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("vc1", true) || codecId.contains("wmv9") -> {
+                codecId.contains("vc1", true) || codecId.contains("wmv") -> {
                     profile = VC1Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = VC1Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }

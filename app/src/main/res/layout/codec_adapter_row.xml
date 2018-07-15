@@ -9,6 +9,7 @@
     android:layout_height="@dimen/list_content_row_size"
     android:paddingStart="@dimen/list_content_padding"
     android:paddingEnd="@dimen/list_content_padding"
+    android:paddingBottom="12dp"
     android:background="?attr/selectableItemBackground">
 
     <androidx.appcompat.widget.AppCompatTextView

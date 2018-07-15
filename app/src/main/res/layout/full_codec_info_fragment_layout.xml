@@ -45,6 +45,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="20dp"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="false"
             tools:listitem="@layout/codec_info_adapter_row"/>
 
     </LinearLayout>

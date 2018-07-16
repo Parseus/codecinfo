@@ -1,8 +1,12 @@
 package com.parseus.codecinfo
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
 import com.google.android.material.tabs.TabLayout
@@ -33,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         tabs.setupWithViewPager(viewPager)
     }
 
+    @SuppressLint("InflateParams")
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.itemId
 
@@ -49,6 +54,21 @@ class MainActivity : AppCompatActivity() {
                     .setType("text/plain").setText(codecStringBuilder.toString()).startChooser()
 
             return true
+        } else if (id == R.id.menu_item_about_app) {
+            val alertDialogBuilder = AlertDialog.Builder(this)
+            val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
+            alertDialogBuilder.setView(dialogView)
+            val alertDialog = alertDialogBuilder.create()
+
+            val okButton: View = dialogView.findViewById(R.id.ok_button)
+            okButton.setOnClickListener { alertDialog.dismiss() }
+
+            try {
+                val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
+                versionTextView.text = getString(R.string.app_version, packageManager.getPackageInfo(packageName, 0).versionName)
+            } catch (e : Exception) {}
+
+            alertDialog.show()
         }
 
         return super.onOptionsItemSelected(item)

@@ -69,7 +69,7 @@ object CodecUtils {
         return codecSimpleInfoList
     }
 
-    fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): Map<String, String> {
+    fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): HashMap<String, String> {
         val mediaCodecInfo = mediaCodecInfos.first { it.name == codecName }
         val capabilities = mediaCodecInfo.getCapabilitiesForType(codecId)
         val isAudio = isAudioCodec(mediaCodecInfo)

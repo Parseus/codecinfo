@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.view.*
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ShareCompat
 import androidx.core.view.ViewCompat
@@ -15,14 +13,24 @@ import com.parseus.codecinfo.MainActivity
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.adapters.CodecInfoAdapter
 import com.parseus.codecinfo.codecinfo.CodecUtils
-import kotlinx.android.synthetic.main.full_codec_info_fragment_layout.*
+import kotlinx.android.synthetic.main.codec_details_fragment_layout.*
 
-class FullCodecInfoDialogFragment : DialogFragment() {
+class CodecDetailsDialogFragment : DialogFragment() {
+
+    private var dismissDialog = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.full_codec_info_fragment_layout, container, false)
+        val view = inflater.inflate(R.layout.codec_details_fragment_layout, container, false)
 
-        val toolbar = ViewCompat.requireViewById<Toolbar>(view, R.id.dialogToolbar)
+        val toolbar: Toolbar
+
+        try {
+            toolbar = ViewCompat.requireViewById(view, R.id.dialogToolbar)
+        } catch (e: Exception) {
+            dismissDialog = true
+            return null
+        }
+
         toolbar.title = requireContext().getString(R.string.codec_details)
         (requireActivity() as MainActivity).setSupportActionBar(toolbar)
         (requireActivity() as MainActivity).supportActionBar?.apply {
@@ -34,6 +42,16 @@ class FullCodecInfoDialogFragment : DialogFragment() {
         setHasOptionsMenu(true)
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (dismissDialog) {
+            requireActivity().supportFragmentManager.popBackStack()
+            dismiss()
+            return
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -83,24 +101,6 @@ class FullCodecInfoDialogFragment : DialogFragment() {
 
                 ShareCompat.IntentBuilder.from(activity).setType("text/plain")
                         .setText(codecStringBuilder.toString()).startChooser()
-            }
-            R.id.fragment_menu_item_about_app -> {
-                val alertDialogBuilder = AlertDialog.Builder(requireContext())
-                val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
-                alertDialogBuilder.setView(dialogView)
-                val alertDialog = alertDialogBuilder.create()
-
-                val okButton: View = dialogView.findViewById(R.id.ok_button)
-                okButton.setOnClickListener { alertDialog.dismiss() }
-
-                try {
-                    val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
-                    versionTextView.text = getString(R.string.app_version,
-                            requireContext().packageManager.getPackageInfo(
-                                    requireContext().packageName, 0).versionName)
-                } catch (e : Exception) {}
-
-                alertDialog.show()
             }
         }
 

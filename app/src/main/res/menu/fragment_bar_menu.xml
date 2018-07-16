@@ -2,11 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/fragment_menu_item_about_app"
-        app:showAsAction="always"
-        android:title="@string/about_app"
-        android:icon="@drawable/ic_info" />
-
     <item android:id="@+id/fragment_menu_item_share"
         app:showAsAction="ifRoom"
         android:title="@string/share"

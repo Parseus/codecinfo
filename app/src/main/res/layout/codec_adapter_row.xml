@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:gravity="center_vertical"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/list_content_row_size"
+    android:layout_height="wrap_content"
     android:paddingStart="@dimen/list_content_padding"
     android:paddingEnd="@dimen/list_content_padding"
     android:paddingBottom="12dp"

@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
+import androidx.fragment.app.DialogFragment
 import com.google.android.material.tabs.TabLayout
 import com.kobakei.ratethisapp.RateThisApp
 import com.parseus.codecinfo.adapters.PagerAdapter
@@ -40,6 +41,29 @@ class MainActivity : AppCompatActivity() {
             }
         })
         tabs.setupWithViewPager(viewPager)
+
+        if (resources.getBoolean(R.bool.twoPaneMode)) {
+            return
+        }
+
+        if (savedInstanceState != null) {
+            supportFragmentManager.executePendingTransactions()
+            val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment)
+            fragmentById?.let { supportFragmentManager.beginTransaction().remove(fragmentById).commit() }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+
+        if (resources.getBoolean(R.bool.twoPaneMode)) {
+            supportFragmentManager.findFragmentByTag("SINGLE_PANE_DETAILS")?.let {
+                val dialog = (it as DialogFragment).dialog
+                if (dialog != null && dialog.isShowing) {
+                    it.dismiss()
+                }
+            }
+        }
     }
 
     @SuppressLint("InflateParams")

@@ -61,7 +61,13 @@ enum class MPEG4Levels(val value: Int) {
 
     companion object {
         fun from(findValue: Int, extension: String = ""): String? = try {
-            MPEG4Levels.values().first { it.value == findValue && it.name.contains(extension, true) }.name
+            MPEG4Levels.values().first {
+                if (it.value > 0x7F000000 && it.value != 0x7FFFFFFF) {
+                    it.value == findValue && it.name.contains(extension, true)
+                } else {
+                    it.value == findValue
+                }
+            }.name
         } catch (e: Exception) {
             null
         }

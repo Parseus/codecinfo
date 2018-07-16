@@ -291,7 +291,7 @@ object CodecUtils {
                 codecId.contains("mp4v-es", true) -> {
                     var extension = ""
 
-                    if (codecName.contains("QOMX", true)) {
+                    if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
                         extension = "QOMX"
                     } else if (codecName.contains("OMX.SEC", true)) {
                         extension = "OMX.SEC"

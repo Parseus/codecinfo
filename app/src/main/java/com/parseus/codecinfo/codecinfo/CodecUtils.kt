@@ -13,6 +13,20 @@ import com.parseus.codecinfo.toKiloHertz
 
 object CodecUtils {
 
+    private val platformSupportedTypes = listOf(
+            "audio/3gpp",
+            "audio/amr-mb",
+            "audio/amr-wb",
+            "audio/flac",
+            "audio/g711-alaw",
+            "audio/g711-mlaw",
+            "audio/gsm",
+            "audio/mp4a-latm",
+            "audio/mpeg",
+            "audio/opus",
+            "audio/raw",
+            "audio/vorbis")
+
     private val mediaCodecInfos: Array<MediaCodecInfo>
     private var audioCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList(0)
     private var videoCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList(0)
@@ -83,7 +97,7 @@ object CodecUtils {
 
         if (isAudio) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getAudioCapabilities(context, capabilities, codecInfoMap)
+                getAudioCapabilities(context, codecId, capabilities, codecInfoMap)
             }
         } else {
             getVideoCapabilities(context, capabilities, codecInfoMap)
@@ -141,11 +155,12 @@ object CodecUtils {
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun getAudioCapabilities(context: Context, capabilities: MediaCodecInfo.CodecCapabilities,
+    private fun getAudioCapabilities(context: Context, codecId: String, capabilities: MediaCodecInfo.CodecCapabilities,
                                      codecInfoMap: HashMap<String, String>) {
         val audioCapabilities = capabilities.audioCapabilities
 
-        codecInfoMap[context.getString(R.string.input_channels)] = audioCapabilities.maxInputChannelCount.toString()
+        codecInfoMap[context.getString(R.string.input_channels)] =
+                adjustMaxInputChannelCount(codecId, audioCapabilities.maxInputChannelCount).toString()
 
         val bitrateRange = audioCapabilities.bitrateRange
         val bitrateRangeString = if (bitrateRange.lower == bitrateRange.upper || bitrateRange.lower == 1) {
@@ -173,6 +188,32 @@ object CodecUtils {
             }
         }
         codecInfoMap[context.getString(R.string.sample_rates)] = sampleRatesString
+    }
+
+    /**
+     * Tries to adjust max input channel count for non-platform codecs.
+     *
+     * AudioCapabilities incorrectly assumes that non-platform codecs support only one input channel.
+     * This function provides a somewhat better, assumed guess.
+     */
+    private fun adjustMaxInputChannelCount(codecId: String, maxChannelCount: Int): Int {
+        if (maxChannelCount > 1 || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && maxChannelCount > 0)) {
+            // The maximum channel count looks like it's been set correctly.
+            return maxChannelCount
+        }
+
+        if (codecId in platformSupportedTypes) {
+            // Platform code should have set a default.
+            return maxChannelCount
+        }
+
+        // The maximum channel count looks incorrect. Adjust it to an assumed default.
+        return when (codecId) {
+            "audio/ac3" -> 6
+            "audio/eac3" -> 16
+            // Default to the platform limit, which is 30.
+            else -> 30
+        }
     }
 
     private fun getVideoCapabilities(context: Context, capabilities: MediaCodecInfo.CodecCapabilities,

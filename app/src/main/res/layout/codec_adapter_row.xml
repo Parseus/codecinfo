@@ -12,6 +12,13 @@
     android:paddingBottom="12dp"
     android:background="?attr/selectableItemBackground">
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/codec_name"
         android:layout_width="wrap_content"
@@ -28,8 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:firstBaselineToTopHeight="@dimen/list_baseline_primary"
+        app:layout_constraintTop_toBottomOf="@id/guideline"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
         tools:text="Encoder/decoder"/>
 

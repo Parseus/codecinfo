@@ -349,7 +349,7 @@ object CodecUtils {
                     if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
                         extension = "QOMX"
                     } else if (codecName.contains("OMX.SEC", true)) {
-                        extension = "OMX.SEC"
+                        extension = "OMX_SEC"
                     }
 
                     profile = MPEG4Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"

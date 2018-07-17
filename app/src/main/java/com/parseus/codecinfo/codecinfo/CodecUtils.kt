@@ -6,6 +6,7 @@ import android.media.MediaCodecList
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.codecinfo.colorformats.*
 import com.parseus.codecinfo.codecinfo.profilelevels.*
 import com.parseus.codecinfo.toBytesPerSecond
 import com.parseus.codecinfo.toHexHstring
@@ -100,7 +101,7 @@ object CodecUtils {
                 getAudioCapabilities(context, codecId, capabilities, codecInfoMap)
             }
         } else {
-            getVideoCapabilities(context, capabilities, codecInfoMap)
+            getVideoCapabilities(context, codecName, capabilities, codecInfoMap)
 
             if (!isEncoder) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -216,7 +217,7 @@ object CodecUtils {
         }
     }
 
-    private fun getVideoCapabilities(context: Context, capabilities: MediaCodecInfo.CodecCapabilities,
+    private fun getVideoCapabilities(context: Context, codecName: String, capabilities: MediaCodecInfo.CodecCapabilities,
                                      codecInfoMap: HashMap<String, String>) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val videoCapabilities = capabilities.videoCapabilities
@@ -246,8 +247,21 @@ object CodecUtils {
 
         val colorFormats = capabilities.colorFormats
         val colorFormatStrings = Array(colorFormats.size) { it ->
-            ColorFormat.from(colorFormats[it])
-                    ?: "${context.getString(R.string.unknown)} (0x${colorFormats[it].toString(16).toUpperCase()})"}
+            var colorFormat = when {
+                codecName.contains("broadcomm", true) -> BroadcomColorFormat.from(colorFormats[it])
+                codecName.contains("qcom", true) || codecName.contains("qti", true)
+                    -> QualcommColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.SEC", true) -> SamsungColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.STE", true) || codecName.contains("OMX.TI", true)
+                    -> OtherColorFormat.from(colorFormats[it])
+                else -> null
+            }
+
+            if (colorFormat == null) {
+                colorFormat = MediaCodecColorFormat.from(colorFormats[it])
+            }
+
+            colorFormat ?: "${context.getString(R.string.unknown)} (0x${colorFormats[it].toString(16).toUpperCase()})"}
         colorFormatStrings.sort()
         codecInfoMap[context.getString(R.string.color_profiles)] = colorFormatStrings.joinToString("\n")
     }

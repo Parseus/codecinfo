@@ -63,10 +63,10 @@ object CodecUtils {
                 val isAudioCodec = isAudioCodec(mediaCodecInfo)
 
                 if (isAudio && isAudioCodec) {
-                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec)
+                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec, isEncoder(mediaCodecInfo))
                     codecSimpleInfoList.add(codecSimpleInfo)
                 } else if (!isAudio && !isAudioCodec) {
-                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec)
+                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec, isEncoder(mediaCodecInfo))
                     codecSimpleInfoList.add(codecSimpleInfo)
                 }
             }

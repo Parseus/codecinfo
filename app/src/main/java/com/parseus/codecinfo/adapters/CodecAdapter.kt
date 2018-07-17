@@ -34,11 +34,14 @@ class CodecAdapter(private val codecList: List<CodecSimpleInfo>) : RecyclerView.
         private val layout: View = view.findViewById(R.id.simpleCodecRow)
         private val codecId: TextView = view.findViewById(R.id.codec_name)
         private val codecName: TextView = view.findViewById(R.id.codec_full_name)
+        private val codecType: TextView = view.findViewById(R.id.codec_type)
         private val moreInfo: TextView = view.findViewById(R.id.more_info)
 
         fun bindCodecInfo(codecInfo: CodecSimpleInfo) {
             codecId.text = codecInfo.codecId
             codecName.text = codecInfo.codecName
+            codecType.text = itemView.resources.getString(
+                    if (codecInfo.isEncoder) R.string.encoder else R.string.decoder)
 
             if (codecInfo.isAudio && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 moreInfo.visibility = View.GONE

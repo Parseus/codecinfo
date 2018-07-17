@@ -18,6 +18,9 @@
     <string name="audio">Audio</string>
     <string name="video">Video</string>
 
+    <string name="decoder">Decoder</string>
+    <string name="encoder">Encoder</string>
+
     <string name="codec_details">Codec details</string>
     
     <string name="frames_per_second">fps</string>

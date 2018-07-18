@@ -45,6 +45,20 @@ class CodecAdapter(private val codecList: List<CodecSimpleInfo>) : RecyclerView.
 
             if (codecInfo.isAudio && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 moreInfo.visibility = View.GONE
+
+                if (itemView.context.resources.getBoolean(R.bool.twoPaneMode)) {
+                    layout.setOnClickListener {
+                        val detailsFragment = CodecDetailsFragment()
+                        val bundle = Bundle().apply {
+                            putString("codecName", itemView.resources.getString(R.string.no_info))
+                        }
+                        detailsFragment.arguments = bundle
+                        val activity = (layout.context as FragmentActivity)
+                        activity.supportFragmentManager.beginTransaction()
+                                .replace(R.id.codecDetailsFragment, detailsFragment).commit()
+
+                    }
+                }
             } else {
                 if (itemView.context.resources.getBoolean(R.bool.twoPaneMode)) {
                     moreInfo.visibility = View.GONE

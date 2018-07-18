@@ -21,23 +21,23 @@ class CodecDetailsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        var codecName = ""
-        var codecInfoMap = HashMap<String, String>()
-
         arguments?.let {
-            val codecId = arguments!!.getString("codecId")
-            codecName = arguments!!.getString("codecName")
-            codecInfoMap = CodecUtils.getDetailedCodecInfo(requireContext(), codecId, codecName)
+            val codecId: String? = arguments!!.getString("codecId")
+            val codecName = arguments!!.getString("codecName")
+            full_codec_info_name.text = codecName
+
+            codecId?.let {
+                val codecInfoMap = CodecUtils.getDetailedCodecInfo(requireContext(), codecId, codecName)
+                val codecAdapter = CodecInfoAdapter(codecInfoMap)
+                full_codec_info_content.apply {
+                    layoutManager = LinearLayoutManager(context)
+                    adapter = codecAdapter
+                    ViewCompat.setNestedScrollingEnabled(this, false)
+                }
+            }
         }
 
-        val codecAdapter = CodecInfoAdapter(codecInfoMap)
 
-        full_codec_info_name.text = codecName
-        full_codec_info_content.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = codecAdapter
-            ViewCompat.setNestedScrollingEnabled(this, false)
-        }
     }
 
 }

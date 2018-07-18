@@ -1,5 +1,6 @@
 package com.parseus.codecinfo.fragments
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.view.*
@@ -12,14 +13,24 @@ import com.parseus.codecinfo.MainActivity
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.adapters.CodecInfoAdapter
 import com.parseus.codecinfo.codecinfo.CodecUtils
-import kotlinx.android.synthetic.main.full_codec_info_fragment_layout.*
+import kotlinx.android.synthetic.main.codec_details_fragment_layout.*
 
-class FullCodecInfoDialogFragment : DialogFragment() {
+class CodecDetailsDialogFragment : DialogFragment() {
+
+    private var dismissDialog = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.full_codec_info_fragment_layout, container, false)
+        val view = inflater.inflate(R.layout.codec_details_fragment_layout, container, false)
 
-        val toolbar = ViewCompat.requireViewById<Toolbar>(view, R.id.dialogToolbar)
+        val toolbar: Toolbar
+
+        try {
+            toolbar = ViewCompat.requireViewById(view, R.id.dialogToolbar)
+        } catch (e: Exception) {
+            dismissDialog = true
+            return null
+        }
+
         toolbar.title = requireContext().getString(R.string.codec_details)
         (requireActivity() as MainActivity).setSupportActionBar(toolbar)
         (requireActivity() as MainActivity).supportActionBar?.apply {
@@ -31,6 +42,16 @@ class FullCodecInfoDialogFragment : DialogFragment() {
         setHasOptionsMenu(true)
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (dismissDialog) {
+            requireActivity().supportFragmentManager.popBackStack()
+            dismiss()
+            return
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -61,24 +82,26 @@ class FullCodecInfoDialogFragment : DialogFragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
+    @SuppressLint("InflateParams")
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.itemId
 
-        if (id == android.R.id.home) {
-            dismiss()
-        } else if (id == R.id.fragment_menu_item_share) {
-            val codecId = arguments!!.getString("codecId")
-            val codecName = arguments!!.getString("codecName")
-            val header = "${requireContext().getString(R.string.codec_details)}: $codecName\n\n"
-            val codecStringBuilder = StringBuilder(header)
-            val codecInfoMap = CodecUtils.getDetailedCodecInfo(requireContext(), codecId, codecName)
+        when (id) {
+            android.R.id.home -> dismiss()
+            R.id.fragment_menu_item_share -> {
+                val codecId = arguments!!.getString("codecId")
+                val codecName = arguments!!.getString("codecName")
+                val header = "${requireContext().getString(R.string.codec_details)}: $codecName\n\n"
+                val codecStringBuilder = StringBuilder(header)
+                val codecInfoMap = CodecUtils.getDetailedCodecInfo(requireContext(), codecId, codecName)
 
-            for (key in codecInfoMap.keys) {
-                codecStringBuilder.append("$key\n${codecInfoMap[key]}\n\n")
+                for (key in codecInfoMap.keys) {
+                    codecStringBuilder.append("$key\n${codecInfoMap[key]}\n\n")
+                }
+
+                ShareCompat.IntentBuilder.from(activity).setType("text/plain")
+                        .setText(codecStringBuilder.toString()).startChooser()
             }
-
-            ShareCompat.IntentBuilder.from(activity).setType("text/plain")
-                    .setText(codecStringBuilder.toString()).startChooser()
         }
 
         return true

@@ -7,7 +7,8 @@ enum class VP9Profiles(val value: Int) {
     VP9Profile2(0x04),
     VP9Profile3(0x08),
     VP9Profile2HDR(0x1000),
-    VP9Profile3HDR(0x2000);
+    VP9Profile3HDR(0x2000),
+    VP9ProfileMax(0x7FFFFFFF);
 
     companion object {
         fun from(findValue: Int): String? = try {
@@ -33,7 +34,8 @@ enum class VP9Levels(val value: Int) {
     VP9Level52(0x400),
     VP9Level6(0x800),
     VP9Level61(0x1000),
-    VP9Level62(0x2000);
+    VP9Level62(0x2000),
+    VP9LevelMax(0x7FFFFFFF);
 
     companion object {
         fun from(findValue: Int): String? = try {

@@ -6,12 +6,27 @@ import android.media.MediaCodecList
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.codecinfo.colorformats.*
 import com.parseus.codecinfo.codecinfo.profilelevels.*
 import com.parseus.codecinfo.toBytesPerSecond
 import com.parseus.codecinfo.toHexHstring
 import com.parseus.codecinfo.toKiloHertz
 
 object CodecUtils {
+
+    private val platformSupportedTypes = listOf(
+            "audio/3gpp",
+            "audio/amr-mb",
+            "audio/amr-wb",
+            "audio/flac",
+            "audio/g711-alaw",
+            "audio/g711-mlaw",
+            "audio/gsm",
+            "audio/mp4a-latm",
+            "audio/mpeg",
+            "audio/opus",
+            "audio/raw",
+            "audio/vorbis")
 
     private val mediaCodecInfos: Array<MediaCodecInfo>
     private var audioCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList(0)
@@ -48,10 +63,10 @@ object CodecUtils {
                 val isAudioCodec = isAudioCodec(mediaCodecInfo)
 
                 if (isAudio && isAudioCodec) {
-                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec)
+                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec, isEncoder(mediaCodecInfo))
                     codecSimpleInfoList.add(codecSimpleInfo)
                 } else if (!isAudio && !isAudioCodec) {
-                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec)
+                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec, isEncoder(mediaCodecInfo))
                     codecSimpleInfoList.add(codecSimpleInfo)
                 }
             }
@@ -69,7 +84,7 @@ object CodecUtils {
         return codecSimpleInfoList
     }
 
-    fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): Map<String, String> {
+    fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): HashMap<String, String> {
         val mediaCodecInfo = mediaCodecInfos.first { it.name == codecName }
         val capabilities = mediaCodecInfo.getCapabilitiesForType(codecId)
         val isAudio = isAudioCodec(mediaCodecInfo)
@@ -83,10 +98,10 @@ object CodecUtils {
 
         if (isAudio) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getAudioCapabilities(context, capabilities, codecInfoMap)
+                getAudioCapabilities(context, codecId, capabilities, codecInfoMap)
             }
         } else {
-            getVideoCapabilities(context, capabilities, codecInfoMap)
+            getVideoCapabilities(context, codecName, capabilities, codecInfoMap)
 
             if (!isEncoder) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -133,7 +148,7 @@ object CodecUtils {
             codecInfoMap[context.getString(R.string.bitrate_modes)] = bitrateModesString
         }
 
-        getProfileLevels(context, codecId, capabilities)?.let {
+        getProfileLevels(context, codecId, codecName, capabilities)?.let {
             codecInfoMap[context.getString(R.string.profile_levels)] = it
         }
 
@@ -141,11 +156,12 @@ object CodecUtils {
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun getAudioCapabilities(context: Context, capabilities: MediaCodecInfo.CodecCapabilities,
+    private fun getAudioCapabilities(context: Context, codecId: String, capabilities: MediaCodecInfo.CodecCapabilities,
                                      codecInfoMap: HashMap<String, String>) {
         val audioCapabilities = capabilities.audioCapabilities
 
-        codecInfoMap[context.getString(R.string.input_channels)] = audioCapabilities.maxInputChannelCount.toString()
+        codecInfoMap[context.getString(R.string.input_channels)] =
+                adjustMaxInputChannelCount(codecId, audioCapabilities.maxInputChannelCount).toString()
 
         val bitrateRange = audioCapabilities.bitrateRange
         val bitrateRangeString = if (bitrateRange.lower == bitrateRange.upper || bitrateRange.lower == 1) {
@@ -175,7 +191,33 @@ object CodecUtils {
         codecInfoMap[context.getString(R.string.sample_rates)] = sampleRatesString
     }
 
-    private fun getVideoCapabilities(context: Context, capabilities: MediaCodecInfo.CodecCapabilities,
+    /**
+     * Tries to adjust max input channel count for non-platform codecs.
+     *
+     * AudioCapabilities incorrectly assumes that non-platform codecs support only one input channel.
+     * This function provides a somewhat better, assumed guess.
+     */
+    private fun adjustMaxInputChannelCount(codecId: String, maxChannelCount: Int): Int {
+        if (maxChannelCount > 1 || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && maxChannelCount > 0)) {
+            // The maximum channel count looks like it's been set correctly.
+            return maxChannelCount
+        }
+
+        if (codecId in platformSupportedTypes) {
+            // Platform code should have set a default.
+            return maxChannelCount
+        }
+
+        // The maximum channel count looks incorrect. Adjust it to an assumed default.
+        return when (codecId) {
+            "audio/ac3" -> 6
+            "audio/eac3" -> 16
+            // Default to the platform limit, which is 30.
+            else -> 30
+        }
+    }
+
+    private fun getVideoCapabilities(context: Context, codecName: String, capabilities: MediaCodecInfo.CodecCapabilities,
                                      codecInfoMap: HashMap<String, String>) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val videoCapabilities = capabilities.videoCapabilities
@@ -205,8 +247,23 @@ object CodecUtils {
 
         val colorFormats = capabilities.colorFormats
         val colorFormatStrings = Array(colorFormats.size) { it ->
-            ColorFormat.from(colorFormats[it])
-                    ?: "${context.getString(R.string.unknown)} (0x${colorFormats[it].toString(16).toUpperCase()})"}
+            var colorFormat = when {
+                codecName.contains("broadcomm", true) -> BroadcomColorFormat.from(colorFormats[it])
+                codecName.contains("qcom", true) || codecName.contains("qti", true)
+                    -> QualcommColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)
+                    -> SamsungColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.STE", true) || codecName.contains("OMX.TI", true)
+                    -> OtherColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.MTK", true) -> MediaTekColorFormat.from(colorFormats[it])
+                else -> null
+            }
+
+            if (colorFormat == null) {
+                colorFormat = MediaCodecColorFormat.from(colorFormats[it])
+            }
+
+            colorFormat ?: "${context.getString(R.string.unknown)} (0x${colorFormats[it].toString(16).toUpperCase()})"}
         colorFormatStrings.sort()
         codecInfoMap[context.getString(R.string.color_profiles)] = colorFormatStrings.joinToString("\n")
     }
@@ -245,7 +302,7 @@ object CodecUtils {
         return capabilities.toString()
     }
 
-    private fun getProfileLevels(context: Context, codecId: String, capabilities: MediaCodecInfo.CodecCapabilities): String? {
+    private fun getProfileLevels(context: Context, codecId: String, codecName: String, capabilities: MediaCodecInfo.CodecCapabilities): String? {
         val profileLevels = capabilities.profileLevels
 
         if (profileLevels == null || profileLevels.isEmpty()) {
@@ -289,10 +346,18 @@ object CodecUtils {
                     level = MPEG2Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("mp4v-es", true) -> {
+                    var extension = ""
+
+                    if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
+                        extension = "QOMX"
+                    } else if (codecName.contains("OMX.SEC", true)) {
+                        extension = "OMX_SEC"
+                    }
+
                     profile = MPEG4Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = MPEG4Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                    level = MPEG4Levels.from(it.level, extension) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("vc1", true) || codecId.contains("wmv9") -> {
+                codecId.contains("vc1", true) || codecId.contains("wmv") -> {
                     profile = VC1Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = VC1Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }

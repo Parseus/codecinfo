@@ -1,11 +1,17 @@
 package com.parseus.codecinfo
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
+import androidx.fragment.app.DialogFragment
 import com.google.android.material.tabs.TabLayout
+import com.kobakei.ratethisapp.RateThisApp
 import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.CodecUtils
 import kotlinx.android.synthetic.main.activity_main.*
@@ -16,6 +22,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        val config = RateThisApp.Config(3, 5)
+        RateThisApp.init(config)
+        RateThisApp.showRateDialogIfNeeded(this)
 
         val tabs = tabLayout
         val viewPager = pager.apply {
@@ -31,8 +41,32 @@ class MainActivity : AppCompatActivity() {
             }
         })
         tabs.setupWithViewPager(viewPager)
+
+        if (resources.getBoolean(R.bool.twoPaneMode)) {
+            return
+        }
+
+        if (savedInstanceState != null) {
+            supportFragmentManager.executePendingTransactions()
+            val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment)
+            fragmentById?.let { supportFragmentManager.beginTransaction().remove(fragmentById).commit() }
+        }
     }
 
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+
+        if (resources.getBoolean(R.bool.twoPaneMode)) {
+            supportFragmentManager.findFragmentByTag("SINGLE_PANE_DETAILS")?.let {
+                val dialog = (it as DialogFragment).dialog
+                if (dialog != null && dialog.isShowing) {
+                    it.dismiss()
+                }
+            }
+        }
+    }
+
+    @SuppressLint("InflateParams")
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.itemId
 
@@ -49,6 +83,21 @@ class MainActivity : AppCompatActivity() {
                     .setType("text/plain").setText(codecStringBuilder.toString()).startChooser()
 
             return true
+        } else if (id == R.id.menu_item_about_app) {
+            val alertDialogBuilder = AlertDialog.Builder(this)
+            val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
+            alertDialogBuilder.setView(dialogView)
+            val alertDialog = alertDialogBuilder.create()
+
+            val okButton: View = dialogView.findViewById(R.id.ok_button)
+            okButton.setOnClickListener { alertDialog.dismiss() }
+
+            try {
+                val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
+                versionTextView.text = getString(R.string.app_version, packageManager.getPackageInfo(packageName, 0).versionName)
+            } catch (e : Exception) {}
+
+            alertDialog.show()
         }
 
         return super.onOptionsItemSelected(item)

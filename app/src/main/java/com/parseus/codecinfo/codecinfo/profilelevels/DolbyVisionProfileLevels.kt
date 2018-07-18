@@ -11,7 +11,8 @@ enum class DolbyVisionProfiles(val value: Int) {
     DolbyVisionProfileDvheDth(0x40),
     DolbyVisionProfileDvheDtb(0x80),
     DolbyVisionProfileDvheSt(0x100),
-    DolbyVisionProfileDvavSe(0x200);
+    DolbyVisionProfileDvavSe(0x200),
+    DolbyVisionProfileMax(0x7FFFFFFF);
 
     companion object {
         fun from(findValue: Int): String? = try {
@@ -33,7 +34,8 @@ enum class DolbyVisionLevels(val value: Int) {
     DolbyVisionLevelUhd24(0x20),
     DolbyVisionLevelUhd30(0x40),
     DolbyVisionLevelUhd48(0x80),
-    DolbyVisionLevelUhd60(0x100);
+    DolbyVisionLevelUhd60(0x100),
+    DolbyVisionLevelMax(0x7FFFFFFF);
 
     companion object {
         fun from(findValue: Int): String? = try {

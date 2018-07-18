@@ -4,6 +4,8 @@
     android:id="@+id/simpleCodecListView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:scrollbars="vertical"
+    android:fadeScrollbars="false"
     tools:listitem="@layout/codec_adapter_row">
 
 </androidx.recyclerview.widget.RecyclerView>

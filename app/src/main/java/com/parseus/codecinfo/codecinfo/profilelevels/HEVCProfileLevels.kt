@@ -2,6 +2,7 @@ package com.parseus.codecinfo.codecinfo.profilelevels
 
 enum class HEVCProfiles(val value: Int) {
 
+    HEVCProfileUnknown(0x00),
     HEVCProfileMain(0x01),
     HEVCProfileMain10(0x02),
     HEVCProfileStillImage(0x04),
@@ -20,6 +21,7 @@ enum class HEVCProfiles(val value: Int) {
 
 enum class HEVCLevels(val value: Int) {
 
+    HEVCLevelUnknown(0x0),
     HEVCMainTierLevel1(0x1),
     HEVCHighTierLevel1(0x2),
     HEVCMainTierLevel2(0x4),

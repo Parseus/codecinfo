@@ -251,7 +251,8 @@ object CodecUtils {
                 codecName.contains("broadcomm", true) -> BroadcomColorFormat.from(colorFormats[it])
                 codecName.contains("qcom", true) || codecName.contains("qti", true)
                     -> QualcommColorFormat.from(colorFormats[it])
-                codecName.contains("OMX.SEC", true) -> SamsungColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)
+                    -> SamsungColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.STE", true) || codecName.contains("OMX.TI", true)
                     -> OtherColorFormat.from(colorFormats[it])
                 else -> null

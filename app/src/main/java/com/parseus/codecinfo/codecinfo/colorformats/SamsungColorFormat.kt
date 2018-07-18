@@ -3,6 +3,7 @@ package com.parseus.codecinfo.codecinfo.colorformats
 @Suppress("EnumEntryName")
 enum class SamsungColorFormat(val value: Int) {
 
+    OMX_SEC_COLOR_FormatEncodedData(0x19),
     OMX_SEC_COLOR_FormatANBYUV420SemiPlanar(0x100),
     OMX_SEC_COLOR_FormatNV12TPhysicalAddress(0x7F000001),
     OMX_SEC_COLOR_FormatNV12LPhysicalAddress(0x7F000002),

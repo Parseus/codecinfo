@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'project-report'
 
 android {
     compileSdkVersion 28
@@ -9,8 +8,8 @@ android {
         applicationId "com.parseus.codecinfo"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.2"
         resConfigs "en"
     }
     buildTypes {

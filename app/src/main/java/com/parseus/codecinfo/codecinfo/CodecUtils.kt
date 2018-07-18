@@ -255,6 +255,7 @@ object CodecUtils {
                     -> SamsungColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.STE", true) || codecName.contains("OMX.TI", true)
                     -> OtherColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.MTK", true) -> MediaTekColorFormat.from(colorFormats[it])
                 else -> null
             }
 

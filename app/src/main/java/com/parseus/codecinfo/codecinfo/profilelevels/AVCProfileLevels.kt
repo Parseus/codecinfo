@@ -1,3 +1,5 @@
+@file:Suppress("EnumEntryName")
+
 package com.parseus.codecinfo.codecinfo.profilelevels
 
 enum class AVCProfiles(val value: Int) {
@@ -19,11 +21,23 @@ enum class AVCProfiles(val value: Int) {
     AVCProfileScalableHighIntra(0x8000),
     AVCProfileConstrainedBaseline(0x10000),
     AVCProfileConstrainedHigh(0x80000),
+
+    // Qualcomm extensions
+    QOMX_VIDEO_AVCProfileConstrained(0x7F000000),
+    QOMX_VIDEO_AVCProfileConstrainedBaseline(0x7F000001),
+    QOMX_VIDEO_AVCProfileConstrainedHigh(0x7F000002),
+
     AVCProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            AVCProfiles.values().first { it.value == findValue }.name
+        fun from(findValue: Int, extension: String = ""): String? = try {
+            AVCProfiles.values().first {
+                if (it.value > 0x7F000000 && it.value != 0x7FFFFFFF) {
+                    it.value == findValue && it.name.contains(extension, true)
+                } else {
+                    it.value == findValue
+                }
+            }.name
         } catch (e: Exception) {
             null
         }

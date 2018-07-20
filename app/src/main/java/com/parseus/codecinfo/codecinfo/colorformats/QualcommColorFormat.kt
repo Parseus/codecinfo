@@ -3,6 +3,7 @@ package com.parseus.codecinfo.codecinfo.colorformats
 @Suppress("EnumEntryName")
 enum class QualcommColorFormat (val value: Int) {
 
+    QOMX_COLOR_FormatYVU420SemiPlanar(0x7FA30C00),
     QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka(0x7FA30C01),
     QOMX_COLOR_FormatYUV420PackedSemiPlanar16m2ka(0x7FA30C02),
     QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka(0x7FA30C03),

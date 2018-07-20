@@ -322,7 +322,13 @@ object CodecUtils {
                     profile = AACProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                 }
                 codecId.contains("avc", true) -> {
-                    profile = AVCProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
+                    var extension = ""
+
+                    if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
+                        extension = "QOMX"
+                    }
+
+                    profile = AVCProfiles.from(it.profile, extension) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = AVCLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("divx", true) -> {

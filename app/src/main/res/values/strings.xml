@@ -52,6 +52,9 @@
     <string name="cq" translatable="false">Constant quality (CQ)</string>
     <string name="vbr" translatable="false">Variable bitrate (VBR)</string>
 
+    <string name="complexity_range">Encoding complexity range</string>
+    <string name="quality_range">Encoding quality range</string>
+
     <string name="more_info">Tap to see more info…</string>
 
 </resources>

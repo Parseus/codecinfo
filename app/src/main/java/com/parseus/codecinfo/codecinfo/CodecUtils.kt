@@ -146,6 +146,30 @@ object CodecUtils {
                             "\n${context.getString(R.string.vbr)}: " +
                             "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)}"
             codecInfoMap[context.getString(R.string.bitrate_modes)] = bitrateModesString
+
+            val complexityLower = encoderCapabilities.complexityRange.lower
+            val complexityUpper = encoderCapabilities.complexityRange.upper
+
+            val complexityRangeString = if (complexityLower != complexityUpper) {
+                "$complexityLower — $complexityUpper"
+            } else {
+                "$complexityLower"
+            }
+
+            codecInfoMap[context.getString(R.string.complexity_range)] = complexityRangeString
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val qualityRangeLower = encoderCapabilities.qualityRange.lower
+                val qualityRangeUpper = encoderCapabilities.qualityRange.upper
+
+                val qualityRangeString = if (qualityRangeLower != qualityRangeUpper) {
+                    "$qualityRangeLower — $qualityRangeUpper"
+                } else {
+                    "$qualityRangeLower"
+                }
+
+                codecInfoMap[context.getString(R.string.quality_range)] = qualityRangeString
+            }
         }
 
         getProfileLevels(context, codecId, codecName, capabilities)?.let {

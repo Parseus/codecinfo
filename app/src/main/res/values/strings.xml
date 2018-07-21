@@ -9,6 +9,10 @@
         com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
 
     <string name="share">Share</string>
+    <string name="choose_share">Choose info to share</string>
+    <string name="codec_list">Codec list</string>
+    <string name="codec_details_selected">Selected codec details</string>
+    <string name="codec_all_info">All codecs with details</string>
 
     <string name="about_app">About &app_name;…</string>
     <string name="app_version">Version %s</string>

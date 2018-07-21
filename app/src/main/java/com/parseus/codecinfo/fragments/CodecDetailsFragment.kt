@@ -14,6 +14,9 @@ import kotlinx.android.synthetic.main.codec_details_fragment_layout.*
 
 class CodecDetailsFragment : Fragment() {
 
+    var codecId: String? = null
+    var codecName: String? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.codec_details_fragment_layout, container, false)
     }
@@ -22,12 +25,12 @@ class CodecDetailsFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         arguments?.let {
-            val codecId: String? = arguments!!.getString("codecId")
-            val codecName = arguments!!.getString("codecName")
+            codecId = arguments!!.getString("codecId")
+            codecName = arguments!!.getString("codecName")
             full_codec_info_name.text = codecName
 
             codecId?.let {
-                val codecInfoMap = CodecUtils.getDetailedCodecInfo(requireContext(), codecId, codecName)
+                val codecInfoMap = CodecUtils.getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
                 val codecAdapter = CodecInfoAdapter(codecInfoMap)
                 full_codec_info_content.apply {
                     layoutManager = LinearLayoutManager(context)

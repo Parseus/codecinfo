@@ -168,9 +168,18 @@ class MainActivity : AppCompatActivity() {
                 val codecName = fragmentById.codecName
 
                 val codecInfoMap = CodecUtils.getDetailedCodecInfo(this, codecId!!, codecName!!)
+                codecStringBuilder.append("${getString(R.string.codec_details)}: $codecName\n\n")
 
                 for (key in codecInfoMap.keys) {
-                    codecStringBuilder.append("$key\n${codecInfoMap[key]}\n\n")
+                    val stringToAppend = if (key != getString(R.string.bitrate_modes)
+                            && key != getString(R.string.color_profiles)
+                            && key != getString(R.string.profile_levels)
+                            && key != getString(R.string.max_frame_rate_per_resolution)) {
+                        "$key: ${codecInfoMap[key]}\n"
+                    } else {
+                        "$key:\n${codecInfoMap[key]}\n"
+                    }
+                    codecStringBuilder.append(stringToAppend)
                 }
             }
         }

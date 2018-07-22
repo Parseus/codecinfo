@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +28,7 @@ class CodecDetailsFragment : Fragment() {
         arguments?.let {
             codecId = arguments!!.getString("codecId")
             codecName = arguments!!.getString("codecName")
-            full_codec_info_name.text = codecName
+            (full_codec_info_name as TextView).text = codecName
 
             codecId?.let {
                 val codecInfoMap = CodecUtils.getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)

@@ -29,15 +29,18 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbarlayout_scrolling_view_behavior">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/full_codec_info_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
             android:paddingTop="@dimen/list_content_padding"
             android:paddingStart="@dimen/list_content_padding"
             android:paddingEnd="@dimen/list_content_padding"
             android:textColor="@color/colorPrimary"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textAppearance="@style/MaterialHeadline"
+            app:autoSizeMinTextSize="16sp"
+            app:autoSizeMaxTextSize="20sp"
+            app:autoSizeStepGranularity="1sp"
             tools:text="Codec full name"/>
 
         <androidx.recyclerview.widget.RecyclerView

@@ -1,9 +1,12 @@
 package com.parseus.codecinfo.codecinfo
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.media.MediaCodecInfo
 import android.media.MediaCodecList
-import android.os.Build
+import android.media.MediaFormat
+import android.os.Build.VERSION.SDK_INT
+import android.os.Build.VERSION_CODES.*
 import androidx.annotation.RequiresApi
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.codecinfo.colorformats.*
@@ -33,7 +36,7 @@ object CodecUtils {
     private var videoCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList(0)
 
     init {
-        mediaCodecInfos = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        mediaCodecInfos = if (SDK_INT >= LOLLIPOP) {
             MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
         } else {
             @Suppress("DEPRECATION")
@@ -92,37 +95,37 @@ object CodecUtils {
 
         val codecInfoMap = LinkedHashMap<String, String>()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (SDK_INT >= M) {
             codecInfoMap[context.getString(R.string.max_instances)] = capabilities.maxSupportedInstances.toString()
         }
 
         if (isAudio) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (SDK_INT >= LOLLIPOP) {
                 getAudioCapabilities(context, codecId, capabilities, codecInfoMap)
             }
         } else {
             getVideoCapabilities(context, codecName, capabilities, codecInfoMap)
 
             if (!isEncoder) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                if (SDK_INT >= KITKAT) {
                     codecInfoMap[context.getString(R.string.adaptive_playback)] =
                             capabilities.isFeatureSupported(
                                     MediaCodecInfo.CodecCapabilities.FEATURE_AdaptivePlayback).toString()
                 }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (SDK_INT >= O) {
                     codecInfoMap[context.getString(R.string.partial_frames)] =
                             capabilities.isFeatureSupported(
                                     MediaCodecInfo.CodecCapabilities.FEATURE_PartialFrame).toString()
                 }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (SDK_INT >= LOLLIPOP) {
                     codecInfoMap[context.getString(R.string.secure_playback)] =
                             capabilities.isFeatureSupported(
                                     MediaCodecInfo.CodecCapabilities.FEATURE_SecurePlayback).toString()
                 }
             } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                if (SDK_INT >= N) {
                     codecInfoMap[context.getString(R.string.intra_refresh)] =
                             capabilities.isFeatureSupported(
                                     MediaCodecInfo.CodecCapabilities.FEATURE_IntraRefresh).toString()
@@ -130,13 +133,13 @@ object CodecUtils {
             }
         }
 
-        if (!isEncoder && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (!isEncoder && SDK_INT >= LOLLIPOP) {
             codecInfoMap[context.getString(R.string.tunneled_playback)] =
                     capabilities.isFeatureSupported(
                             MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback).toString()
         }
 
-        if (isEncoder && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (isEncoder && SDK_INT >= LOLLIPOP) {
             val encoderCapabilities = capabilities.encoderCapabilities
             val bitrateModesString =
                     "${context.getString(R.string.cbr)}: " +
@@ -158,7 +161,7 @@ object CodecUtils {
 
             codecInfoMap[context.getString(R.string.complexity_range)] = complexityRangeString
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (SDK_INT >= P) {
                 val qualityRangeLower = encoderCapabilities.qualityRange.lower
                 val qualityRangeUpper = encoderCapabilities.qualityRange.upper
 
@@ -179,13 +182,13 @@ object CodecUtils {
         return codecInfoMap
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    @RequiresApi(LOLLIPOP)
     private fun getAudioCapabilities(context: Context, codecId: String, capabilities: MediaCodecInfo.CodecCapabilities,
                                      codecInfoMap: HashMap<String, String>) {
         val audioCapabilities = capabilities.audioCapabilities
 
         codecInfoMap[context.getString(R.string.input_channels)] =
-                adjustMaxInputChannelCount(codecId, audioCapabilities.maxInputChannelCount).toString()
+                adjustMaxInputChannelCount(codecId, audioCapabilities.maxInputChannelCount, capabilities).toString()
 
         val bitrateRange = audioCapabilities.bitrateRange
         val bitrateRangeString = if (bitrateRange.lower == bitrateRange.upper || bitrateRange.lower == 1) {
@@ -221,8 +224,9 @@ object CodecUtils {
      * AudioCapabilities incorrectly assumes that non-platform codecs support only one input channel.
      * This function provides a somewhat better, assumed guess.
      */
-    private fun adjustMaxInputChannelCount(codecId: String, maxChannelCount: Int): Int {
-        if (maxChannelCount > 1 || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && maxChannelCount > 0)) {
+    @SuppressLint("NewApi")
+    private fun adjustMaxInputChannelCount(codecId: String, maxChannelCount: Int, capabilities: MediaCodecInfo.CodecCapabilities): Int {
+        if (maxChannelCount > 1 || (SDK_INT >= O && maxChannelCount > 0)) {
             // The maximum channel count looks like it's been set correctly.
             return maxChannelCount
         }
@@ -230,6 +234,24 @@ object CodecUtils {
         if (codecId in platformSupportedTypes) {
             // Platform code should have set a default.
             return maxChannelCount
+        }
+
+        if (SDK_INT in LOLLIPOP..O_MR1) {
+            /*
+                mCapabilitiesInfo, a private MediaFormat instance hidden in MediaCodecInfo,
+                can actually providemax input channel count (as well as other useful info).
+                Unfortunately, with P restricting non-API usage via reflection, I can only hope
+                that everything will work fine on newer versions.
+             */
+            try {
+                val capabilitiesInfo = capabilities::class.java.getDeclaredField("mCapabilitiesInfo")
+                capabilitiesInfo.isAccessible = true
+                val mediaFormat = capabilitiesInfo.get(capabilities) as MediaFormat
+
+                if (mediaFormat.containsKey("max-channel-count")) {
+                    return mediaFormat.getString("max-channel-count").toInt()
+                }
+            } catch (e: Exception) {}
         }
 
         // The maximum channel count looks incorrect. Adjust it to an assumed default.
@@ -243,7 +265,7 @@ object CodecUtils {
 
     private fun getVideoCapabilities(context: Context, codecName: String, capabilities: MediaCodecInfo.CodecCapabilities,
                                      codecInfoMap: HashMap<String, String>) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (SDK_INT >= LOLLIPOP) {
             val videoCapabilities = capabilities.videoCapabilities
 
             val bitrateRange = videoCapabilities.bitrateRange
@@ -292,7 +314,7 @@ object CodecUtils {
         codecInfoMap[context.getString(R.string.color_profiles)] = colorFormatStrings.joinToString("\n")
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    @RequiresApi(LOLLIPOP)
     private fun getFrameRatePerResolutions(context: Context, videoCapabilities: MediaCodecInfo.VideoCapabilities): String {
         val capabilities = StringBuilder()
         var maxFrameRate: Double

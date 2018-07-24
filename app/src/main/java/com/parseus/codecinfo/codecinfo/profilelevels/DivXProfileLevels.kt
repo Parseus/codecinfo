@@ -14,7 +14,7 @@ enum class DivXProfiles(val value: Int) {
 
     companion object {
         fun from(findValue: Int, extension: String = ""): String? = try {
-            MPEG4Levels.values().first {
+            DivXProfiles.values().first {
                 if (it.value > 0x7F000000 && it.value != 0x7FFFFFFF) {
                     it.value == findValue && it.name.contains(extension, true)
                 } else {

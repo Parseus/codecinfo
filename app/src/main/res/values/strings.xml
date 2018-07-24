@@ -58,6 +58,7 @@
 
     <string name="complexity_range">Encoding complexity range</string>
     <string name="quality_range">Encoding quality range</string>
+    <string name="range_default">default</string>
 
     <string name="more_info">Tap to see more info…</string>
 

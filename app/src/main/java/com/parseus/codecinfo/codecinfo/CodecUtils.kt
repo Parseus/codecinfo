@@ -152,9 +152,15 @@ object CodecUtils {
 
             val complexityLower = encoderCapabilities.complexityRange.lower
             val complexityUpper = encoderCapabilities.complexityRange.upper
+            var defaultComplexity = 0
+
+            val defaultMediaFormat = capabilities.defaultFormat
+            if (defaultMediaFormat.containsKey(MediaFormat.KEY_COMPLEXITY)) {
+                defaultComplexity = defaultMediaFormat.getInteger(MediaFormat.KEY_COMPLEXITY)
+            }
 
             val complexityRangeString = if (complexityLower != complexityUpper) {
-                "$complexityLower — $complexityUpper"
+                "$complexityLower — $complexityUpper (${context.getString(R.string.range_default)}: $defaultComplexity)"
             } else {
                 "$complexityLower"
             }

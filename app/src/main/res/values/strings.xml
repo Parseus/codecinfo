@@ -31,6 +31,7 @@
     <string name="frames_per_second">fps</string>
     <string name="unknown">Unknown</string>
 
+    <string name="profiles">Profiles</string>
     <string name="profile_levels">Profile levels</string>
 
     <string name="max_instances">Max supported instances</string>

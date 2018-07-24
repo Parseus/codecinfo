@@ -181,8 +181,14 @@ object CodecUtils {
             }
         }
 
+        val profileString = if (codecId.contains("mp4a-latm")) {
+            context.getString(R.string.profiles)
+        } else {
+            context.getString(R.string.profile_levels)
+        }
+
         getProfileLevels(context, codecId, codecName, capabilities)?.let {
-            codecInfoMap[context.getString(R.string.profile_levels)] = it
+            codecInfoMap[profileString] = it
         }
 
         return codecInfoMap

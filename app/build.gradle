@@ -40,6 +40,4 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
     implementation 'androidx.vectordrawable:vectordrawable:1.0.0-beta01'
     implementation 'com.google.android.material:material:1.0.0-beta01'
-
-    implementation 'io.github.kobakei:ratethisapp:1.2.0'
 }

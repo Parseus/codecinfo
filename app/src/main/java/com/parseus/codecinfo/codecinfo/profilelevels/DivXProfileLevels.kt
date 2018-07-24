@@ -13,8 +13,14 @@ enum class DivXProfiles(val value: Int) {
     QOMX_VIDEO_DivXProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            DivXProfiles.values().first { it.value == findValue }.name
+        fun from(findValue: Int, extension: String = ""): String? = try {
+            MPEG4Levels.values().first {
+                if (it.value > 0x7F000000 && it.value != 0x7FFFFFFF) {
+                    it.value == findValue && it.name.contains(extension, true)
+                } else {
+                    it.value == findValue
+                }
+            }.name
         } catch (e: Exception) {
             null
         }

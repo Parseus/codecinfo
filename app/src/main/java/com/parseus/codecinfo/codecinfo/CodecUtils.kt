@@ -14,7 +14,7 @@ import com.parseus.codecinfo.toKiloHertz
 
 object CodecUtils {
 
-    private val platformSupportedTypes = listOf(
+    private val platformSupportedTypes = arrayOf(
             "audio/3gpp",
             "audio/amr-mb",
             "audio/amr-wb",
@@ -278,7 +278,7 @@ object CodecUtils {
                 codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)
                     -> SamsungColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.STE", true) || codecName.contains("OMX.TI", true)
-                    -> OtherColorFormat.from(colorFormats[it])
+                    || codecName.contains("INTEL", true) -> OtherColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.MTK", true) -> MediaTekColorFormat.from(colorFormats[it])
                 else -> null
             }
@@ -356,7 +356,13 @@ object CodecUtils {
                     level = AVCLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("divx", true) -> {
-                    profile = DivXProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
+                    var extension = ""
+
+                    if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
+                        extension = "QOMX"
+                    }
+
+                    profile = DivXProfiles.from(it.profile, extension) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("dolby-vision", true) -> {

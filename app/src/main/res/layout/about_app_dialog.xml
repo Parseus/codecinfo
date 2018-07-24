@@ -8,9 +8,11 @@
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        app:firstBaselineToTopHeight="40dp"
+        android:layout_marginLeft="@dimen/dialog_margin_size"
+        android:layout_marginRight="@dimen/dialog_margin_size"
+        android:layout_marginStart="@dimen/dialog_margin_size"
+        android:layout_marginEnd="@dimen/dialog_margin_size"
+        app:firstBaselineToTopHeight="@dimen/dialog_baseline_primary"
         android:text="@string/app_name"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
 
@@ -18,25 +20,31 @@
         android:id="@+id/version_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginLeft="@dimen/dialog_margin_size"
+        android:layout_marginRight="@dimen/dialog_margin_size"
+        android:layout_marginStart="@dimen/dialog_margin_size"
+        android:layout_marginEnd="@dimen/dialog_margin_size"
         android:text="@string/app_version"
-        app:firstBaselineToTopHeight="36dp"
+        app:firstBaselineToTopHeight="@dimen/dialog_baseline_secondary"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginLeft="@dimen/dialog_margin_size"
+        android:layout_marginRight="@dimen/dialog_margin_size"
+        android:layout_marginStart="@dimen/dialog_margin_size"
+        android:layout_marginEnd="@dimen/dialog_margin_size"
         android:text="@string/copyright"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"/>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginLeft="@dimen/dialog_margin_size"
+        android:layout_marginRight="@dimen/dialog_margin_size"
+        android:layout_marginStart="@dimen/dialog_margin_size"
+        android:layout_marginEnd="@dimen/dialog_margin_size"
         android:autoLink="web"
         android:text="@string/source_code_link"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"/>
@@ -45,8 +53,9 @@
         android:id="@+id/ok_button"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="@dimen/dialog_button_margin_size"
+        android:layout_marginEnd="@dimen/dialog_button_margin_size"
+        android:layout_marginRight="@dimen/dialog_button_margin_size"
         android:layout_marginTop="46dp"
         android:layout_gravity="end"
         android:text="@android:string/ok"

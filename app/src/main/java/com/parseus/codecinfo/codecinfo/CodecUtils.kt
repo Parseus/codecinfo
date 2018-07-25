@@ -33,8 +33,8 @@ object CodecUtils {
             "audio/vorbis")
 
     private val mediaCodecInfos: Array<MediaCodecInfo>
-    private var audioCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList(0)
-    private var videoCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList(0)
+    private var audioCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList()
+    private var videoCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList()
 
     init {
         mediaCodecInfos = if (SDK_INT >= LOLLIPOP) {

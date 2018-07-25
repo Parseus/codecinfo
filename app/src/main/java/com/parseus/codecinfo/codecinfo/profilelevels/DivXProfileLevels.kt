@@ -21,7 +21,7 @@ enum class DivXProfiles(val value: Int) {
                     it.value == findValue
                 }
             }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }

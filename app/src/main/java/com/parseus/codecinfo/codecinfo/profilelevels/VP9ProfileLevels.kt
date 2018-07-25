@@ -13,7 +13,7 @@ enum class VP9Profiles(val value: Int) {
     companion object {
         fun from(findValue: Int): String? = try {
             VP9Profiles.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }
@@ -40,7 +40,7 @@ enum class VP9Levels(val value: Int) {
     companion object {
         fun from(findValue: Int): String? = try {
             VP9Levels.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }

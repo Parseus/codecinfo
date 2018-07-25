@@ -14,7 +14,7 @@ enum class VP8Profiles(val value: Int) {
     companion object {
         fun from(findValue: Int): String? = try {
             VP8Profiles.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }
@@ -34,7 +34,7 @@ enum class VP8Levels(val value: Int) {
     companion object {
         fun from(findValue: Int): String? = try {
             VP8Levels.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }

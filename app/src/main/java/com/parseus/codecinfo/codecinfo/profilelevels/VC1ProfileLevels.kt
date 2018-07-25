@@ -21,7 +21,7 @@ enum class VC1Profiles(val value: Int) {
                     it.value == findValue
                 }
             }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }
@@ -49,7 +49,7 @@ enum class VC1Levels(val value: Int) {
                     it.value == findValue
                 }
             }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }

@@ -19,7 +19,7 @@ enum class AACProfiles(val value: Int) {
     companion object {
         fun from(findValue: Int): String? = try {
             AACProfiles.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }

@@ -321,7 +321,7 @@ object CodecUtils {
                 colorFormat = MediaCodecColorFormat.from(colorFormats[it])
             }
 
-            colorFormat ?: "${context.getString(R.string.unknown)} (0x${colorFormats[it].toString(16).toUpperCase()})"}
+            colorFormat ?: "${context.getString(R.string.unknown)} (${colorFormats[it].toHexHstring()})"}
         colorFormatStrings.sort()
         codecInfoMap[context.getString(R.string.color_profiles)] = colorFormatStrings.joinToString("\n")
     }

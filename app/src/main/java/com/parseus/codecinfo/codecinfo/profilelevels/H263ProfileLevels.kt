@@ -16,7 +16,7 @@ enum class H263Profiles(val value: Int) {
     companion object {
         fun from(findValue: Int): String? = try {
             H263Profiles.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }
@@ -38,7 +38,7 @@ enum class H263Levels(val value: Int) {
     companion object {
         fun from(findValue: Int): String? = try {
             H263Levels.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }

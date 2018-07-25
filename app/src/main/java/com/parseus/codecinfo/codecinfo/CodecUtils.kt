@@ -7,6 +7,7 @@ import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.*
+import android.util.Range
 import androidx.annotation.RequiresApi
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.codecinfo.colorformats.*
@@ -167,9 +168,20 @@ object CodecUtils {
 
             codecInfoMap[context.getString(R.string.complexity_range)] = complexityRangeString
 
-            if (SDK_INT >= P) {
-                val qualityRangeLower = encoderCapabilities.qualityRange.lower
-                val qualityRangeUpper = encoderCapabilities.qualityRange.upper
+            @Suppress("UNCHECKED_CAST")
+            val qualityRange = if (SDK_INT >= P) {
+                encoderCapabilities.qualityRange
+            } else {
+                // Before P quality range was actually available, but hidden as a private API.
+                try {
+                    val qualityRangeMethod = encoderCapabilities::class.java.getDeclaredMethod("getQualityRange")
+                    qualityRangeMethod.invoke(encoderCapabilities) as Range<Int>
+                } catch (e: Exception) { null }
+            }
+            
+            qualityRange?.let {
+                val qualityRangeLower = qualityRange.lower
+                val qualityRangeUpper = qualityRange.upper
 
                 val qualityRangeString = if (qualityRangeLower != qualityRangeUpper) {
                     "$qualityRangeLower — $qualityRangeUpper"

@@ -420,7 +420,7 @@ object CodecUtils {
 
                     if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
                         extension = "QOMX"
-                    } else if (codecName.contains("OMX.SEC", true)) {
+                    } else if (codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)) {
                         extension = "OMX_SEC"
                     }
 
@@ -428,8 +428,14 @@ object CodecUtils {
                     level = MPEG4Levels.from(it.level, extension) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("vc1", true) || codecId.contains("wmv") -> {
-                    profile = VC1Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = VC1Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                    var extension = ""
+
+                    if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
+                        extension = "QOMX"
+                    }
+
+                    profile = VC1Profiles.from(it.profile, extension) ?: "$unknownString (${it.profile.toHexHstring()})"
+                    level = VC1Levels.from(it.level, extension) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("vp8", true) -> {
                     profile = VP8Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"

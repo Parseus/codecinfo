@@ -178,13 +178,19 @@ object CodecUtils {
                     qualityRangeMethod.invoke(encoderCapabilities) as Range<Int>
                 } catch (e: Exception) { null }
             }
+
+            var defaultQuality = 0
+
+            if (defaultMediaFormat.containsKey("quality")) {
+                defaultQuality = defaultMediaFormat.getInteger("quality")
+            }
             
             qualityRange?.let {
                 val qualityRangeLower = qualityRange.lower
                 val qualityRangeUpper = qualityRange.upper
 
                 val qualityRangeString = if (qualityRangeLower != qualityRangeUpper) {
-                    "$qualityRangeLower — $qualityRangeUpper"
+                    "$qualityRangeLower — $qualityRangeUpper (${context.getString(R.string.range_default)}: $defaultQuality)"
                 } else {
                     "$qualityRangeLower"
                 }
@@ -263,7 +269,7 @@ object CodecUtils {
         if (SDK_INT in LOLLIPOP..O_MR1) {
             /*
                 mCapabilitiesInfo, a private MediaFormat instance hidden in MediaCodecInfo,
-                can actually providemax input channel count (as well as other useful info).
+                can actually provide max input channel count (as well as other useful info).
                 Unfortunately, with P restricting non-API usage via reflection, I can only hope
                 that everything will work fine on newer versions.
              */

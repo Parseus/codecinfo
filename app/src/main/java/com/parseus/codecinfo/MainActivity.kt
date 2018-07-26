@@ -11,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.tabs.TabLayout
-import com.kobakei.ratethisapp.RateThisApp
 import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.CodecUtils
+import com.parseus.codecinfo.fragments.CodecDetailsFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
         val config = RateThisApp.Config(3, 5)
         RateThisApp.init(config)
-        RateThisApp.showRateDialogIfNeeded(this)
+        RateThisApp.onCreate(this)
 
         val tabs = tabLayout
         val viewPager = pager.apply {
@@ -53,6 +53,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        RateThisApp.showRateDialogIfNeeded(this)
+    }
+
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
 
@@ -71,16 +76,31 @@ class MainActivity : AppCompatActivity() {
         val id = item?.itemId
 
         if (id == R.id.menu_item_share) {
-            val codecStringBuilder = StringBuilder()
-            val codecSimpleInfoList = CodecUtils.getSimpleCodecInfoList(true)
-            codecSimpleInfoList.addAll(CodecUtils.getSimpleCodecInfoList(false))
+            val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment) as CodecDetailsFragment?
+            val codecId = fragmentById?.codecId
+            val codecName = fragmentById?.codecName
 
-            for (info in codecSimpleInfoList) {
-                codecStringBuilder.append("$info\n")
+            val codecShareOptions = if (resources.getBoolean(R.bool.twoPaneMode)
+                && (codecId != null && codecName != null)) {
+                arrayOf(
+                        getString(R.string.codec_list),
+                        getString(R.string.codec_all_info),
+                        getString(R.string.codec_details_selected))
+            } else {
+                arrayOf(
+                        getString(R.string.codec_list),
+                        getString(R.string.codec_all_info))
             }
 
-            ShareCompat.IntentBuilder.from(this)
-                    .setType("text/plain").setText(codecStringBuilder.toString()).startChooser()
+            var alertDialog: AlertDialog? = null
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle(R.string.choose_share)
+            builder.setSingleChoiceItems(codecShareOptions, -1) { _, option ->
+                launchShareIntent(option)
+                alertDialog!!.dismiss()
+            }
+            alertDialog = builder.create()
+            alertDialog.show()
 
             return true
         } else if (id == R.id.menu_item_about_app) {
@@ -107,6 +127,69 @@ class MainActivity : AppCompatActivity() {
         menu?.clear()
         menuInflater.inflate(R.menu.app_bar_menu, menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun launchShareIntent(option: Int) {
+        val codecStringBuilder = StringBuilder()
+
+        when (option) {
+            0 -> {
+                codecStringBuilder.append("${getString(R.string.codec_list)}:\n\n")
+                val codecSimpleInfoList = CodecUtils.getSimpleCodecInfoList(true)
+                codecSimpleInfoList.addAll(CodecUtils.getSimpleCodecInfoList(false))
+
+                for (info in codecSimpleInfoList) {
+                    codecStringBuilder.append("$info\n")
+                }
+            }
+
+            1 -> {
+                codecStringBuilder.append("${getString(R.string.codec_list)}:\n")
+                val codecSimpleInfoList = CodecUtils.getSimpleCodecInfoList(true)
+                codecSimpleInfoList.addAll(CodecUtils.getSimpleCodecInfoList(false))
+
+                for (info in codecSimpleInfoList) {
+                    codecStringBuilder.append("\n$info\n")
+                    val codecInfoMap = CodecUtils.getDetailedCodecInfo(this, info.codecId, info.codecName)
+
+                    for (key in codecInfoMap.keys) {
+                        val stringToAppend = if (key != getString(R.string.bitrate_modes)
+                            && key != getString(R.string.color_profiles)
+                            && key != getString(R.string.profile_levels)
+                            && key != getString(R.string.max_frame_rate_per_resolution)) {
+                            "$key: ${codecInfoMap[key]}\n"
+                        } else {
+                            "$key:\n${codecInfoMap[key]}\n"
+                        }
+                        codecStringBuilder.append(stringToAppend)
+                    }
+                }
+            }
+
+            2 -> {
+                val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment) as CodecDetailsFragment
+                val codecId = fragmentById.codecId
+                val codecName = fragmentById.codecName
+
+                val codecInfoMap = CodecUtils.getDetailedCodecInfo(this, codecId!!, codecName!!)
+                codecStringBuilder.append("${getString(R.string.codec_details)}: $codecName\n\n")
+
+                for (key in codecInfoMap.keys) {
+                    val stringToAppend = if (key != getString(R.string.bitrate_modes)
+                            && key != getString(R.string.color_profiles)
+                            && key != getString(R.string.profile_levels)
+                            && key != getString(R.string.max_frame_rate_per_resolution)) {
+                        "$key: ${codecInfoMap[key]}\n"
+                    } else {
+                        "$key:\n${codecInfoMap[key]}\n"
+                    }
+                    codecStringBuilder.append(stringToAppend)
+                }
+            }
+        }
+
+        ShareCompat.IntentBuilder.from(this).setType("text/plain")
+                .setText(codecStringBuilder.toString()).startChooser()
     }
 
 }

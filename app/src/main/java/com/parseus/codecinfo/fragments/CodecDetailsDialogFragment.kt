@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
 import android.view.*
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ShareCompat
 import androidx.core.view.ViewCompat
@@ -68,7 +69,7 @@ class CodecDetailsDialogFragment : DialogFragment() {
         val codecInfoMap = CodecUtils.getDetailedCodecInfo(requireContext(), codecId, codecName)
         val codecAdapter = CodecInfoAdapter(codecInfoMap)
 
-        full_codec_info_name.text = codecName
+        (full_codec_info_name as TextView).text = codecName
         full_codec_info_content.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = codecAdapter

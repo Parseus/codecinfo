@@ -12,7 +12,7 @@ enum class HEVCProfiles(val value: Int) {
     companion object {
         fun from(findValue: Int): String? = try {
             HEVCProfiles.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }
@@ -53,7 +53,7 @@ enum class HEVCLevels(val value: Int) {
     companion object {
         fun from(findValue: Int): String? = try {
             HEVCLevels.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }

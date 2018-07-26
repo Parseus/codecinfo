@@ -9,6 +9,10 @@
         com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
 
     <string name="share">Share</string>
+    <string name="choose_share">Choose info to share</string>
+    <string name="codec_list">Codec list</string>
+    <string name="codec_details_selected">Selected codec details</string>
+    <string name="codec_all_info">All codecs with details</string>
 
     <string name="about_app">About &app_name;…</string>
     <string name="app_version">Version %s</string>
@@ -22,10 +26,12 @@
     <string name="encoder">Encoder</string>
 
     <string name="codec_details">Codec details</string>
+    <string name="no_info">No info available.</string>
     
     <string name="frames_per_second">fps</string>
     <string name="unknown">Unknown</string>
 
+    <string name="profiles">Profiles</string>
     <string name="profile_levels">Profile levels</string>
 
     <string name="max_instances">Max supported instances</string>
@@ -51,6 +57,16 @@
     <string name="cq" translatable="false">Constant quality (CQ)</string>
     <string name="vbr" translatable="false">Variable bitrate (VBR)</string>
 
+    <string name="complexity_range">Encoding complexity range</string>
+    <string name="quality_range">Encoding quality range</string>
+    <string name="range_default">default</string>
+
     <string name="more_info">Tap to see more info…</string>
+
+    <string name="rta_dialog_cancel">Later</string>
+    <string name="rta_dialog_message">If you enjoy using this app, would you mind taking a moment to rate it? It won\'t take more than a minute. Thank you for your support!</string>
+    <string name="rta_dialog_no">No, thanks</string>
+    <string name="rta_dialog_ok">Rate now</string>
+    <string name="rta_dialog_title">Rate this app</string>
 
 </resources>

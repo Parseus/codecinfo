@@ -13,12 +13,13 @@ enum class AACProfiles(val value: Int) {
     AACObjectERScalable(20),
     AACObjectLD(23),
     AACObjectHE_PS(29),
-    AACObjectELD(39);
+    AACObjectELD(39),
+    AACObjectXHE(42);
 
     companion object {
         fun from(findValue: Int): String? = try {
             AACProfiles.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }

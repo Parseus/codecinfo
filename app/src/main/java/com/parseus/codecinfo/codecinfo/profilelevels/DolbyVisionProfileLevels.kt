@@ -17,7 +17,7 @@ enum class DolbyVisionProfiles(val value: Int) {
     companion object {
         fun from(findValue: Int): String? = try {
             DolbyVisionProfiles.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }
@@ -40,7 +40,7 @@ enum class DolbyVisionLevels(val value: Int) {
     companion object {
         fun from(findValue: Int): String? = try {
             DolbyVisionLevels.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }

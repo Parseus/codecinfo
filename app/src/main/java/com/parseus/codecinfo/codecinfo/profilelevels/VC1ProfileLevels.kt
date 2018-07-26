@@ -10,12 +10,18 @@ enum class VC1Profiles(val value: Int) {
     WMV9ProfileSimple(0x08),
     WMV9ProfileMain(0x10),
     WMV9ProfileComplex(0x20),
-    QOMX_VIDEO_VC1ProfileMax(0x7FFFFFFF);
+    VC1ProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            VC1Profiles.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        fun from(findValue: Int, extension: String = ""): String? = try {
+            VC1Profiles.values().first {
+                if (it.value > 0x7F000000 && it.value != 0x7FFFFFFF) {
+                    it.value == findValue && it.name.contains(extension, true)
+                } else {
+                    it.value == findValue
+                }
+            }.name
+        } catch (e: NoSuchElementException) {
             null
         }
     }
@@ -32,12 +38,18 @@ enum class VC1Levels(val value: Int) {
     QOMX_VIDEO_VC1Level2(0x20),
     QOMX_VIDEO_VC1Level3(0x40),
     QOMX_VIDEO_VC1Level4(0x80),
-    QOMX_VIDEO_VC1LevelMax(0x7FFFFFFF);
+    VC1LevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            VC1Levels.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        fun from(findValue: Int, extension: String = ""): String? = try {
+            VC1Levels.values().first {
+                if (it.value > 0x7F000000 && it.value != 0x7FFFFFFF) {
+                    it.value == findValue && it.name.contains(extension, true)
+                } else {
+                    it.value == findValue
+                }
+            }.name
+        } catch (e: NoSuchElementException) {
             null
         }
     }

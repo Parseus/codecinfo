@@ -25,7 +25,7 @@ enum class MPEG4Profiles(val value: Int) {
     companion object {
         fun from(findValue: Int): String? = try {
             MPEG4Profiles.values().first { it.value == findValue }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }
@@ -68,7 +68,7 @@ enum class MPEG4Levels(val value: Int) {
                     it.value == findValue
                 }
             }.name
-        } catch (e: Exception) {
+        } catch (e: NoSuchElementException) {
             null
         }
     }

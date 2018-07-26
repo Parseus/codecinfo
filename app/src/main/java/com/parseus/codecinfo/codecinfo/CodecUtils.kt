@@ -350,30 +350,42 @@ object CodecUtils {
         var maxFrameRate: Double
         val fpsString = context.getString(R.string.frames_per_second)
 
+        if (videoCapabilities.isSizeSupported(320, 240)) {
+            maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(320, 240).upper
+            capabilities.append("240p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
+        }
+
         if (videoCapabilities.isSizeSupported(480, 360)) {
             maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(480, 360).upper
-            capabilities.append("360p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString")
+            capabilities.append("360p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
         }
 
         if (videoCapabilities.isSizeSupported(640, 480)) {
             maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(640, 480).upper
-            capabilities.append("\n480p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString")
+            capabilities.append("480p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
+        }
+
+        if (videoCapabilities.isSizeSupported(720, 576)) {
+            maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(720, 576).upper
+            capabilities.append("576p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
         }
 
         if (videoCapabilities.isSizeSupported(1280, 720)) {
             maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(1280, 720).upper
-            capabilities.append("\n720p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString")
+            capabilities.append("720p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
         }
 
         if (videoCapabilities.isSizeSupported(1920, 1080)) {
             maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(1920, 1080).upper
-            capabilities.append("\n1080p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString")
+            capabilities.append("1080p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
         }
 
         if (videoCapabilities.isSizeSupported(3840, 2160)) {
             maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(3840, 2160).upper
-            capabilities.append("\n4K: ").append("%.1f".format(maxFrameRate)).append(" $fpsString")
+            capabilities.append("4K: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
         }
+
+        capabilities.setLength(capabilities.length - 1) // Remove the last \n
 
         return capabilities.toString()
     }

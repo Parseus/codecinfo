@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.codecinfo.colorformats.*
 import com.parseus.codecinfo.codecinfo.profilelevels.*
+import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
 import com.parseus.codecinfo.toBytesPerSecond
 import com.parseus.codecinfo.toHexHstring
 import com.parseus.codecinfo.toKiloHertz
@@ -390,17 +391,29 @@ object CodecUtils {
         return capabilities.toString()
     }
 
+    @SuppressLint("NewApi")
     private fun getProfileLevels(context: Context, codecId: String, codecName: String, capabilities: MediaCodecInfo.CodecCapabilities): String? {
         val profileLevels = capabilities.profileLevels
-
-        if (profileLevels == null || profileLevels.isEmpty()) {
-            return null
-        }
-
         val stringBuilder = StringBuilder()
         val unknownString = context.getString(R.string.unknown)
         var profile: String
         var level = ""
+
+        // On versions L and M, VP9 codecCapabilities do not advertise profile level support.
+        // In this case, estimate the level from MediaCodecInfo.VideoCapabilities instead.
+        // Assume VP9 is not supported before L.
+        if (SDK_INT in LOLLIPOP..M && codecId.endsWith("vp9", false)) {
+            val vp9Level = getMaxVP9ProfileLevel(capabilities.videoCapabilities)
+            // Assume all platforms before N only support VP9 profile 0.
+            profile = VP9Profiles.VP9Profile0.name
+            level = VP9Levels.from(vp9Level)!!
+            stringBuilder.append("$profile: $level\n")
+
+            stringBuilder.setLength(stringBuilder.length - 1) // Remove the last \n
+            return stringBuilder.toString()
+        } else if (profileLevels == null || profileLevels.isEmpty()) {
+            return null
+        }
 
         val comparator: Comparator<MediaCodecInfo.CodecProfileLevel> = compareBy{it.profile}
         profileLevels.sortedWith(comparator)
@@ -486,6 +499,32 @@ object CodecUtils {
 
         stringBuilder.setLength(stringBuilder.length - 1) // Remove the last \n
         return stringBuilder.toString()
+    }
+
+    /**
+     * Needed on M and older to get correct information about VP9 support.
+     */
+    @RequiresApi(LOLLIPOP)
+    private fun getMaxVP9ProfileLevel(capabilities: MediaCodecInfo.VideoCapabilities): Int {
+        // https://www.webmproject.org/vp9/levels
+        val bitrateMapping = arrayOf(
+                intArrayOf(200, VP9Level1.value), intArrayOf(800, VP9Level11.value),
+                intArrayOf(1800, VP9Level2.value), intArrayOf(3600, VP9Level21.value),
+                intArrayOf(7200, VP9Level3.value), intArrayOf(12000, VP9Level31.value),
+                intArrayOf(18000, VP9Level4.value), intArrayOf(30000, VP9Level41.value),
+                intArrayOf(60000, VP9Level5.value), intArrayOf(120000, VP9Level51.value),
+                intArrayOf(180000, VP9Level52.value))
+        val profileLevels = ArrayList<Int>()
+
+        for (entry in bitrateMapping) {
+            val bitrate = entry[0]
+            val level = entry[1]
+            if (capabilities.bitrateRange.contains(bitrate)) {
+                profileLevels.add(level)
+            }
+        }
+
+        return profileLevels[profileLevels.size - 1]
     }
 
     private fun isAudioCodec(mediaCodecInfo: MediaCodecInfo) = mediaCodecInfo.supportedTypes.joinToString().contains("audio")

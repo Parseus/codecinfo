@@ -419,10 +419,10 @@ object CodecUtils {
         profileLevels.sortedWith(comparator)
         profileLevels.forEach {
             when {
-                codecId.contains("mp4a-latm", true) -> {
+                codecId.contains("mp4a-latm") -> {
                     profile = AACProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                 }
-                codecId.contains("avc", true) -> {
+                codecId.contains("avc") -> {
                     var extension = ""
 
                     if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
@@ -432,7 +432,7 @@ object CodecUtils {
                     profile = AVCProfiles.from(it.profile, extension) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = AVCLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("divx", true) -> {
+                codecId.contains("divx") -> {
                     var extension = ""
 
                     if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
@@ -442,23 +442,23 @@ object CodecUtils {
                     profile = DivXProfiles.from(it.profile, extension) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("dolby-vision", true) -> {
+                codecId.contains("dolby-vision") -> {
                     profile = DolbyVisionProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = DolbyVisionLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("3gpp", true) || codecId.contains("sorenson", true) -> {
+                codecId.contains("3gpp") || codecId.contains("sorenson") -> {
                     profile = H263Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = H263Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("hevc", true) -> {
+                codecId.contains("hevc") -> {
                     profile = HEVCProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = HEVCLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("mpeg2", true) -> {
+                codecId.endsWith("mpeg") || codecId.contains("mpeg2") -> {
                     profile = MPEG2Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = MPEG2Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("mp4v-es", true) -> {
+                codecId.contains("mp4v-es") -> {
                     var extension = ""
 
                     if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
@@ -470,7 +470,7 @@ object CodecUtils {
                     profile = MPEG4Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = MPEG4Levels.from(it.level, extension) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("vc1", true) || codecId.contains("wmv") -> {
+                codecId.contains("vc1") || codecId.contains("wmv") -> {
                     var extension = ""
 
                     if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
@@ -480,11 +480,11 @@ object CodecUtils {
                     profile = VC1Profiles.from(it.profile, extension) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = VC1Levels.from(it.level, extension) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("vp8", true) -> {
+                codecId.contains("vp8") -> {
                     profile = VP8Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = VP8Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("vp9", true) -> {
+                codecId.contains("vp9") -> {
                     profile = VP9Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = VP9Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }

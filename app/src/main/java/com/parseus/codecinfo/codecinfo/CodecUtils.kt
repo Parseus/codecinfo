@@ -482,6 +482,9 @@ object CodecUtils {
                     profile = VP9Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = VP9Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
+                codecId.contains("wma") -> {
+                    profile = WMAProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
+                }
                 codecId.contains("wmv") -> {
                     profile = WMVProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = WMVLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"

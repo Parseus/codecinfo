@@ -316,7 +316,7 @@ object CodecUtils {
             }
             codecInfoMap[context.getString(R.string.frame_rate)] = framerateString
 
-            if (maxHeight >= 360) {
+            if (maxHeight >= 240) {
                 codecInfoMap[context.getString(R.string.max_frame_rate_per_resolution)] =
                         getFrameRatePerResolutions(context, videoCapabilities)
             }

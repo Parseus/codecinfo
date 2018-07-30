@@ -470,15 +470,9 @@ object CodecUtils {
                     profile = MPEG4Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = MPEG4Levels.from(it.level, extension) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("vc1") || codecId.contains("wmv") -> {
-                    var extension = ""
-
-                    if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
-                        extension = "QOMX"
-                    }
-
-                    profile = VC1Profiles.from(it.profile, extension) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = VC1Levels.from(it.level, extension) ?: "$unknownString (${it.level.toHexHstring()})"
+                codecId.contains("vc1") -> {
+                    profile = VC1Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
+                    level = VC1Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("vp8") -> {
                     profile = VP8Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
@@ -487,6 +481,10 @@ object CodecUtils {
                 codecId.contains("vp9") -> {
                     profile = VP9Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = VP9Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                }
+                codecId.contains("wmv") -> {
+                    profile = WMVProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
+                    level = WMVLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 else -> {
                     profile = "$unknownString (${it.profile.toHexHstring()})"

@@ -27,6 +27,7 @@ enum class VC1Levels(val value: Int) {
     OMX_VIDEO_VC1Level2(0x06),
     OMX_VIDEO_VC1Level3(0x07),
     OMX_VIDEO_VC1Level4(0x08),
+    OMX_VIDEO_VC1LevelSMPTEReserved(0x09),
     OMX_VIDEO_VC1LevelMax(0x7F000001);
 
     companion object {

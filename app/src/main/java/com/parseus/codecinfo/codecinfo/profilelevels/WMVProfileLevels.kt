@@ -26,6 +26,7 @@ enum class WMVLevels(val value: Int) {
     OMX_VIDEO_WMVL2(0x05),
     OMX_VIDEO_WMVL3(0x06),
     OMX_VIDEO_WMVL4(0x07),
+    OMX_VIDEO_WMVLevelSMPTEReserved(0x08),
     OMX_VIDEO_WMVLevelMax(0x7FFFFFFF);
 
     companion object {

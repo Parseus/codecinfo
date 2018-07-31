@@ -333,6 +333,7 @@ object CodecUtils {
                 codecName.contains("OMX.STE", true) || codecName.contains("OMX.TI", true)
                     || codecName.contains("INTEL", true) -> OtherColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.MTK", true) -> MediaTekColorFormat.from(colorFormats[it])
+                codecName.contains("MSVDX", true) -> MSVDXColorFormat.from(colorFormats[it])
                 else -> null
             }
 
@@ -340,8 +341,7 @@ object CodecUtils {
                 colorFormat = MediaCodecColorFormat.from(colorFormats[it])
             }
 
-            colorFormat ?: "${context.getString(R.string.unknown)} (${colorFormats[it].toHexHstring()})"}
-        colorFormatStrings.sort()
+            colorFormat ?: "${context.getString(R.string.unknown)} (${colorFormats[it].toHexHstring()})"}.toSortedSet()
         codecInfoMap[context.getString(R.string.color_profiles)] = colorFormatStrings.joinToString("\n")
     }
 
@@ -432,6 +432,10 @@ object CodecUtils {
                     profile = AVCProfiles.from(it.profile, extension) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = AVCLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
+                codecId.contains("avs") -> {
+                    profile = AVSProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
+                    level = AVSLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                }
                 codecId.contains("divx") -> {
                     var extension = " "
 
@@ -473,6 +477,10 @@ object CodecUtils {
                 codecId.contains("vc1") -> {
                     profile = VC1Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = VC1Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                }
+                codecId.contains("vp6") -> {
+                    profile = VP8Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
+                    level = "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("vp8") -> {
                     profile = VP8Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"

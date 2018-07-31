@@ -17,11 +17,7 @@ enum class AACProfiles(val value: Int) {
     AACObjectXHE(42);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            AACProfiles.values().first { it.value == findValue }.name
-        } catch (e: NoSuchElementException) {
-            null
-        }
+        fun from(findValue: Int): String? = AACProfiles.values().find { it.value == findValue }?.name
     }
 
 }

@@ -423,7 +423,7 @@ object CodecUtils {
                     profile = AACProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                 }
                 codecId.contains("avc") -> {
-                    var extension = ""
+                    var extension = " "
 
                     if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
                         extension = "QOMX"
@@ -433,7 +433,7 @@ object CodecUtils {
                     level = AVCLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("divx") -> {
-                    var extension = ""
+                    var extension = " "
 
                     if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
                         extension = "QOMX"
@@ -459,7 +459,7 @@ object CodecUtils {
                     level = MPEG2Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("mp4v-es") -> {
-                    var extension = ""
+                    var extension = " "
 
                     if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
                         extension = "QOMX"

@@ -11,17 +11,7 @@ enum class VC1Profiles(val value: Int) {
     OMX_VIDEO_VC1ProfileMax(0x7F000001);
 
     companion object {
-        fun from(findValue: Int, extension: String = ""): String? = try {
-            VC1Profiles.values().first {
-                if (it.value > 0x7F000000) {
-                    it.value == findValue && it.name.contains(extension, true)
-                } else {
-                    it.value == findValue
-                }
-            }.name
-        } catch (e: NoSuchElementException) {
-            null
-        }
+        fun from(findValue: Int): String? = VC1Profiles.values().find { it.value == findValue }?.name
     }
 
 }
@@ -40,17 +30,7 @@ enum class VC1Levels(val value: Int) {
     OMX_VIDEO_VC1LevelMax(0x7F000001);
 
     companion object {
-        fun from(findValue: Int, extension: String = ""): String? = try {
-            VC1Levels.values().first {
-                if (it.value > 0x7F000000) {
-                    it.value == findValue && it.name.contains(extension, true)
-                } else {
-                    it.value == findValue
-                }
-            }.name
-        } catch (e: NoSuchElementException) {
-            null
-        }
+        fun from(findValue: Int): String? = VC1Levels.values().find { it.value == findValue }?.name
     }
 
 }

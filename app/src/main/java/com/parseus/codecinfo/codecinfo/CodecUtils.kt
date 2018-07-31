@@ -33,6 +33,15 @@ object CodecUtils {
             "audio/raw",
             "audio/vorbis")
 
+    private val framerateResolutions = arrayOf(
+            intArrayOf(176, 144), intArrayOf(320, 240), intArrayOf(640, 480),
+            intArrayOf(720, 576), intArrayOf(1280, 720), intArrayOf(1920, 1080),
+            intArrayOf(3840, 2160)
+    )
+    private val framerateClasses = arrayOf(
+            "144p", "240p", "480p", "576p", "720p", "1080p", "4K"
+    )
+
     private val mediaCodecInfos: Array<MediaCodecInfo>
     private var audioCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList()
     private var videoCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList()
@@ -316,10 +325,8 @@ object CodecUtils {
             }
             codecInfoMap[context.getString(R.string.frame_rate)] = framerateString
 
-            if (maxHeight >= 240) {
-                codecInfoMap[context.getString(R.string.max_frame_rate_per_resolution)] =
-                        getFrameRatePerResolutions(context, videoCapabilities)
-            }
+            codecInfoMap[context.getString(R.string.max_frame_rate_per_resolution)] =
+                    getFrameRatePerResolutions(context, videoCapabilities)
         }
 
         val colorFormats = capabilities.colorFormats
@@ -351,39 +358,11 @@ object CodecUtils {
         var maxFrameRate: Double
         val fpsString = context.getString(R.string.frames_per_second)
 
-        if (videoCapabilities.isSizeSupported(320, 240)) {
-            maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(320, 240).upper
-            capabilities.append("240p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
-        }
-
-        if (videoCapabilities.isSizeSupported(480, 360)) {
-            maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(480, 360).upper
-            capabilities.append("360p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
-        }
-
-        if (videoCapabilities.isSizeSupported(640, 480)) {
-            maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(640, 480).upper
-            capabilities.append("480p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
-        }
-
-        if (videoCapabilities.isSizeSupported(720, 576)) {
-            maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(720, 576).upper
-            capabilities.append("576p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
-        }
-
-        if (videoCapabilities.isSizeSupported(1280, 720)) {
-            maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(1280, 720).upper
-            capabilities.append("720p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
-        }
-
-        if (videoCapabilities.isSizeSupported(1920, 1080)) {
-            maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(1920, 1080).upper
-            capabilities.append("1080p: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
-        }
-
-        if (videoCapabilities.isSizeSupported(3840, 2160)) {
-            maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(3840, 2160).upper
-            capabilities.append("4K: ").append("%.1f".format(maxFrameRate)).append(" $fpsString\n")
+        framerateResolutions.forEachIndexed { index, resolution ->
+            if (videoCapabilities.isSizeSupported(resolution[0], resolution[1])) {
+                maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(resolution[0], resolution[1]).upper
+                capabilities.append("${framerateClasses[index]}: ${"%.1f".format(maxFrameRate)} $fpsString\n")
+            }
         }
 
         capabilities.setLength(capabilities.length - 1) // Remove the last \n

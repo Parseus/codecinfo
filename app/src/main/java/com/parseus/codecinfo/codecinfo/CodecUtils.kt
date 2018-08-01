@@ -340,7 +340,7 @@ object CodecUtils {
                 codecName.contains("OMX.STE", true) || codecName.contains("OMX.TI", true)
                     || codecName.contains("INTEL", true) -> OtherColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.MTK", true) -> MediaTekColorFormat.from(colorFormats[it])
-                codecName.contains("MSVDX", true) -> MSVDXColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.IMG", true) -> IMGColorFormat.from(colorFormats[it])
                 else -> null
             }
 

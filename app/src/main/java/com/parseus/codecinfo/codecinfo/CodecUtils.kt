@@ -458,7 +458,7 @@ object CodecUtils {
                     level = VC1Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("vp6") -> {
-                    profile = VP8Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
+                    profile = VP6Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("vp8") -> {

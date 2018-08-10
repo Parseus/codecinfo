@@ -344,8 +344,15 @@ object CodecUtils {
                 else -> null
             }
 
+            // When in doubt, use a standard color formats from the SDK...
             if (colorFormat == null) {
                 colorFormat = MediaCodecColorFormat.from(colorFormats[it])
+            }
+
+            // ...unless it's a standard OpenMAX IL color format that's not defined in the SDK
+            // (apparently Huawei devices with IMG MSVDX codecs tend to use some of those)
+            if (colorFormat == null) {
+                colorFormat = OpenMAXILColorFormat.from(colorFormats[it])
             }
 
             colorFormat ?: "${context.getString(R.string.unknown)} (${colorFormats[it].toHexHstring()})"}.toSortedSet()

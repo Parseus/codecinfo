@@ -77,10 +77,12 @@ object CodecUtils {
                 val isAudioCodec = isAudioCodec(mediaCodecInfo)
 
                 if (isAudio && isAudioCodec) {
-                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec, isEncoder(mediaCodecInfo))
+                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec,
+                            isEncoder(mediaCodecInfo))
                     codecSimpleInfoList.add(codecSimpleInfo)
                 } else if (!isAudio && !isAudioCodec) {
-                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec, isEncoder(mediaCodecInfo))
+                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec,
+                            isEncoder(mediaCodecInfo))
                     codecSimpleInfoList.add(codecSimpleInfo)
                 }
             }
@@ -184,7 +186,8 @@ object CodecUtils {
             } else {
                 // Before P quality range was actually available, but hidden as a private API.
                 try {
-                    val qualityRangeMethod = encoderCapabilities::class.java.getDeclaredMethod("getQualityRange")
+                    val qualityRangeMethod = encoderCapabilities::class.java
+                            .getDeclaredMethod("getQualityRange")
                     qualityRangeMethod.invoke(encoderCapabilities) as Range<Int>
                 } catch (e: Exception) { null }
             }
@@ -223,7 +226,8 @@ object CodecUtils {
     }
 
     @RequiresApi(LOLLIPOP)
-    private fun getAudioCapabilities(context: Context, codecId: String, capabilities: MediaCodecInfo.CodecCapabilities,
+    private fun getAudioCapabilities(context: Context, codecId: String,
+                                     capabilities: MediaCodecInfo.CodecCapabilities,
                                      codecInfoMap: HashMap<String, String>) {
         val audioCapabilities = capabilities.audioCapabilities
 
@@ -265,7 +269,8 @@ object CodecUtils {
      * This function provides a somewhat better, assumed guess.
      */
     @SuppressLint("NewApi")
-    private fun adjustMaxInputChannelCount(codecId: String, maxChannelCount: Int, capabilities: MediaCodecInfo.CodecCapabilities): Int {
+    private fun adjustMaxInputChannelCount(codecId: String, maxChannelCount: Int,
+                                           capabilities: MediaCodecInfo.CodecCapabilities): Int {
         if (maxChannelCount > 1 || (SDK_INT >= O && maxChannelCount > 0)) {
             // The maximum channel count looks like it's been set correctly.
             return maxChannelCount
@@ -303,7 +308,8 @@ object CodecUtils {
         }
     }
 
-    private fun getVideoCapabilities(context: Context, codecName: String, capabilities: MediaCodecInfo.CodecCapabilities,
+    private fun getVideoCapabilities(context: Context, codecName: String,
+                                     capabilities: MediaCodecInfo.CodecCapabilities,
                                      codecInfoMap: HashMap<String, String>) {
         if (SDK_INT >= LOLLIPOP) {
             val videoCapabilities = capabilities.videoCapabilities
@@ -329,16 +335,21 @@ object CodecUtils {
                     getFrameRatePerResolutions(context, videoCapabilities)
         }
 
+        addColorFormats(capabilities, codecName, context, codecInfoMap)
+    }
+
+    private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, codecName: String,
+                                context: Context, codecInfoMap: HashMap<String, String>) {
         val colorFormats = capabilities.colorFormats
         val colorFormatStrings = Array(colorFormats.size) { it ->
             var colorFormat = when {
                 codecName.contains("brcm", true) -> BroadcomColorFormat.from(colorFormats[it])
                 codecName.contains("qcom", true) || codecName.contains("qti", true)
-                    -> QualcommColorFormat.from(colorFormats[it])
+                -> QualcommColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)
-                    -> SamsungColorFormat.from(colorFormats[it])
+                -> SamsungColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.STE", true) || codecName.contains("OMX.TI", true)
-                    || codecName.contains("INTEL", true) -> OtherColorFormat.from(colorFormats[it])
+                        || codecName.contains("INTEL", true) -> OtherColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.MTK", true) -> MediaTekColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.IMG", true) -> IMGColorFormat.from(colorFormats[it])
                 else -> null
@@ -355,12 +366,15 @@ object CodecUtils {
                 colorFormat = OpenMAXILColorFormat.from(colorFormats[it])
             }
 
-            colorFormat ?: "${context.getString(R.string.unknown)} (${colorFormats[it].toHexHstring()})"}.toSortedSet()
+            colorFormat
+                    ?: "${context.getString(R.string.unknown)} (${colorFormats[it].toHexHstring()})"
+        }.toSortedSet()
         codecInfoMap[context.getString(R.string.color_profiles)] = colorFormatStrings.joinToString("\n")
     }
 
     @RequiresApi(LOLLIPOP)
-    private fun getFrameRatePerResolutions(context: Context, videoCapabilities: MediaCodecInfo.VideoCapabilities): String {
+    private fun getFrameRatePerResolutions(context: Context,
+                                           videoCapabilities: MediaCodecInfo.VideoCapabilities): String {
         val capabilities = StringBuilder()
         var maxFrameRate: Double
         val fpsString = context.getString(R.string.frames_per_second)
@@ -378,7 +392,8 @@ object CodecUtils {
     }
 
     @SuppressLint("NewApi")
-    private fun getProfileLevels(context: Context, codecId: String, codecName: String, capabilities: MediaCodecInfo.CodecCapabilities): String? {
+    private fun getProfileLevels(context: Context, codecId: String, codecName: String,
+                                 capabilities: MediaCodecInfo.CodecCapabilities): String? {
         val profileLevels = capabilities.profileLevels
         val stringBuilder = StringBuilder()
         val unknownString = context.getString(R.string.unknown)

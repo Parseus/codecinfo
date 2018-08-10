@@ -453,7 +453,7 @@ object CodecUtils {
                     profile = MPEG4Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = MPEG4Levels.from(it.level, extension) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("vc1") -> {
+                codecId.contains("vc1") || codecId.contains("asf") -> {
                     profile = VC1Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = VC1Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }

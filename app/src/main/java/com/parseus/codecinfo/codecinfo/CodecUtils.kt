@@ -332,7 +332,7 @@ object CodecUtils {
         val colorFormats = capabilities.colorFormats
         val colorFormatStrings = Array(colorFormats.size) { it ->
             var colorFormat = when {
-                codecName.contains("broadcomm", true) -> BroadcomColorFormat.from(colorFormats[it])
+                codecName.contains("brcm", true) -> BroadcomColorFormat.from(colorFormats[it])
                 codecName.contains("qcom", true) || codecName.contains("qti", true)
                     -> QualcommColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)

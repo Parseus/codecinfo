@@ -426,7 +426,7 @@ object CodecUtils {
                     profile = DolbyVisionProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = DolbyVisionLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("3gpp") || codecId.contains("sorenson")
+                (codecId.contains("3gpp") && codecName.contains("h263")) || codecId.contains("sorenson")
                         || codecName.contains("flv") -> {
                     profile = H263Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = H263Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
@@ -439,7 +439,9 @@ object CodecUtils {
                     profile = MPEG2Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = MPEG2Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("mp4v-es") || codecId.contains("divx") || codecId.contains("xvid") -> {
+                codecId.contains("mp4v-es") || codecId.contains("divx")
+                        || codecId.contains("xvid")
+                        || (codecId.contains("3gpp") && codecName.contains("mpeg4")) -> {
                     var extension = " "
 
                     if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {

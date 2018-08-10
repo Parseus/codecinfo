@@ -422,16 +422,6 @@ object CodecUtils {
                     profile = AVSProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = AVSLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("divx") -> {
-                    var extension = " "
-
-                    if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
-                        extension = "QOMX"
-                    }
-
-                    profile = DivXProfiles.from(it.profile, extension) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = "$unknownString (${it.level.toHexHstring()})"
-                }
                 codecId.contains("dolby-vision") -> {
                     profile = DolbyVisionProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = DolbyVisionLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
@@ -449,7 +439,7 @@ object CodecUtils {
                     profile = MPEG2Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = MPEG2Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                codecId.contains("mp4v-es") -> {
+                codecId.contains("mp4v-es") || codecId.contains("divx") || codecId.contains("xvid") -> {
                     var extension = " "
 
                     if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {

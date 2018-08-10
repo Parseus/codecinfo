@@ -4,6 +4,7 @@ package com.parseus.codecinfo.codecinfo.colorformats
 enum class OtherColorFormat(val value: Int) {
 
     // Intel
+    OMX_INTEL_COLOR_FormatHalYV12(0x32315659),
     OMX_INTEL_COLOR_FormatYUV420PackedSemiPlanar(0x7FA00E00),
     OMX_INTEL_COLOR_FormatYUV420PackedSemiPlanar_Tiled(0x7FA00F00),
 

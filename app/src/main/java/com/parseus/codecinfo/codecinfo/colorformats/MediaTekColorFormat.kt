@@ -2,6 +2,7 @@ package com.parseus.codecinfo.codecinfo.colorformats
 
 @Suppress("EnumEntryName")
 enum class MediaTekColorFormat(val value: Int) {
+    COLOR_MTK_FormatYUVPrivate(0x32315679),
     OMX_COLOR_FormatVendorMTKYUV(0x7F000001),
     OMX_COLOR_FormatVendorMTKYUV_FCM(0x7F000002),
     OMX_COLOR_FormatVendorMTKYUV_UFO(0x7F000003),

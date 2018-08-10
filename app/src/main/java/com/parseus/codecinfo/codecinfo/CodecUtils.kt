@@ -437,7 +437,7 @@ object CodecUtils {
                     level = DolbyVisionLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("3gpp") || codecId.contains("sorenson")
-                        || codecName.contains("sorenson", true) -> {
+                        || codecName.contains("flv") -> {
                     profile = H263Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = H263Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }

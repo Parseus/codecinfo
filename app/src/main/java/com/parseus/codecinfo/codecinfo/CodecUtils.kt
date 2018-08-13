@@ -455,7 +455,7 @@ object CodecUtils {
                     level = MPEG2Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
                 codecId.contains("mp4v-es") || codecId.contains("divx")
-                        || codecId.contains("xvid")
+                        || codecId.contains("xvid") || codecId.endsWith("mp4")
                         || (codecId.contains("3gpp") && codecName.contains("mpeg4")) -> {
                     var extension = " "
 

@@ -418,7 +418,7 @@ object CodecUtils {
 
         val comparator: Comparator<MediaCodecInfo.CodecProfileLevel> = compareBy{it.profile}
         profileLevels.sortedWith(comparator)
-        profileLevels.forEach {
+        profileLevels.reversed().distinctBy { it.profile }.reversed().forEach {
             when {
                 codecId.contains("mp4a-latm") -> {
                     profile = AACProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"

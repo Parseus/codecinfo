@@ -3,7 +3,6 @@
     <dimen name="list_baseline_primary">28dp</dimen>
     <dimen name="list_baseline_secondary">20dp</dimen>
     <dimen name="list_content_padding">16dp</dimen>
-    <dimen name="list_content_row_size">100dp</dimen>
 
     <dimen name="dialog_baseline_primary">40dp</dimen>
     <dimen name="dialog_baseline_secondary">36dp</dimen>

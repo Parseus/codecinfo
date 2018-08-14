@@ -11,11 +11,7 @@ enum class VP9Profiles(val value: Int) {
     VP9ProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            VP9Profiles.values().first { it.value == findValue }.name
-        } catch (e: NoSuchElementException) {
-            null
-        }
+        fun from(findValue: Int): String? = VP9Profiles.values().find { it.value == findValue }?.name
     }
 
 }
@@ -38,10 +34,6 @@ enum class VP9Levels(val value: Int) {
     VP9LevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            VP9Levels.values().first { it.value == findValue }.name
-        } catch (e: NoSuchElementException) {
-            null
-        }
+        fun from(findValue: Int): String? = VP9Levels.values().find { it.value == findValue }?.name
     }
 }

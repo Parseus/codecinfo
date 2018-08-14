@@ -25,7 +25,7 @@ class CodecDetailsFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        arguments?.let {
+        arguments?.let { _ ->
             codecId = arguments!!.getString("codecId")
             codecName = arguments!!.getString("codecName")
             (full_codec_info_name as TextView).text = codecName
@@ -40,8 +40,6 @@ class CodecDetailsFragment : Fragment() {
                 }
             }
         }
-
-
     }
 
 }

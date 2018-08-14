@@ -30,17 +30,13 @@ enum class AVCProfiles(val value: Int) {
     AVCProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int, extension: String = ""): String? = try {
-            AVCProfiles.values().first {
-                if (it.value > 0x7F000000 && it.value != 0x7FFFFFFF) {
-                    it.value == findValue && it.name.contains(extension, true)
-                } else {
-                    it.value == findValue
-                }
-            }.name
-        } catch (e: NoSuchElementException) {
-            null
-        }
+        fun from(findValue: Int, extension: String): String? = AVCProfiles.values().find {
+            if (it.value > 0x7F000000 && it.value != 0x7FFFFFFF) {
+                it.value == findValue && it.name.contains(extension, true)
+            } else {
+                it.value == findValue
+            }
+        }?.name
     }
 
 }

@@ -11,11 +11,7 @@ enum class MPEG2Profiles(val value: Int) {
     MPEG2ProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            MPEG2Profiles.values().first { it.value == findValue }.name
-        } catch (e: NoSuchElementException) {
-            null
-        }
+        fun from(findValue: Int): String? = MPEG2Profiles.values().find { it.value == findValue }?.name
     }
 
 }
@@ -29,11 +25,7 @@ enum class MPEG2Levels(val value: Int) {
     MPEG2LevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            MPEG2Levels.values().first { it.value == findValue }.name
-        } catch (e: NoSuchElementException) {
-            null
-        }
+        fun from(findValue: Int): String? = MPEG2Levels.values().find { it.value == findValue }?.name
     }
 
 }

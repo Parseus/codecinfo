@@ -14,11 +14,7 @@ enum class H263Profiles(val value: Int) {
     H263ProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            H263Profiles.values().first { it.value == findValue }.name
-        } catch (e: NoSuchElementException) {
-            null
-        }
+        fun from(findValue: Int): String? = H263Profiles.values().find { it.value == findValue }?.name
     }
 
 }
@@ -36,11 +32,7 @@ enum class H263Levels(val value: Int) {
     H263LevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            H263Levels.values().first { it.value == findValue }.name
-        } catch (e: NoSuchElementException) {
-            null
-        }
+        fun from(findValue: Int): String? = H263Levels.values().find { it.value == findValue }?.name
     }
 
 }

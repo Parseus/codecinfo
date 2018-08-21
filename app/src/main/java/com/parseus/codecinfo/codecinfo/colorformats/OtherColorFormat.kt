@@ -15,8 +15,7 @@ enum class OtherColorFormat(val value: Int) {
     // Texas Instruments
     OMX_TI_COLOR_FormatYUV420PackedSemiPlanarInterlaced(0x7F000001),
     OMX_TI_COLOR_FormatRawBayer10bitStereo(0x7F000002),
-
-    ;
+    OMX_TI_COLOR_FormatYUV420PackedSemiPlanar(0x7F000100);
 
     companion object {
         fun from(findValue: Int): String? = OtherColorFormat.values().find { it.value == findValue }?.name

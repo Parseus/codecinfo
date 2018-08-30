@@ -4,10 +4,9 @@ package com.parseus.codecinfo.codecinfo.profilelevels
 
 enum class WMVProfiles(val value: Int) {
 
-    OMX_VIDEO_WMVProfileUnused(0x00),
-    OMX_VIDEO_WMVProfileSimple(0x01),
-    OMX_VIDEO_WMVProfileMain(0x02),
-    OMX_VIDEO_WMVProfileAdvanced(0x03),
+    OMX_VIDEO_WMVProfileSimple(0x00),
+    OMX_VIDEO_WMVProfileMain(0x01),
+    OMX_VIDEO_WMVProfileAdvanced(0x02),
     OMX_VIDEO_WMVProfileMax(0x7FFFFFFF);
 
     companion object {

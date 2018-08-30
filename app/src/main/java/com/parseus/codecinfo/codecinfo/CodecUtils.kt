@@ -441,8 +441,8 @@ object CodecUtils {
                     profile = DolbyVisionProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = DolbyVisionLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }
-                (codecId.contains("3gpp") && codecName.contains("h263", true)) || codecId.contains("sorenson")
-                        || codecName.contains("flv") -> {
+                (codecId.contains("3gpp") && !codecName.contains("mpeg4", true))
+                        || codecId.contains("sorenson") || codecId.contains("flv") -> {
                     profile = H263Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
                     level = H263Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
                 }

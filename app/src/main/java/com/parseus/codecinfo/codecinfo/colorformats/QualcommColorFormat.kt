@@ -11,8 +11,7 @@ enum class QualcommColorFormat (val value: Int) {
     QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mMultiView(0x7FA30C05),
     QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mCompressed(0x7FA30C06),
     QOMX_COLOR_Format32bitRGBA8888(0x7FA30C07),
-    QOMX_COLOR_Format32bitRGBA8888Compressed(0x7FA30C08),
-    QOMX_COLOR_FormatAndroidOpaque(0x7F000789);
+    QOMX_COLOR_Format32bitRGBA8888Compressed(0x7FA30C08);
 
     companion object {
         fun from(findValue: Int): String? = QualcommColorFormat.values().find { it.value == findValue }?.name

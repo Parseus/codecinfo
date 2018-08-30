@@ -8,9 +8,9 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.parseus.codecinfo.codecinfo.CodecUtils
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.adapters.CodecAdapter
+import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
 import kotlinx.android.synthetic.main.tab_content_layout.*
 
 class CodecFragment : Fragment() {
@@ -22,7 +22,7 @@ class CodecFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val codecSimpleInfoList = CodecUtils.getSimpleCodecInfoList(arguments!!.getBoolean("isAudio"))
+        val codecSimpleInfoList = getSimpleCodecInfoList(arguments!!.getBoolean("isAudio"))
         val codecAdapter = CodecAdapter(codecSimpleInfoList)
         simpleCodecListView.apply {
             layoutManager = LinearLayoutManager(context)

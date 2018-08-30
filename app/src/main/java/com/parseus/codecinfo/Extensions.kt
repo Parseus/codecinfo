@@ -1,5 +1,6 @@
 package com.parseus.codecinfo
 
+import android.media.MediaCodecInfo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,4 +26,8 @@ fun Int.toBytesPerSecond(): String {
 
 fun Int.toHexHstring(): String {
     return "0x${this.toString(16).toUpperCase()}"
+}
+
+fun MediaCodecInfo.isAudioCodec(): Boolean {
+    return supportedTypes.joinToString().contains("audio")
 }

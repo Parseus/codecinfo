@@ -352,6 +352,7 @@ object CodecUtils {
                         || codecName.contains("INTEL", true) -> OtherColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.MTK", true) -> MediaTekColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.IMG", true) -> IMGColorFormat.from(colorFormats[it])
+                codecName.contains("Marvell", true) -> MarvellColorFormat.from(colorFormats[it])
                 else -> null
             }
 

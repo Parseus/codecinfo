@@ -349,6 +349,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 codecName.contains("OMX.MTK", true) -> MediaTekColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.IMG", true) -> IMGColorFormat.from(colorFormats[it])
                 codecName.contains("Marvell", true) -> MarvellColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.ST", true) -> SonyColorFormat.from(colorFormats[it])
                 else -> null
             }
 

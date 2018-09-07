@@ -359,7 +359,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
 
             // ...unless it's a standard OpenMAX IL color format that's not defined in the SDK
-            // (apparently Huawei devices with IMG MSVDX codecs tend to use some of those)
+            // (at least MSVDX/Topaz codecs tend to use some of those)
             if (colorFormat == null) {
                 colorFormat = OpenMAXILColorFormat.from(colorFormats[it])
             }

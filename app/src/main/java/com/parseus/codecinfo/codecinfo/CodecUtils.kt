@@ -344,12 +344,12 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 -> QualcommColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)
                 -> SamsungColorFormat.from(colorFormats[it])
-                codecName.contains("OMX.STE", true) || codecName.contains("OMX.TI", true)
-                        || codecName.contains("INTEL", true) -> OtherColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.MTK", true) -> MediaTekColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.IMG", true) -> IMGColorFormat.from(colorFormats[it])
                 codecName.contains("Marvell", true) -> MarvellColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.ST", true) -> SonyColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.TI", true) || codecName.contains("INTEL", true)
+                -> OtherColorFormat.from(colorFormats[it])
                 else -> null
             }
 

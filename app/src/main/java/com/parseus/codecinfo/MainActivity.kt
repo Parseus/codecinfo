@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         val config = RateThisApp.Config(3, 5)
         RateThisApp.init(config)
         RateThisApp.onCreate(this)
+        RateThisApp.showRateDialogIfNeeded(this)
 
         val tabs = tabLayout
         val viewPager = pager.apply {
@@ -55,11 +56,6 @@ class MainActivity : AppCompatActivity() {
             val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment)
             fragmentById?.let { supportFragmentManager.beginTransaction().remove(fragmentById).commit() }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        RateThisApp.showRateDialogIfNeeded(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {

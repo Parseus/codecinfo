@@ -264,7 +264,6 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
      * AudioCapabilities incorrectly assumes that non-platform codecs support only one input channel.
      * This function provides a somewhat better, assumed guess.
      */
-    @SuppressLint("NewApi")
     private fun adjustMaxInputChannelCount(codecId: String, maxChannelCount: Int,
                                            capabilities: MediaCodecInfo.CodecCapabilities): Int {
         if (maxChannelCount > 1 || (SDK_INT >= O && maxChannelCount > 0)) {
@@ -465,6 +464,10 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
 
                     profile = MPEG4Profiles.from(it.profile)
                     level = MPEG4Levels.from(it.level, extension)
+                }
+                codecId.contains("mvc") -> {
+                    profile = MVCProfiles.from(it.profile)
+                    level = MVCLevels.from(it.level)
                 }
                 codecId.contains("vc1") || codecId.contains("asf") -> {
                     profile = VC1Profiles.from(it.profile)

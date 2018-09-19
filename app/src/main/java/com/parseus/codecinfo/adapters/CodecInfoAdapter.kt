@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.bind
 import com.parseus.codecinfo.inflate
 
 class CodecInfoAdapter(private val codecInfoMap: Map<String, String>) : RecyclerView.Adapter<CodecInfoAdapter.CodecInfoViewHolder>() {
@@ -24,8 +25,8 @@ class CodecInfoAdapter(private val codecInfoMap: Map<String, String>) : Recycler
 
     class CodecInfoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        private val codecName: TextView = view.findViewById(R.id.codec_property)
-        private val codecInfo: TextView = view.findViewById(R.id.codec_value)
+        private val codecName by view.bind<TextView>(R.id.codec_property)
+        private val codecInfo by view.bind<TextView>(R.id.codec_value)
 
         fun bindCodecInfo(name: String, info: String) {
             codecName.text = name

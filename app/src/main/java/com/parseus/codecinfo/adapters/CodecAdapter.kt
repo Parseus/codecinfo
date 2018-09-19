@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.bind
 import com.parseus.codecinfo.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.fragments.CodecDetailsDialogFragment
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
@@ -31,11 +32,11 @@ class CodecAdapter(private val codecList: List<CodecSimpleInfo>) : RecyclerView.
 
     class CodecInfoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        private val layout: View = view.findViewById(R.id.simpleCodecRow)
-        private val codecId: TextView = view.findViewById(R.id.codec_name)
-        private val codecName: TextView = view.findViewById(R.id.codec_full_name)
-        private val codecType: TextView = view.findViewById(R.id.codec_type)
-        private val moreInfo: TextView = view.findViewById(R.id.more_info)
+        private val layout by view.bind<View>(R.id.simpleCodecRow)
+        private val codecId by view.bind<TextView>(R.id.codec_name)
+        private val codecName by view.bind<TextView>(R.id.codec_full_name)
+        private val codecType by view.bind<TextView>(R.id.codec_type)
+        private val moreInfo by view.bind<TextView>(R.id.more_info)
 
         fun bindCodecInfo(codecInfo: CodecSimpleInfo) {
             codecId.text = codecInfo.codecId

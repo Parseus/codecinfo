@@ -208,7 +208,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
         }
 
-        val profileString = if (codecId.contains("mp4a-latm")) {
+        val profileString = if (codecId.contains("mp4a-latm") || codecId.contains("wma")) {
             context.getString(R.string.profiles)
         } else {
             context.getString(R.string.profile_levels)
@@ -277,7 +277,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             return maxChannelCount
         }
 
-        if (SDK_INT in LOLLIPOP..O_MR1) {
+        if (SDK_INT < O_MR1) {
             /*
                 mCapabilitiesInfo, a private MediaFormat instance hidden in MediaCodecInfo,
                 can actually provide max input channel count (as well as other useful info).

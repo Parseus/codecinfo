@@ -276,7 +276,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             return maxChannelCount
         }
 
-        if (SDK_INT < O_MR1) {
+        if (SDK_INT < P) {
             /*
                 mCapabilitiesInfo, a private MediaFormat instance hidden in MediaCodecInfo,
                 can actually provide max input channel count (as well as other useful info).
@@ -405,9 +405,8 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             // Assume all platforms before N only support VP9 profile 0.
             profile = VP9Profiles.VP9Profile0.name
             level = VP9Levels.from(vp9Level)!!
-            stringBuilder.append("$profile: $level\n")
+            stringBuilder.append("$profile: $level")
 
-            stringBuilder.setLength(stringBuilder.length - 1) // Remove the last \n
             return stringBuilder.toString()
         } else if (profileLevels == null || profileLevels.isEmpty()) {
             return null

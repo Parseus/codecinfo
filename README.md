@@ -18,3 +18,5 @@ Features:
 
 
 <a href='https://play.google.com/store/apps/details?id=com.parseus.codecinfo&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+
+<a href='http://www.amazon.com/gp/product/B07H4ZR164/ref=mas_pm_codec_info'><img alt='Available at Amazon Appstore for Android' src='https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-appstore-badge-english-black.png' /></a>

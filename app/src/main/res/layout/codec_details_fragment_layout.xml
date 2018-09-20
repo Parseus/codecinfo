@@ -18,7 +18,8 @@
             android:background="?attr/colorPrimaryDark"
             app:titleTextColor="@color/white"
             android:theme="@style/ToolbarStyle"
-            app:popupTheme="@style/Theme.MaterialComponents.Light"/>
+            app:popupTheme="@style/Theme.MaterialComponents.Light"
+            tools:ignore="InconsistentLayout"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

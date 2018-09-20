@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.parseus.codecinfo.MainActivity
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.adapters.CodecInfoAdapter
-import com.parseus.codecinfo.codecinfo.CodecUtils
+import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import kotlinx.android.synthetic.main.codec_details_fragment_layout.*
 
 class CodecDetailsDialogFragment : DialogFragment() {
@@ -66,7 +66,7 @@ class CodecDetailsDialogFragment : DialogFragment() {
 
         val codecId = arguments!!.getString("codecId")
         val codecName = arguments!!.getString("codecName")
-        val codecInfoMap = CodecUtils.getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+        val codecInfoMap = getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
         val codecAdapter = CodecInfoAdapter(codecInfoMap)
 
         (full_codec_info_name as TextView).text = codecName
@@ -94,7 +94,7 @@ class CodecDetailsDialogFragment : DialogFragment() {
                 val codecName = arguments!!.getString("codecName")
                 val header = "${requireContext().getString(R.string.codec_details)}: $codecName\n\n"
                 val codecStringBuilder = StringBuilder(header)
-                val codecInfoMap = CodecUtils.getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+                val codecInfoMap = getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
 
                 for (key in codecInfoMap.keys) {
                     codecStringBuilder.append("$key\n${codecInfoMap[key]}\n\n")

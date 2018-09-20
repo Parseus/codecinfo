@@ -8,11 +8,13 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.tabs.TabLayout
 import com.parseus.codecinfo.adapters.PagerAdapter
-import com.parseus.codecinfo.codecinfo.CodecUtils
+import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
+import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -23,9 +25,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
+
         val config = RateThisApp.Config(3, 5)
         RateThisApp.init(config)
         RateThisApp.onCreate(this)
+        RateThisApp.showRateDialogIfNeeded(this)
 
         val tabs = tabLayout
         val viewPager = pager.apply {
@@ -51,11 +56,6 @@ class MainActivity : AppCompatActivity() {
             val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment)
             fragmentById?.let { supportFragmentManager.beginTransaction().remove(fragmentById).commit() }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        RateThisApp.showRateDialogIfNeeded(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -135,8 +135,8 @@ class MainActivity : AppCompatActivity() {
         when (option) {
             0 -> {
                 codecStringBuilder.append("${getString(R.string.codec_list)}:\n\n")
-                val codecSimpleInfoList = CodecUtils.getSimpleCodecInfoList(true)
-                codecSimpleInfoList.addAll(CodecUtils.getSimpleCodecInfoList(false))
+                val codecSimpleInfoList = getSimpleCodecInfoList(true)
+                codecSimpleInfoList.addAll(getSimpleCodecInfoList(false))
 
                 for (info in codecSimpleInfoList) {
                     codecStringBuilder.append("$info\n")
@@ -145,12 +145,12 @@ class MainActivity : AppCompatActivity() {
 
             1 -> {
                 codecStringBuilder.append("${getString(R.string.codec_list)}:\n")
-                val codecSimpleInfoList = CodecUtils.getSimpleCodecInfoList(true)
-                codecSimpleInfoList.addAll(CodecUtils.getSimpleCodecInfoList(false))
+                val codecSimpleInfoList = getSimpleCodecInfoList(true)
+                codecSimpleInfoList.addAll(getSimpleCodecInfoList(false))
 
                 for (info in codecSimpleInfoList) {
                     codecStringBuilder.append("\n$info\n")
-                    val codecInfoMap = CodecUtils.getDetailedCodecInfo(this, info.codecId, info.codecName)
+                    val codecInfoMap = getDetailedCodecInfo(this, info.codecId, info.codecName)
 
                     for (key in codecInfoMap.keys) {
                         val stringToAppend = if (key != getString(R.string.bitrate_modes)
@@ -171,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                 val codecId = fragmentById.codecId
                 val codecName = fragmentById.codecName
 
-                val codecInfoMap = CodecUtils.getDetailedCodecInfo(this, codecId!!, codecName!!)
+                val codecInfoMap = getDetailedCodecInfo(this, codecId!!, codecName!!)
                 codecStringBuilder.append("${getString(R.string.codec_details)}: $codecName\n\n")
 
                 for (key in codecInfoMap.keys) {

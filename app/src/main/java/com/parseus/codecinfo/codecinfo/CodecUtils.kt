@@ -9,15 +9,10 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.*
 import android.util.Range
 import androidx.annotation.RequiresApi
-import com.parseus.codecinfo.R
+import com.parseus.codecinfo.*
 import com.parseus.codecinfo.codecinfo.colorformats.*
 import com.parseus.codecinfo.codecinfo.profilelevels.*
 import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
-import com.parseus.codecinfo.toBytesPerSecond
-import com.parseus.codecinfo.toHexHstring
-import com.parseus.codecinfo.toKiloHertz
-
-object CodecUtils {
 
     private val platformSupportedTypes = arrayOf(
             "audio/3gpp",
@@ -42,24 +37,25 @@ object CodecUtils {
             "144p", "240p", "480p", "576p", "720p", "1080p", "4K"
     )
 
-    private val mediaCodecInfos: Array<MediaCodecInfo>
+    private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()
     private var audioCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList()
     private var videoCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList()
 
-    init {
-        mediaCodecInfos = if (SDK_INT >= LOLLIPOP) {
-            MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
-        } else {
-            @Suppress("DEPRECATION")
-            Array(MediaCodecList.getCodecCount()) { i -> MediaCodecList.getCodecInfoAt(i)}
-        }
-    }
 
     fun getSimpleCodecInfoList(isAudio: Boolean): ArrayList<CodecSimpleInfo> {
         if (isAudio && audioCodecSimpleInfoList.isNotEmpty()) {
             return audioCodecSimpleInfoList
         } else if (!isAudio && videoCodecSimpleInfoList.isNotEmpty()) {
             return videoCodecSimpleInfoList
+        }
+
+        if (mediaCodecInfos.isEmpty()) {
+            mediaCodecInfos = if (SDK_INT >= LOLLIPOP) {
+                MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
+            } else {
+                @Suppress("DEPRECATION")
+                Array(MediaCodecList.getCodecCount()) { i -> MediaCodecList.getCodecInfoAt(i)}
+            }
         }
 
         val codecSimpleInfoList = ArrayList<CodecSimpleInfo>()
@@ -74,15 +70,15 @@ object CodecUtils {
                     continue
                 }
 
-                val isAudioCodec = isAudioCodec(mediaCodecInfo)
+                val isAudioCodec = mediaCodecInfo.isAudioCodec()
 
                 if (isAudio && isAudioCodec) {
                     val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec,
-                            isEncoder(mediaCodecInfo))
+                            mediaCodecInfo.isEncoder)
                     codecSimpleInfoList.add(codecSimpleInfo)
                 } else if (!isAudio && !isAudioCodec) {
                     val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec,
-                            isEncoder(mediaCodecInfo))
+                            mediaCodecInfo.isEncoder)
                     codecSimpleInfoList.add(codecSimpleInfo)
                 }
             }
@@ -103,8 +99,8 @@ object CodecUtils {
     fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): HashMap<String, String> {
         val mediaCodecInfo = mediaCodecInfos.first { it.name == codecName }
         val capabilities = mediaCodecInfo.getCapabilitiesForType(codecId)
-        val isAudio = isAudioCodec(mediaCodecInfo)
-        val isEncoder = isEncoder(mediaCodecInfo)
+        val isAudio = mediaCodecInfo.isAudioCodec()
+        val isEncoder = mediaCodecInfo.isEncoder
 
         val codecInfoMap = LinkedHashMap<String, String>()
 
@@ -212,7 +208,7 @@ object CodecUtils {
             }
         }
 
-        val profileString = if (codecId.contains("mp4a-latm")) {
+        val profileString = if (codecId.contains("mp4a-latm") || codecId.contains("wma")) {
             context.getString(R.string.profiles)
         } else {
             context.getString(R.string.profile_levels)
@@ -268,7 +264,6 @@ object CodecUtils {
      * AudioCapabilities incorrectly assumes that non-platform codecs support only one input channel.
      * This function provides a somewhat better, assumed guess.
      */
-    @SuppressLint("NewApi")
     private fun adjustMaxInputChannelCount(codecId: String, maxChannelCount: Int,
                                            capabilities: MediaCodecInfo.CodecCapabilities): Int {
         if (maxChannelCount > 1 || (SDK_INT >= O && maxChannelCount > 0)) {
@@ -281,7 +276,7 @@ object CodecUtils {
             return maxChannelCount
         }
 
-        if (SDK_INT in LOLLIPOP..O_MR1) {
+        if (SDK_INT < P) {
             /*
                 mCapabilitiesInfo, a private MediaFormat instance hidden in MediaCodecInfo,
                 can actually provide max input channel count (as well as other useful info).
@@ -348,10 +343,12 @@ object CodecUtils {
                 -> QualcommColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)
                 -> SamsungColorFormat.from(colorFormats[it])
-                codecName.contains("OMX.STE", true) || codecName.contains("OMX.TI", true)
-                        || codecName.contains("INTEL", true) -> OtherColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.MTK", true) -> MediaTekColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.IMG", true) -> IMGColorFormat.from(colorFormats[it])
+                codecName.contains("Marvell", true) -> MarvellColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.ST", true) -> SonyColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.TI", true) || codecName.contains("INTEL", true)
+                -> OtherColorFormat.from(colorFormats[it])
                 else -> null
             }
 
@@ -361,7 +358,7 @@ object CodecUtils {
             }
 
             // ...unless it's a standard OpenMAX IL color format that's not defined in the SDK
-            // (apparently Huawei devices with IMG MSVDX codecs tend to use some of those)
+            // (at least MSVDX/Topaz codecs tend to use some of those)
             if (colorFormat == null) {
                 colorFormat = OpenMAXILColorFormat.from(colorFormats[it])
             }
@@ -397,8 +394,8 @@ object CodecUtils {
         val profileLevels = capabilities.profileLevels
         val stringBuilder = StringBuilder()
         val unknownString = context.getString(R.string.unknown)
-        var profile: String
-        var level = ""
+        var profile: String?
+        var level: String? = ""
 
         // On versions L and M, VP9 codecCapabilities do not advertise profile level support.
         // In this case, estimate the level from MediaCodecInfo.VideoCapabilities instead.
@@ -408,9 +405,8 @@ object CodecUtils {
             // Assume all platforms before N only support VP9 profile 0.
             profile = VP9Profiles.VP9Profile0.name
             level = VP9Levels.from(vp9Level)!!
-            stringBuilder.append("$profile: $level\n")
+            stringBuilder.append("$profile: $level")
 
-            stringBuilder.setLength(stringBuilder.length - 1) // Remove the last \n
             return stringBuilder.toString()
         } else if (profileLevels == null || profileLevels.isEmpty()) {
             return null
@@ -421,7 +417,7 @@ object CodecUtils {
         profileLevels.reversed().distinctBy { it.profile }.reversed().forEach {
             when {
                 codecId.contains("mp4a-latm") -> {
-                    profile = AACProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
+                    profile = AACProfiles.from(it.profile)
                 }
                 codecId.contains("avc") -> {
                     var extension = " "
@@ -430,29 +426,29 @@ object CodecUtils {
                         extension = "QOMX"
                     }
 
-                    profile = AVCProfiles.from(it.profile, extension) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = AVCLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                    profile = AVCProfiles.from(it.profile, extension)
+                    level = AVCLevels.from(it.level)
                 }
                 codecId.contains("avs") -> {
-                    profile = AVSProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = AVSLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                    profile = AVSProfiles.from(it.profile)
+                    level = AVSLevels.from(it.level)
                 }
                 codecId.contains("dolby-vision") -> {
-                    profile = DolbyVisionProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = DolbyVisionLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                    profile = DolbyVisionProfiles.from(it.profile)
+                    level = DolbyVisionLevels.from(it.level)
                 }
-                (codecId.contains("3gpp") && codecName.contains("h263", true)) || codecId.contains("sorenson")
-                        || codecName.contains("flv") -> {
-                    profile = H263Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = H263Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                (codecId.contains("3gpp") && !codecName.contains("mpeg4", true))
+                        || codecId.contains("sorenson") || codecId.contains("flv") -> {
+                    profile = H263Profiles.from(it.profile)
+                    level = H263Levels.from(it.level)
                 }
                 codecId.contains("hevc") -> {
-                    profile = HEVCProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = HEVCLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                    profile = HEVCProfiles.from(it.profile)
+                    level = HEVCLevels.from(it.level)
                 }
                 codecId.endsWith("mpeg") || codecId.contains("mpeg2") -> {
-                    profile = MPEG2Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = MPEG2Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                    profile = MPEG2Profiles.from(it.profile)
+                    level = MPEG2Levels.from(it.level)
                 }
                 codecId.contains("mp4v-es") || codecId.contains("divx")
                         || codecId.contains("xvid") || codecId.endsWith("mp4")
@@ -465,39 +461,51 @@ object CodecUtils {
                         extension = "OMX_SEC"
                     }
 
-                    profile = MPEG4Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = MPEG4Levels.from(it.level, extension) ?: "$unknownString (${it.level.toHexHstring()})"
+                    profile = MPEG4Profiles.from(it.profile)
+                    level = MPEG4Levels.from(it.level, extension)
+                }
+                codecId.contains("mvc") -> {
+                    profile = MVCProfiles.from(it.profile)
+                    level = MVCLevels.from(it.level)
                 }
                 codecId.contains("vc1") || codecId.contains("asf") -> {
-                    profile = VC1Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = VC1Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                    profile = VC1Profiles.from(it.profile)
+                    level = VC1Levels.from(it.level)
                 }
                 codecId.contains("vp6") -> {
-                    profile = VP6Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = "$unknownString (${it.level.toHexHstring()})"
+                    profile = VP6Profiles.from(it.profile)
+                    level = null
                 }
                 codecId.contains("vp8") -> {
-                    profile = VP8Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = VP8Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                    profile = VP8Profiles.from(it.profile)
+                    level = VP8Levels.from(it.level)
                 }
                 codecId.contains("vp9") -> {
-                    profile = VP9Profiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = VP9Levels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                    profile = VP9Profiles.from(it.profile)
+                    level = VP9Levels.from(it.level)
                 }
                 codecId.contains("wma") -> {
-                    profile = WMAProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
+                    profile = WMAProfiles.from(it.profile)
                 }
                 codecId.contains("wmv") -> {
-                    profile = WMVProfiles.from(it.profile) ?: "$unknownString (${it.profile.toHexHstring()})"
-                    level = WMVLevels.from(it.level) ?: "$unknownString (${it.level.toHexHstring()})"
+                    profile = WMVProfiles.from(it.profile)
+                    level = WMVLevels.from(it.level)
                 }
                 else -> {
-                    profile = "$unknownString (${it.profile.toHexHstring()})"
-                    level = "$unknownString (${it.level.toHexHstring()})"
+                    profile = null
+                    level = null
                 }
             }
 
-            stringBuilder.append(if (level.isNotEmpty()) "$profile: $level\n" else "$profile\n")
+            if (profile == null) {
+                profile = "$unknownString (${it.profile.toHexHstring()})"
+            }
+
+            if (level == null) {
+                level = "$unknownString (${it.level.toHexHstring()})"
+            }
+
+            stringBuilder.append(if (level!!.isNotEmpty()) "$profile: $level\n" else "$profile\n")
         }
 
         stringBuilder.setLength(stringBuilder.length - 1) // Remove the last \n
@@ -517,20 +525,15 @@ object CodecUtils {
                 intArrayOf(18000, VP9Level4.value), intArrayOf(30000, VP9Level41.value),
                 intArrayOf(60000, VP9Level5.value), intArrayOf(120000, VP9Level51.value),
                 intArrayOf(180000, VP9Level52.value))
-        val profileLevels = ArrayList<Int>()
+        var maxBitrateRange = 0
 
         for (entry in bitrateMapping) {
             val bitrate = entry[0]
             val level = entry[1]
             if (capabilities.bitrateRange.contains(bitrate)) {
-                profileLevels.add(level)
+                maxBitrateRange = level
             }
         }
 
-        return profileLevels[profileLevels.size - 1]
+        return maxBitrateRange
     }
-
-    private fun isAudioCodec(mediaCodecInfo: MediaCodecInfo) = mediaCodecInfo.supportedTypes.joinToString().contains("audio")
-    private fun isEncoder(mediaCodecInfo: MediaCodecInfo) = mediaCodecInfo.isEncoder
-
-}

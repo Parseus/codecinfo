@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.adapters.CodecInfoAdapter
-import com.parseus.codecinfo.codecinfo.CodecUtils
+import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import kotlinx.android.synthetic.main.codec_details_fragment_layout.*
 
 class CodecDetailsFragment : Fragment() {
@@ -31,7 +31,7 @@ class CodecDetailsFragment : Fragment() {
             (full_codec_info_name as TextView).text = codecName
 
             codecId?.let {
-                val codecInfoMap = CodecUtils.getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+                val codecInfoMap = getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
                 val codecAdapter = CodecInfoAdapter(codecInfoMap)
                 full_codec_info_content.apply {
                     layoutManager = LinearLayoutManager(context)

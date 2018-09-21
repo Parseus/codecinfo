@@ -33,6 +33,10 @@ fun MediaCodecInfo.isAudioCodec(): Boolean {
     return supportedTypes.joinToString().contains("audio")
 }
 
+fun MediaCodecInfo.isHardwareAccelerated(): Boolean {
+    return !(name.startsWith("OMX.google.") || name.endsWith("sw", true))
+}
+
 fun <T : View> View.bind(@IdRes idRes: Int): Lazy<T> {
     return unsafeLazy { findViewById<T>(idRes) }
 }

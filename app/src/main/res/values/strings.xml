@@ -61,6 +61,8 @@
     <string name="quality_range">Encoding quality range</string>
     <string name="range_default">default</string>
 
+    <string name="hardware_acceleration">Hardware acceleration</string>
+
     <string name="more_info">Tap to see more info…</string>
 
     <string name="rta_dialog_cancel">Later</string>

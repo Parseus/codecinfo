@@ -104,6 +104,9 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
 
         val codecInfoMap = LinkedHashMap<String, String>()
 
+        codecInfoMap[context.getString(R.string.hardware_acceleration)] =
+                mediaCodecInfo.isHardwareAccelerated().toString()
+
         if (SDK_INT >= M) {
             codecInfoMap[context.getString(R.string.max_instances)] = capabilities.maxSupportedInstances.toString()
         }

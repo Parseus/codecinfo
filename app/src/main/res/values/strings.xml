@@ -26,7 +26,6 @@
     <string name="encoder">Encoder</string>
 
     <string name="codec_details">Codec details</string>
-    <string name="no_info">No info available.</string>
     
     <string name="frames_per_second">fps</string>
     <string name="unknown">Unknown</string>

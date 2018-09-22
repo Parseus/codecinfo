@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         })
         tabs.setupWithViewPager(viewPager)
 
-        if (resources.getBoolean(R.bool.twoPaneMode)) {
+        if (isInTwoPaneMode()) {
             return
         }
 
@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
 
-        if (resources.getBoolean(R.bool.twoPaneMode)) {
+        if (isInTwoPaneMode()) {
             supportFragmentManager.findFragmentByTag("SINGLE_PANE_DETAILS")?.let {
                 val dialog = (it as DialogFragment).dialog
                 if (dialog != null && dialog.isShowing) {
@@ -80,8 +80,8 @@ class MainActivity : AppCompatActivity() {
             val codecId = fragmentById?.codecId
             val codecName = fragmentById?.codecName
 
-            val codecShareOptions = if (resources.getBoolean(R.bool.twoPaneMode)
-                && (codecId != null && codecName != null)) {
+            val codecShareOptions = if (isInTwoPaneMode()
+                    && (codecId != null && codecName != null)) {
                 arrayOf(
                         getString(R.string.codec_list),
                         getString(R.string.codec_all_info),

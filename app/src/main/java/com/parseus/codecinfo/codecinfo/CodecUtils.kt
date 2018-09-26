@@ -343,6 +343,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             var colorFormat = when {
                 codecName.contains("brcm", true) -> BroadcomColorFormat.from(colorFormats[it])
                 codecName.contains("qcom", true) || codecName.contains("qti", true)
+                    || codecName.contains("ittiam", true)
                 -> QualcommColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)
                 -> SamsungColorFormat.from(colorFormats[it])
@@ -404,7 +405,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         // On versions L and M, VP9 codecCapabilities do not advertise profile level support.
         // In this case, estimate the level from MediaCodecInfo.VideoCapabilities instead.
         // Assume VP9 is not supported before L.
-        if (SDK_INT in LOLLIPOP..M && codecId.endsWith("vp9", false)) {
+        if (SDK_INT in LOLLIPOP..M && codecId.endsWith("vp9")) {
             val vp9Level = getMaxVP9ProfileLevel(capabilities.videoCapabilities)
             // Assume all platforms before N only support VP9 profile 0.
             profile = VP9Profiles.VP9Profile0.name

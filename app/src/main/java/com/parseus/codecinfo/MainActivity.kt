@@ -18,6 +18,7 @@ import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
+import com.samsung.android.sdk.SsdkVendorCheck
 import com.samsung.android.sdk.gesture.Sgesture
 import com.samsung.android.sdk.gesture.SgestureHand
 import kotlinx.android.synthetic.main.activity_main.*
@@ -67,23 +68,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeSamsungGesture(pager: ViewPager) {
-        try {
-            val gesture = Sgesture()
-            gesture.initialize(this)
+        if (SsdkVendorCheck.isSamsungDevice()) {
+            try {
+                val gesture = Sgesture()
+                gesture.initialize(this)
 
-            if (gesture.isFeatureEnabled(Sgesture.TYPE_HAND_PRIMITIVE)) {
-                gestureHand = SgestureHand(Looper.getMainLooper(), gesture)
-                gestureHand?.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
-                    if (info.angle in 225..315) {        // to the left
-                        tabLayout.setScrollPosition(0, 0f, true)
-                        pager.currentItem = 0
-                    } else if (info.angle in 45..135) {  // to the right
-                        tabLayout.setScrollPosition(1, 0f, true)
-                        pager.currentItem = 1
+                if (gesture.isFeatureEnabled(Sgesture.TYPE_HAND_PRIMITIVE)) {
+                    gestureHand = SgestureHand(Looper.getMainLooper(), gesture)
+                    gestureHand?.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
+                        if (info.angle in 225..315) {        // to the left
+                            tabLayout.setScrollPosition(0, 0f, true)
+                            pager.currentItem = 0
+                        } else if (info.angle in 45..135) {  // to the right
+                            tabLayout.setScrollPosition(1, 0f, true)
+                            pager.currentItem = 1
+                        }
                     }
                 }
-            }
-        } catch (e: Exception) {}
+            } catch (e: Exception) {}
+        }
     }
 
     override fun onDestroy() {

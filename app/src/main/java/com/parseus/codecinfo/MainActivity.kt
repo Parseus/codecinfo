@@ -2,6 +2,7 @@ package com.parseus.codecinfo
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -11,14 +12,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.DialogFragment
+import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
+import com.samsung.android.sdk.SsdkVendorCheck
+import com.samsung.android.sdk.gesture.Sgesture
+import com.samsung.android.sdk.gesture.SgestureHand
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    private var gestureHand: SgestureHand? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +54,9 @@ class MainActivity : AppCompatActivity() {
         })
         tabs.setupWithViewPager(viewPager)
 
-        if (resources.getBoolean(R.bool.twoPaneMode)) {
+        initializeSamsungGesture(viewPager)
+
+        if (isInTwoPaneMode()) {
             return
         }
 
@@ -58,10 +67,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun initializeSamsungGesture(pager: ViewPager) {
+        if (SsdkVendorCheck.isSamsungDevice()) {
+            try {
+                val gesture = Sgesture()
+                gesture.initialize(this)
+
+                if (gesture.isFeatureEnabled(Sgesture.TYPE_HAND_PRIMITIVE)) {
+                    gestureHand = SgestureHand(Looper.getMainLooper(), gesture)
+                    gestureHand?.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
+                        if (info.angle in 225..315) {        // to the left
+                            tabLayout.setScrollPosition(0, 0f, true)
+                            pager.currentItem = 0
+                        } else if (info.angle in 45..135) {  // to the right
+                            tabLayout.setScrollPosition(1, 0f, true)
+                            pager.currentItem = 1
+                        }
+                    }
+                }
+            } catch (e: Exception) {}
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        gestureHand?.stop()
+    }
+
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
 
-        if (resources.getBoolean(R.bool.twoPaneMode)) {
+        if (isInTwoPaneMode()) {
             supportFragmentManager.findFragmentByTag("SINGLE_PANE_DETAILS")?.let {
                 val dialog = (it as DialogFragment).dialog
                 if (dialog != null && dialog.isShowing) {
@@ -80,8 +116,8 @@ class MainActivity : AppCompatActivity() {
             val codecId = fragmentById?.codecId
             val codecName = fragmentById?.codecName
 
-            val codecShareOptions = if (resources.getBoolean(R.bool.twoPaneMode)
-                && (codecId != null && codecName != null)) {
+            val codecShareOptions = if (isInTwoPaneMode()
+                    && (codecId != null && codecName != null)) {
                 arrayOf(
                         getString(R.string.codec_list),
                         getString(R.string.codec_all_info),

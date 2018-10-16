@@ -16,7 +16,7 @@
 
     <string name="about_app">About &app_name;…</string>
     <string name="app_version">Version %s</string>
-    <string name="copyright" translatable="false">\u00A9 2018 Parseus</string>
+    <string name="copyright" translatable="false">\u00A9 2018 KN-Soft</string>
     <string name="source_code_link" translatable="false">https://github.com/Parseus/codecinfo</string>
 
     <string name="audio">Audio</string>
@@ -26,7 +26,6 @@
     <string name="encoder">Encoder</string>
 
     <string name="codec_details">Codec details</string>
-    <string name="no_info">No info available.</string>
     
     <string name="frames_per_second">fps</string>
     <string name="unknown">Unknown</string>
@@ -60,6 +59,8 @@
     <string name="complexity_range">Encoding complexity range</string>
     <string name="quality_range">Encoding quality range</string>
     <string name="range_default">default</string>
+
+    <string name="hardware_acceleration">Hardware acceleration</string>
 
     <string name="more_info">Tap to see more info…</string>
 

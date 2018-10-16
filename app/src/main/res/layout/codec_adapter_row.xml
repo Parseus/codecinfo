@@ -36,8 +36,8 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/codec_full_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/codec_name"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
@@ -46,6 +46,7 @@
         app:autoSizeMinTextSize="12sp"
         app:autoSizeMaxTextSize="16sp"
         app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform"
         tools:text="Codec full name"/>
 
     <androidx.appcompat.widget.AppCompatTextView

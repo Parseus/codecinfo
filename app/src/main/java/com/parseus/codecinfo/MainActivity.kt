@@ -74,10 +74,10 @@ class MainActivity : AppCompatActivity() {
             if (gesture.isFeatureEnabled(Sgesture.TYPE_HAND_PRIMITIVE)) {
                 gestureHand = SgestureHand(Looper.getMainLooper(), gesture)
                 gestureHand?.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
-                    if (info.angle == 270) {        // to the left
+                    if (info.angle in 225..315) {        // to the left
                         tabLayout.setScrollPosition(0, 0f, true)
                         pager.currentItem = 0
-                    } else if (info.angle == 90) {  // to the right
+                    } else if (info.angle in 45..135) {  // to the right
                         tabLayout.setScrollPosition(1, 0f, true)
                         pager.currentItem = 1
                     }

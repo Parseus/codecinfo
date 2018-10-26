@@ -473,7 +473,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                     profile = MVCProfiles.from(it.profile)
                     level = MVCLevels.from(it.level)
                 }
-                codecId.contains("vc1") || codecId.contains("asf") -> {
+                codecId.contains("vc1") || codecId.contains("asf") || codecId.endsWith("wmv9") -> {
                     profile = VC1Profiles.from(it.profile)
                     level = VC1Levels.from(it.level)
                 }

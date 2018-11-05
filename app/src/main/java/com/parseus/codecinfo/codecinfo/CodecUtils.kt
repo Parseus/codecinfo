@@ -64,7 +64,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             for (codecId in mediaCodecInfo.supportedTypes) {
                 try {
                     mediaCodecInfo.getCapabilitiesForType(codecId)
-                } catch (e: IllegalArgumentException) {
+                } catch (e: Exception) {
                     // Some devices (e.g. Kindle Fire HD) can report a codec in the supported list
                     // but don't really implement it (or it's buggy). In this case just skip this.
                     continue

@@ -53,11 +53,17 @@ enum class MPEG4Levels(val value: Int) {
     OMX_SEC_VIDEO_MPEG4Level8(0x7F000003),
     OMX_SEC_VIDEO_MPEG4Level9(0x7F000004),
 
+    // Reneseas extensions
+    OMF_MC_VIDEO_MPEG4Level3b(0x7F000000),
+    OMF_MC_VIDEO_MPEG4Level6(0x7F000001),
+    OMF_MC_VIDEO_MPEG4LevelNone(0x7F000002),
+    OMF_MC_VIDEO_MPEG4LevelUnknown(0x7F000003),
+
     MPEG4LevelMax(0x7FFFFFFF);
 
     companion object {
         fun from(findValue: Int, extension: String): String? = MPEG4Levels.values().find {
-            if (it.value > 0x7F000000 && it.value != 0x7FFFFFFF) {
+            if (it.value >= 0x7F000000 && it.value != 0x7FFFFFFF) {
                 it.value == findValue && it.name.contains(extension, true)
             } else {
                 it.value == findValue

@@ -352,6 +352,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 codecName.contains("Marvell", true) -> MarvellColorFormat.from(colorFormats[it])
                 codecName.contains("Nvidia", true) -> NvidiaColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.ST", true) -> SonyColorFormat.from(colorFormats[it])
+                codecName.contains("Renesas", true) -> RenesasColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.TI", true) || codecName.contains("INTEL", true)
                 -> OtherColorFormat.from(colorFormats[it])
                 else -> null
@@ -452,8 +453,14 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                     level = HEVCLevels.from(it.level)
                 }
                 codecId.endsWith("mpeg") || codecId.contains("mpeg2") -> {
-                    profile = MPEG2Profiles.from(it.profile)
-                    level = MPEG2Levels.from(it.level)
+                    var extension = " "
+
+                    if (codecName.contains("Renesas", true)) {
+                        extension = "OMF_MC"
+                    }
+
+                    profile = MPEG2Profiles.from(it.profile, extension)
+                    level = MPEG2Levels.from(it.level, extension)
                 }
                 codecId.contains("mp4v-es") || codecId.contains("divx")
                         || codecId.contains("xvid") || codecId.endsWith("mp4")
@@ -464,6 +471,8 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                         extension = "QOMX"
                     } else if (codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)) {
                         extension = "OMX_SEC"
+                    } else if (codecName.contains("Renesas", true)) {
+                        extension = "OMF_MC"
                     }
 
                     profile = MPEG4Profiles.from(it.profile)

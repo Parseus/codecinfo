@@ -512,14 +512,16 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
 
             if (profile == null) {
-                profile = "$unknownString (${it.profile.toHexHstring()})"
+                profile = unknownString
             }
 
             if (level == null) {
-                level = "$unknownString (${it.level.toHexHstring()})"
+                level = unknownString
             }
 
-            stringBuilder.append(if (level!!.isNotEmpty()) "$profile: $level\n" else "$profile\n")
+            stringBuilder.append(if (level!!.isNotEmpty())
+                "$profile (${it.profile.toHexHstring()}): $level (${it.level.toHexHstring()}\n"
+                else "$profile (${it.profile.toHexHstring()}\n")
         }
 
         stringBuilder.setLength(stringBuilder.length - 1) // Remove the last \n

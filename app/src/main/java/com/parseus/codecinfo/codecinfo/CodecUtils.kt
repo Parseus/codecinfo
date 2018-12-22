@@ -72,11 +72,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
 
                 val isAudioCodec = mediaCodecInfo.isAudioCodec()
 
-                if (isAudio && isAudioCodec) {
-                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec,
-                            mediaCodecInfo.isEncoder)
-                    codecSimpleInfoList.add(codecSimpleInfo)
-                } else if (!isAudio && !isAudioCodec) {
+                if (isAudio == isAudioCodec) {
                     val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec,
                             mediaCodecInfo.isEncoder)
                     codecSimpleInfoList.add(codecSimpleInfo)

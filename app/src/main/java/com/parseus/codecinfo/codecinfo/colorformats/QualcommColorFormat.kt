@@ -1,5 +1,7 @@
 package com.parseus.codecinfo.codecinfo.colorformats
 
+import com.parseus.codecinfo.toHexHstring
+
 @Suppress("EnumEntryName")
 enum class QualcommColorFormat (val value: Int) {
 
@@ -14,7 +16,9 @@ enum class QualcommColorFormat (val value: Int) {
     QOMX_COLOR_Format32bitRGBA8888Compressed(0x7FA30C08);
 
     companion object {
-        fun from(findValue: Int): String? = QualcommColorFormat.values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = QualcommColorFormat.values().find { it.value == findValue }?.let {
+            "${it.name} (${it.value.toHexHstring()})"
+        }
     }
 
 }

@@ -8,6 +8,9 @@ enum class VC1Profiles(val value: Int) {
     OMX_VIDEO_VC1ProfileSimple(0x01),
     OMX_VIDEO_VC1ProfileMain(0x02),
     OMX_VIDEO_VC1ProfileAdvanced(0x03),
+    WMV9ProfileSimple(0x08),
+    WMV9ProfileMain(0x10),
+    WMV9ProfileComplex(0x20),
     OMX_VIDEO_VC1ProfileMax(0x7F000001);
 
     companion object {

@@ -1,5 +1,7 @@
 package com.parseus.codecinfo.codecinfo.colorformats
 
+import com.parseus.codecinfo.toHexHstring
+
 @Suppress("EnumEntryName")
 enum class MediaTekColorFormat(val value: Int) {
     COLOR_MTK_FormatYUVPrivate(0x32315679),
@@ -14,7 +16,9 @@ enum class MediaTekColorFormat(val value: Int) {
     OMX_MTK_COLOR_FormatBitStream(0x7F000300);
 
     companion object {
-        fun from(findValue: Int): String? = MediaTekColorFormat.values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = MediaTekColorFormat.values().find { it.value == findValue }?.let {
+            "${it.name} (${it.value.toHexHstring()})"
+        }
     }
 
 }

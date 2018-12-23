@@ -64,7 +64,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             for (codecId in mediaCodecInfo.supportedTypes) {
                 try {
                     mediaCodecInfo.getCapabilitiesForType(codecId)
-                } catch (e: IllegalArgumentException) {
+                } catch (e: Exception) {
                     // Some devices (e.g. Kindle Fire HD) can report a codec in the supported list
                     // but don't really implement it (or it's buggy). In this case just skip this.
                     continue
@@ -72,11 +72,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
 
                 val isAudioCodec = mediaCodecInfo.isAudioCodec()
 
-                if (isAudio && isAudioCodec) {
-                    val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec,
-                            mediaCodecInfo.isEncoder)
-                    codecSimpleInfoList.add(codecSimpleInfo)
-                } else if (!isAudio && !isAudioCodec) {
+                if (isAudio == isAudioCodec) {
                     val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec,
                             mediaCodecInfo.isEncoder)
                     codecSimpleInfoList.add(codecSimpleInfo)
@@ -352,6 +348,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 codecName.contains("Marvell", true) -> MarvellColorFormat.from(colorFormats[it])
                 codecName.contains("Nvidia", true) -> NvidiaColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.ST", true) -> SonyColorFormat.from(colorFormats[it])
+                codecName.contains("Renesas", true) -> RenesasColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.TI", true) || codecName.contains("INTEL", true)
                 -> OtherColorFormat.from(colorFormats[it])
                 else -> null
@@ -452,8 +449,14 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                     level = HEVCLevels.from(it.level)
                 }
                 codecId.endsWith("mpeg") || codecId.contains("mpeg2") -> {
-                    profile = MPEG2Profiles.from(it.profile)
-                    level = MPEG2Levels.from(it.level)
+                    var extension = " "
+
+                    if (codecName.contains("Renesas", true)) {
+                        extension = "OMF_MC"
+                    }
+
+                    profile = MPEG2Profiles.from(it.profile, extension)
+                    level = MPEG2Levels.from(it.level, extension)
                 }
                 codecId.contains("mp4v-es") || codecId.contains("divx")
                         || codecId.contains("xvid") || codecId.endsWith("mp4")
@@ -464,6 +467,8 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                         extension = "QOMX"
                     } else if (codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)) {
                         extension = "OMX_SEC"
+                    } else if (codecName.contains("Renesas", true)) {
+                        extension = "OMF_MC"
                     }
 
                     profile = MPEG4Profiles.from(it.profile)
@@ -473,7 +478,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                     profile = MVCProfiles.from(it.profile)
                     level = MVCLevels.from(it.level)
                 }
-                codecId.contains("vc1") || codecId.contains("asf") -> {
+                codecId.contains("vc1") || codecId.contains("asf") || codecId.endsWith("wmv9") -> {
                     profile = VC1Profiles.from(it.profile)
                     level = VC1Levels.from(it.level)
                 }
@@ -503,14 +508,16 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
 
             if (profile == null) {
-                profile = "$unknownString (${it.profile.toHexHstring()})"
+                profile = unknownString
             }
 
             if (level == null) {
-                level = "$unknownString (${it.level.toHexHstring()})"
+                level = unknownString
             }
 
-            stringBuilder.append(if (level!!.isNotEmpty()) "$profile: $level\n" else "$profile\n")
+            stringBuilder.append(if (level!!.isNotEmpty())
+                "$profile (${it.profile.toHexHstring()}): $level (${it.level.toHexHstring()})\n"
+                else "$profile (${it.profile.toHexHstring()}\n")
         }
 
         stringBuilder.setLength(stringBuilder.length - 1) // Remove the last \n

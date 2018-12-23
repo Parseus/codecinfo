@@ -1,5 +1,7 @@
 package com.parseus.codecinfo.codecinfo.colorformats
 
+import com.parseus.codecinfo.toHexHstring
+
 @Suppress("EnumEntryName")
 enum class OpenMAXILColorFormat(val value: Int) {
 
@@ -69,7 +71,9 @@ enum class OpenMAXILColorFormat(val value: Int) {
 
 
     companion object {
-        fun from(findValue: Int): String? = OpenMAXILColorFormat.values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = OpenMAXILColorFormat.values().find { it.value == findValue }?.let {
+            "${it.name} (${it.value.toHexHstring()})"
+        }
     }
 
 }

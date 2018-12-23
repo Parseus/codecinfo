@@ -1,5 +1,7 @@
 package com.parseus.codecinfo.codecinfo.colorformats
 
+import com.parseus.codecinfo.toHexHstring
+
 @Suppress("EnumEntryName")
 enum class MarvellColorFormat(val value: Int) {
 
@@ -11,7 +13,9 @@ enum class MarvellColorFormat(val value: Int) {
     OMX_COLOR_FormatIppPicture(0x7F000006);
 
     companion object {
-        fun from(findValue: Int): String? = MarvellColorFormat.values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = MarvellColorFormat.values().find { it.value == findValue }?.let {
+            "${it.name} (${it.value.toHexHstring()})"
+        }
     }
 
 }

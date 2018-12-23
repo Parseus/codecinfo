@@ -516,7 +516,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
 
             stringBuilder.append(if (level!!.isNotEmpty())
-                "$profile (${it.profile.toHexHstring()}): $level (${it.level.toHexHstring()}\n"
+                "$profile (${it.profile.toHexHstring()}): $level (${it.level.toHexHstring()})\n"
                 else "$profile (${it.profile.toHexHstring()}\n")
         }
 

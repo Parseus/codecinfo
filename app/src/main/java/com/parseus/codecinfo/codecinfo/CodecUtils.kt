@@ -335,7 +335,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
     private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, codecName: String,
                                 context: Context, codecInfoMap: HashMap<String, String>) {
         val colorFormats = capabilities.colorFormats
-        val colorFormatStrings = Array(colorFormats.size) { it ->
+        val colorFormatStrings = Array(colorFormats.size) {
             var colorFormat = when {
                 codecName.contains("brcm", true) -> BroadcomColorFormat.from(colorFormats[it])
                 codecName.contains("qcom", true) || codecName.contains("qti", true)

@@ -26,7 +26,7 @@ fun Int.toBytesPerSecond(): String {
         this >= 1000000000 -> (this / 1000000000).toString() + " Gbps"
         this >= 1000000 -> (this / 1000000).toString() + " Mbps"
         this >= 1000 -> (this / 1000).toString() + " Kbps"
-        else -> this.toString() + " bps"
+        else -> "$this bps"
     }
 }
 

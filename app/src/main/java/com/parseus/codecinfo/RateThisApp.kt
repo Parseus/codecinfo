@@ -235,7 +235,7 @@ object RateThisApp {
             e.printStackTrace()
         }
         editor.putLong(KEY_INSTALL_DATE, installDate.time)
-        log("First install: " + installDate.toString())
+        log("First install: $installDate")
     }
 
     /**

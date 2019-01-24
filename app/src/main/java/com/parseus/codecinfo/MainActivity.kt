@@ -99,10 +99,7 @@ class MainActivity : AppCompatActivity() {
 
         if (isInTwoPaneMode()) {
             supportFragmentManager.findFragmentByTag("SINGLE_PANE_DETAILS")?.let {
-                val dialog = (it as DialogFragment).dialog
-                if (dialog != null && dialog.isShowing) {
-                    it.dismiss()
-                }
+                (it as DialogFragment).dialog.takeIf { dialog -> dialog.isShowing }?.dismiss()
             }
         }
     }
@@ -110,6 +107,8 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("InflateParams")
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.itemId
+        var alertDialog: AlertDialog? = null
+        val builder = AlertDialog.Builder(this)
 
         if (id == R.id.menu_item_share) {
             val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment) as CodecDetailsFragment?
@@ -128,8 +127,6 @@ class MainActivity : AppCompatActivity() {
                         getString(R.string.codec_all_info))
             }
 
-            var alertDialog: AlertDialog? = null
-            val builder = AlertDialog.Builder(this)
             builder.setTitle(R.string.choose_share)
             builder.setSingleChoiceItems(codecShareOptions, -1) { _, option ->
                 launchShareIntent(option)
@@ -140,13 +137,11 @@ class MainActivity : AppCompatActivity() {
 
             return true
         } else if (id == R.id.menu_item_about_app) {
-            val alertDialogBuilder = AlertDialog.Builder(this)
             val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
-            alertDialogBuilder.setView(dialogView)
-            val alertDialog = alertDialogBuilder.create()
+            builder.setView(dialogView)
+            alertDialog = builder.create()
 
-            val okButton: View = dialogView.findViewById(R.id.ok_button)
-            okButton.setOnClickListener { alertDialog.dismiss() }
+            dialogView.findViewById<View>(R.id.ok_button).setOnClickListener { alertDialog.dismiss() }
 
             try {
                 val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)

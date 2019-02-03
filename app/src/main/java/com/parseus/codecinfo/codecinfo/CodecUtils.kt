@@ -58,7 +58,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
         }
 
-        val codecSimpleInfoList = ArrayList<CodecSimpleInfo>()
+        var codecSimpleInfoList = ArrayList<CodecSimpleInfo>()
 
         for (mediaCodecInfo in mediaCodecInfos) {
             for (codecId in mediaCodecInfo.supportedTypes) {
@@ -81,7 +81,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         }
 
         val comparator: Comparator<CodecSimpleInfo> = compareBy({it.codecId}, {it.codecName})
-        codecSimpleInfoList.sortWith(comparator)
+        codecSimpleInfoList = codecSimpleInfoList.sortedWith(comparator).distinct() as ArrayList<CodecSimpleInfo>
 
         if (isAudio) {
             audioCodecSimpleInfoList = codecSimpleInfoList

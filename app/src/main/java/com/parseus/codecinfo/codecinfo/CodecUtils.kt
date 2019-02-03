@@ -158,22 +158,23 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                             "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)}"
             codecInfoMap[context.getString(R.string.bitrate_modes)] = bitrateModesString
 
+            val defaultMediaFormat = capabilities.defaultFormat
+
             val complexityLower = encoderCapabilities.complexityRange.lower
             val complexityUpper = encoderCapabilities.complexityRange.upper
-            var defaultComplexity = 0
 
-            val defaultMediaFormat = capabilities.defaultFormat
-            if (defaultMediaFormat.containsKey(MediaFormat.KEY_COMPLEXITY)) {
-                defaultComplexity = defaultMediaFormat.getInteger(MediaFormat.KEY_COMPLEXITY)
+            if (complexityLower != complexityUpper) {
+                var defaultComplexity = 0
+
+                if (defaultMediaFormat.containsKey(MediaFormat.KEY_COMPLEXITY)) {
+                    defaultComplexity = defaultMediaFormat.getInteger(MediaFormat.KEY_COMPLEXITY)
+                }
+
+                val complexityRangeString = "$complexityLower — $complexityUpper " +
+                        "(${context.getString(R.string.range_default)}: $defaultComplexity)"
+
+                codecInfoMap[context.getString(R.string.complexity_range)] = complexityRangeString
             }
-
-            val complexityRangeString = if (complexityLower != complexityUpper) {
-                "$complexityLower — $complexityUpper (${context.getString(R.string.range_default)}: $defaultComplexity)"
-            } else {
-                "$complexityLower"
-            }
-
-            codecInfoMap[context.getString(R.string.complexity_range)] = complexityRangeString
 
             @Suppress("UNCHECKED_CAST")
             val qualityRange = if (SDK_INT >= P) {
@@ -186,24 +187,22 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                     qualityRangeMethod.invoke(encoderCapabilities) as Range<Int>
                 } catch (e: Exception) { null }
             }
-
-            var defaultQuality = 0
-
-            if (defaultMediaFormat.containsKey("quality")) {
-                defaultQuality = defaultMediaFormat.getInteger("quality")
-            }
             
             qualityRange?.let {
                 val qualityRangeLower = qualityRange.lower
                 val qualityRangeUpper = qualityRange.upper
 
-                val qualityRangeString = if (qualityRangeLower != qualityRangeUpper) {
-                    "$qualityRangeLower — $qualityRangeUpper (${context.getString(R.string.range_default)}: $defaultQuality)"
-                } else {
-                    "$qualityRangeLower"
+                var defaultQuality = 0
+
+                if (defaultMediaFormat.containsKey("quality")) {
+                    defaultQuality = defaultMediaFormat.getInteger("quality")
                 }
 
-                codecInfoMap[context.getString(R.string.quality_range)] = qualityRangeString
+                if (qualityRangeLower != qualityRangeUpper) {
+                    codecInfoMap[context.getString(R.string.quality_range)] =
+                            "$qualityRangeLower — $qualityRangeUpper " +
+                                    "(${context.getString(R.string.range_default)}: $defaultQuality)"
+                }
             }
         }
 

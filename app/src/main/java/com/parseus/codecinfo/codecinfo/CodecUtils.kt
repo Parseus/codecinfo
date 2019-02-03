@@ -264,14 +264,18 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
      */
     private fun adjustMaxInputChannelCount(codecId: String, maxChannelCount: Int,
                                            capabilities: MediaCodecInfo.CodecCapabilities): Int {
-        if (maxChannelCount > 1 || (SDK_INT >= O && maxChannelCount > 0)) {
-            // The maximum channel count looks like it's been set correctly.
-            return maxChannelCount
-        }
+        val platformLimit = 30
 
-        if (codecId in platformSupportedTypes) {
-            // Platform code should have set a default.
-            return maxChannelCount
+        if (maxChannelCount != platformLimit) {
+            if (maxChannelCount > 1 || (SDK_INT >= O && maxChannelCount > 0)) {
+                // The maximum channel count looks like it's been set correctly.
+                return maxChannelCount
+            }
+
+            if (codecId in platformSupportedTypes) {
+                // Platform code should have set a default.
+                return maxChannelCount
+            }
         }
 
         if (SDK_INT < P) {
@@ -298,7 +302,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             "audio/eac3" -> 16
             "audio/flac" -> 8
             // Default to the platform limit, which is 30.
-            else -> 30
+            else -> platformLimit
         }
     }
 

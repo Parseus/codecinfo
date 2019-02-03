@@ -296,6 +296,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         return when (codecId) {
             "audio/ac3" -> 6
             "audio/eac3" -> 16
+            "audio/flac" -> 8
             // Default to the platform limit, which is 30.
             else -> 30
         }

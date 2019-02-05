@@ -39,8 +39,11 @@ fun MediaCodecInfo.isAudioCodec(): Boolean {
 }
 
 fun MediaCodecInfo.isHardwareAccelerated(): Boolean {
-    return (name.contains("OMX.brcm.video") && !name.contains("hw"))
-            || !(name.startsWith("OMX.google.") || name.endsWith("sw", true)
+    return (name.contains("OMX.brcm.video", true) && name.contains("hw", true))
+            || !(name.startsWith("OMX.google.", true)
+            || name.startsWith("c2.android.", true)
+            || (!name.startsWith("OMX.", true) && !name.startsWith("c2.", true))
+            || name.endsWith("sw", true)
             || name.endsWith("sw.dec", true) || name.endsWith("swvdec", true))
 }
 

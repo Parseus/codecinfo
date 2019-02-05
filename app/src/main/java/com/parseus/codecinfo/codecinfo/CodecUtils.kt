@@ -296,11 +296,20 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             } catch (e: Exception) {}
         }
 
+        if (codecId.endsWith("flac")) {
+            /* LG G Pad 8.3 has a FLAC decoder with an audio/x-lg-flac mimetype,
+               so normal detection won't work.
+               I wouldn't be surprised if other OEMs do the same thing with their codecs.
+
+               Source for channel count: https://xiph.org/flac/faq.html#general__channels
+            */
+            return 8
+        }
+
         // The maximum channel count looks incorrect. Adjust it to an assumed default.
         return when (codecId) {
             "audio/ac3" -> 6
             "audio/eac3" -> 16
-            "audio/flac" -> 8
             // Default to the platform limit, which is 30.
             else -> platformLimit
         }

@@ -492,8 +492,13 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                     level = MVCLevels.from(it.level)
                 }
                 codecId.contains("vc1") || codecId.contains("asf") || codecId.endsWith("wmv9") -> {
-                    profile = VC1Profiles.from(it.profile)
-                    level = VC1Levels.from(it.level)
+                    val extension: String? = if (codecName.contains("Renesas", true)) {
+                        "OMF_MC"
+                    } else {
+                        null
+                    }
+                    profile = VC1Profiles.from(it.profile, extension)
+                    level = VC1Levels.from(it.level, extension)
                 }
                 codecId.contains("vp6") -> {
                     profile = VP6Profiles.from(it.profile)

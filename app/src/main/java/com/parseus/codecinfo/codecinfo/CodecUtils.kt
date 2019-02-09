@@ -267,7 +267,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         val platformLimit = 30
 
         if (maxChannelCount != platformLimit) {
-            if (maxChannelCount > 1 || (SDK_INT >= O && maxChannelCount > 0)) {
+            if (maxChannelCount > 1) {
                 // The maximum channel count looks like it's been set correctly.
                 return maxChannelCount
             }

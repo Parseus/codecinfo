@@ -228,32 +228,48 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         codecInfoMap[context.getString(R.string.input_channels)] =
                 adjustMaxInputChannelCount(codecId, audioCapabilities.maxInputChannelCount, capabilities).toString()
 
-        val bitrateRange = audioCapabilities.bitrateRange
-        val bitrateRangeString = if (bitrateRange.lower == bitrateRange.upper || bitrateRange.lower == 1) {
-            bitrateRange.upper.toBytesPerSecond()
+        val bitrateRangeString = if (codecId != "audio/amr-wb-plus") {
+            val bitrateRange = audioCapabilities.bitrateRange
+            if (bitrateRange.lower == bitrateRange.upper || bitrateRange.lower == 1) {
+                bitrateRange.upper.toBytesPerSecond()
+            } else {
+                "${bitrateRange.lower.toBytesPerSecond()} \u2014 ${bitrateRange.upper.toBytesPerSecond()}"
+            }
         } else {
-            "${bitrateRange.lower.toBytesPerSecond()} \u2014 ${bitrateRange.upper.toBytesPerSecond()}"
+            // Source: http://www.voiceage.com/AMR-WBplus.html
+            "Mono: 6 \u2014 36 Kbps\nStereo: 7 \u2014 48 Kbps"
         }
+
         codecInfoMap[context.getString(R.string.bitrate_range)] = bitrateRangeString
 
         val sampleRates = audioCapabilities.supportedSampleRateRanges
-        val sampleRatesString = if (sampleRates.size > 1) {
-            val rates = StringBuilder(sampleRates[0].upper.toKiloHertz().toString())
-
-            for (rate in 1 until sampleRates.size) {
-                rates.append(", ").append(sampleRates[rate].upper.toKiloHertz())
+        val sampleRatesString = when {
+            // Source: http://www.3gpp.org/ftp/Specs/html-info/26290.htm
+            codecId == "audio/amr-wb-plus" -> {
+                "16.0 KHz, 24.0 KHz, 32.0 KHz, 48.0 KHz"
             }
 
-            rates.append(" KHz")
-            rates.toString()
-        } else {
-            if (sampleRates[0].lower == sampleRates[0].upper) {
-                "${sampleRates[0].upper.toKiloHertz()} KHz"
-            } else {
-                "${sampleRates[0].lower.toKiloHertz()}, ${sampleRates[0].upper.toKiloHertz()} KHz"
+            sampleRates.size > 1 -> {
+                val rates = StringBuilder(sampleRates[0].upper.toKiloHertz().toString())
+
+                for (rate in 1 until sampleRates.size) {
+                    rates.append(", ").append(sampleRates[rate].upper.toKiloHertz())
+                }
+
+                rates.append(" KHz")
+                rates.toString()
+            }
+
+            else -> {
+                if (sampleRates[0].lower == sampleRates[0].upper) {
+                    "${sampleRates[0].upper.toKiloHertz()} KHz"
+                } else {
+                    "${sampleRates[0].lower.toKiloHertz()}, ${sampleRates[0].upper.toKiloHertz()} KHz"
+                }
             }
         }
-        codecInfoMap[context.getString(R.string.sample_rates)] = sampleRatesString
+
+        codecInfoMap [context.getString(R.string.sample_rates)] = sampleRatesString
     }
 
     /**
@@ -309,6 +325,8 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         // The maximum channel count looks incorrect. Adjust it to an assumed default.
         return when (codecId) {
             "audio/ac3" -> 6
+            // Source: http://www.voiceage.com/AMR-WBplus.html
+            "audio/amr-wb-plus" -> 2
             "audio/eac3" -> 16
             // Default to the platform limit, which is 30.
             else -> platformLimit

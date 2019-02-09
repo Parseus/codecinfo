@@ -246,7 +246,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         val sampleRatesString = when {
             // Source: http://www.3gpp.org/ftp/Specs/html-info/26290.htm
             codecId == "audio/amr-wb-plus" -> {
-                "16.0 KHz, 24.0 KHz, 32.0 KHz, 48.0 KHz"
+                "16.0, 24.0, 32.0, 48.0 KHz"
             }
 
             sampleRates.size > 1 -> {

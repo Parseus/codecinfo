@@ -341,6 +341,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             "audio/ac3" -> 6
             // Source: http://www.voiceage.com/AMR-WBplus.html
             "audio/amr-wb-plus" -> 2
+            "audio/dts" -> 8
             "audio/eac3" -> 16
             // source: https://mpeg.chiariglione.org/standards/mpeg-1/audio
             "audio/mpeg", "audio/mpeg-l1", "audio/mpeg-l2" -> 2

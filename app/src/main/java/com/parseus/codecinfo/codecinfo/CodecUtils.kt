@@ -29,12 +29,26 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             "audio/vorbis")
 
     private val framerateResolutions = arrayOf(
-            intArrayOf(176, 144), intArrayOf(320, 240), intArrayOf(640, 480),
-            intArrayOf(720, 576), intArrayOf(1280, 720), intArrayOf(1920, 1080),
-            intArrayOf(3840, 2160)
+            intArrayOf(176, 144), intArrayOf(256, 144),
+            intArrayOf(320, 240), intArrayOf(426, 240),
+            intArrayOf(480, 360), intArrayOf(640, 360),
+            intArrayOf(640, 480), intArrayOf(854, 480),
+            intArrayOf(720, 576),
+            intArrayOf(1280, 720),
+            intArrayOf(1920, 1080),
+            intArrayOf(3840, 2160),
+            intArrayOf(7680, 4320)
     )
     private val framerateClasses = arrayOf(
-            "144p", "240p", "480p", "576p", "720p", "1080p", "4K"
+            "144p", "144p (YouTube)",
+            "240p", "240p (widescreen)",
+            "360p", "360p (widescreen)",
+            "480p", "480p (widescreen)",
+            "576p",
+            "720p",
+            "1080p",
+            "4K",
+            "8K"
     )
 
     private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()

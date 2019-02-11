@@ -23,6 +23,10 @@
                 <category android:name="android.intent.category.PENWINDOW_LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/settings"
+            android:parentActivityName=".MainActivity"/>
 
         <uses-library android:required="false" android:name="com.sec.android.app.multiwindow" />
 

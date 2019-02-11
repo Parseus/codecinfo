@@ -77,15 +77,15 @@ class CodecDetailsDialogFragment : DialogFragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        menu?.clear()
-        inflater?.inflate(R.menu.fragment_bar_menu, menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.fragment_bar_menu, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
     @SuppressLint("InflateParams")
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val id = item?.itemId
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
 
         when (id) {
             android.R.id.home -> dismiss()

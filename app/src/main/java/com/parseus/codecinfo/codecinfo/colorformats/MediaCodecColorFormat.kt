@@ -1,7 +1,5 @@
 package com.parseus.codecinfo.codecinfo.colorformats
 
-import com.parseus.codecinfo.toHexHstring
-
 @Suppress("EnumEntryName")
 enum class MediaCodecColorFormat(val value: Int) {
     COLOR_FormatMonochrome(1),
@@ -58,9 +56,7 @@ enum class MediaCodecColorFormat(val value: Int) {
     OMX_COLOR_FormatMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int) = MediaCodecColorFormat.values().find { it.value == findValue }?.let {
-            "${it.name} (${it.value.toHexHstring()})"
-        }
+        fun from(findValue: Int) = MediaCodecColorFormat.values().find { it.value == findValue }?.name
     }
 
 }

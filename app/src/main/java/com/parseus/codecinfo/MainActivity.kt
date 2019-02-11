@@ -1,6 +1,7 @@
 package com.parseus.codecinfo
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.os.Looper
 import android.view.Menu
@@ -94,12 +95,12 @@ class MainActivity : AppCompatActivity() {
         gestureHand?.stop()
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
         if (isInTwoPaneMode()) {
             supportFragmentManager.findFragmentByTag("SINGLE_PANE_DETAILS")?.let {
-                (it as DialogFragment).dialog.takeIf { dialog -> dialog.isShowing }?.dismiss()
+                (it as DialogFragment).dialog?.takeIf { dialog -> dialog.isShowing }?.dismiss()
             }
         }
     }
@@ -110,45 +111,49 @@ class MainActivity : AppCompatActivity() {
         var alertDialog: AlertDialog? = null
         val builder = AlertDialog.Builder(this)
 
-        if (id == R.id.menu_item_share) {
-            val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment) as CodecDetailsFragment?
-            val codecId = fragmentById?.codecId
-            val codecName = fragmentById?.codecName
+        when (id) {
+            R.id.menu_item_share -> {
+                val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment) as CodecDetailsFragment?
+                val codecId = fragmentById?.codecId
+                val codecName = fragmentById?.codecName
 
-            val codecShareOptions = if (isInTwoPaneMode()
-                    && (codecId != null && codecName != null)) {
-                arrayOf(
-                        getString(R.string.codec_list),
-                        getString(R.string.codec_all_info),
-                        getString(R.string.codec_details_selected))
-            } else {
-                arrayOf(
-                        getString(R.string.codec_list),
-                        getString(R.string.codec_all_info))
+                val codecShareOptions = if (isInTwoPaneMode()
+                        && (codecId != null && codecName != null)) {
+                    arrayOf(
+                            getString(R.string.codec_list),
+                            getString(R.string.codec_all_info),
+                            getString(R.string.codec_details_selected))
+                } else {
+                    arrayOf(
+                            getString(R.string.codec_list),
+                            getString(R.string.codec_all_info))
+                }
+
+                builder.setTitle(R.string.choose_share)
+                builder.setSingleChoiceItems(codecShareOptions, -1) { _, option ->
+                    launchShareIntent(option)
+                    alertDialog!!.dismiss()
+                }
+                alertDialog = builder.create()
+                alertDialog.show()
+
+                return true
             }
+            R.id.menu_item_about_app -> {
+                val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
+                builder.setView(dialogView)
+                alertDialog = builder.create()
 
-            builder.setTitle(R.string.choose_share)
-            builder.setSingleChoiceItems(codecShareOptions, -1) { _, option ->
-                launchShareIntent(option)
-                alertDialog!!.dismiss()
+                dialogView.findViewById<View>(R.id.ok_button).setOnClickListener { alertDialog.dismiss() }
+
+                try {
+                    val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
+                    versionTextView.text = getString(R.string.app_version, packageManager.getPackageInfo(packageName, 0).versionName)
+                } catch (e : Exception) {}
+
+                alertDialog.show()
             }
-            alertDialog = builder.create()
-            alertDialog.show()
-
-            return true
-        } else if (id == R.id.menu_item_about_app) {
-            val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
-            builder.setView(dialogView)
-            alertDialog = builder.create()
-
-            dialogView.findViewById<View>(R.id.ok_button).setOnClickListener { alertDialog.dismiss() }
-
-            try {
-                val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
-                versionTextView.text = getString(R.string.app_version, packageManager.getPackageInfo(packageName, 0).versionName)
-            } catch (e : Exception) {}
-
-            alertDialog.show()
+            R.id.menu_item_settings -> startActivity(Intent(this, SettingsActivity::class.java))
         }
 
         return super.onOptionsItemSelected(item)

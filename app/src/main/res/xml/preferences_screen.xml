@@ -1,0 +1,30 @@
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Display options">
+        <androidx.preference.ListPreference
+            app:entries="@array/settings_show_for_known_titles"
+            app:entryValues="@array/settings_show_for_known_values"
+            app:defaultValue="1"
+            app:key="known_values_color_profiles"
+            app:title="Show values for known color profiles"
+            app:useSimpleSummaryProvider="true"/>
+
+        <androidx.preference.ListPreference
+            app:entries="@array/settings_show_for_known_titles"
+            app:entryValues="@array/settings_show_for_known_values"
+            app:defaultValue="1"
+            app:key="known_values_profile_levels"
+            app:title="Show values for known profile levels"
+            app:useSimpleSummaryProvider="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Help">
+
+        <Preference
+            app:key="feedback"
+            app:summary="Report technical issues or suggest new features"
+            app:title="Send feedback" />
+
+    </PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>

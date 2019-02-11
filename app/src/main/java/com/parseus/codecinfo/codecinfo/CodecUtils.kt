@@ -9,6 +9,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.*
 import android.util.Range
 import androidx.annotation.RequiresApi
+import androidx.preference.PreferenceManager
 import com.parseus.codecinfo.*
 import com.parseus.codecinfo.codecinfo.colorformats.*
 import com.parseus.codecinfo.codecinfo.profilelevels.*
@@ -413,10 +414,24 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 colorFormat = OpenMAXILColorFormat.from(colorFormats[it])
             }
 
-            colorFormat
-                    ?: "${context.getString(R.string.unknown)} (${colorFormats[it].toHexHstring()})"
+            if (colorFormat != null) {
+                getFormattedColorProfileString(context, colorFormat, colorFormats[it])
+            } else {
+                "${context.getString(R.string.unknown)} (${colorFormats[it]})"
+            }
         }.toSortedSet()
         codecInfoMap[context.getString(R.string.color_profiles)] = colorFormatStrings.joinToString("\n")
+    }
+
+    private fun getFormattedColorProfileString(context: Context, colorFormat: String, colorFormatInt: Int): String {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val option = prefs.getString("known_values_color_profiles", "0")!!.toInt()
+
+        return when (option) {
+            0 -> colorFormat
+            1 -> "$colorFormat (${colorFormatInt.toHexHstring()})"
+            else -> "$colorFormat ($colorFormatInt)"
+        }
     }
 
     @RequiresApi(LOLLIPOP)
@@ -443,7 +458,6 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                                  capabilities: MediaCodecInfo.CodecCapabilities): String? {
         val profileLevels = capabilities.profileLevels
         val stringBuilder = StringBuilder()
-        val unknownString = context.getString(R.string.unknown)
         var profile: String?
         var level: String? = ""
 
@@ -560,21 +574,49 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 }
             }
 
-            if (profile == null) {
-                profile = unknownString
-            }
-
-            if (level == null) {
-                level = unknownString
-            }
-
-            stringBuilder.append(if (level!!.isNotEmpty())
-                "$profile (${it.profile.toHexHstring()}): $level (${it.level.toHexHstring()})\n"
-                else "$profile (${it.profile.toHexHstring()})\n")
+            stringBuilder.append(getFormattedProfileLevelString(context,
+                    profile, it.profile, level, it.level))
         }
 
         stringBuilder.setLength(stringBuilder.length - 1) // Remove the last \n
         return stringBuilder.toString()
+    }
+
+    private fun getFormattedProfileLevelString(context: Context, profile: String?, profileInt: Int,
+                                               level: String?, levelInt: Int): String {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val option = prefs.getString("known_values_profile_levels", "0")!!.toInt()
+        val unknownString = context.getString(R.string.unknown)
+
+        val profileString = if (profile != null) {
+            when (option) {
+                0 -> profile
+                1 -> "$profile (${profileInt.toHexHstring()})"
+                else -> "$profile ($profileInt)"
+            }
+        } else {
+            "$unknownString ($profileInt)"
+        }
+
+        val levelString = if (level != null) {
+            if (level.isNotEmpty()) {
+                when (option) {
+                    0 -> level
+                    1 -> "$level (${levelInt.toHexHstring()})"
+                    else -> "$level ($levelInt)"
+                }
+            } else {
+                ""
+            }
+        } else {
+            "$unknownString ($profileInt)"
+        }
+
+        return if (levelString.isNotEmpty()) {
+            "$profileString: $levelString\n"
+        } else {
+            "$profileString\n"
+        }
     }
 
     /**

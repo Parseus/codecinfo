@@ -1,7 +1,5 @@
 package com.parseus.codecinfo.codecinfo.colorformats
 
-import com.parseus.codecinfo.toHexHstring
-
 @Suppress("EnumEntryName")
 enum class SamsungColorFormat(val value: Int) {
 
@@ -29,9 +27,7 @@ enum class SamsungColorFormat(val value: Int) {
     OMX_SEC_COLOR_FormatYUV420Planar_TB_RL(0x7FC0000E);
 
     companion object {
-        fun from(findValue: Int) = SamsungColorFormat.values().find { it.value == findValue }?.let {
-            "${it.name} (${it.value.toHexHstring()})"
-        }
+        fun from(findValue: Int) = SamsungColorFormat.values().find { it.value == findValue }?.name
     }
 
 }

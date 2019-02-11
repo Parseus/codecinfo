@@ -1,7 +1,5 @@
 package com.parseus.codecinfo.codecinfo.colorformats
 
-import com.parseus.codecinfo.toHexHstring
-
 @Suppress("EnumEntryName")
 enum class OtherColorFormat(val value: Int) {
 
@@ -19,9 +17,7 @@ enum class OtherColorFormat(val value: Int) {
     OMX_TI_COLOR_FormatYUV420PackedSemiPlanar(0x7F000100);
 
     companion object {
-        fun from(findValue: Int) = OtherColorFormat.values().find { it.value == findValue }?.let {
-            "${it.name} (${it.value.toHexHstring()})"
-        }
+        fun from(findValue: Int) = OtherColorFormat.values().find { it.value == findValue }?.name
     }
 
 }

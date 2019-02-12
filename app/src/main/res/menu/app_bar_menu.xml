@@ -2,18 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/menu_item_settings"
-        app:showAsAction="ifRoom"
-        android:title="@string/settings"
-        android:icon="@drawable/ic_settings"/>
-
     <item android:id="@+id/menu_item_share"
         app:showAsAction="ifRoom"
         android:title="@string/share"
         android:icon="@drawable/ic_share" />
 
-    <item android:id="@+id/menu_item_about_app"
+    <item android:id="@+id/menu_item_settings"
         app:showAsAction="ifRoom"
-        android:title="@string/about_app"
-        android:icon="@drawable/ic_info" />
+        android:title="@string/settings"
+        android:icon="@drawable/ic_settings"/>
+
 </menu>

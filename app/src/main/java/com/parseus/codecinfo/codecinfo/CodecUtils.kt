@@ -440,11 +440,18 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         val capabilities = StringBuilder()
         var maxFrameRate: Double
         val fpsString = context.getString(R.string.frames_per_second)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val option = prefs.getString("known_resolutions", "0")!!.toInt()
 
         framerateResolutions.forEachIndexed { index, resolution ->
             if (videoCapabilities.isSizeSupported(resolution[0], resolution[1])) {
                 maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(resolution[0], resolution[1]).upper
-                capabilities.append("${framerateClasses[index]}: ${"%.1f".format(maxFrameRate)} $fpsString\n")
+
+                if (option == 0) {
+                    capabilities.append("${framerateClasses[index]}: ${"%.1f".format(maxFrameRate)} $fpsString\n")
+                } else {
+                    capabilities.append("${resolution[0]}x${resolution[1]}: ${"%.1f".format(maxFrameRate)} $fpsString\n")
+                }
             }
         }
 

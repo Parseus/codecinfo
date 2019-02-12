@@ -6,8 +6,6 @@ import android.os.Bundle
 import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -107,11 +105,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("InflateParams")
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val id = item?.itemId
-        var alertDialog: AlertDialog? = null
-        val builder = AlertDialog.Builder(this)
-
-        when (id) {
+        when (item?.itemId) {
             R.id.menu_item_share -> {
                 val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment) as CodecDetailsFragment?
                 val codecId = fragmentById?.codecId
@@ -129,6 +123,8 @@ class MainActivity : AppCompatActivity() {
                             getString(R.string.codec_all_info))
                 }
 
+                val builder = AlertDialog.Builder(this)
+                var alertDialog: AlertDialog? = null
                 builder.setTitle(R.string.choose_share)
                 builder.setSingleChoiceItems(codecShareOptions, -1) { _, option ->
                     launchShareIntent(option)
@@ -138,20 +134,6 @@ class MainActivity : AppCompatActivity() {
                 alertDialog.show()
 
                 return true
-            }
-            R.id.menu_item_about_app -> {
-                val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
-                builder.setView(dialogView)
-                alertDialog = builder.create()
-
-                dialogView.findViewById<View>(R.id.ok_button).setOnClickListener { alertDialog.dismiss() }
-
-                try {
-                    val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
-                    versionTextView.text = getString(R.string.app_version, packageManager.getPackageInfo(packageName, 0).versionName)
-                } catch (e : Exception) {}
-
-                alertDialog.show()
             }
             R.id.menu_item_settings -> startActivity(Intent(this, SettingsActivity::class.java))
         }

@@ -16,6 +16,14 @@
             app:key="known_values_profile_levels"
             app:title="Show values for known profile levels"
             app:useSimpleSummaryProvider="true"/>
+
+        <androidx.preference.ListPreference
+            app:entries="@array/settings_show_resolutions_titles"
+            app:entryValues="@array/settings_show_resolutions_values"
+            app:defaultValue="0"
+            app:key="known_resolutions"
+            app:title="Show supported resolutions"
+            app:useSimpleSummaryProvider="true"/>
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Help">
@@ -24,6 +32,10 @@
             app:key="feedback"
             app:summary="Report technical issues or suggest new features"
             app:title="Send feedback" />
+
+        <Preference
+            app:key="help"
+            app:title="About Codec Info…"/>
 
     </PreferenceCategory>
 

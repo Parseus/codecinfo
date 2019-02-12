@@ -2,6 +2,7 @@ package com.parseus.codecinfo.fragments
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.TextView
@@ -12,6 +13,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.parseus.codecinfo.MainActivity
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.SettingsActivity
 import com.parseus.codecinfo.adapters.CodecInfoAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import kotlinx.android.synthetic.main.codec_details_fragment_layout.*
@@ -103,6 +105,7 @@ class CodecDetailsDialogFragment : DialogFragment() {
                 ShareCompat.IntentBuilder.from(activity).setType("text/plain")
                         .setText(codecStringBuilder.toString()).startChooser()
             }
+            R.id.menu_item_settings -> startActivity(Intent(requireActivity(), SettingsActivity::class.java))
         }
 
         return true

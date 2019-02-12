@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string-array name="settings_show_resolutions_titles">
+        <item>Shorthand (i.e. 720p)</item>
+        <item>Full resolution (i.e. 1280x720)</item>
+    </string-array>
+
+    <string-array name="settings_show_resolutions_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
     
     <string-array name="settings_show_for_known_titles">
         <item>Don\'t show</item>

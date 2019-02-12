@@ -1,9 +1,12 @@
 package com.parseus.codecinfo
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -24,6 +27,7 @@ class SettingsActivity : AppCompatActivity() {
             addPreferencesFromResource(R.xml.preferences_screen)
         }
 
+        @SuppressLint("InflateParams")
         override fun onPreferenceTreeClick(preference: Preference): Boolean {
             return when (preference.key) {
                 "feedback" -> {
@@ -37,6 +41,24 @@ class SettingsActivity : AppCompatActivity() {
                         Snackbar.make(requireActivity().findViewById<View>(android.R.id.content),
                                 R.string.no_email_apps, Snackbar.LENGTH_LONG).show()
                     }
+                    true
+                }
+
+                "help" -> {
+                    val builder = AlertDialog.Builder(requireActivity())
+                    val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
+                    builder.setView(dialogView)
+                    val alertDialog = builder.create()
+
+                    dialogView.findViewById<View>(R.id.ok_button).setOnClickListener { alertDialog.dismiss() }
+
+                    try {
+                        val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
+                        versionTextView.text = getString(R.string.app_version,
+                                requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0).versionName)
+                    } catch (e : Exception) {}
+
+                    alertDialog.show()
                     true
                 }
 

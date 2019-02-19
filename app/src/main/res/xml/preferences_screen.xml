@@ -1,6 +1,10 @@
 <androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="Display options">
+        <androidx.preference.SwitchPreferenceCompat
+            app:key="darkmode"
+            app:title="Dark mode" />
+
         <androidx.preference.ListPreference
             app:entries="@array/settings_show_for_known_titles"
             app:entryValues="@array/settings_show_for_known_values"

@@ -1,6 +1,7 @@
 package com.parseus.codecinfo
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -8,21 +9,50 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.settings_main.*
 
 class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.settings_main)
         setSupportActionBar(toolbar)
         supportFragmentManager.beginTransaction().replace(R.id.content, SettingsFragment()).commit()
     }
 
+    override fun finish() {
+        val intent = Intent()
+        intent.putExtra(EXTRA_THEME_CHANGED, themeChanged)
+        setResult(Activity.RESULT_CANCELED, intent)
+        super.finish()
+    }
+
     class SettingsFragment : PreferenceFragmentCompat() {
+
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+
+            val darkModeSwitch = findPreference<SwitchPreferenceCompat>("darkmode")
+            darkModeSwitch.setOnPreferenceChangeListener { _, newValue ->
+                if (newValue as Boolean) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
+
+                SettingsActivity.themeChanged = true
+                requireActivity().recreate()
+
+                true
+            }
+        }
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             addPreferencesFromResource(R.xml.preferences_screen)
         }
@@ -66,6 +96,11 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    companion object {
+        var themeChanged = false
+        const val EXTRA_THEME_CHANGED = "theme_changed"
     }
 
 }

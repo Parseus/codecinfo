@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.DialogFragment
+import androidx.preference.PreferenceManager
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.parseus.codecinfo.adapters.PagerAdapter
@@ -25,9 +26,16 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private var gestureHand: SgestureHand? = null
+    private var shouldRecreateActivity = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
+
         super.onCreate(savedInstanceState)
+
+        val isDarkMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("darkmode", false)
+        AppCompatDelegate.setDefaultNightMode(if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
@@ -64,6 +72,28 @@ class MainActivity : AppCompatActivity() {
             val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment)
             fragmentById?.let { supportFragmentManager.beginTransaction().remove(fragmentById).commit() }
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == OPEN_SETTINGS) {
+            if (data != null && data.getBooleanExtra(SettingsActivity.EXTRA_THEME_CHANGED, false)) {
+                shouldRecreateActivity = true
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (shouldRecreateActivity) {
+            recreate()
+            return
+        }
+    }
+
+    override fun recreate() {
+        super.recreate()
+        shouldRecreateActivity = false
     }
 
     private fun initializeSamsungGesture(pager: ViewPager) {
@@ -135,7 +165,7 @@ class MainActivity : AppCompatActivity() {
 
                 return true
             }
-            R.id.menu_item_settings -> startActivity(Intent(this, SettingsActivity::class.java))
+            R.id.menu_item_settings -> startActivityForResult(Intent(this, SettingsActivity::class.java), OPEN_SETTINGS)
         }
 
         return super.onOptionsItemSelected(item)
@@ -208,6 +238,10 @@ class MainActivity : AppCompatActivity() {
 
         ShareCompat.IntentBuilder.from(this).setType("text/plain")
                 .setText(codecStringBuilder.toString()).startChooser()
+    }
+
+    companion object {
+        private const val OPEN_SETTINGS = 42
     }
 
 }

@@ -1,13 +1,16 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorSecondary">@color/colorSecondary</item>
-        <item name="alertDialogTheme">@style/Theme.MaterialComponents.Light.Dialog.Alert</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+    </style>
+    
+    <style name="AppTheme.Launcher">
+        <item name="android:windowBackground">@drawable/launch_screen</item>
     </style>
 
     <style name="ToolbarStyle" parent="@style/ThemeOverlay.MaterialComponents.ActionBar">

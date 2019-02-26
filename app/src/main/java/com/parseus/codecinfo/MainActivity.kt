@@ -78,8 +78,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == OPEN_SETTINGS) {
-            if (data != null && data.getBooleanExtra(SettingsActivity.EXTRA_THEME_CHANGED, false)) {
-                shouldRecreateActivity = true
+            data?.let {
+                if (it.getBooleanExtra(SettingsActivity.EXTRA_THEME_CHANGED, false)) {
+                    shouldRecreateActivity = true
+                } else if (it.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)) {
+                    shouldRecreateActivity = true
+                }
             }
         }
     }
@@ -106,7 +110,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (gesture.isFeatureEnabled(Sgesture.TYPE_HAND_PRIMITIVE)) {
                     gestureHand = SgestureHand(Looper.getMainLooper(), gesture)
-                    gestureHand?.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
+                    gestureHand!!.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
                         if (info.angle in 225..315) {        // to the left
                             tabLayout.setScrollPosition(0, 0f, true)
                             pager.currentItem = 0
@@ -201,8 +205,8 @@ class MainActivity : AppCompatActivity() {
         when (option) {
             0 -> {
                 codecStringBuilder.append("${getString(R.string.codec_list)}:\n\n")
-                val codecSimpleInfoList = getSimpleCodecInfoList(true)
-                codecSimpleInfoList.addAll(getSimpleCodecInfoList(false))
+                val codecSimpleInfoList = getSimpleCodecInfoList(this, true)
+                codecSimpleInfoList.addAll(getSimpleCodecInfoList(this, false))
 
                 for (info in codecSimpleInfoList) {
                     codecStringBuilder.append("$info\n")
@@ -211,8 +215,8 @@ class MainActivity : AppCompatActivity() {
 
             1 -> {
                 codecStringBuilder.append("${getString(R.string.codec_list)}:\n")
-                val codecSimpleInfoList = getSimpleCodecInfoList(true)
-                codecSimpleInfoList.addAll(getSimpleCodecInfoList(false))
+                val codecSimpleInfoList = getSimpleCodecInfoList(this, true)
+                codecSimpleInfoList.addAll(getSimpleCodecInfoList(this, false))
 
                 for (info in codecSimpleInfoList) {
                     codecStringBuilder.append("\n$info\n")

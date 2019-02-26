@@ -22,5 +22,17 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+
+    <string-array name="settings_filter_type_titles">
+        <item>Decoders only</item>
+        <item>Encoders only</item>
+        <item>Decoders and encoders</item>
+    </string-array>
+
+    <string-array name="settings_filter_type_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
     
 </resources>

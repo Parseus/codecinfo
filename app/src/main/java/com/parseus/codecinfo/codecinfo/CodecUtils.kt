@@ -57,13 +57,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
     private var videoCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList()
 
 
-    fun getSimpleCodecInfoList(isAudio: Boolean): ArrayList<CodecSimpleInfo> {
-        if (isAudio && audioCodecSimpleInfoList.isNotEmpty()) {
-            return audioCodecSimpleInfoList
-        } else if (!isAudio && videoCodecSimpleInfoList.isNotEmpty()) {
-            return videoCodecSimpleInfoList
-        }
-
+    fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): ArrayList<CodecSimpleInfo> {
         if (mediaCodecInfos.isEmpty()) {
             mediaCodecInfos = if (SDK_INT >= LOLLIPOP) {
                 MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
@@ -88,6 +82,13 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 val isAudioCodec = mediaCodecInfo.isAudioCodec()
 
                 if (isAudio == isAudioCodec) {
+                    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+                    val option = prefs.getString("filter_type", "2")!!.toInt()
+
+                    if ((option == 0 && mediaCodecInfo.isEncoder) || (option == 1 && !mediaCodecInfo.isEncoder)) {
+                        continue
+                    }
+
                     val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec,
                             mediaCodecInfo.isEncoder)
                     codecSimpleInfoList.add(codecSimpleInfo)

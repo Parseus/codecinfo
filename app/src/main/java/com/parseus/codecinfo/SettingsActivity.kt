@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
@@ -29,7 +30,8 @@ class SettingsActivity : AppCompatActivity() {
     override fun finish() {
         val intent = Intent()
         intent.putExtra(EXTRA_THEME_CHANGED, themeChanged)
-        setResult(Activity.RESULT_CANCELED, intent)
+        intent.putExtra(FILTER_TYPE_CHANGED, filterTypeChanged)
+        setResult(Activity.RESULT_OK, intent)
         super.finish()
     }
 
@@ -49,6 +51,12 @@ class SettingsActivity : AppCompatActivity() {
                 SettingsActivity.themeChanged = true
                 requireActivity().recreate()
 
+                true
+            }
+
+            val filterType = findPreference<ListPreference>("filter_type")
+            filterType.setOnPreferenceChangeListener { _, _ ->
+                SettingsActivity.filterTypeChanged = true
                 true
             }
         }
@@ -100,7 +108,9 @@ class SettingsActivity : AppCompatActivity() {
 
     companion object {
         var themeChanged = false
+        var filterTypeChanged = false
         const val EXTRA_THEME_CHANGED = "theme_changed"
+        const val FILTER_TYPE_CHANGED = "filter_type_changed"
     }
 
 }

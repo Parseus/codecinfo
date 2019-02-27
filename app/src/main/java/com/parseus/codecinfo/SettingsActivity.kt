@@ -28,10 +28,11 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     override fun finish() {
-        val intent = Intent()
-        intent.putExtra(EXTRA_THEME_CHANGED, themeChanged)
-        intent.putExtra(FILTER_TYPE_CHANGED, filterTypeChanged)
-        setResult(Activity.RESULT_OK, intent)
+        setResult(Activity.RESULT_OK, Intent().apply {
+            putExtra(EXTRA_THEME_CHANGED, themeChanged)
+            putExtra(FILTER_TYPE_CHANGED, filterTypeChanged)
+            putExtra(SORTING_CHANGED, sortingChanged)
+        })
         super.finish()
     }
 
@@ -57,6 +58,12 @@ class SettingsActivity : AppCompatActivity() {
             val filterType = findPreference<ListPreference>("filter_type")
             filterType.setOnPreferenceChangeListener { _, _ ->
                 SettingsActivity.filterTypeChanged = true
+                true
+            }
+
+            val sortingType = findPreference<ListPreference>("sort_type")
+            sortingType.setOnPreferenceChangeListener { _, _ ->
+                SettingsActivity.sortingChanged = true
                 true
             }
         }
@@ -109,8 +116,10 @@ class SettingsActivity : AppCompatActivity() {
     companion object {
         var themeChanged = false
         var filterTypeChanged = false
+        var sortingChanged = false
         const val EXTRA_THEME_CHANGED = "theme_changed"
         const val FILTER_TYPE_CHANGED = "filter_type_changed"
+        const val SORTING_CHANGED = "sorting_changed"
     }
 
 }

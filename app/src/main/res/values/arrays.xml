@@ -34,5 +34,19 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+
+    <string-array name="settings_sort_codecs_titles">
+        <item>By mimetype (ascending)</item>
+        <item>By mimetype (descending)</item>
+        <item>By name (ascending)</item>
+        <item>By name (descending)</item>
+    </string-array>
+
+    <string-array name="settings_sort_codecs_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
     
 </resources>

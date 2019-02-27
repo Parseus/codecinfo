@@ -37,7 +37,15 @@
             app:entryValues="@array/settings_filter_type_values"
             app:defaultValue="2"
             app:key="filter_type"
-            app:title="Filter codec type"
+            app:title="Filter codecs"
+            app:useSimpleSummaryProvider="true"/>
+
+        <androidx.preference.ListPreference
+            app:entries="@array/settings_sort_codecs_titles"
+            app:entryValues="@array/settings_sort_codecs_values"
+            app:defaultValue="0"
+            app:key="sort_type"
+            app:title="Sort codecs"
             app:useSimpleSummaryProvider="true"/>
 
     </PreferenceCategory>

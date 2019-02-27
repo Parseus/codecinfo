@@ -58,6 +58,8 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
 
 
     fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): ArrayList<CodecSimpleInfo> {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+
         if (mediaCodecInfos.isEmpty()) {
             mediaCodecInfos = if (SDK_INT >= LOLLIPOP) {
                 MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
@@ -82,7 +84,6 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 val isAudioCodec = mediaCodecInfo.isAudioCodec()
 
                 if (isAudio == isAudioCodec) {
-                    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
                     val option = prefs.getString("filter_type", "2")!!.toInt()
 
                     if ((option == 0 && mediaCodecInfo.isEncoder) || (option == 1 && !mediaCodecInfo.isEncoder)) {
@@ -96,7 +97,14 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
         }
 
-        val comparator: Comparator<CodecSimpleInfo> = compareBy({it.codecId}, {it.codecName})
+        val sortingOption = prefs.getString("sort_type", "0")!!.toInt()
+        val comparator: Comparator<CodecSimpleInfo> = when (sortingOption) {
+            0 -> compareBy({it.codecId}, {it.codecName})
+            1 -> compareByDescending<CodecSimpleInfo>{it.codecId}.thenBy{it.codecName}
+            2 -> compareBy({it.codecName}, {it.codecId})
+            else -> compareByDescending<CodecSimpleInfo>{it.codecName}.thenBy{it.codecId}
+        }
+
         codecSimpleInfoList = codecSimpleInfoList.sortedWith(comparator).distinct() as ArrayList<CodecSimpleInfo>
 
         if (isAudio) {

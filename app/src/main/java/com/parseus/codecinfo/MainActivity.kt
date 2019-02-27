@@ -78,12 +78,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == OPEN_SETTINGS) {
-            data?.let {
-                if (it.getBooleanExtra(SettingsActivity.EXTRA_THEME_CHANGED, false)) {
-                    shouldRecreateActivity = true
-                } else if (it.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)) {
-                    shouldRecreateActivity = true
-                }
+            if (data != null && (data.getBooleanExtra(SettingsActivity.EXTRA_THEME_CHANGED, false)
+                            || data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)
+                            || data.getBooleanExtra(SettingsActivity.SORTING_CHANGED, false))) {
+                shouldRecreateActivity = true
             }
         }
     }

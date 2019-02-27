@@ -1,7 +1,5 @@
 package com.parseus.codecinfo.codecinfo.colorformats
 
-import com.parseus.codecinfo.toHexHstring
-
 @Suppress("EnumEntryName")
 enum class BroadcomColorFormat(val value: Int) {
 
@@ -21,9 +19,7 @@ enum class BroadcomColorFormat(val value: Int) {
     OMX_COLOR_FormatYUV420_UVSideBySide(0x7F00000E);
 
     companion object {
-        fun from(findValue: Int) = BroadcomColorFormat.values().find { it.value == findValue }?.let {
-            "${it.name} (${it.value.toHexHstring()})"
-        }
+        fun from(findValue: Int) = BroadcomColorFormat.values().find { it.value == findValue }?.name
     }
 
 }

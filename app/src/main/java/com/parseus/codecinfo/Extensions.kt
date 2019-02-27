@@ -26,7 +26,7 @@ fun Int.toBytesPerSecond(): String {
         this >= 1000000000 -> (this / 1000000000).toString() + " Gbps"
         this >= 1000000 -> (this / 1000000).toString() + " Mbps"
         this >= 1000 -> (this / 1000).toString() + " Kbps"
-        else -> this.toString() + " bps"
+        else -> "$this bps"
     }
 }
 
@@ -39,8 +39,11 @@ fun MediaCodecInfo.isAudioCodec(): Boolean {
 }
 
 fun MediaCodecInfo.isHardwareAccelerated(): Boolean {
-    return (name.contains("OMX.brcm.video") && !name.contains("hw"))
-            || !(name.startsWith("OMX.google.") || name.endsWith("sw", true)
+    return (name.contains("OMX.brcm.video", true) && name.contains("hw", true))
+            || !(name.startsWith("OMX.google.", true)
+            || name.startsWith("c2.android.", true)
+            || (!name.startsWith("OMX.", true) && !name.startsWith("c2.", true))
+            || name.endsWith("sw", true)
             || name.endsWith("sw.dec", true) || name.endsWith("swvdec", true))
 }
 

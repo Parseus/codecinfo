@@ -22,7 +22,7 @@ class CodecFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val codecSimpleInfoList = getSimpleCodecInfoList(arguments!!.getBoolean("isAudio"))
+        val codecSimpleInfoList = getSimpleCodecInfoList(requireContext(), arguments!!.getBoolean("isAudio"))
         val codecAdapter = CodecAdapter(codecSimpleInfoList)
         simpleCodecListView.apply {
             layoutManager = LinearLayoutManager(context)

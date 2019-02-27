@@ -17,7 +17,7 @@ class CodecInfoAdapter(private val codecInfoMap: Map<String, String>) : Recycler
 
     override fun onBindViewHolder(holder: CodecInfoViewHolder, position: Int) {
         val name = codecInfoMap.keys.elementAt(position)
-        val info = codecInfoMap[name]!!
+        val info = codecInfoMap.getValue(name)
         holder.bindCodecInfo(name, info)
     }
 

@@ -9,6 +9,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.*
 import android.util.Range
 import androidx.annotation.RequiresApi
+import androidx.preference.PreferenceManager
 import com.parseus.codecinfo.*
 import com.parseus.codecinfo.codecinfo.colorformats.*
 import com.parseus.codecinfo.codecinfo.profilelevels.*
@@ -29,12 +30,26 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             "audio/vorbis")
 
     private val framerateResolutions = arrayOf(
-            intArrayOf(176, 144), intArrayOf(320, 240), intArrayOf(640, 480),
-            intArrayOf(720, 576), intArrayOf(1280, 720), intArrayOf(1920, 1080),
-            intArrayOf(3840, 2160)
+            intArrayOf(176, 144), intArrayOf(256, 144),
+            intArrayOf(320, 240), intArrayOf(426, 240),
+            intArrayOf(480, 360), intArrayOf(640, 360),
+            intArrayOf(640, 480), intArrayOf(854, 480),
+            intArrayOf(720, 576),
+            intArrayOf(1280, 720),
+            intArrayOf(1920, 1080),
+            intArrayOf(3840, 2160),
+            intArrayOf(7680, 4320)
     )
     private val framerateClasses = arrayOf(
-            "144p", "240p", "480p", "576p", "720p", "1080p", "4K"
+            "144p", "144p (YouTube)",
+            "240p", "240p (widescreen)",
+            "360p", "360p (widescreen)",
+            "480p", "480p (widescreen)",
+            "576p",
+            "720p",
+            "1080p",
+            "4K",
+            "8K"
     )
 
     private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()
@@ -42,12 +57,8 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
     private var videoCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList()
 
 
-    fun getSimpleCodecInfoList(isAudio: Boolean): ArrayList<CodecSimpleInfo> {
-        if (isAudio && audioCodecSimpleInfoList.isNotEmpty()) {
-            return audioCodecSimpleInfoList
-        } else if (!isAudio && videoCodecSimpleInfoList.isNotEmpty()) {
-            return videoCodecSimpleInfoList
-        }
+    fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): ArrayList<CodecSimpleInfo> {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
         if (mediaCodecInfos.isEmpty()) {
             mediaCodecInfos = if (SDK_INT >= LOLLIPOP) {
@@ -58,7 +69,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
         }
 
-        val codecSimpleInfoList = ArrayList<CodecSimpleInfo>()
+        var codecSimpleInfoList = ArrayList<CodecSimpleInfo>()
 
         for (mediaCodecInfo in mediaCodecInfos) {
             for (codecId in mediaCodecInfo.supportedTypes) {
@@ -73,6 +84,12 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 val isAudioCodec = mediaCodecInfo.isAudioCodec()
 
                 if (isAudio == isAudioCodec) {
+                    val option = prefs.getString("filter_type", "2")!!.toInt()
+
+                    if ((option == 0 && mediaCodecInfo.isEncoder) || (option == 1 && !mediaCodecInfo.isEncoder)) {
+                        continue
+                    }
+
                     val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec,
                             mediaCodecInfo.isEncoder)
                     codecSimpleInfoList.add(codecSimpleInfo)
@@ -80,8 +97,15 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
         }
 
-        val comparator: Comparator<CodecSimpleInfo> = compareBy({it.codecId}, {it.codecName})
-        codecSimpleInfoList.sortWith(comparator)
+        val sortingOption = prefs.getString("sort_type", "0")!!.toInt()
+        val comparator: Comparator<CodecSimpleInfo> = when (sortingOption) {
+            0 -> compareBy({it.codecId}, {it.codecName})
+            1 -> compareByDescending<CodecSimpleInfo>{it.codecId}.thenBy{it.codecName}
+            2 -> compareBy({it.codecName}, {it.codecId})
+            else -> compareByDescending<CodecSimpleInfo>{it.codecName}.thenBy{it.codecId}
+        }
+
+        codecSimpleInfoList = codecSimpleInfoList.sortedWith(comparator).distinct() as ArrayList<CodecSimpleInfo>
 
         if (isAudio) {
             audioCodecSimpleInfoList = codecSimpleInfoList
@@ -158,22 +182,23 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                             "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)}"
             codecInfoMap[context.getString(R.string.bitrate_modes)] = bitrateModesString
 
+            val defaultMediaFormat = capabilities.defaultFormat
+
             val complexityLower = encoderCapabilities.complexityRange.lower
             val complexityUpper = encoderCapabilities.complexityRange.upper
-            var defaultComplexity = 0
 
-            val defaultMediaFormat = capabilities.defaultFormat
-            if (defaultMediaFormat.containsKey(MediaFormat.KEY_COMPLEXITY)) {
-                defaultComplexity = defaultMediaFormat.getInteger(MediaFormat.KEY_COMPLEXITY)
+            if (complexityLower != complexityUpper) {
+                var defaultComplexity = 0
+
+                if (defaultMediaFormat.containsKey(MediaFormat.KEY_COMPLEXITY)) {
+                    defaultComplexity = defaultMediaFormat.getInteger(MediaFormat.KEY_COMPLEXITY)
+                }
+
+                val complexityRangeString = "$complexityLower — $complexityUpper " +
+                        "(${context.getString(R.string.range_default)}: $defaultComplexity)"
+
+                codecInfoMap[context.getString(R.string.complexity_range)] = complexityRangeString
             }
-
-            val complexityRangeString = if (complexityLower != complexityUpper) {
-                "$complexityLower — $complexityUpper (${context.getString(R.string.range_default)}: $defaultComplexity)"
-            } else {
-                "$complexityLower"
-            }
-
-            codecInfoMap[context.getString(R.string.complexity_range)] = complexityRangeString
 
             @Suppress("UNCHECKED_CAST")
             val qualityRange = if (SDK_INT >= P) {
@@ -186,24 +211,22 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                     qualityRangeMethod.invoke(encoderCapabilities) as Range<Int>
                 } catch (e: Exception) { null }
             }
-
-            var defaultQuality = 0
-
-            if (defaultMediaFormat.containsKey("quality")) {
-                defaultQuality = defaultMediaFormat.getInteger("quality")
-            }
             
             qualityRange?.let {
                 val qualityRangeLower = qualityRange.lower
                 val qualityRangeUpper = qualityRange.upper
 
-                val qualityRangeString = if (qualityRangeLower != qualityRangeUpper) {
-                    "$qualityRangeLower — $qualityRangeUpper (${context.getString(R.string.range_default)}: $defaultQuality)"
-                } else {
-                    "$qualityRangeLower"
+                var defaultQuality = 0
+
+                if (defaultMediaFormat.containsKey("quality")) {
+                    defaultQuality = defaultMediaFormat.getInteger("quality")
                 }
 
-                codecInfoMap[context.getString(R.string.quality_range)] = qualityRangeString
+                if (qualityRangeLower != qualityRangeUpper) {
+                    codecInfoMap[context.getString(R.string.quality_range)] =
+                            "$qualityRangeLower — $qualityRangeUpper " +
+                                    "(${context.getString(R.string.range_default)}: $defaultQuality)"
+                }
             }
         }
 
@@ -229,32 +252,48 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         codecInfoMap[context.getString(R.string.input_channels)] =
                 adjustMaxInputChannelCount(codecId, audioCapabilities.maxInputChannelCount, capabilities).toString()
 
-        val bitrateRange = audioCapabilities.bitrateRange
-        val bitrateRangeString = if (bitrateRange.lower == bitrateRange.upper || bitrateRange.lower == 1) {
-            bitrateRange.upper.toBytesPerSecond()
+        val bitrateRangeString = if (codecId != "audio/amr-wb-plus") {
+            val bitrateRange = audioCapabilities.bitrateRange
+            if (bitrateRange.lower == bitrateRange.upper || bitrateRange.lower == 1) {
+                bitrateRange.upper.toBytesPerSecond()
+            } else {
+                "${bitrateRange.lower.toBytesPerSecond()} \u2014 ${bitrateRange.upper.toBytesPerSecond()}"
+            }
         } else {
-            "${bitrateRange.lower.toBytesPerSecond()} \u2014 ${bitrateRange.upper.toBytesPerSecond()}"
+            // Source: http://www.voiceage.com/AMR-WBplus.html
+            "Mono: 6 \u2014 36 Kbps\nStereo: 7 \u2014 48 Kbps"
         }
+
         codecInfoMap[context.getString(R.string.bitrate_range)] = bitrateRangeString
 
         val sampleRates = audioCapabilities.supportedSampleRateRanges
-        val sampleRatesString = if (sampleRates.size > 1) {
-            val rates = StringBuilder(sampleRates[0].upper.toKiloHertz().toString())
-
-            for (rate in 1 until sampleRates.size) {
-                rates.append(", ").append(sampleRates[rate].upper.toKiloHertz())
+        val sampleRatesString = when {
+            // Source: http://www.3gpp.org/ftp/Specs/html-info/26290.htm
+            codecId == "audio/amr-wb-plus" -> {
+                "16.0, 24.0, 32.0, 48.0 KHz"
             }
 
-            rates.append(" KHz")
-            rates.toString()
-        } else {
-            if (sampleRates[0].lower == sampleRates[0].upper) {
-                "${sampleRates[0].upper.toKiloHertz()} KHz"
-            } else {
-                "${sampleRates[0].lower.toKiloHertz()}, ${sampleRates[0].upper.toKiloHertz()} KHz"
+            sampleRates.size > 1 -> {
+                val rates = StringBuilder(sampleRates[0].upper.toKiloHertz().toString())
+
+                for (rate in 1 until sampleRates.size) {
+                    rates.append(", ").append(sampleRates[rate].upper.toKiloHertz())
+                }
+
+                rates.append(" KHz")
+                rates.toString()
+            }
+
+            else -> {
+                if (sampleRates[0].lower == sampleRates[0].upper) {
+                    "${sampleRates[0].upper.toKiloHertz()} KHz"
+                } else {
+                    "${sampleRates[0].lower.toKiloHertz()}, ${sampleRates[0].upper.toKiloHertz()} KHz"
+                }
             }
         }
-        codecInfoMap[context.getString(R.string.sample_rates)] = sampleRatesString
+
+        codecInfoMap [context.getString(R.string.sample_rates)] = sampleRatesString
     }
 
     /**
@@ -265,14 +304,18 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
      */
     private fun adjustMaxInputChannelCount(codecId: String, maxChannelCount: Int,
                                            capabilities: MediaCodecInfo.CodecCapabilities): Int {
-        if (maxChannelCount > 1 || (SDK_INT >= O && maxChannelCount > 0)) {
-            // The maximum channel count looks like it's been set correctly.
-            return maxChannelCount
-        }
+        val platformLimit = 30
 
-        if (codecId in platformSupportedTypes) {
-            // Platform code should have set a default.
-            return maxChannelCount
+        if (maxChannelCount != platformLimit) {
+            if (maxChannelCount > 1) {
+                // The maximum channel count looks like it's been set correctly.
+                return maxChannelCount
+            }
+
+            if (codecId in platformSupportedTypes) {
+                // Platform code should have set a default.
+                return maxChannelCount
+            }
         }
 
         if (SDK_INT < P) {
@@ -293,12 +336,27 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             } catch (e: Exception) {}
         }
 
+        if (codecId.endsWith("flac")) {
+            /* LG G Pad 8.3 has a FLAC decoder with an audio/x-lg-flac mimetype,
+               so normal detection won't work.
+               I wouldn't be surprised if other OEMs do the same thing with their codecs.
+
+               Source for channel count: https://xiph.org/flac/faq.html#general__channels
+            */
+            return 8
+        }
+
         // The maximum channel count looks incorrect. Adjust it to an assumed default.
         return when (codecId) {
             "audio/ac3" -> 6
+            // Source: http://www.voiceage.com/AMR-WBplus.html
+            "audio/amr-wb-plus" -> 2
+            "audio/dts" -> 8
             "audio/eac3" -> 16
+            // source: https://mpeg.chiariglione.org/standards/mpeg-1/audio
+            "audio/mpeg", "audio/mpeg-l1", "audio/mpeg-l2" -> 2
             // Default to the platform limit, which is 30.
-            else -> 30
+            else -> platformLimit
         }
     }
 
@@ -335,7 +393,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
     private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, codecName: String,
                                 context: Context, codecInfoMap: HashMap<String, String>) {
         val colorFormats = capabilities.colorFormats
-        val colorFormatStrings = Array(colorFormats.size) { it ->
+        val colorFormatStrings = Array(colorFormats.size) {
             var colorFormat = when {
                 codecName.contains("brcm", true) -> BroadcomColorFormat.from(colorFormats[it])
                 codecName.contains("qcom", true) || codecName.contains("qti", true)
@@ -365,10 +423,24 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 colorFormat = OpenMAXILColorFormat.from(colorFormats[it])
             }
 
-            colorFormat
-                    ?: "${context.getString(R.string.unknown)} (${colorFormats[it].toHexHstring()})"
+            if (colorFormat != null) {
+                getFormattedColorProfileString(context, colorFormat, colorFormats[it])
+            } else {
+                "${context.getString(R.string.unknown)} (${colorFormats[it]})"
+            }
         }.toSortedSet()
         codecInfoMap[context.getString(R.string.color_profiles)] = colorFormatStrings.joinToString("\n")
+    }
+
+    private fun getFormattedColorProfileString(context: Context, colorFormat: String, colorFormatInt: Int): String {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val option = prefs.getString("known_values_color_profiles", "0")!!.toInt()
+
+        return when (option) {
+            0 -> colorFormat
+            1 -> "$colorFormat (${colorFormatInt.toHexHstring()})"
+            else -> "$colorFormat ($colorFormatInt)"
+        }
     }
 
     @RequiresApi(LOLLIPOP)
@@ -377,11 +449,18 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         val capabilities = StringBuilder()
         var maxFrameRate: Double
         val fpsString = context.getString(R.string.frames_per_second)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val option = prefs.getString("known_resolutions", "0")!!.toInt()
 
         framerateResolutions.forEachIndexed { index, resolution ->
             if (videoCapabilities.isSizeSupported(resolution[0], resolution[1])) {
                 maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(resolution[0], resolution[1]).upper
-                capabilities.append("${framerateClasses[index]}: ${"%.1f".format(maxFrameRate)} $fpsString\n")
+
+                if (option == 0) {
+                    capabilities.append("${framerateClasses[index]}: ${"%.1f".format(maxFrameRate)} $fpsString\n")
+                } else {
+                    capabilities.append("${resolution[0]}x${resolution[1]}: ${"%.1f".format(maxFrameRate)} $fpsString\n")
+                }
             }
         }
 
@@ -395,7 +474,6 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                                  capabilities: MediaCodecInfo.CodecCapabilities): String? {
         val profileLevels = capabilities.profileLevels
         val stringBuilder = StringBuilder()
-        val unknownString = context.getString(R.string.unknown)
         var profile: String?
         var level: String? = ""
 
@@ -479,8 +557,13 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                     level = MVCLevels.from(it.level)
                 }
                 codecId.contains("vc1") || codecId.contains("asf") || codecId.endsWith("wmv9") -> {
-                    profile = VC1Profiles.from(it.profile)
-                    level = VC1Levels.from(it.level)
+                    val extension: String? = if (codecName.contains("Renesas", true)) {
+                        "OMF_MC"
+                    } else {
+                        null
+                    }
+                    profile = VC1Profiles.from(it.profile, extension)
+                    level = VC1Levels.from(it.level, extension)
                 }
                 codecId.contains("vp6") -> {
                     profile = VP6Profiles.from(it.profile)
@@ -507,21 +590,49 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 }
             }
 
-            if (profile == null) {
-                profile = unknownString
-            }
-
-            if (level == null) {
-                level = unknownString
-            }
-
-            stringBuilder.append(if (level!!.isNotEmpty())
-                "$profile (${it.profile.toHexHstring()}): $level (${it.level.toHexHstring()})\n"
-                else "$profile (${it.profile.toHexHstring()}\n")
+            stringBuilder.append(getFormattedProfileLevelString(context,
+                    profile, it.profile, level, it.level))
         }
 
         stringBuilder.setLength(stringBuilder.length - 1) // Remove the last \n
         return stringBuilder.toString()
+    }
+
+    private fun getFormattedProfileLevelString(context: Context, profile: String?, profileInt: Int,
+                                               level: String?, levelInt: Int): String {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val option = prefs.getString("known_values_profile_levels", "0")!!.toInt()
+        val unknownString = context.getString(R.string.unknown)
+
+        val profileString = if (profile != null) {
+            when (option) {
+                0 -> profile
+                1 -> "$profile (${profileInt.toHexHstring()})"
+                else -> "$profile ($profileInt)"
+            }
+        } else {
+            "$unknownString ($profileInt)"
+        }
+
+        val levelString = if (level != null) {
+            if (level.isNotEmpty()) {
+                when (option) {
+                    0 -> level
+                    1 -> "$level (${levelInt.toHexHstring()})"
+                    else -> "$level ($levelInt)"
+                }
+            } else {
+                ""
+            }
+        } else {
+            "$unknownString ($profileInt)"
+        }
+
+        return if (levelString.isNotEmpty()) {
+            "$profileString: $levelString\n"
+        } else {
+            "$profileString\n"
+        }
     }
 
     /**

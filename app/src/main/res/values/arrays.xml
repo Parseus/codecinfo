@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="settings_show_resolutions_titles">
+        <item>Shorthand (i.e. 720p)</item>
+        <item>Full resolution (i.e. 1280x720)</item>
+    </string-array>
+
+    <string-array name="settings_show_resolutions_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    
+    <string-array name="settings_show_for_known_titles">
+        <item>Don\'t show</item>
+        <item>As hex values</item>
+        <item>As integers</item>
+    </string-array>
+
+    <string-array name="settings_show_for_known_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="settings_filter_type_titles">
+        <item>Decoders only</item>
+        <item>Encoders only</item>
+        <item>Decoders and encoders</item>
+    </string-array>
+
+    <string-array name="settings_filter_type_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="settings_sort_codecs_titles">
+        <item>By mimetype (ascending)</item>
+        <item>By mimetype (descending)</item>
+        <item>By name (ascending)</item>
+        <item>By name (descending)</item>
+    </string-array>
+
+    <string-array name="settings_sort_codecs_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    
+</resources>

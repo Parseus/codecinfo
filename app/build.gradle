@@ -8,8 +8,8 @@ android {
         applicationId "com.parseus.codecinfo"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 11
-        versionName "1.7.0"
+        versionCode 12
+        versionName "1.8.0"
         resConfigs "en"
 
         vectorDrawables.useSupportLibrary = true
@@ -43,8 +43,9 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha02'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.vectordrawable:vectordrawable:1.0.1'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.preference:preference:1.1.0-alpha03'
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0-alpha01'
+    implementation 'com.google.android.material:material:1.1.0-alpha03'
 }

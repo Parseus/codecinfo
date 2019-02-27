@@ -14,10 +14,16 @@
     <string name="codec_details_selected">Selected codec details</string>
     <string name="codec_all_info">All codecs with details</string>
 
+    <string name="settings">Settings</string>
     <string name="about_app">About &app_name;…</string>
     <string name="app_version">Version %s</string>
-    <string name="copyright" translatable="false">\u00A9 2018 KN-Soft</string>
+    <string name="copyright" translatable="false">\u00A9 2018-2019 KN-Soft</string>
     <string name="source_code_link" translatable="false">https://github.com/Parseus/codecinfo</string>
+
+    <string name="feedback_email" translatable="false">parseus.dev@gmail.com</string>
+    <string name="email_subject">Feedback</string>
+    <string name="choose_email">Send feedback via…</string>
+    <string name="no_email_apps">No apps can perform this action.</string>
 
     <string name="audio">Audio</string>
     <string name="video">Video</string>

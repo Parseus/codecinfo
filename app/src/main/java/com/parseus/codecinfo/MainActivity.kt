@@ -1,17 +1,19 @@
 package com.parseus.codecinfo
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.DialogFragment
+import androidx.preference.PreferenceManager
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.parseus.codecinfo.adapters.PagerAdapter
@@ -26,9 +28,16 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private var gestureHand: SgestureHand? = null
+    private var shouldRecreateActivity = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.AppTheme)
+
         super.onCreate(savedInstanceState)
+
+        val isDarkMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("darkmode", false)
+        AppCompatDelegate.setDefaultNightMode(if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
@@ -67,6 +76,30 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == OPEN_SETTINGS) {
+            if (data != null && (data.getBooleanExtra(SettingsActivity.EXTRA_THEME_CHANGED, false)
+                            || data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)
+                            || data.getBooleanExtra(SettingsActivity.SORTING_CHANGED, false))) {
+                shouldRecreateActivity = true
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (shouldRecreateActivity) {
+            recreate()
+            return
+        }
+    }
+
+    override fun recreate() {
+        super.recreate()
+        shouldRecreateActivity = false
+    }
+
     private fun initializeSamsungGesture(pager: ViewPager) {
         if (SsdkVendorCheck.isSamsungDevice()) {
             try {
@@ -75,7 +108,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (gesture.isFeatureEnabled(Sgesture.TYPE_HAND_PRIMITIVE)) {
                     gestureHand = SgestureHand(Looper.getMainLooper(), gesture)
-                    gestureHand?.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
+                    gestureHand!!.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
                         if (info.angle in 225..315) {        // to the left
                             tabLayout.setScrollPosition(0, 0f, true)
                             pager.currentItem = 0
@@ -94,66 +127,65 @@ class MainActivity : AppCompatActivity() {
         gestureHand?.stop()
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
         if (isInTwoPaneMode()) {
             supportFragmentManager.findFragmentByTag("SINGLE_PANE_DETAILS")?.let {
-                val dialog = (it as DialogFragment).dialog
-                if (dialog != null && dialog.isShowing) {
-                    it.dismiss()
-                }
+                (it as DialogFragment).dialog?.takeIf { dialog -> dialog.isShowing }?.dismiss()
             }
+        }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) setImmersiveMode()
+    }
+
+    private fun setImmersiveMode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
         }
     }
 
     @SuppressLint("InflateParams")
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        val id = item?.itemId
+        when (item?.itemId) {
+            R.id.menu_item_share -> {
+                val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment) as CodecDetailsFragment?
+                val codecId = fragmentById?.codecId
+                val codecName = fragmentById?.codecName
 
-        if (id == R.id.menu_item_share) {
-            val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment) as CodecDetailsFragment?
-            val codecId = fragmentById?.codecId
-            val codecName = fragmentById?.codecName
+                val codecShareOptions = if (isInTwoPaneMode()
+                        && (codecId != null && codecName != null)) {
+                    arrayOf(
+                            getString(R.string.codec_list),
+                            getString(R.string.codec_all_info),
+                            getString(R.string.codec_details_selected))
+                } else {
+                    arrayOf(
+                            getString(R.string.codec_list),
+                            getString(R.string.codec_all_info))
+                }
 
-            val codecShareOptions = if (isInTwoPaneMode()
-                    && (codecId != null && codecName != null)) {
-                arrayOf(
-                        getString(R.string.codec_list),
-                        getString(R.string.codec_all_info),
-                        getString(R.string.codec_details_selected))
-            } else {
-                arrayOf(
-                        getString(R.string.codec_list),
-                        getString(R.string.codec_all_info))
+                val builder = AlertDialog.Builder(this)
+                var alertDialog: AlertDialog? = null
+                builder.setTitle(R.string.choose_share)
+                builder.setSingleChoiceItems(codecShareOptions, -1) { _, option ->
+                    launchShareIntent(option)
+                    alertDialog!!.dismiss()
+                }
+                alertDialog = builder.create()
+                alertDialog.show()
+
+                return true
             }
-
-            var alertDialog: AlertDialog? = null
-            val builder = AlertDialog.Builder(this)
-            builder.setTitle(R.string.choose_share)
-            builder.setSingleChoiceItems(codecShareOptions, -1) { _, option ->
-                launchShareIntent(option)
-                alertDialog!!.dismiss()
-            }
-            alertDialog = builder.create()
-            alertDialog.show()
-
-            return true
-        } else if (id == R.id.menu_item_about_app) {
-            val alertDialogBuilder = AlertDialog.Builder(this)
-            val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
-            alertDialogBuilder.setView(dialogView)
-            val alertDialog = alertDialogBuilder.create()
-
-            val okButton: View = dialogView.findViewById(R.id.ok_button)
-            okButton.setOnClickListener { alertDialog.dismiss() }
-
-            try {
-                val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
-                versionTextView.text = getString(R.string.app_version, packageManager.getPackageInfo(packageName, 0).versionName)
-            } catch (e : Exception) {}
-
-            alertDialog.show()
+            R.id.menu_item_settings -> startActivityForResult(Intent(this, SettingsActivity::class.java), OPEN_SETTINGS)
         }
 
         return super.onOptionsItemSelected(item)
@@ -171,8 +203,8 @@ class MainActivity : AppCompatActivity() {
         when (option) {
             0 -> {
                 codecStringBuilder.append("${getString(R.string.codec_list)}:\n\n")
-                val codecSimpleInfoList = getSimpleCodecInfoList(true)
-                codecSimpleInfoList.addAll(getSimpleCodecInfoList(false))
+                val codecSimpleInfoList = getSimpleCodecInfoList(this, true)
+                codecSimpleInfoList.addAll(getSimpleCodecInfoList(this, false))
 
                 for (info in codecSimpleInfoList) {
                     codecStringBuilder.append("$info\n")
@@ -181,8 +213,8 @@ class MainActivity : AppCompatActivity() {
 
             1 -> {
                 codecStringBuilder.append("${getString(R.string.codec_list)}:\n")
-                val codecSimpleInfoList = getSimpleCodecInfoList(true)
-                codecSimpleInfoList.addAll(getSimpleCodecInfoList(false))
+                val codecSimpleInfoList = getSimpleCodecInfoList(this, true)
+                codecSimpleInfoList.addAll(getSimpleCodecInfoList(this, false))
 
                 for (info in codecSimpleInfoList) {
                     codecStringBuilder.append("\n$info\n")
@@ -226,6 +258,10 @@ class MainActivity : AppCompatActivity() {
 
         ShareCompat.IntentBuilder.from(this).setType("text/plain")
                 .setText(codecStringBuilder.toString()).startChooser()
+    }
+
+    companion object {
+        private const val OPEN_SETTINGS = 42
     }
 
 }

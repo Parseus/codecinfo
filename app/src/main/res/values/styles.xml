@@ -9,10 +9,6 @@
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
     </style>
     
-    <style name="AppTheme.Launcher">
-        <item name="android:windowBackground">@drawable/launch_screen</item>
-    </style>
-
     <style name="ToolbarStyle" parent="@style/ThemeOverlay.MaterialComponents.ActionBar">
         <!-- Customize color of navigation drawer icon and back arrow -->
         <item name="colorControlNormal">@color/white</item>

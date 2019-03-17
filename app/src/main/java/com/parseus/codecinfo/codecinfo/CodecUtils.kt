@@ -515,6 +515,10 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 codecId.contains("mp4a-latm") -> {
                     profile = AACProfiles.from(it.profile)
                 }
+                codecId.contains("av01") -> {
+                    profile = AV1Profiles.from(it.profile)
+                    level = AV1Levels.from(it.level)
+                }
                 codecId.contains("avc") -> {
                     var extension = " "
 

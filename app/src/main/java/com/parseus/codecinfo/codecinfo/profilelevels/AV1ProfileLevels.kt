@@ -11,13 +11,7 @@ enum class AV1Profiles(val value: Int) {
     AV1ProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int, extension: String): String? = AV1Profiles.values().find {
-            if (it.value > 0x7F000000 && it.value != 0x7FFFFFFF) {
-                it.value == findValue && it.name.contains(extension, true)
-            } else {
-                it.value == findValue
-            }
-        }?.name
+        fun from(findValue: Int): String? = AV1Profiles.values().find { it.value == findValue }?.name
     }
 
 }
@@ -51,10 +45,6 @@ enum class AV1Levels (val value: Int) {
     AV1LevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = try {
-            AV1Levels.values().first { it.value == findValue }.name
-        } catch (e: NoSuchElementException) {
-            null
-        }
+        fun from(findValue: Int): String? = AV1Levels.values().find { it.value == findValue }?.name
     }
 }

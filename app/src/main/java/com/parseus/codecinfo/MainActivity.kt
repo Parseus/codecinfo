@@ -154,8 +154,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("InflateParams")
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.menu_item_share -> {
                 val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment) as CodecDetailsFragment?
                 val codecId = fragmentById?.codecId

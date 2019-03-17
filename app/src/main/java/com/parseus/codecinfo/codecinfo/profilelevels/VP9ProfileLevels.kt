@@ -8,6 +8,8 @@ enum class VP9Profiles(val value: Int) {
     VP9Profile3(0x08),
     VP9Profile2HDR(0x1000),
     VP9Profile3HDR(0x2000),
+    VP9Profile2HDR10Plus(0x4000),
+    VP9Profile3HDR10Plus(0x8000),
     VP9ProfileMax(0x7FFFFFFF);
 
     companion object {

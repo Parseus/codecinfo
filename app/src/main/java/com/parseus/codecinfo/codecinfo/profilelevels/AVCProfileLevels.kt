@@ -60,6 +60,9 @@ enum class AVCLevels (val value: Int) {
     AVCLevel5(0x4000),
     AVCLevel51(0x8000),
     AVCLevel52(0x10000),
+    AVCLevel6(0x20000),
+    AVCLevel61(0x40000),
+    AVCLevel62(0x80000),
     AVCLevelMax(0x7FFFFFFF);
 
     companion object {

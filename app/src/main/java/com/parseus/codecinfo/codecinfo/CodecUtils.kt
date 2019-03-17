@@ -125,7 +125,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         val codecInfoMap = LinkedHashMap<String, String>()
 
         codecInfoMap[context.getString(R.string.hardware_acceleration)] =
-                mediaCodecInfo.isHardwareAccelerated().toString()
+                mediaCodecInfo.isAccelerated().toString()
 
         if (SDK_INT >= M) {
             codecInfoMap[context.getString(R.string.max_instances)] = capabilities.maxSupportedInstances.toString()
@@ -165,10 +165,26 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
         }
 
+        if (SDK_INT >= Q) {
+            codecInfoMap[context.getString(R.string.dynamic_timestamp)] =
+                    capabilities.isFeatureSupported(
+                            MediaCodecInfo.CodecCapabilities.FEATURE_DynamicTimestamp).toString()
+
+            codecInfoMap[context.getString(R.string.multiple_access_units)] =
+                    capabilities.isFeatureSupported(
+                            MediaCodecInfo.CodecCapabilities.FEATURE_MultipleFrames).toString()
+        }
+
         if (!isEncoder && SDK_INT >= LOLLIPOP) {
             codecInfoMap[context.getString(R.string.tunneled_playback)] =
                     capabilities.isFeatureSupported(
                             MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback).toString()
+
+            if (SDK_INT >= Q) {
+                codecInfoMap[context.getString(R.string.multiple_access_units)] =
+                        capabilities.isFeatureSupported(
+                                MediaCodecInfo.CodecCapabilities.FEATURE_FrameParsing).toString()
+            }
         }
 
         if (isEncoder && SDK_INT >= LOLLIPOP) {
@@ -331,7 +347,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 val mediaFormat = capabilitiesInfo.get(capabilities) as MediaFormat
 
                 if (mediaFormat.containsKey("max-channel-count")) {
-                    return mediaFormat.getString("max-channel-count").toInt()
+                    return mediaFormat.getString("max-channel-count")!!.toInt()
                 }
             } catch (e: Exception) {}
         }

@@ -42,7 +42,7 @@ class SettingsActivity : AppCompatActivity() {
             super.onCreate(savedInstanceState)
 
             val darkModeSwitch = findPreference<SwitchPreferenceCompat>("darkmode")
-            darkModeSwitch.setOnPreferenceChangeListener { _, newValue ->
+            darkModeSwitch!!.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 } else {
@@ -56,13 +56,13 @@ class SettingsActivity : AppCompatActivity() {
             }
 
             val filterType = findPreference<ListPreference>("filter_type")
-            filterType.setOnPreferenceChangeListener { _, _ ->
+            filterType!!.setOnPreferenceChangeListener { _, _ ->
                 SettingsActivity.filterTypeChanged = true
                 true
             }
 
             val sortingType = findPreference<ListPreference>("sort_type")
-            sortingType.setOnPreferenceChangeListener { _, _ ->
+            sortingType!!.setOnPreferenceChangeListener { _, _ ->
                 SettingsActivity.sortingChanged = true
                 true
             }

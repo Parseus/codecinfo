@@ -52,7 +52,10 @@
     <string name="color_profiles">Color profiles</string>
 
     <string name="adaptive_playback">Adaptive playback</string>
+    <string name="dynamic_timestamp">Dynamic timestamp</string>
     <string name="intra_refresh">Intra refresh</string>
+    <string name="multiple_access_units">Multiple access units</string>
+    <string name="partial_access_units">Partial access units per input buffer</string>
     <string name="partial_frames">Partial frames queuing</string>
     <string name="secure_playback">Secure playback decryption</string>
     <string name="tunneled_playback">Tunneled playback</string>

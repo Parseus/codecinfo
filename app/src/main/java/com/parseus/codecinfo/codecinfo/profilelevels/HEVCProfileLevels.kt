@@ -7,6 +7,7 @@ enum class HEVCProfiles(val value: Int) {
     HEVCProfileMain10(0x02),
     HEVCProfileMainStill(0x04),
     HEVCProfileMain10HDR10(0x1000),
+    HEVCProfileMain10HDR10Plus(0x2000),
     HEVCProfileMax(0x7FFFFFFF);
 
     companion object {

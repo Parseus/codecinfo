@@ -14,7 +14,7 @@ enum class QualcommColorFormat (val value: Int) {
     QOMX_COLOR_Format32bitRGBA8888Compressed(0x7FA30C08);
 
     companion object {
-        fun from(findValue: Int) = QualcommColorFormat.values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = values().find { it.value == findValue }?.name
     }
 
 }

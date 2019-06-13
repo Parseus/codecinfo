@@ -10,7 +10,7 @@ enum class WMVProfiles(val value: Int) {
     OMX_VIDEO_WMVProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = WMVProfiles.values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
     }
 
 }
@@ -29,7 +29,7 @@ enum class WMVLevels(val value: Int) {
     OMX_VIDEO_WMVLevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = WMVLevels.values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
     }
 
 }

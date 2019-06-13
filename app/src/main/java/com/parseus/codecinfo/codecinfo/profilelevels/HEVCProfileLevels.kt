@@ -7,10 +7,11 @@ enum class HEVCProfiles(val value: Int) {
     HEVCProfileMain10(0x02),
     HEVCProfileMainStill(0x04),
     HEVCProfileMain10HDR10(0x1000),
+    HEVCProfileMain10HDR10Plus(0x2000),
     HEVCProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = HEVCProfiles.values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
     }
 
 }
@@ -47,7 +48,7 @@ enum class HEVCLevels(val value: Int) {
     HEVCLevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = HEVCLevels.values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
     }
 
 }

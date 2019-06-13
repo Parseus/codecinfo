@@ -18,7 +18,7 @@ enum class MPEG2Profiles(val value: Int) {
     MPEG2ProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int, extension: String): String? = MPEG2Profiles.values().find {
+        fun from(findValue: Int, extension: String): String? = values().find {
             if (it.value >= 0x7F000000 && it.value != 0x7FFFFFFF) {
                 it.value == findValue && it.name.contains(extension, true)
             } else {
@@ -43,7 +43,7 @@ enum class MPEG2Levels(val value: Int) {
     MPEG2LevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int, extension: String): String? = MPEG2Levels.values().find {
+        fun from(findValue: Int, extension: String): String? = values().find {
             if (it.value >= 0x7F000000 && it.value != 0x7FFFFFFF) {
                 it.value == findValue && it.name.contains(extension, true)
             } else {

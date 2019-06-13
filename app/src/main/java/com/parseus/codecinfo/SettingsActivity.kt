@@ -17,12 +17,11 @@ import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.settings_main.*
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.settings_main)
         setSupportActionBar(toolbar)
         supportFragmentManager.beginTransaction().replace(R.id.content, SettingsFragment()).commit()
     }
@@ -42,28 +41,28 @@ class SettingsActivity : AppCompatActivity() {
             super.onCreate(savedInstanceState)
 
             val darkModeSwitch = findPreference<SwitchPreferenceCompat>("darkmode")
-            darkModeSwitch.setOnPreferenceChangeListener { _, newValue ->
+            darkModeSwitch!!.setOnPreferenceChangeListener { _, newValue ->
                 if (newValue as Boolean) {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 } else {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 }
 
-                SettingsActivity.themeChanged = true
+                themeChanged = true
                 requireActivity().recreate()
 
                 true
             }
 
             val filterType = findPreference<ListPreference>("filter_type")
-            filterType.setOnPreferenceChangeListener { _, _ ->
-                SettingsActivity.filterTypeChanged = true
+            filterType!!.setOnPreferenceChangeListener { _, _ ->
+                filterTypeChanged = true
                 true
             }
 
             val sortingType = findPreference<ListPreference>("sort_type")
-            sortingType.setOnPreferenceChangeListener { _, _ ->
-                SettingsActivity.sortingChanged = true
+            sortingType!!.setOnPreferenceChangeListener { _, _ ->
+                sortingChanged = true
                 true
             }
         }

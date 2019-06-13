@@ -11,7 +11,7 @@ enum class HEVCProfiles(val value: Int) {
     HEVCProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = HEVCProfiles.values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
     }
 
 }
@@ -48,7 +48,7 @@ enum class HEVCLevels(val value: Int) {
     HEVCLevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = HEVCLevels.values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
     }
 
 }

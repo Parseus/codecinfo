@@ -3,11 +3,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 'android-Q'
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.parseus.codecinfo"
         minSdkVersion 16
-        targetSdkVersion 'Q'
+        targetSdkVersion 29
         versionCode 12
         versionName "1.8.0"
         resConfigs "en"
@@ -43,9 +43,9 @@ dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation 'androidx.appcompat:appcompat:1.1.0-alpha03'
+    implementation 'androidx.appcompat:appcompat:1.1.0-beta01'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.preference:preference:1.1.0-alpha04'
-    implementation 'androidx.vectordrawable:vectordrawable:1.1.0-alpha01'
-    implementation 'com.google.android.material:material:1.1.0-alpha04'
+    implementation 'androidx.preference:preference:1.1.0-beta01'
+    implementation 'androidx.vectordrawable:vectordrawable:1.1.0-beta02'
+    implementation 'com.google.android.material:material:1.1.0-alpha07'
 }

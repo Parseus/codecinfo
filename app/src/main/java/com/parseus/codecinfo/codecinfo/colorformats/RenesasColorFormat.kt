@@ -10,7 +10,7 @@ enum class RenesasColorFormat(val value: Int) {
     OMF_MC_COLOR_FormatYUV444HV11(0x7F000003);
 
     companion object {
-        fun from(findValue: Int) = RenesasColorFormat.values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = values().find { it.value == findValue }?.name
     }
 
 }

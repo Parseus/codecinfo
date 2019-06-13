@@ -25,7 +25,7 @@ import com.samsung.android.sdk.gesture.Sgesture
 import com.samsung.android.sdk.gesture.SgestureHand
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private var gestureHand: SgestureHand? = null
     private var shouldRecreateActivity = false
@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
         val isDarkMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("darkmode", false)
         AppCompatDelegate.setDefaultNightMode(if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
 
-        setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
@@ -77,6 +76,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == OPEN_SETTINGS) {
             if (data != null && (data.getBooleanExtra(SettingsActivity.EXTRA_THEME_CHANGED, false)
                             || data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)

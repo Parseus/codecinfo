@@ -19,7 +19,7 @@ enum class BroadcomColorFormat(val value: Int) {
     OMX_COLOR_FormatYUV420_UVSideBySide(0x7F00000E);
 
     companion object {
-        fun from(findValue: Int) = BroadcomColorFormat.values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = values().find { it.value == findValue }?.name
     }
 
 }

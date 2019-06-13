@@ -97,8 +97,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
         }
 
-        val sortingOption = prefs.getString("sort_type", "0")!!.toInt()
-        val comparator: Comparator<CodecSimpleInfo> = when (sortingOption) {
+        val comparator: Comparator<CodecSimpleInfo> = when (prefs.getString("sort_type", "0")!!.toInt()) {
             0 -> compareBy({it.codecId}, {it.codecName})
             1 -> compareByDescending<CodecSimpleInfo>{it.codecId}.thenBy{it.codecName}
             2 -> compareBy({it.codecName}, {it.codecId})
@@ -450,9 +449,8 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
 
     private fun getFormattedColorProfileString(context: Context, colorFormat: String, colorFormatInt: Int): String {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        val option = prefs.getString("known_values_color_profiles", "0")!!.toInt()
 
-        return when (option) {
+        return when (prefs.getString("known_values_color_profiles", "0")!!.toInt()) {
             0 -> colorFormat
             1 -> "$colorFormat (${colorFormatInt.toHexHstring()})"
             else -> "$colorFormat ($colorFormatInt)"

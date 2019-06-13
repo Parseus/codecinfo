@@ -13,7 +13,7 @@ enum class VP9Profiles(val value: Int) {
     VP9ProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = VP9Profiles.values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
     }
 
 }
@@ -36,6 +36,6 @@ enum class VP9Levels(val value: Int) {
     VP9LevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = VP9Levels.values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
     }
 }

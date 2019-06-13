@@ -69,7 +69,7 @@ enum class OpenMAXILColorFormat(val value: Int) {
 
 
     companion object {
-        fun from(findValue: Int) = OpenMAXILColorFormat.values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = values().find { it.value == findValue }?.name
     }
 
 }

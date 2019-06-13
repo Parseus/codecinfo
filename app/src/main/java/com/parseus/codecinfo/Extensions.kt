@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
+import java.util.*
 
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutRes, this, attachRoot)
@@ -32,7 +33,7 @@ fun Int.toBytesPerSecond(): String {
 }
 
 fun Int.toHexHstring(): String {
-    return "0x${this.toString(16).toUpperCase()}"
+    return "0x${this.toString(16).toUpperCase(Locale.getDefault())}"
 }
 
 fun MediaCodecInfo.isAudioCodec(): Boolean {

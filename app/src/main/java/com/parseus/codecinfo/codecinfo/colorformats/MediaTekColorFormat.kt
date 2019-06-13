@@ -14,7 +14,7 @@ enum class MediaTekColorFormat(val value: Int) {
     OMX_MTK_COLOR_FormatBitStream(0x7F000300);
 
     companion object {
-        fun from(findValue: Int) = MediaTekColorFormat.values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = values().find { it.value == findValue }?.name
     }
 
 }

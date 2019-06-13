@@ -16,6 +16,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
+import com.kobakei.ratethisapp.RateThisApp
 import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList

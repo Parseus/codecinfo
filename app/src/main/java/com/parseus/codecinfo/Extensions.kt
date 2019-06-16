@@ -49,7 +49,8 @@ fun MediaCodecInfo.isAccelerated(): Boolean {
                 || name.startsWith("c2.android.", true)
                 || (!name.startsWith("OMX.", true) && !name.startsWith("c2.", true))
                 || name.endsWith("sw", true)
-                || name.endsWith("sw.dec", true) || name.endsWith("swvdec", true))
+                || name.endsWith("sw.dec", true) || name.endsWith("swvdec", true)
+                || name.contains("sw_vd", true))
     }
 }
 

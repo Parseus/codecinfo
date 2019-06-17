@@ -4,7 +4,13 @@
     <string-array name="settings_dark_theme_titles" tools:ignore="InconsistentArrays">
         <item>Light</item>
         <item>Dark</item>
-        <item>System default</item>
+        <item>Set by Battery Saver</item>
     </string-array>
 
+    <string-array name="settings_dark_theme_values" tools:ignore="InconsistentArrays">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    
 </resources>

@@ -42,7 +42,7 @@ class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
 
             val darkTheme = findPreference<ListPreference>("dark_theme")
             darkTheme!!.setOnPreferenceChangeListener { _, newValue ->
-                AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(newValue as Int))
+                AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue((newValue as String).toInt()))
 
                 themeChanged = true
                 requireActivity().recreate()

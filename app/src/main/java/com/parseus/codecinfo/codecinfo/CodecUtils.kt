@@ -619,31 +619,25 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         val option = prefs.getString("known_values_profile_levels", "0")!!.toInt()
         val unknownString = context.getString(R.string.unknown)
 
-        val profileString = if (profile != null) {
-            when (option) {
-                0 -> profile
-                1 -> "$profile (${profileInt.toHexHstring()})"
-                else -> "$profile ($profileInt)"
-            }
-        } else {
-            "$unknownString ($profileInt)"
+        val profileString = when (option) {
+            0 -> profile ?: unknownString
+            1 -> "${profile ?: unknownString} (${profileInt.toHexHstring()})"
+            else -> "${profile ?: unknownString} ($profileInt)"
         }
 
-        val levelString = if (level != null) {
-            if (level.isNotEmpty()) {
-                when (option) {
-                    0 -> level
-                    1 -> "$level (${levelInt.toHexHstring()})"
-                    else -> "$level ($levelInt)"
-                }
-            } else {
-                ""
-            }
+        val levelNameString = if (level != null) {
+            if (level.isNotEmpty()) level else ""
         } else {
-            "$unknownString ($profileInt)"
+            unknownString
         }
 
-        return if (levelString.isNotEmpty()) {
+        return if (levelNameString.isNotEmpty()) {
+            val levelString = when (option) {
+                0 -> levelNameString
+                1 -> "$levelNameString (${levelInt.toHexHstring()})"
+                else -> "$levelNameString ($levelInt)"
+            }
+
             "$profileString: $levelString\n"
         } else {
             "$profileString\n"

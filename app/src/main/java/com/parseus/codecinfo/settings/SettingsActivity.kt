@@ -1,4 +1,4 @@
-package com.parseus.codecinfo
+package com.parseus.codecinfo.settings
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -13,8 +13,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.Snackbar
+import com.parseus.codecinfo.R
 import kotlinx.android.synthetic.main.settings_main.*
 
 class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
@@ -40,13 +40,9 @@ class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
 
-            val darkModeSwitch = findPreference<SwitchPreferenceCompat>("darkmode")
-            darkModeSwitch!!.setOnPreferenceChangeListener { _, newValue ->
-                if (newValue as Boolean) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                }
+            val darkTheme = findPreference<ListPreference>("dark_theme")
+            darkTheme!!.setOnPreferenceChangeListener { _, newValue ->
+                AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(newValue as Int))
 
                 themeChanged = true
                 requireActivity().recreate()

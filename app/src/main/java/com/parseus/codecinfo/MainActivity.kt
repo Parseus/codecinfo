@@ -21,6 +21,8 @@ import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
+import com.parseus.codecinfo.settings.DarkTheme
+import com.parseus.codecinfo.settings.SettingsActivity
 import com.samsung.android.sdk.SsdkVendorCheck
 import com.samsung.android.sdk.gesture.Sgesture
 import com.samsung.android.sdk.gesture.SgestureHand
@@ -36,8 +38,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         super.onCreate(savedInstanceState)
 
-        val isDarkMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("darkmode", false)
-        AppCompatDelegate.setDefaultNightMode(if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
+        val darkTheme = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString("dark_theme", DarkTheme.SystemDefault.value.toString())!!.toInt()
+        AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
 
         setSupportActionBar(toolbar)
 

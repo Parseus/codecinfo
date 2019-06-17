@@ -13,7 +13,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.parseus.codecinfo.MainActivity
 import com.parseus.codecinfo.R
-import com.parseus.codecinfo.SettingsActivity
+import com.parseus.codecinfo.settings.SettingsActivity
 import com.parseus.codecinfo.adapters.CodecInfoAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import kotlinx.android.synthetic.main.codec_details_fragment_layout.*

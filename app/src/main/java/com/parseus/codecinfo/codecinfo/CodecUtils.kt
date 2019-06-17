@@ -499,7 +499,8 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             // Assume all platforms before N only support VP9 profile 0.
             profile = VP9Profiles.VP9Profile0.name
             level = VP9Levels.from(vp9Level)!!
-            stringBuilder.append("$profile: $level")
+            stringBuilder.append(getFormattedProfileLevelString(context,
+                    profile, VP9Profiles.VP9Profile0.value, level, vp9Level))
 
             return stringBuilder.toString()
         } else if (profileLevels == null || profileLevels.isEmpty()) {

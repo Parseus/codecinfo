@@ -438,11 +438,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 colorFormat = OpenMAXILColorFormat.from(colorFormats[it])
             }
 
-            if (colorFormat != null) {
-                getFormattedColorProfileString(context, colorFormat, colorFormats[it])
-            } else {
-                "${context.getString(R.string.unknown)} (${colorFormats[it]})"
-            }
+            getFormattedColorProfileString(context, colorFormat ?: context.getString(R.string.unknown), colorFormats[it])
         }.toSortedSet()
         codecInfoMap[context.getString(R.string.color_profiles)] = colorFormatStrings.joinToString("\n")
     }

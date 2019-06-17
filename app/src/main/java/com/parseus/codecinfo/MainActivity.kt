@@ -38,10 +38,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         super.onCreate(savedInstanceState)
 
+        val defaultThemeMode = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> DarkTheme.SystemDefault.value
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> DarkTheme.BatterySaver.value
+            else -> DarkTheme.Light.value
+        }
         val darkTheme = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString("dark_theme",
-                        (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                            DarkTheme.SystemDefault.value else DarkTheme.Light.value).toString())!!.toInt()
+                .getString("dark_theme", defaultThemeMode.toString())!!.toInt()
         AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
 
         setSupportActionBar(toolbar)

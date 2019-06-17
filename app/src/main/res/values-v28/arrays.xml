@@ -4,13 +4,15 @@
     <string-array name="settings_dark_theme_titles" tools:ignore="InconsistentArrays">
         <item>Light</item>
         <item>Dark</item>
-        <item>Set by Battery Saver (may not work on some devices)</item>
+        <item>Set by Battery Saver</item>
+        <item>Use system default</item>
     </string-array>
 
     <string-array name="settings_dark_theme_values" tools:ignore="InconsistentArrays">
         <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
-    
+
 </resources>

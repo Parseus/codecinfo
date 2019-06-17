@@ -50,7 +50,5 @@ dependencies {
     implementation 'androidx.vectordrawable:vectordrawable:1.1.0-beta02'
     implementation 'com.google.android.material:material:1.1.0-alpha07'
 
-    implementation ('io.github.kobakei:ratethisapp:1.2.0') {
-        exclude group: 'com.android.support'
-    }
+    implementation ('io.github.kobakei:ratethisapp:1.2.0')
 }

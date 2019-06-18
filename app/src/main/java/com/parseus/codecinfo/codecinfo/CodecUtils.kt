@@ -180,7 +180,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                             MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback).toString()
 
             if (SDK_INT >= Q) {
-                codecInfoMap[context.getString(R.string.multiple_access_units)] =
+                codecInfoMap[context.getString(R.string.partial_access_units)] =
                         capabilities.isFeatureSupported(
                                 MediaCodecInfo.CodecCapabilities.FEATURE_FrameParsing).toString()
             }

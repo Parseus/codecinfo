@@ -88,8 +88,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == OPEN_SETTINGS) {
-            if (data != null && (data.getBooleanExtra(SettingsActivity.EXTRA_THEME_CHANGED, false)
-                            || data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)
+            if (data != null && (data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)
                             || data.getBooleanExtra(SettingsActivity.SORTING_CHANGED, false))) {
                 shouldRecreateActivity = true
             }

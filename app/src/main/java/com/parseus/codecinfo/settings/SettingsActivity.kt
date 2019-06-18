@@ -28,7 +28,6 @@ class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
 
     override fun finish() {
         setResult(Activity.RESULT_OK, Intent().apply {
-            putExtra(EXTRA_THEME_CHANGED, themeChanged)
             putExtra(FILTER_TYPE_CHANGED, filterTypeChanged)
             putExtra(SORTING_CHANGED, sortingChanged)
         })
@@ -43,10 +42,6 @@ class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
             val darkTheme = findPreference<ListPreference>("dark_theme")
             darkTheme!!.setOnPreferenceChangeListener { _, newValue ->
                 AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue((newValue as String).toInt()))
-
-                themeChanged = true
-                requireActivity().recreate()
-
                 true
             }
 
@@ -109,10 +104,8 @@ class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
     }
 
     companion object {
-        var themeChanged = false
         var filterTypeChanged = false
         var sortingChanged = false
-        const val EXTRA_THEME_CHANGED = "theme_changed"
         const val FILTER_TYPE_CHANGED = "filter_type_changed"
         const val SORTING_CHANGED = "sorting_changed"
     }

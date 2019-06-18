@@ -97,8 +97,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
         }
 
-        val sortingOption = prefs.getString("sort_type", "0")!!.toInt()
-        val comparator: Comparator<CodecSimpleInfo> = when (sortingOption) {
+        val comparator: Comparator<CodecSimpleInfo> = when (prefs.getString("sort_type", "0")!!.toInt()) {
             0 -> compareBy({it.codecId}, {it.codecName})
             1 -> compareByDescending<CodecSimpleInfo>{it.codecId}.thenBy{it.codecName}
             2 -> compareBy({it.codecName}, {it.codecId})
@@ -125,7 +124,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         val codecInfoMap = LinkedHashMap<String, String>()
 
         codecInfoMap[context.getString(R.string.hardware_acceleration)] =
-                mediaCodecInfo.isHardwareAccelerated().toString()
+                mediaCodecInfo.isAccelerated().toString()
 
         if (SDK_INT >= M) {
             codecInfoMap[context.getString(R.string.max_instances)] = capabilities.maxSupportedInstances.toString()
@@ -165,10 +164,26 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             }
         }
 
+        if (SDK_INT >= Q) {
+            codecInfoMap[context.getString(R.string.dynamic_timestamp)] =
+                    capabilities.isFeatureSupported(
+                            MediaCodecInfo.CodecCapabilities.FEATURE_DynamicTimestamp).toString()
+
+            codecInfoMap[context.getString(R.string.multiple_access_units)] =
+                    capabilities.isFeatureSupported(
+                            MediaCodecInfo.CodecCapabilities.FEATURE_MultipleFrames).toString()
+        }
+
         if (!isEncoder && SDK_INT >= LOLLIPOP) {
             codecInfoMap[context.getString(R.string.tunneled_playback)] =
                     capabilities.isFeatureSupported(
                             MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback).toString()
+
+            if (SDK_INT >= Q) {
+                codecInfoMap[context.getString(R.string.partial_access_units)] =
+                        capabilities.isFeatureSupported(
+                                MediaCodecInfo.CodecCapabilities.FEATURE_FrameParsing).toString()
+            }
         }
 
         if (isEncoder && SDK_INT >= LOLLIPOP) {
@@ -331,7 +346,7 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 val mediaFormat = capabilitiesInfo.get(capabilities) as MediaFormat
 
                 if (mediaFormat.containsKey("max-channel-count")) {
-                    return mediaFormat.getString("max-channel-count").toInt()
+                    return mediaFormat.getString("max-channel-count")!!.toInt()
                 }
             } catch (e: Exception) {}
         }
@@ -423,20 +438,15 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
                 colorFormat = OpenMAXILColorFormat.from(colorFormats[it])
             }
 
-            if (colorFormat != null) {
-                getFormattedColorProfileString(context, colorFormat, colorFormats[it])
-            } else {
-                "${context.getString(R.string.unknown)} (${colorFormats[it]})"
-            }
+            getFormattedColorProfileString(context, colorFormat ?: context.getString(R.string.unknown), colorFormats[it])
         }.toSortedSet()
         codecInfoMap[context.getString(R.string.color_profiles)] = colorFormatStrings.joinToString("\n")
     }
 
     private fun getFormattedColorProfileString(context: Context, colorFormat: String, colorFormatInt: Int): String {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        val option = prefs.getString("known_values_color_profiles", "0")!!.toInt()
 
-        return when (option) {
+        return when (prefs.getString("known_values_color_profiles", "0")!!.toInt()) {
             0 -> colorFormat
             1 -> "$colorFormat (${colorFormatInt.toHexHstring()})"
             else -> "$colorFormat ($colorFormatInt)"
@@ -485,7 +495,8 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             // Assume all platforms before N only support VP9 profile 0.
             profile = VP9Profiles.VP9Profile0.name
             level = VP9Levels.from(vp9Level)!!
-            stringBuilder.append("$profile: $level")
+            stringBuilder.append(getFormattedProfileLevelString(context,
+                    profile, VP9Profiles.VP9Profile0.value, level, vp9Level))
 
             return stringBuilder.toString()
         } else if (profileLevels == null || profileLevels.isEmpty()) {
@@ -498,6 +509,10 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
             when {
                 codecId.contains("mp4a-latm") -> {
                     profile = AACProfiles.from(it.profile)
+                }
+                codecId.contains("av01") -> {
+                    profile = AV1Profiles.from(it.profile)
+                    level = AV1Levels.from(it.level)
                 }
                 codecId.contains("avc") -> {
                     var extension = " "
@@ -604,31 +619,25 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         val option = prefs.getString("known_values_profile_levels", "0")!!.toInt()
         val unknownString = context.getString(R.string.unknown)
 
-        val profileString = if (profile != null) {
-            when (option) {
-                0 -> profile
-                1 -> "$profile (${profileInt.toHexHstring()})"
-                else -> "$profile ($profileInt)"
-            }
-        } else {
-            "$unknownString ($profileInt)"
+        val profileString = when (option) {
+            0 -> profile ?: unknownString
+            1 -> "${profile ?: unknownString} (${profileInt.toHexHstring()})"
+            else -> "${profile ?: unknownString} ($profileInt)"
         }
 
-        val levelString = if (level != null) {
-            if (level.isNotEmpty()) {
-                when (option) {
-                    0 -> level
-                    1 -> "$level (${levelInt.toHexHstring()})"
-                    else -> "$level ($levelInt)"
-                }
-            } else {
-                ""
-            }
+        val levelNameString = if (level != null) {
+            if (level.isNotEmpty()) level else ""
         } else {
-            "$unknownString ($profileInt)"
+            unknownString
         }
 
-        return if (levelString.isNotEmpty()) {
+        return if (levelNameString.isNotEmpty()) {
+            val levelString = when (option) {
+                0 -> levelNameString
+                1 -> "$levelNameString (${levelInt.toHexHstring()})"
+                else -> "$levelNameString ($levelInt)"
+            }
+
             "$profileString: $levelString\n"
         } else {
             "$profileString\n"

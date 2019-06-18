@@ -16,16 +16,19 @@ import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
+import com.kobakei.ratethisapp.RateThisApp
 import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
+import com.parseus.codecinfo.settings.DarkTheme
+import com.parseus.codecinfo.settings.SettingsActivity
 import com.samsung.android.sdk.SsdkVendorCheck
 import com.samsung.android.sdk.gesture.Sgesture
 import com.samsung.android.sdk.gesture.SgestureHand
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private var gestureHand: SgestureHand? = null
     private var shouldRecreateActivity = false
@@ -35,10 +38,15 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        val isDarkMode = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("darkmode", false)
-        AppCompatDelegate.setDefaultNightMode(if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO)
+        val defaultThemeMode = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> DarkTheme.SystemDefault.value
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> DarkTheme.BatterySaver.value
+            else -> DarkTheme.Light.value
+        }
+        val darkTheme = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString("dark_theme", defaultThemeMode.toString())!!.toInt()
+        AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
 
-        setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
@@ -77,9 +85,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == OPEN_SETTINGS) {
-            if (data != null && (data.getBooleanExtra(SettingsActivity.EXTRA_THEME_CHANGED, false)
-                            || data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)
+            if (data != null && (data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)
                             || data.getBooleanExtra(SettingsActivity.SORTING_CHANGED, false))) {
                 shouldRecreateActivity = true
             }
@@ -154,8 +163,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("InflateParams")
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             R.id.menu_item_share -> {
                 val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment) as CodecDetailsFragment?
                 val codecId = fragmentById?.codecId

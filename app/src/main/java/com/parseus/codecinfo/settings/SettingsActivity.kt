@@ -1,4 +1,4 @@
-package com.parseus.codecinfo
+package com.parseus.codecinfo.settings
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -13,23 +13,21 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreferenceCompat
 import com.google.android.material.snackbar.Snackbar
+import com.parseus.codecinfo.R
 import kotlinx.android.synthetic.main.settings_main.*
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.settings_main)
         setSupportActionBar(toolbar)
         supportFragmentManager.beginTransaction().replace(R.id.content, SettingsFragment()).commit()
     }
 
     override fun finish() {
         setResult(Activity.RESULT_OK, Intent().apply {
-            putExtra(EXTRA_THEME_CHANGED, themeChanged)
             putExtra(FILTER_TYPE_CHANGED, filterTypeChanged)
             putExtra(SORTING_CHANGED, sortingChanged)
         })
@@ -41,29 +39,21 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
 
-            val darkModeSwitch = findPreference<SwitchPreferenceCompat>("darkmode")
-            darkModeSwitch.setOnPreferenceChangeListener { _, newValue ->
-                if (newValue as Boolean) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                }
-
-                SettingsActivity.themeChanged = true
-                requireActivity().recreate()
-
+            val darkTheme = findPreference<ListPreference>("dark_theme")
+            darkTheme!!.setOnPreferenceChangeListener { _, newValue ->
+                AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue((newValue as String).toInt()))
                 true
             }
 
             val filterType = findPreference<ListPreference>("filter_type")
-            filterType.setOnPreferenceChangeListener { _, _ ->
-                SettingsActivity.filterTypeChanged = true
+            filterType!!.setOnPreferenceChangeListener { _, _ ->
+                filterTypeChanged = true
                 true
             }
 
             val sortingType = findPreference<ListPreference>("sort_type")
-            sortingType.setOnPreferenceChangeListener { _, _ ->
-                SettingsActivity.sortingChanged = true
+            sortingType!!.setOnPreferenceChangeListener { _, _ ->
+                sortingChanged = true
                 true
             }
         }
@@ -114,10 +104,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     companion object {
-        var themeChanged = false
         var filterTypeChanged = false
         var sortingChanged = false
-        const val EXTRA_THEME_CHANGED = "theme_changed"
         const val FILTER_TYPE_CHANGED = "filter_type_changed"
         const val SORTING_CHANGED = "sorting_changed"
     }

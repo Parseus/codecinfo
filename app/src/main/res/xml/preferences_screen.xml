@@ -1,16 +1,20 @@
 <androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="Display">
-        <androidx.preference.SwitchPreferenceCompat
-            app:key="darkmode"
-            app:title="Dark mode" />
+        <androidx.preference.ListPreference
+            app:entries="@array/settings_dark_theme_titles"
+            app:entryValues="@array/settings_dark_theme_values"
+            app:defaultValue="@integer/dark_theme_default_value"
+            app:key="dark_theme"
+            app:title="Dark theme"
+            app:useSimpleSummaryProvider="true"/>
 
         <androidx.preference.ListPreference
             app:entries="@array/settings_show_for_known_titles"
             app:entryValues="@array/settings_show_for_known_values"
             app:defaultValue="1"
             app:key="known_values_color_profiles"
-            app:title="Show values for known color profiles"
+            app:title="Show values for color profiles"
             app:useSimpleSummaryProvider="true"/>
 
         <androidx.preference.ListPreference
@@ -18,7 +22,7 @@
             app:entryValues="@array/settings_show_for_known_values"
             app:defaultValue="1"
             app:key="known_values_profile_levels"
-            app:title="Show values for known profile levels"
+            app:title="Show values for profile levels"
             app:useSimpleSummaryProvider="true"/>
 
         <androidx.preference.ListPreference

@@ -52,7 +52,10 @@
     <string name="color_profiles">Color profiles</string>
 
     <string name="adaptive_playback">Adaptive playback</string>
+    <string name="dynamic_timestamp">Dynamic timestamp</string>
     <string name="intra_refresh">Intra refresh</string>
+    <string name="multiple_access_units">Multiple access units</string>
+    <string name="partial_access_units">Partial access units per input buffer</string>
     <string name="partial_frames">Partial frames queuing</string>
     <string name="secure_playback">Secure playback decryption</string>
     <string name="tunneled_playback">Tunneled playback</string>
@@ -69,11 +72,5 @@
     <string name="hardware_acceleration">Hardware acceleration</string>
 
     <string name="more_info">Tap to see more info…</string>
-
-    <string name="rta_dialog_cancel">Later</string>
-    <string name="rta_dialog_message">If you enjoy using this app, would you mind taking a moment to rate it? It won\'t take more than a minute. Thank you for your support!</string>
-    <string name="rta_dialog_no">No, thanks</string>
-    <string name="rta_dialog_ok">Rate now</string>
-    <string name="rta_dialog_title">Rate this app</string>
 
 </resources>

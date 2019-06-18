@@ -8,7 +8,8 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import com.parseus.codecinfo.fragments.CodecFragment
 import com.parseus.codecinfo.R
 
-class PagerAdapter(private val context: Context, fragmentManager: FragmentManager) : FragmentStatePagerAdapter(fragmentManager) {
+class PagerAdapter(private val context: Context, fragmentManager: FragmentManager)
+    : FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     override fun getItem(position: Int): Fragment {
         return CodecFragment().apply {

@@ -9,7 +9,7 @@ enum class VP6Profiles(val value: Int) {
     OMX_VIDEO_VP6ProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = VP6Profiles.values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
     }
 
 }

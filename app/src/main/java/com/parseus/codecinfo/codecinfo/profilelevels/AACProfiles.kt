@@ -17,7 +17,7 @@ enum class AACProfiles(val value: Int) {
     AACObjectXHE(42);
 
     companion object {
-        fun from(findValue: Int): String? = AACProfiles.values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
     }
 
 }

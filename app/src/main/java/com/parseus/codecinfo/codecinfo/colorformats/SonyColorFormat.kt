@@ -7,7 +7,7 @@ enum class SonyColorFormat(val value: Int) {
     OMX_COLOR_FormatYUV420MBPackedSemiPlanar(0x7FFFFFFE);
 
     companion object {
-        fun from(findValue: Int) = SonyColorFormat.values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = values().find { it.value == findValue }?.name
     }
 
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string-array name="settings_dark_theme_titles" tools:ignore="InconsistentArrays">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>Set by Battery Saver (may not work on some devices)</item>
+    </string-array>
+
+    <string-array name="settings_dark_theme_values" tools:ignore="InconsistentArrays">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    
+</resources>

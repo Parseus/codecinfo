@@ -70,6 +70,11 @@
     <string name="range_default">default</string>
 
     <string name="hardware_acceleration">Hardware acceleration</string>
+    <string name="software_only">Software-only</string>
+
+    <string name="codec_provider">Codec provider</string>
+    <string name="codec_provider_android">Android platform</string>
+    <string name="codec_provider_oem">Device vendor / OEM</string>
 
     <string name="more_info">Tap to see more info…</string>
 

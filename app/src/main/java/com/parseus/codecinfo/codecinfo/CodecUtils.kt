@@ -14,8 +14,13 @@ import com.parseus.codecinfo.*
 import com.parseus.codecinfo.codecinfo.colorformats.*
 import com.parseus.codecinfo.codecinfo.profilelevels.*
 import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.LinkedHashMap
 
-    private val platformSupportedTypes = arrayOf(
+private val platformSupportedTypes = arrayOf(
             "audio/3gpp",
             "audio/amr-mb",
             "audio/amr-wb",
@@ -124,7 +129,13 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         val codecInfoMap = LinkedHashMap<String, String>()
 
         codecInfoMap[context.getString(R.string.hardware_acceleration)] =
-                mediaCodecInfo.isAccelerated().toString()
+                isHardwareAccelerated(mediaCodecInfo).toString()
+
+        codecInfoMap[context.getString(R.string.software_only)] = isSoftwareOnly(mediaCodecInfo).toString()
+
+        codecInfoMap[context.getString(R.string.codec_provider)] =
+                context.getString(if (isVendor(mediaCodecInfo))
+                    R.string.codec_provider_oem else R.string.codec_provider_android)
 
         if (SDK_INT >= M) {
             codecInfoMap[context.getString(R.string.max_instances)] = capabilities.maxSupportedInstances.toString()
@@ -352,8 +363,8 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         }
 
         if (codecId.endsWith("flac")) {
-            /* LG G Pad 8.3 has a FLAC decoder with an audio/x-lg-flac mimetype,
-               so normal detection won't work.
+            /* LG G Pad 8.3 has a FLAC decoder with an audio/x-lg-flac mimetype
+               instead of just audio/flac, so normal detection won't work.
                I wouldn't be surprised if other OEMs do the same thing with their codecs.
 
                Source for channel count: https://xiph.org/flac/faq.html#general__channels
@@ -668,4 +679,55 @@ import com.parseus.codecinfo.codecinfo.profilelevels.VP9Levels.*
         }
 
         return maxBitrateRange
+    }
+
+    private fun isVendor(codecInfo: MediaCodecInfo): Boolean {
+        return if (SDK_INT >= Q) {
+            codecInfo.isVendor
+        } else {
+            val codecName = codecInfo.name.toLowerCase(Locale.ENGLISH)
+            return (!codecName.startsWith("omx.google.")
+                    && !codecName.startsWith("c2.android.")
+                    && !codecName.startsWith("c2.google.")
+                    && !codecName.startsWith("c2.vda.arc")
+                    && !codecName.startsWith("arc."))
+
+        }
+    }
+
+    private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {
+        if (SDK_INT >= Q) {
+            return codecInfo.isSoftwareOnly
+        }
+
+        val codecName = codecInfo.name.toLowerCase(Locale.ENGLISH)
+
+        // Broadcom codecs which specifically mention HW acceleration in their names
+        if (codecName.contains("omx.brcm.video", true) && codecName.contains("hw", true)) {
+            return false
+        }
+
+        // ARC/ARC++ (App Runtime for Chrome) codecs
+        if (codecName.startsWith("c2.vda.arc") || codecName.startsWith("arc.")) {
+            return false
+        }
+
+        return codecName.startsWith("omx.google.")
+                || codecName.startsWith("omx.ffmpeg.")
+                || (codecName.startsWith("omx.sec.") && codecName.contains(".sw."))
+                || codecName == "omx.qcom.video.decoder.hevcswvdec"
+                || codecName.startsWith("c2.android.")
+                || codecName.startsWith("c2.google.")
+                || codecName.endsWith("sw", true)
+                || codecName.endsWith("sw.dec", true)
+                || codecName.contains("sw_vd", true)
+                || (!codecName.startsWith("omx.") && !codecName.startsWith("c2."))
+    }
+
+    private fun isHardwareAccelerated(codecInfo: MediaCodecInfo): Boolean {
+        return if (SDK_INT >= Q) {
+            codecInfo.isHardwareAccelerated
+        } else {
+            !isSoftwareOnly(codecInfo)
+        }
     }

@@ -362,12 +362,14 @@ private val platformSupportedTypes = arrayOf(
             } catch (e: Exception) {}
         }
 
-        if (codecId.endsWith("flac")) {
-            /* LG G Pad 8.3 has a FLAC decoder with an audio/x-lg-flac mimetype
-               instead of just audio/flac, so normal detection won't work.
+        if (codecId.endsWith("flac") || codecId.endsWith("alac")) {
+            /* Some LG devices have ALAC and FLAC decoders with a non-standard mimetype,
+               so the detection below won't work.
                I wouldn't be surprised if other OEMs do the same thing with their codecs.
 
-               Source for channel count: https://xiph.org/flac/faq.html#general__channels
+               Sources for channel count:
+               https://github.com/macosforge/alac/blob/c38887c5c5e64a4b31108733bd79ca9b2496d987/codec/ALACAudioTypes.h#L70
+               https://xiph.org/flac/faq.html#general__channels
             */
             return 8
         }
@@ -691,7 +693,6 @@ private val platformSupportedTypes = arrayOf(
                     && !codecName.startsWith("c2.google.")
                     && !codecName.startsWith("c2.vda.arc")
                     && !codecName.startsWith("arc."))
-
         }
     }
 

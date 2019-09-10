@@ -143,7 +143,7 @@ private val platformSupportedTypes = arrayOf(
 
         if (isAudio) {
             if (SDK_INT >= LOLLIPOP) {
-                getAudioCapabilities(context, codecId, capabilities, codecInfoMap)
+                getAudioCapabilities(context, codecId, codecName, capabilities, codecInfoMap)
             }
         } else {
             getVideoCapabilities(context, codecName, capabilities, codecInfoMap)
@@ -270,24 +270,40 @@ private val platformSupportedTypes = arrayOf(
     }
 
     @RequiresApi(LOLLIPOP)
-    private fun getAudioCapabilities(context: Context, codecId: String,
+    private fun getAudioCapabilities(context: Context, codecId: String, codecName: String,
                                      capabilities: MediaCodecInfo.CodecCapabilities,
                                      codecInfoMap: HashMap<String, String>) {
         val audioCapabilities = capabilities.audioCapabilities
 
         codecInfoMap[context.getString(R.string.input_channels)] =
-                adjustMaxInputChannelCount(codecId, audioCapabilities.maxInputChannelCount, capabilities).toString()
+                adjustMaxInputChannelCount(codecId, codecName,
+                        audioCapabilities.maxInputChannelCount, capabilities).toString()
 
-        val bitrateRangeString = if (codecId != "audio/amr-wb-plus") {
-            val bitrateRange = audioCapabilities.bitrateRange
-            if (bitrateRange.lower == bitrateRange.upper || bitrateRange.lower == 1) {
-                bitrateRange.upper.toBytesPerSecond()
-            } else {
-                "${bitrateRange.lower.toBytesPerSecond()} \u2014 ${bitrateRange.upper.toBytesPerSecond()}"
+        val bitrateRangeString = when {
+            codecId == "audio/amr-wb-plus" -> // Source: http://www.voiceage.com/AMR-WBplus.html
+                "Mono: 6 Kbps \u2014 36 Kbps\nStereo: 7 Kbps \u2014 48 Kbps"
+
+            // Source: https://web.archive.org/web/20070901193343/http://www.microsoft.com/windows/windowsmedia/forpros/codecs/audio.aspx
+            codecId.contains("wma") -> when {
+                codecId.endsWith("wma-voice")
+                        || codecName.contains("wmsVoice", true) -> "4 Kbps \u2014 20 Kbps"
+                codecName.endsWith("wma10Pro", true)
+                        || codecName.contains("WMAPRODecoder", true)
+                        || codecId.endsWith("wma-pro")
+                        || codecId.endsWith("wmapro") -> "24 Kbps \u2014 768 Kbps"
+                codecName.endsWith("wmaLossLess", true)
+                        || codecId.endsWith("wma-lossless") -> "470 Kbps — 940 Kbps"
+                else -> "64 Kbps \u2014 192 Kbps"
             }
-        } else {
-            // Source: http://www.voiceage.com/AMR-WBplus.html
-            "Mono: 6 \u2014 36 Kbps\nStereo: 7 \u2014 48 Kbps"
+
+            else -> {
+                val bitrateRange = audioCapabilities.bitrateRange
+                if (bitrateRange.lower == bitrateRange.upper || bitrateRange.lower == 1) {
+                    bitrateRange.upper.toBytesPerSecond()
+                } else {
+                    "${bitrateRange.lower.toBytesPerSecond()} \u2014 ${bitrateRange.upper.toBytesPerSecond()}"
+                }
+            }
         }
 
         codecInfoMap[context.getString(R.string.bitrate_range)] = bitrateRangeString
@@ -297,6 +313,19 @@ private val platformSupportedTypes = arrayOf(
             // Source: http://www.3gpp.org/ftp/Specs/html-info/26290.htm
             codecId == "audio/amr-wb-plus" -> {
                 "16.0, 24.0, 32.0, 48.0 KHz"
+            }
+
+            // Source: https://web.archive.org/web/20070901193343/http://www.microsoft.com/windows/windowsmedia/forpros/codecs/audio.aspx
+            codecId.contains("wma") -> when {
+                codecId.endsWith("wma-voice")
+                        || codecName.contains("wmsVoice", true) -> "8.0, 11.025, 12.0, 16.0, 22.05 KHz"
+                codecName.endsWith("wma10Pro", true)
+                        || codecName.contains("WMAPRODecoder", true)
+                        || codecId.endsWith("wma-pro")
+                        || codecId.endsWith("wmapro") -> "8.0, 11.025, 12.0, 16.0, 22.05, 24.0, 32.0, 44.1, 48.0, 88.2, 96.0 KHz"
+                codecName.endsWith("wmaLossLess", true)
+                        || codecId.endsWith("wma-lossless") -> "8.0, 11.025, 12.0, 16.0, 22.05, 24.0, 32.0, 44.1, 48.0, 88.2, 96.0 KHz"
+                else -> "8.0, 11.025, 12.0, 16.0, 22.05, 24.0, 32.0, 44.1, 48.0 KHz"
             }
 
             sampleRates.size > 1 -> {
@@ -328,7 +357,7 @@ private val platformSupportedTypes = arrayOf(
      * AudioCapabilities incorrectly assumes that non-platform codecs support only one input channel.
      * This function provides a somewhat better, assumed guess.
      */
-    private fun adjustMaxInputChannelCount(codecId: String, maxChannelCount: Int,
+    private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxChannelCount: Int,
                                            capabilities: MediaCodecInfo.CodecCapabilities): Int {
         val platformLimit = 30
 
@@ -372,6 +401,20 @@ private val platformSupportedTypes = arrayOf(
                https://xiph.org/flac/faq.html#general__channels
             */
             return 8
+        }
+
+        // Some WMA codecs provide their type in the mimetype, some in their name, some in both.
+        // Why.
+        // Source:
+        // https://web.archive.org/web/20070901193343/http://www.microsoft.com/windows/windowsmedia/forpros/codecs/audio.aspx
+        if (codecId.contains("wma")) {
+            return when {
+                codecId.endsWith("wma-voice") || codecName.contains("wmsVoice", true) -> 1
+                codecName.endsWith("wma10Pro", true) || codecName.contains("WMAPRODecoder", true)
+                        || codecId.endsWith("wma-pro") || codecId.endsWith("wmapro") -> 8
+                codecName.endsWith("wmaLossLess", true) || codecId.endsWith("wma-lossless") -> 6
+                else -> 2
+            }
         }
 
         // The maximum channel count looks incorrect. Adjust it to an assumed default.

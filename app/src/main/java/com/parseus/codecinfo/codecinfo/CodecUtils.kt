@@ -310,22 +310,25 @@ private val platformSupportedTypes = arrayOf(
 
         val sampleRates = audioCapabilities.supportedSampleRateRanges
         val sampleRatesString = when {
+            // Source: https://github.com/macosforge/alac/blob/master/ReadMe.txt
+            codecId.contains("alac") -> "1 kHz \u2014 384 kHz"
+
             // Source: http://www.3gpp.org/ftp/Specs/html-info/26290.htm
             codecId == "audio/amr-wb-plus" -> {
-                "16.0, 24.0, 32.0, 48.0 KHz"
+                "16.0, 24.0, 32.0, 48.0 kHz"
             }
 
             // Source: https://web.archive.org/web/20070901193343/http://www.microsoft.com/windows/windowsmedia/forpros/codecs/audio.aspx
             codecId.contains("wma") -> when {
                 codecId.endsWith("wma-voice")
-                        || codecName.contains("wmsVoice", true) -> "8.0, 11.025, 12.0, 16.0, 22.05 KHz"
+                        || codecName.contains("wmsVoice", true) -> "8.0, 11.025, 12.0, 16.0, 22.05 kHz"
                 codecName.endsWith("wma10Pro", true)
                         || codecName.contains("WMAPRODecoder", true)
                         || codecId.endsWith("wma-pro")
-                        || codecId.endsWith("wmapro") -> "8.0, 11.025, 12.0, 16.0, 22.05, 24.0, 32.0, 44.1, 48.0, 88.2, 96.0 KHz"
+                        || codecId.endsWith("wmapro") -> "8.0, 11.025, 12.0, 16.0, 22.05, 24.0, 32.0, 44.1, 48.0, 88.2, 96.0 kHz"
                 codecName.endsWith("wmaLossLess", true)
-                        || codecId.endsWith("wma-lossless") -> "8.0, 11.025, 12.0, 16.0, 22.05, 24.0, 32.0, 44.1, 48.0, 88.2, 96.0 KHz"
-                else -> "8.0, 11.025, 12.0, 16.0, 22.05, 24.0, 32.0, 44.1, 48.0 KHz"
+                        || codecId.endsWith("wma-lossless") -> "8.0, 11.025, 12.0, 16.0, 22.05, 24.0, 32.0, 44.1, 48.0, 88.2, 96.0 kHz"
+                else -> "8.0, 11.025, 12.0, 16.0, 22.05, 24.0, 32.0, 44.1, 48.0 kHz"
             }
 
             sampleRates.size > 1 -> {
@@ -335,15 +338,15 @@ private val platformSupportedTypes = arrayOf(
                     rates.append(", ").append(sampleRates[rate].upper.toKiloHertz())
                 }
 
-                rates.append(" KHz")
+                rates.append(" kHz")
                 rates.toString()
             }
 
             else -> {
                 if (sampleRates[0].lower == sampleRates[0].upper) {
-                    "${sampleRates[0].upper.toKiloHertz()} KHz"
+                    "${sampleRates[0].upper.toKiloHertz()} kHz"
                 } else {
-                    "${sampleRates[0].lower.toKiloHertz()}, ${sampleRates[0].upper.toKiloHertz()} KHz"
+                    "${sampleRates[0].lower.toKiloHertz()}, ${sampleRates[0].upper.toKiloHertz()} kHz"
                 }
             }
         }

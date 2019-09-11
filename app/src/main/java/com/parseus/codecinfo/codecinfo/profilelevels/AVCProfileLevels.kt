@@ -67,7 +67,7 @@ enum class AVCLevels (val value: Int) {
 
     companion object {
         fun from(findValue: Int): String? = try {
-            AVCLevels.values().first { it.value == findValue }.name
+            values().first { it.value == findValue }.name
         } catch (e: NoSuchElementException) {
             null
         }

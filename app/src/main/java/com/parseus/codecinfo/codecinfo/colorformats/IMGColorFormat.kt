@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "EnumEntryName")
 
 package com.parseus.codecinfo.codecinfo.colorformats
 

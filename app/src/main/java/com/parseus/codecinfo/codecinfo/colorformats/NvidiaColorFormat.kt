@@ -1,6 +1,7 @@
+@file:Suppress("EnumEntryName", "unused")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
-@Suppress("EnumEntryName")
 enum class NvidiaColorFormat(val value: Int) {
 
     NVX_IMAGE_COLOR_FormatYV12(0x7F000001),

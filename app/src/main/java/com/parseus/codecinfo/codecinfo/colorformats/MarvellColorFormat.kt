@@ -1,6 +1,7 @@
+@file:Suppress("unused", "EnumEntryName")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
-@Suppress("EnumEntryName")
 enum class MarvellColorFormat(val value: Int) {
 
     OMX_COLOR_FormatYV12(0x7F000001),

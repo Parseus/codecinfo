@@ -1,6 +1,7 @@
+@file:Suppress("unused")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
-@Suppress("EnumEntryName")
 enum class IMGColorFormat(val value: Int) {
 
     OMX_COLOR_FormatYVU420SemiPlanar(0x7F000001),

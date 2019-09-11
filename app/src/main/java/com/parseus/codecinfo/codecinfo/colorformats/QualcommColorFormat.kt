@@ -1,6 +1,7 @@
+@file:Suppress("EnumEntryName", "unused")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
-@Suppress("EnumEntryName")
 enum class QualcommColorFormat (val value: Int) {
 
     QOMX_COLOR_FormatYVU420SemiPlanar(0x7FA30C00),

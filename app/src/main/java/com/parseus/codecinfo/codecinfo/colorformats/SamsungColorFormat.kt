@@ -1,6 +1,7 @@
+@file:Suppress("EnumEntryName", "unused")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
-@Suppress("EnumEntryName")
 enum class SamsungColorFormat(val value: Int) {
 
     OMX_SEC_COLOR_FormatEncodedData(0x19),

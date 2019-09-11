@@ -1,6 +1,7 @@
+@file:Suppress("EnumEntryName", "unused")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
-@Suppress("EnumEntryName")
 enum class MediaTekColorFormat(val value: Int) {
     COLOR_MTK_FormatYUVPrivate(0x32315679),
     OMX_COLOR_FormatVendorMTKYUV(0x7F000001),

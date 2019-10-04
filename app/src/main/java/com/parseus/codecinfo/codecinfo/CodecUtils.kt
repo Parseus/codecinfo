@@ -472,17 +472,19 @@ private val platformSupportedTypes = arrayOf(
                 codecName.contains("brcm", true) -> BroadcomColorFormat.from(colorFormats[it])
                 codecName.contains("qcom", true) || codecName.contains("qti", true)
                     || codecName.contains("ittiam", true)
-                -> QualcommColorFormat.from(colorFormats[it])
+                    -> QualcommColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)
-                -> SamsungColorFormat.from(colorFormats[it])
+                    -> SamsungColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.MTK", true) -> MediaTekColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.IMG", true) -> IMGColorFormat.from(colorFormats[it])
                 codecName.contains("Marvell", true) -> MarvellColorFormat.from(colorFormats[it])
                 codecName.contains("Nvidia", true) -> NvidiaColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.ST", true) -> SonyColorFormat.from(colorFormats[it])
                 codecName.contains("Renesas", true) -> RenesasColorFormat.from(colorFormats[it])
+                codecName.contains("OMX.PSC", true) || codecName.contains("OMX.SNI", true)
+                    -> PanasonicSNIColorFormat.from(colorFormats[it])
                 codecName.contains("OMX.TI", true) || codecName.contains("INTEL", true)
-                -> OtherColorFormat.from(colorFormats[it])
+                    -> OtherColorFormat.from(colorFormats[it])
                 else -> null
             }
 

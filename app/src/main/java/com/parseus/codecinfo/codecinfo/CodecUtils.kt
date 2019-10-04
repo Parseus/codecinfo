@@ -760,7 +760,7 @@ private val platformSupportedTypes = arrayOf(
         }
 
         return codecName.startsWith("omx.google.")
-                || codecName.startsWith("omx.ffmpeg.")
+                || codecName.contains("ffmpeg") // OMX.ffmpeg or OMX.k3.ffmpeg
                 || (codecName.startsWith("omx.sec.") && codecName.contains(".sw."))
                 || codecName == "omx.qcom.video.decoder.hevcswvdec"
                 || codecName.startsWith("c2.android.")

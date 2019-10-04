@@ -4,15 +4,17 @@
     package="com.parseus.codecinfo">
 
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-feature android:name="android.software.leanback" android:required="false" />
 
     <uses-permission android:name= "com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY"/>
 
     <application
+        android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning,UnusedAttribute">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
@@ -23,6 +25,18 @@
                 <category android:name="android.intent.category.PENWINDOW_LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".TvActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Leanback">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/settings"

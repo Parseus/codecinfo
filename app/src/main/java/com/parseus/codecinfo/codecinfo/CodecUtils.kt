@@ -756,17 +756,30 @@ private val platformSupportedTypes = arrayOf(
             return false
         }
 
-        // ARC/ARC++ (App Runtime for Chrome) codecs
+        // Marvell codecs which specifically mention HW acceleration in their names
+        if (codecName.startsWith("omx.marvell.video.hw", true)) {
+            return false
+        }
+
+        // Intel codecs which specifically mention HW acceleration in their names
+        if (codecName.startsWith("omx.intel.hw_vd", true)) {
+            return false
+        }
+
+        // ARC/ARC++ (App Runtime for Chrome) codecs are always HW-only.
         if (codecName.startsWith("c2.vda.arc") || codecName.startsWith("arc.")) {
             return false
         }
 
         return codecName.startsWith("omx.google.")
-                || codecName.contains("ffmpeg") // OMX.ffmpeg or OMX.k3.ffmpeg
+                || codecName.contains("ffmpeg") // either OMX.ffmpeg or OMX.k3.ffmpeg
                 || (codecName.startsWith("omx.sec.") && codecName.contains(".sw."))
                 || codecName == "omx.qcom.video.decoder.hevcswvdec"
                 || codecName.startsWith("c2.android.")
                 || codecName.startsWith("c2.google.")
+                || codecName.startsWith("omx.sprd.soft.")
+                || codecName.startsWith("omx.avcodec.")
+                || codecName.startsWith("omx.pv")
                 || codecName.endsWith("sw", true)
                 || codecName.endsWith("sw.dec", true)
                 || codecName.contains("sw_vd", true)

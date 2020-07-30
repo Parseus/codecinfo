@@ -1,0 +1,28 @@
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="NewApi">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.Leanback">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+        <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="headerStyle">@style/MyHeaderStyle</item>
+        <item name="rowHeaderStyle">@style/MyHeaderStyle</item>
+    </style>
+
+    <style name="MyHeaderStyle" parent="@style/Widget.Leanback.Header" >
+        <item name="android:textAppearance">@style/MyHeaderStyle.MyHeaderText</item>
+    </style>
+
+    <style name="MyHeaderStyle.MyHeaderText" parent="TextAppearance.Leanback.Header">
+        <item name="android:textSize">@dimen/lb_browse_header_text_size</item>
+        <item name="android:textColor">@color/colorSecondary</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>

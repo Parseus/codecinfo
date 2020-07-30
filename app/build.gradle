@@ -36,10 +36,14 @@ android {
         exclude 'META-INF/*.kotlin_module'
         exclude 'META-INF/*.version'
     }
+
+    viewBinding {
+        enabled = true
+    }
 }
 
 dependencies {
-    implementation"org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
@@ -50,5 +54,5 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'com.google.android.material:material:1.1.0-alpha10'
 
-    implementation ('io.github.kobakei:ratethisapp:1.2.0')
+    implementation('io.github.kobakei:ratethisapp:1.2.0')
 }

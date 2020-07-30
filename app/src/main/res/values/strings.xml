@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE resources [
-    <!ENTITY app_name "Codec Info">
-    ]>
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE resources [<!ENTITY app_name "Codec Info">]>
 
 <resources>
     <string name="app_name" translatable="false">&app_name;</string>
@@ -32,7 +29,7 @@
     <string name="encoder">Encoder</string>
 
     <string name="codec_details">Codec details</string>
-    
+
     <string name="frames_per_second">fps</string>
     <string name="unknown">Unknown</string>
 
@@ -59,7 +56,7 @@
     <string name="partial_frames">Partial frames queuing</string>
     <string name="secure_playback">Secure playback decryption</string>
     <string name="tunneled_playback">Tunneled playback</string>
-    
+
     <string name="bitrate_modes">Bitrate modes</string>
     <string name="cbr" translatable="false">Constant bitrate (CBR)</string>
     <string name="cq" translatable="false">Constant quality (CQ)</string>

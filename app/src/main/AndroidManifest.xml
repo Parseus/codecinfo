@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.parseus.codecinfo">
 
-    <uses-sdk tools:overrideLibrary="androidx.leanback" />
+    <uses-sdk tools:overrideLibrary="androidx.leanback, androidx.leanback.preference" />
 
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <uses-feature android:name="android.software.leanback" android:required="false" />
@@ -46,6 +46,14 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.Leanback"
             android:parentActivityName=".tv.TvActivity"/>
+        <activity android:name=".tv.TvSettingsActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.Preference"
+            android:parentActivityName=".tv.TvActivity" />
+        <activity android:name=".tv.TvAboutActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Leanback"
+            android:parentActivityName=".tv.TvActivity" />
 
         <uses-library
             android:name="com.sec.android.app.multiwindow"

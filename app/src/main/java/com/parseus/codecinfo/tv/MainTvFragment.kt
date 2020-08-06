@@ -26,7 +26,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         setAdapter(adapter)
 
         val audioCodecList = getSimpleCodecInfoList(requireContext(), true)
-        val audioPresenterHeader = HeaderItem(1, requireContext().getString(R.string.audio))
+        val audioPresenterHeader = HeaderItem(1, getString(R.string.category_audio))
         val audioPresentAdapter = ArrayObjectAdapter(CodecPresenter(R.drawable.ic_audio))
 
         for (audioCodec in audioCodecList) {
@@ -36,7 +36,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         adapter.add(ListRow(audioPresenterHeader, audioPresentAdapter))
 
         val videoCodecList = getSimpleCodecInfoList(requireContext(), false)
-        val videoPresenterHeader = HeaderItem(2, requireContext().getString(R.string.video))
+        val videoPresenterHeader = HeaderItem(2, getString(R.string.category_video))
         val videoPresentAdapter = ArrayObjectAdapter(CodecPresenter(R.drawable.ic_video))
 
         for (videoCodec in videoCodecList) {
@@ -44,6 +44,15 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         }
 
         adapter.add(ListRow(videoPresenterHeader, videoPresentAdapter))
+
+        val otherPresenterHeader = HeaderItem(3, getString(R.string.category_other))
+        val otherPresenterAdapter = ArrayObjectAdapter(OtherActionsPresenter())
+
+        otherPresenterAdapter.add(OtherActionDescriptor(ACTION_SETTINGS_ID, R.drawable.ic_settings, R.string.settings))
+        otherPresenterAdapter.add(OtherActionDescriptor(ACTION_ABOUT_ID, R.drawable.ic_info, R.string.about_app))
+
+        adapter.add(ListRow(otherPresenterHeader, otherPresenterAdapter))
+
         onItemViewClickedListener = this
     }
 
@@ -55,7 +64,18 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
                 putExtra("codecName", item.codecName)
             }
             startActivity(intent)
+        } else if (item is OtherActionDescriptor) {
+            if (item.actionId == ACTION_SETTINGS_ID) {
+                startActivity(Intent(requireActivity(), TvSettingsActivity::class.java))
+            } else if (item.actionId == ACTION_ABOUT_ID) {
+                startActivity(Intent(requireActivity(), TvAboutActivity::class.java))
+            }
         }
+    }
+
+    companion object {
+        private const val ACTION_SETTINGS_ID = 1000
+        private const val ACTION_ABOUT_ID = 1001
     }
 
 }

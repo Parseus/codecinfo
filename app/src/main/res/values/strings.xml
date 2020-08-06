@@ -22,8 +22,9 @@
     <string name="choose_email">Send feedback via…</string>
     <string name="no_email_apps">No apps can perform this action.</string>
 
-    <string name="audio">Audio</string>
-    <string name="video">Video</string>
+    <string name="category_audio">Audio</string>
+    <string name="category_video">Video</string>
+    <string name="category_other">Other</string>
 
     <string name="decoder">Decoder</string>
     <string name="encoder">Encoder</string>

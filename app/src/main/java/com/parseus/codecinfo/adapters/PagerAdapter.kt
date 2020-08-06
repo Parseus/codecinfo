@@ -23,8 +23,8 @@ class PagerAdapter(private val context: Context, fragmentManager: FragmentManage
 
     override fun getPageTitle(position: Int): CharSequence? {
         return when (position) {
-            0 -> context.getString(R.string.audio)
-            1 -> context.getString(R.string.video)
+            0 -> context.getString(R.string.category_audio)
+            1 -> context.getString(R.string.category_video)
             else -> null
         }
     }

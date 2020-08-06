@@ -9,4 +9,6 @@
     <dimen name="dialog_margin_size">24dp</dimen>
     <dimen name="dialog_button_margin_size">8dp</dimen>
 
+    <dimen name="icon_size">24dp</dimen>
+
 </resources>

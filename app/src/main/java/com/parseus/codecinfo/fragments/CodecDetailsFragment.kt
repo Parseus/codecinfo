@@ -25,8 +25,8 @@ class CodecDetailsFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         arguments?.let {
-            codecId = arguments!!.getString("codecId")
-            codecName = arguments!!.getString("codecName")
+            codecId = requireArguments().getString("codecId")
+            codecName = requireArguments().getString("codecName")
             full_codec_info_name.text = codecName
 
             codecId?.let {

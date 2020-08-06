@@ -66,8 +66,8 @@ class CodecDetailsDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val codecId = arguments!!.getString("codecId")
-        val codecName = arguments!!.getString("codecName")
+        val codecId = requireArguments().getString("codecId")
+        val codecName = requireArguments().getString("codecName")
         val codecInfoMap = getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
         val codecAdapter = CodecInfoAdapter(codecInfoMap)
 
@@ -91,8 +91,8 @@ class CodecDetailsDialogFragment : DialogFragment() {
         when (item.itemId) {
             android.R.id.home -> dismiss()
             R.id.fragment_menu_item_share -> {
-                val codecId = arguments!!.getString("codecId")
-                val codecName = arguments!!.getString("codecName")
+                val codecId = requireArguments().getString("codecId")
+                val codecName = requireArguments().getString("codecName")
                 val header = "${requireContext().getString(R.string.codec_details)}: $codecName\n\n"
                 val codecStringBuilder = StringBuilder(header)
                 val codecInfoMap = getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
@@ -101,7 +101,7 @@ class CodecDetailsDialogFragment : DialogFragment() {
                     codecStringBuilder.append("$key\n${codecInfoMap[key]}\n\n")
                 }
 
-                ShareCompat.IntentBuilder.from(activity).setType("text/plain")
+                ShareCompat.IntentBuilder.from(requireActivity()).setType("text/plain")
                         .setText(codecStringBuilder.toString()).startChooser()
             }
             R.id.menu_item_settings -> startActivity(Intent(requireActivity(), SettingsActivity::class.java))

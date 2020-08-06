@@ -1,6 +1,13 @@
 package com.parseus.codecinfo.tv
 
+import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
-import com.parseus.codecinfo.R
 
-class TvSettingsActivity : FragmentActivity(R.layout.settings_main)
+class TvSettingsActivity : FragmentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        supportFragmentManager.beginTransaction().replace(android.R.id.content, TvSettingsFragment()).commit()
+    }
+
+}

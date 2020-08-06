@@ -75,6 +75,11 @@
     <string name="codec_provider_android">Android platform</string>
     <string name="codec_provider_oem">Device vendor / OEM</string>
 
+    <string name="app_theme_light">Light</string>
+    <string name="app_theme_dark">Dark</string>
+    <string name="app_theme_battery_saver">Set by Battery Saver</string>
+    <string name="app_theme_system_default">System default</string>
+
     <string name="more_info">Tap to see more info…</string>
 
 </resources>

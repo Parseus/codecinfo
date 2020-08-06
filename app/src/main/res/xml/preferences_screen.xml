@@ -2,9 +2,6 @@
 
     <PreferenceCategory app:title="Display">
         <androidx.preference.ListPreference
-            app:entries="@array/settings_dark_theme_titles"
-            app:entryValues="@array/settings_dark_theme_values"
-            app:defaultValue="@integer/dark_theme_default_value"
             app:key="dark_theme"
             app:title="Dark theme"
             app:useSimpleSummaryProvider="true"/>

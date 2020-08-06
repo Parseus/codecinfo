@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -15,6 +16,8 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.getDefaultThemeOption
+import com.parseus.codecinfo.isBatterySaverDisallowed
 import kotlinx.android.synthetic.main.settings_main.*
 
 class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
@@ -39,10 +42,12 @@ class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
 
-            val darkTheme = findPreference<ListPreference>("dark_theme")
-            darkTheme!!.setOnPreferenceChangeListener { _, newValue ->
-                AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue((newValue as String).toInt()))
-                true
+            findPreference<ListPreference>("dark_theme")!!.apply {
+                setDarkThemeOptions(this)
+                setOnPreferenceChangeListener { _, newValue ->
+                    AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue((newValue as String).toInt()))
+                    true
+                }
             }
 
             val filterType = findPreference<ListPreference>("filter_type")
@@ -99,6 +104,33 @@ class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
 
                 else -> super.onPreferenceTreeClick(preference)
             }
+        }
+
+        private fun setDarkThemeOptions(listPreference: ListPreference) {
+            val entries = mutableListOf<CharSequence>()
+            val entryValues = mutableListOf<CharSequence>()
+
+            // Light and Dark (always present)
+            entries.add(getString(R.string.app_theme_light))
+            entries.add(getString(R.string.app_theme_dark))
+            entryValues.add(DarkTheme.Light.value.toString())
+            entryValues.add(DarkTheme.Dark.value.toString())
+
+            // Set by battery saver (if not blacklisted)
+            if (!isBatterySaverDisallowed()) {
+                entries.add(getString(R.string.app_theme_battery_saver))
+                entryValues.add(DarkTheme.BatterySaver.value.toString())
+            }
+
+            // System default (Android 9.0+)
+            if (Build.VERSION.SDK_INT >= 28) {
+                entries.add(getString(R.string.app_theme_system_default))
+                entryValues.add(DarkTheme.SystemDefault.value.toString())
+            }
+
+            listPreference.entries = entries.toTypedArray()
+            listPreference.entryValues = entryValues.toTypedArray()
+            listPreference.setDefaultValue(getDefaultThemeOption().toString())
         }
 
     }

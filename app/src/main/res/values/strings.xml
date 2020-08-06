@@ -57,6 +57,7 @@
     <string name="partial_frames">Partial frames queuing</string>
     <string name="secure_playback">Secure playback decryption</string>
     <string name="tunneled_playback">Tunneled playback</string>
+    <string name="low_latency">Low latency decoding</string>
 
     <string name="bitrate_modes">Bitrate modes</string>
     <string name="cbr" translatable="false">Constant bitrate (CBR)</string>

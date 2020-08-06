@@ -6,7 +6,6 @@ import android.media.MediaCodecInfo
 import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.os.Build.VERSION.SDK_INT
-import android.os.Build.VERSION_CODES.*
 import android.util.Range
 import androidx.annotation.RequiresApi
 import androidx.preference.PreferenceManager
@@ -66,7 +65,7 @@ private val platformSupportedTypes = arrayOf(
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
         if (mediaCodecInfos.isEmpty()) {
-            mediaCodecInfos = if (SDK_INT >= LOLLIPOP) {
+            mediaCodecInfos = if (SDK_INT >= 21) {
                 MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
             } else {
                 @Suppress("DEPRECATION")
@@ -133,41 +132,47 @@ private val platformSupportedTypes = arrayOf(
 
         codecInfoMap[context.getString(R.string.software_only)] = isSoftwareOnly(mediaCodecInfo).toString()
 
+        if (!isEncoder && SDK_INT >= 30) {
+            codecInfoMap[context.getString(R.string.low_latency)] =
+                    capabilities.isFeatureSupported(
+                            MediaCodecInfo.CodecCapabilities.FEATURE_LowLatency).toString()
+        }
+
         codecInfoMap[context.getString(R.string.codec_provider)] =
                 context.getString(if (isVendor(mediaCodecInfo))
                     R.string.codec_provider_oem else R.string.codec_provider_android)
 
-        if (SDK_INT >= M) {
+        if (SDK_INT >= 23) {
             codecInfoMap[context.getString(R.string.max_instances)] = capabilities.maxSupportedInstances.toString()
         }
 
         if (isAudio) {
-            if (SDK_INT >= LOLLIPOP) {
+            if (SDK_INT >= 21) {
                 getAudioCapabilities(context, codecId, codecName, capabilities, codecInfoMap)
             }
         } else {
             getVideoCapabilities(context, codecName, capabilities, codecInfoMap)
 
             if (!isEncoder) {
-                if (SDK_INT >= KITKAT) {
+                if (SDK_INT >= 19) {
                     codecInfoMap[context.getString(R.string.adaptive_playback)] =
                             capabilities.isFeatureSupported(
                                     MediaCodecInfo.CodecCapabilities.FEATURE_AdaptivePlayback).toString()
                 }
 
-                if (SDK_INT >= O) {
+                if (SDK_INT >= 26) {
                     codecInfoMap[context.getString(R.string.partial_frames)] =
                             capabilities.isFeatureSupported(
                                     MediaCodecInfo.CodecCapabilities.FEATURE_PartialFrame).toString()
                 }
 
-                if (SDK_INT >= LOLLIPOP) {
+                if (SDK_INT >= 21) {
                     codecInfoMap[context.getString(R.string.secure_playback)] =
                             capabilities.isFeatureSupported(
                                     MediaCodecInfo.CodecCapabilities.FEATURE_SecurePlayback).toString()
                 }
             } else {
-                if (SDK_INT >= N) {
+                if (SDK_INT >= 24) {
                     codecInfoMap[context.getString(R.string.intra_refresh)] =
                             capabilities.isFeatureSupported(
                                     MediaCodecInfo.CodecCapabilities.FEATURE_IntraRefresh).toString()
@@ -175,7 +180,7 @@ private val platformSupportedTypes = arrayOf(
             }
         }
 
-        if (SDK_INT >= Q) {
+        if (SDK_INT >= 29) {
             codecInfoMap[context.getString(R.string.dynamic_timestamp)] =
                     capabilities.isFeatureSupported(
                             MediaCodecInfo.CodecCapabilities.FEATURE_DynamicTimestamp).toString()
@@ -185,19 +190,19 @@ private val platformSupportedTypes = arrayOf(
                             MediaCodecInfo.CodecCapabilities.FEATURE_MultipleFrames).toString()
         }
 
-        if (!isEncoder && SDK_INT >= LOLLIPOP) {
+        if (!isEncoder && SDK_INT >= 21) {
             codecInfoMap[context.getString(R.string.tunneled_playback)] =
                     capabilities.isFeatureSupported(
                             MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback).toString()
 
-            if (SDK_INT >= Q) {
+            if (SDK_INT >= 29) {
                 codecInfoMap[context.getString(R.string.partial_access_units)] =
                         capabilities.isFeatureSupported(
                                 MediaCodecInfo.CodecCapabilities.FEATURE_FrameParsing).toString()
             }
         }
 
-        if (isEncoder && SDK_INT >= LOLLIPOP) {
+        if (isEncoder && SDK_INT >= 21) {
             val encoderCapabilities = capabilities.encoderCapabilities
             val bitrateModesString =
                     "${context.getString(R.string.cbr)}: " +
@@ -227,7 +232,7 @@ private val platformSupportedTypes = arrayOf(
             }
 
             @Suppress("UNCHECKED_CAST")
-            val qualityRange = if (SDK_INT >= P) {
+            val qualityRange = if (SDK_INT >= 28) {
                 encoderCapabilities.qualityRange
             } else {
                 // Before P quality range was actually available, but hidden as a private API.
@@ -269,7 +274,7 @@ private val platformSupportedTypes = arrayOf(
         return codecInfoMap
     }
 
-    @RequiresApi(LOLLIPOP)
+    @RequiresApi(21)
     private fun getAudioCapabilities(context: Context, codecId: String, codecName: String,
                                      capabilities: MediaCodecInfo.CodecCapabilities,
                                      codecInfoMap: HashMap<String, String>) {
@@ -376,7 +381,7 @@ private val platformSupportedTypes = arrayOf(
             }
         }
 
-        if (SDK_INT < P) {
+        if (SDK_INT < 28) {
             /*
                 mCapabilitiesInfo, a private MediaFormat instance hidden in MediaCodecInfo,
                 can actually provide max input channel count (as well as other useful info).
@@ -437,7 +442,7 @@ private val platformSupportedTypes = arrayOf(
     private fun getVideoCapabilities(context: Context, codecName: String,
                                      capabilities: MediaCodecInfo.CodecCapabilities,
                                      codecInfoMap: HashMap<String, String>) {
-        if (SDK_INT >= LOLLIPOP) {
+        if (SDK_INT >= 21) {
             val videoCapabilities = capabilities.videoCapabilities
 
             val bitrateRange = videoCapabilities.bitrateRange
@@ -514,7 +519,7 @@ private val platformSupportedTypes = arrayOf(
         }
     }
 
-    @RequiresApi(LOLLIPOP)
+    @RequiresApi(21)
     private fun getFrameRatePerResolutions(context: Context,
                                            videoCapabilities: MediaCodecInfo.VideoCapabilities): String {
         val capabilities = StringBuilder()
@@ -551,7 +556,7 @@ private val platformSupportedTypes = arrayOf(
         // On versions L and M, VP9 codecCapabilities do not advertise profile level support.
         // In this case, estimate the level from MediaCodecInfo.VideoCapabilities instead.
         // Assume VP9 is not supported before L.
-        if (SDK_INT in LOLLIPOP..M && codecId.endsWith("vp9")) {
+        if (SDK_INT in 21..23 && codecId.endsWith("vp9")) {
             val vp9Level = getMaxVP9ProfileLevel(capabilities.videoCapabilities)
             // Assume all platforms before N only support VP9 profile 0.
             profile = VP9Profiles.VP9Profile0.name
@@ -708,7 +713,7 @@ private val platformSupportedTypes = arrayOf(
     /**
      * Needed on M and older to get correct information about VP9 support.
      */
-    @RequiresApi(LOLLIPOP)
+    @RequiresApi(21)
     private fun getMaxVP9ProfileLevel(capabilities: MediaCodecInfo.VideoCapabilities): Int {
         // https://www.webmproject.org/vp9/levels
         val bitrateMapping = arrayOf(
@@ -732,7 +737,7 @@ private val platformSupportedTypes = arrayOf(
     }
 
     private fun isVendor(codecInfo: MediaCodecInfo): Boolean {
-        return if (SDK_INT >= Q) {
+        return if (SDK_INT >= 29) {
             codecInfo.isVendor
         } else {
             val codecName = codecInfo.name.toLowerCase(Locale.ENGLISH)
@@ -745,7 +750,7 @@ private val platformSupportedTypes = arrayOf(
     }
 
     private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {
-        if (SDK_INT >= Q) {
+        if (SDK_INT >= 29) {
             return codecInfo.isSoftwareOnly
         }
 
@@ -787,7 +792,7 @@ private val platformSupportedTypes = arrayOf(
     }
 
     private fun isHardwareAccelerated(codecInfo: MediaCodecInfo): Boolean {
-        return if (SDK_INT >= Q) {
+        return if (SDK_INT >= 29) {
             codecInfo.isHardwareAccelerated
         } else {
             !isSoftwareOnly(codecInfo)

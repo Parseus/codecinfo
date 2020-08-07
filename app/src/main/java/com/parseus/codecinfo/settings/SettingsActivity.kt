@@ -2,6 +2,8 @@ package com.parseus.codecinfo.settings
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -10,6 +12,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
@@ -80,13 +83,17 @@ class SettingsActivity : AppCompatActivity() {
         override fun onPreferenceTreeClick(preference: Preference): Boolean {
             return when (preference.key) {
                 "feedback" -> {
+                    val feedbackEmail = getString(R.string.feedback_email)
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
-                        data = Uri.parse("mailto:${getString(R.string.feedback_email)}")
+                        data = Uri.parse("mailto:$feedbackEmail")
                         putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject))
                     }
                     if (intent.resolveActivity(requireActivity().packageManager) != null) {
                         startActivity(Intent.createChooser(intent, getString(R.string.choose_email)))
                     } else {
+                        val clipboard = ContextCompat.getSystemService(requireContext(), ClipboardManager::class.java)
+                        clipboard!!.setPrimaryClip(ClipData.newPlainText("email", feedbackEmail))
+
                         Snackbar.make(requireActivity().findViewById<View>(android.R.id.content),
                                 R.string.no_email_apps, Snackbar.LENGTH_LONG).show()
                     }

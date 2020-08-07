@@ -22,23 +22,38 @@ enum class AVCProfiles(val value: Int) {
     AVCProfileConstrainedBaseline(0x10000),
     AVCProfileConstrainedHigh(0x80000),
 
-    // Qualcomm extensions
-    QOMX_VIDEO_AVCProfileConstrained(0x7F000000),
-    QOMX_VIDEO_AVCProfileConstrainedBaseline(0x7F000001),
-    QOMX_VIDEO_AVCProfileConstrainedHigh(0x7F000002),
-
     AVCProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int, extension: String): String? = values().find {
-            if (it.value > 0x7F000000 && it.value != 0x7FFFFFFF) {
-                it.value == findValue && it.name.contains(extension, true)
-            } else {
-                it.value == findValue
-            }
-        }?.name
+        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
     }
+}
 
+enum class AVCQualcommProfiles(val value: Int) {
+    QOMX_VIDEO_AVCProfileConstrained(0x7F000000),
+    QOMX_VIDEO_AVCProfileConstrainedBaseline(0x7F000001),
+    QOMX_VIDEO_AVCProfileConstrainedHigh(0x7F000002);
+
+    companion object {
+        fun from(findValue: Int): String? = try {
+            values().first { it.value == findValue }.name
+        } catch (e: NoSuchElementException) {
+            null
+        }
+    }
+}
+
+enum class AVCSamsungProfiles(val value: Int) {
+    OMX_VIDEO_AVCProfileConstrainedBaseline(0x7F000001),
+    OMX_VIDEO_AVCProfileConstrainedHigh(0x7F000002);
+
+    companion object {
+        fun from(findValue: Int): String? = try {
+            values().first { it.value == findValue }.name
+        } catch (e: NoSuchElementException) {
+            null
+        }
+    }
 }
 
 enum class AVCLevels (val value: Int) {

@@ -581,13 +581,14 @@ private val platformSupportedTypes = arrayOf(
                     level = AV1Levels.from(it.level)
                 }
                 codecId.contains("avc") -> {
-                    var extension = " "
-
-                    if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
-                        extension = "QOMX"
+                    profile = AVCProfiles.from(it.profile)
+                    if (profile == null) {
+                        if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {
+                            profile = AVCQualcommProfiles.from(it.profile)
+                        } else if (codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)) {
+                            profile = AVCSamsungProfiles.from(it.profile)
+                        }
                     }
-
-                    profile = AVCProfiles.from(it.profile, extension)
                     level = AVCLevels.from(it.level)
                 }
                 codecId.contains("avs") -> {
@@ -603,7 +604,7 @@ private val platformSupportedTypes = arrayOf(
                     profile = H263Profiles.from(it.profile)
                     level = H263Levels.from(it.level)
                 }
-                codecId.contains("hevc") -> {
+                codecId.contains("hevc") || codecId.contains("heic") || codecId.contains("heif") -> {
                     profile = HEVCProfiles.from(it.profile)
                     level = HEVCLevels.from(it.level)
                 }

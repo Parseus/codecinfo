@@ -34,6 +34,9 @@ class MainActivity : AppCompatActivity() {
     private var gestureHand: SgestureHand? = null
     private var shouldRecreateActivity = false
 
+    private val useImmersiveMode: Boolean
+        get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("immersive_mode", true)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
 
@@ -148,7 +151,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) setImmersiveMode()
+        if (hasFocus && useImmersiveMode) setImmersiveMode()
     }
 
     @Suppress("DEPRECATION")

@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -45,6 +46,10 @@ class SettingsActivity : AppCompatActivity() {
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
+
+            if (Build.VERSION.SDK_INT < 19) {
+                findPreference<CheckBoxPreference>("immersive_mode")?.isVisible = false
+            }
 
             findPreference<ListPreference>("dark_theme")!!.apply {
                 setDarkThemeOptions(this)

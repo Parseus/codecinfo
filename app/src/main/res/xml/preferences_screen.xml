@@ -6,6 +6,11 @@
             app:title="Dark theme"
             app:useSimpleSummaryProvider="true"/>
 
+        <androidx.preference.CheckBoxPreference
+            app:key="immersive_mode"
+            app:title="Immersive mode"
+            app:defaultValue="true" />
+
         <androidx.preference.ListPreference
             app:entries="@array/settings_show_for_known_titles"
             app:entryValues="@array/settings_show_for_known_values"

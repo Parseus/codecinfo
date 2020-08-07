@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Looper
 import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -12,10 +11,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
-import androidx.viewpager.widget.ViewPager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
-import com.kobakei.ratethisapp.RateThisApp
 import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
@@ -23,15 +20,11 @@ import com.parseus.codecinfo.databinding.ActivityMainBinding
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
 import com.parseus.codecinfo.settings.DarkTheme
 import com.parseus.codecinfo.settings.SettingsActivity
-import com.samsung.android.sdk.SsdkVendorCheck
-import com.samsung.android.sdk.gesture.Sgesture
-import com.samsung.android.sdk.gesture.SgestureHand
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private var gestureHand: SgestureHand? = null
     private var shouldRecreateActivity = false
 
     private val useImmersiveMode: Boolean
@@ -54,10 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
-        val config = RateThisApp.Config(3, 5)
-        RateThisApp.init(config)
-        RateThisApp.onCreate(this)
-        RateThisApp.showRateDialogIfNeeded(this)
+        initializeAppRating(this)
 
         val tabs = binding.tabLayout
         val viewPager = binding.pager.apply {
@@ -74,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         })
         tabs.setupWithViewPager(viewPager)
 
-        initializeSamsungGesture(viewPager)
+        initializeSamsungGesture(this, viewPager, tabs)
 
         if (isInTwoPaneMode()) {
             return
@@ -112,31 +102,9 @@ class MainActivity : AppCompatActivity() {
         shouldRecreateActivity = false
     }
 
-    private fun initializeSamsungGesture(pager: ViewPager) {
-        if (SsdkVendorCheck.isSamsungDevice()) {
-            try {
-                val gesture = Sgesture()
-                gesture.initialize(this)
-
-                if (gesture.isFeatureEnabled(Sgesture.TYPE_HAND_PRIMITIVE)) {
-                    gestureHand = SgestureHand(Looper.getMainLooper(), gesture)
-                    gestureHand!!.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
-                        if (info.angle in 225..315) {        // to the left
-                            binding.tabLayout.setScrollPosition(0, 0f, true)
-                            pager.currentItem = 0
-                        } else if (info.angle in 45..135) {  // to the right
-                            binding.tabLayout.setScrollPosition(1, 0f, true)
-                            pager.currentItem = 1
-                        }
-                    }
-                }
-            } catch (e: Exception) {}
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        gestureHand?.stop()
+        destroySamsungGestures()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

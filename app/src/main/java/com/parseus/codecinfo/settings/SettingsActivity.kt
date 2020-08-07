@@ -8,12 +8,12 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.getDefaultThemeOption
@@ -85,7 +85,7 @@ class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
                 }
 
                 "help" -> {
-                    val builder = AlertDialog.Builder(requireActivity())
+                    val builder = MaterialAlertDialogBuilder(requireActivity())
                     val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
                     builder.setView(dialogView)
                     val alertDialog = builder.create()

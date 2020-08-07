@@ -9,20 +9,15 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar">
+        android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimaryDark"
             app:title="@string/settings"
-            app:titleTextColor="@color/white"
-            app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             app:layout_scrollFlags="scroll|enterAlways"
-            android:theme="@style/ToolbarStyle"
-            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"/>
+            style="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

@@ -42,7 +42,7 @@
         app:layout_constraintTop_toBottomOf="@id/codec_name"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         android:textColor="@color/colorSecondaryDark"
-        android:textAppearance="@style/MaterialBody1"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
         app:autoSizeMinTextSize="12sp"
         app:autoSizeMaxTextSize="16sp"
         app:autoSizeStepGranularity="1sp"

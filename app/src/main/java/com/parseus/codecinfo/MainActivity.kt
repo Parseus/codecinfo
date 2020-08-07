@@ -13,6 +13,7 @@ import androidx.core.app.ShareCompat
 import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
 import androidx.viewpager.widget.ViewPager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
 import com.kobakei.ratethisapp.RateThisApp
 import com.parseus.codecinfo.adapters.PagerAdapter
@@ -182,7 +183,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                             getString(R.string.codec_all_info))
                 }
 
-                val builder = AlertDialog.Builder(this)
+                val builder = MaterialAlertDialogBuilder(this)
                 var alertDialog: AlertDialog? = null
                 builder.setTitle(R.string.choose_share)
                 builder.setSingleChoiceItems(codecShareOptions, -1) { _, option ->

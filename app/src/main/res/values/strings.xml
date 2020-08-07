@@ -14,7 +14,7 @@
     <string name="settings">Settings</string>
     <string name="about_app">About &app_name;…</string>
     <string name="app_version">Version %s</string>
-    <string name="copyright" translatable="false">\u00A9 2018-2019 KN-Soft</string>
+    <string name="copyright" translatable="false">\u00A9 2018-2020 KN-Soft</string>
     <string name="source_code_link" translatable="false">https://github.com/Parseus/codecinfo</string>
 
     <string name="feedback_email" translatable="false">parseus.dev@gmail.com</string>

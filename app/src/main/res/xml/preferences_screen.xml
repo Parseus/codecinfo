@@ -54,11 +54,13 @@
     <PreferenceCategory app:title="Help">
 
         <Preference
+            app:icon="@drawable/ic_email"
             app:key="feedback"
             app:summary="Report technical issues or suggest new features"
             app:title="Send feedback" />
 
         <Preference
+            app:icon="@drawable/ic_info"
             app:key="help"
             app:title="About Codec Info…"/>
 

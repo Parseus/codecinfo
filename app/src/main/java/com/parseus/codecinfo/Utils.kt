@@ -15,7 +15,7 @@ val isMiUi: Boolean
     get() = getSystemProperty("ro.miui.ui.version.name").isNotEmpty()
 
 fun isBatterySaverDisallowed(): Boolean {
-    return Build.VERSION.SDK_INT > 28
+    return Build.VERSION.SDK_INT !in 21..28
             || ("lge".equals(Build.MANUFACTURER, true) && !Build.MODEL.contains("nexus", true))
             || isMiUi
 }

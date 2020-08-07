@@ -7,18 +7,26 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.parseus.codecinfo.R
 import com.parseus.codecinfo.adapters.CodecInfoAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
-import kotlinx.android.synthetic.main.codec_details_fragment_layout.*
+import com.parseus.codecinfo.databinding.CodecDetailsFragmentLayoutBinding
 
 class CodecDetailsFragment : Fragment() {
+
+    private var _binding: CodecDetailsFragmentLayoutBinding? = null
+    private val binding get() = _binding!!
 
     var codecId: String? = null
     var codecName: String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.codec_details_fragment_layout, container, false)
+        _binding = CodecDetailsFragmentLayoutBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -27,12 +35,12 @@ class CodecDetailsFragment : Fragment() {
         arguments?.let {
             codecId = requireArguments().getString("codecId")
             codecName = requireArguments().getString("codecName")
-            full_codec_info_name.text = codecName
+            binding.fullCodecInfoName.text = codecName
 
             codecId?.let {
                 val codecInfoMap = getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
                 val codecAdapter = CodecInfoAdapter(codecInfoMap)
-                full_codec_info_content.apply {
+                binding.fullCodecInfoContent.apply {
                     layoutManager = LinearLayoutManager(context)
                     adapter = codecAdapter
                     ViewCompat.setNestedScrollingEnabled(this, false)

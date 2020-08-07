@@ -19,15 +19,17 @@ import com.kobakei.ratethisapp.RateThisApp
 import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
+import com.parseus.codecinfo.databinding.ActivityMainBinding
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
 import com.parseus.codecinfo.settings.DarkTheme
 import com.parseus.codecinfo.settings.SettingsActivity
 import com.samsung.android.sdk.SsdkVendorCheck
 import com.samsung.android.sdk.gesture.Sgesture
 import com.samsung.android.sdk.gesture.SgestureHand
-import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     private var gestureHand: SgestureHand? = null
     private var shouldRecreateActivity = false
@@ -37,12 +39,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
         super.onCreate(savedInstanceState)
 
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         val defaultThemeMode = getDefaultThemeOption()
         val darkTheme = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString("dark_theme", defaultThemeMode.toString())!!.toInt()
         AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
@@ -51,8 +56,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         RateThisApp.onCreate(this)
         RateThisApp.showRateDialogIfNeeded(this)
 
-        val tabs = tabLayout
-        val viewPager = pager.apply {
+        val tabs = binding.tabLayout
+        val viewPager = binding.pager.apply {
             val pagerAdapter = PagerAdapter(this@MainActivity, supportFragmentManager)
             adapter = pagerAdapter
             addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
@@ -114,10 +119,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                     gestureHand = SgestureHand(Looper.getMainLooper(), gesture)
                     gestureHand!!.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
                         if (info.angle in 225..315) {        // to the left
-                            tabLayout.setScrollPosition(0, 0f, true)
+                            binding.tabLayout.setScrollPosition(0, 0f, true)
                             pager.currentItem = 0
                         } else if (info.angle in 45..135) {  // to the right
-                            tabLayout.setScrollPosition(1, 0f, true)
+                            binding.tabLayout.setScrollPosition(1, 0f, true)
                             pager.currentItem = 1
                         }
                     }

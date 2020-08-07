@@ -16,16 +16,20 @@ import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.databinding.SettingsMainBinding
 import com.parseus.codecinfo.getDefaultThemeOption
 import com.parseus.codecinfo.isBatterySaverDisallowed
-import kotlinx.android.synthetic.main.settings_main.*
 
-class SettingsActivity : AppCompatActivity(R.layout.settings_main) {
+class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var binding: SettingsMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        setSupportActionBar(toolbar)
+        binding = SettingsMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
         supportFragmentManager.beginTransaction().replace(R.id.content, SettingsFragment()).commit()
     }
 

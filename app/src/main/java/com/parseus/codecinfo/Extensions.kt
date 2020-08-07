@@ -2,16 +2,7 @@ package com.parseus.codecinfo
 
 import android.content.Context
 import android.media.MediaCodecInfo
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.annotation.IdRes
-import androidx.annotation.LayoutRes
 import java.util.*
-
-fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachRoot: Boolean = false): View {
-    return LayoutInflater.from(context).inflate(layoutRes, this, attachRoot)
-}
 
 fun Context.isInTwoPaneMode(): Boolean {
     return resources.getBoolean(R.bool.twoPaneMode)
@@ -38,9 +29,3 @@ fun Int.toHexHstring(): String {
 fun MediaCodecInfo.isAudioCodec(): Boolean {
     return supportedTypes.joinToString().contains("audio")
 }
-
-fun <T : View> View.bind(@IdRes idRes: Int): Lazy<T> {
-    return unsafeLazy { findViewById<T>(idRes) }
-}
-
-private fun <T> unsafeLazy(initializer: () -> T) = lazy(LazyThreadSafetyMode.NONE, initializer)

@@ -1,25 +1,24 @@
 package com.parseus.codecinfo.adapters
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.RecyclerView
 import com.parseus.codecinfo.R
-import com.parseus.codecinfo.bind
 import com.parseus.codecinfo.codecinfo.CodecSimpleInfo
+import com.parseus.codecinfo.databinding.CodecAdapterRowBinding
 import com.parseus.codecinfo.fragments.CodecDetailsDialogFragment
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
-import com.parseus.codecinfo.inflate
 import com.parseus.codecinfo.isInTwoPaneMode
 
 class CodecAdapter(private val codecList: List<CodecSimpleInfo>) : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CodecInfoViewHolder {
-        val inflatedView = parent.inflate(R.layout.codec_adapter_row)
-        return CodecInfoViewHolder(inflatedView)
+        val binding = CodecAdapterRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CodecInfoViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: CodecInfoViewHolder, position: Int) {
@@ -29,13 +28,13 @@ class CodecAdapter(private val codecList: List<CodecSimpleInfo>) : RecyclerView.
 
     override fun getItemCount() = codecList.size
 
-    class CodecInfoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class CodecInfoViewHolder(binding: CodecAdapterRowBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        private val layout by view.bind<View>(R.id.simpleCodecRow)
-        private val codecId by view.bind<TextView>(R.id.codec_name)
-        private val codecName by view.bind<TextView>(R.id.codec_full_name)
-        private val codecType by view.bind<TextView>(R.id.codec_type)
-        private val moreInfo by view.bind<TextView>(R.id.more_info)
+        private val layout = binding.simpleCodecRow
+        private val codecId = binding.codecName
+        private val codecName = binding.codecFullName
+        private val codecType = binding.codecType
+        private val moreInfo = binding.moreInfo
 
         fun bindCodecInfo(codecInfo: CodecSimpleInfo) {
             codecId.text = codecInfo.codecId

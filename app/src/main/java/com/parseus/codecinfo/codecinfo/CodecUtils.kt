@@ -540,9 +540,7 @@ private val platformSupportedTypes = arrayOf(
             }
         }
 
-        capabilities.setLength(capabilities.length - 1) // Remove the last \n
-
-        return capabilities.toString()
+        return capabilities.toString().dropLast(1) // Remove the last \n
     }
 
     @SuppressLint("NewApi")

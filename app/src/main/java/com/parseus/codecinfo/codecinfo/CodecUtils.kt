@@ -76,6 +76,12 @@ private val platformSupportedTypes = arrayOf(
         var codecSimpleInfoList = ArrayList<CodecSimpleInfo>()
 
         for (mediaCodecInfo in mediaCodecInfos) {
+            val option = prefs.getString("filter_type", "2")!!.toInt()
+
+            if ((option == 0 && mediaCodecInfo.isEncoder) || (option == 1 && !mediaCodecInfo.isEncoder)) {
+                continue
+            }
+
             for (codecId in mediaCodecInfo.supportedTypes) {
                 try {
                     mediaCodecInfo.getCapabilitiesForType(codecId)
@@ -88,12 +94,6 @@ private val platformSupportedTypes = arrayOf(
                 val isAudioCodec = mediaCodecInfo.isAudioCodec()
 
                 if (isAudio == isAudioCodec) {
-                    val option = prefs.getString("filter_type", "2")!!.toInt()
-
-                    if ((option == 0 && mediaCodecInfo.isEncoder) || (option == 1 && !mediaCodecInfo.isEncoder)) {
-                        continue
-                    }
-
                     val codecSimpleInfo = CodecSimpleInfo(codecId, mediaCodecInfo.name, isAudioCodec,
                             mediaCodecInfo.isEncoder)
                     codecSimpleInfoList.add(codecSimpleInfo)

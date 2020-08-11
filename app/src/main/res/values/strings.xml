@@ -5,6 +5,8 @@
     <string name="appbarlayout_scrolling_view_behavior" translatable="false">
         com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
 
+    <string name="close_details">Close details</string>
+
     <string name="share">Share</string>
     <string name="choose_share">Choose info to share</string>
     <string name="codec_list">Codec list</string>

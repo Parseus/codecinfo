@@ -37,7 +37,8 @@ class CodecDetailsDialogFragment : DialogFragment() {
         (requireActivity() as MainActivity).supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeButtonEnabled(true)
-            setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel)
+            setHomeAsUpIndicator(R.drawable.ic_close)
+            setHomeActionContentDescription(R.string.close_details)
         }
 
         setHasOptionsMenu(true)

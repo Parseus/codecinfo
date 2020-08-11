@@ -18,9 +18,12 @@ fun getSystemProperty(property: String): String? {
 val isMiUi: Boolean
     get() = !getSystemProperty("ro.miui.ui.version.name").isNullOrEmpty()
 
+val isLgUx: Boolean
+    get() = !getSystemProperty("ro.lge.lguiversion").isNullOrEmpty()
+
 fun isBatterySaverDisallowed(): Boolean {
     return Build.VERSION.SDK_INT !in 21..28
-            || ("lge".equals(Build.MANUFACTURER, true) && !Build.MODEL.contains("nexus", true))
+            || isLgUx
             || isMiUi
 }
 

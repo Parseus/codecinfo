@@ -27,7 +27,7 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbarlayout_scrolling_view_behavior">
 
-        <com.google.android.material.textview.MaterialTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/full_codec_info_name"
             android:layout_width="match_parent"
             android:layout_height="48dp"

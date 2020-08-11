@@ -14,7 +14,7 @@
     android:paddingBottom="@dimen/list_content_padding"
     android:background="?attr/selectableItemBackground">
 
-    <com.google.android.material.textview.MaterialTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/codec_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
         android:textColor="@color/colorPrimary"
         tools:text="Codec name"/>
 
-    <com.google.android.material.textview.MaterialTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/codec_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
         android:textAppearance="?attr/textAppearanceOverline"
         tools:text="Encoder/decoder"/>
 
-    <com.google.android.material.textview.MaterialTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/codec_full_name"
         android:layout_width="match_parent"
         android:layout_height="24dp"
@@ -57,7 +57,7 @@
         app:autoSizeTextType="uniform"
         tools:text="Codec full name"/>
 
-    <com.google.android.material.textview.MaterialTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/more_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

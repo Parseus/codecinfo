@@ -53,7 +53,8 @@
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@android:color/darker_gray"/>
+            android:alpha="0.1"
+            android:background="?attr/colorOnSurface"/>
 
         <FrameLayout
             android:id="@+id/codecDetailsFragment"

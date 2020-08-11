@@ -12,4 +12,6 @@
 .idea/assetWizardSettings.xml
 app/build
 app/build/generated/not_namespaced_r_class_sources/debug/processDebugResources/r/androidx/asynclayoutinflater/R.java
+app/full
+app/openSource
 .idea/kotlinc.xml

@@ -4,5 +4,7 @@
 
 -repackageclasses
 
+-dontwarn android.hardware.scontext.**
 -dontwarn com.samsung.**
+#noinspection ShrinkerUnresolvedReference
 -keep class com.samsung.** { *; }

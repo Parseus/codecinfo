@@ -5,7 +5,7 @@
     android:layout_width="280dp"
     android:layout_height="wrap_content">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dialog_margin_size"
@@ -17,9 +17,9 @@
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/dialog_baseline_primary"
         android:text="@string/app_name"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"/>
+        android:textAppearance="?attr/textAppearanceHeadline6"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/version_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,9 +29,9 @@
         android:layout_marginEnd="@dimen/dialog_margin_size"
         android:text="@string/app_version"
         app:firstBaselineToTopHeight="@dimen/dialog_baseline_secondary"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
+        android:textAppearance="?attr/textAppearanceBody2" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dialog_margin_size"
@@ -39,9 +39,9 @@
         android:layout_marginStart="@dimen/dialog_margin_size"
         android:layout_marginEnd="@dimen/dialog_margin_size"
         android:text="@string/copyright"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"/>
+        android:textAppearance="?attr/textAppearanceBody2"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <com.google.android.material.textview.MaterialTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dialog_margin_size"
@@ -50,7 +50,7 @@
         android:layout_marginEnd="@dimen/dialog_margin_size"
         android:autoLink="web"
         android:text="@string/source_code_link"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"/>
+        android:textAppearance="?attr/textAppearanceBody2"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/ok_button"

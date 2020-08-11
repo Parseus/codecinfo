@@ -41,6 +41,7 @@ class SettingsActivity : AppCompatActivity() {
         setResult(Activity.RESULT_OK, Intent().apply {
             putExtra(FILTER_TYPE_CHANGED, filterTypeChanged)
             putExtra(SORTING_CHANGED, sortingChanged)
+            putExtra(IMMERSIVE_CHANGED, immersiveChanged)
         })
         super.finish()
     }
@@ -50,8 +51,15 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
 
-            if (Build.VERSION.SDK_INT < 19) {
-                findPreference<CheckBoxPreference>("immersive_mode")?.isVisible = false
+            findPreference<CheckBoxPreference>("immersive_mode")?.apply {
+                if (Build.VERSION.SDK_INT >= 19) {
+                    setOnPreferenceChangeListener { _, _ ->
+                        immersiveChanged = true
+                        true
+                    }
+                } else {
+                    isVisible = false
+                }
             }
 
             findPreference<ListPreference>("dark_theme")!!.apply {
@@ -154,8 +162,10 @@ class SettingsActivity : AppCompatActivity() {
     companion object {
         var filterTypeChanged = false
         var sortingChanged = false
+        var immersiveChanged = false
         const val FILTER_TYPE_CHANGED = "filter_type_changed"
         const val SORTING_CHANGED = "sorting_changed"
+        const val IMMERSIVE_CHANGED = "immersive_changed"
     }
 
 }

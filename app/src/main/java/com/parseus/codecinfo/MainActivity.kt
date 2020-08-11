@@ -80,9 +80,10 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == OPEN_SETTINGS) {
-            if (data != null && (data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)
-                            || data.getBooleanExtra(SettingsActivity.SORTING_CHANGED, false))) {
+        if (requestCode == OPEN_SETTINGS && data != null) {
+            if (data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)
+                    || data.getBooleanExtra(SettingsActivity.SORTING_CHANGED, false)
+                    || data.getBooleanExtra(SettingsActivity.IMMERSIVE_CHANGED, false)) {
                 shouldRecreateActivity = true
             }
         }

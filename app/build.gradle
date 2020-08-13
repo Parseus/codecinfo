@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 30
@@ -64,5 +65,4 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.0'
 
     fullImplementation fileTree(include: ['*.jar'], dir: 'libs')
-    fullImplementation('io.github.kobakei:ratethisapp:1.2.0')
 }

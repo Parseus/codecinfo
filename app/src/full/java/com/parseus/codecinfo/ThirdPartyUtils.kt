@@ -2,20 +2,20 @@ package com.parseus.codecinfo
 
 import android.content.Context
 import android.os.Looper
+import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
-import com.kobakei.ratethisapp.RateThisApp
+import com.mikhaellopez.ratebottomsheet.RateBottomSheet
+import com.mikhaellopez.ratebottomsheet.RateBottomSheetManager
 import com.samsung.android.sdk.SsdkVendorCheck
 import com.samsung.android.sdk.gesture.Sgesture
 import com.samsung.android.sdk.gesture.SgestureHand
 
 private var gestureHand: SgestureHand? = null
 
-fun initializeAppRating(context: Context) {
-    val config = RateThisApp.Config(3, 5)
-    RateThisApp.init(config)
-    RateThisApp.onCreate(context)
-    RateThisApp.showRateDialogIfNeeded(context)
+fun initializeAppRating(activity: AppCompatActivity) {
+    RateBottomSheetManager(activity).monitor()
+    RateBottomSheet.showRateBottomSheetIfMeetsConditions(activity)
 }
 
 fun initializeSamsungGesture(context: Context, pager: ViewPager, tabLayout: TabLayout) {

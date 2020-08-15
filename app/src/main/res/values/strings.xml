@@ -4,6 +4,7 @@
     <string name="app_name" translatable="false">&app_name;</string>
     <string name="appbarlayout_scrolling_view_behavior" translatable="false">
         com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
+    <string name="app_version_name">Version %1$s\n\u00A9 2018–2020 KN-Soft</string>
 
     <string name="close_details">Close details</string>
 

@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
+import android.content.res.Configuration.UI_MODE_NIGHT_MASK
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -13,10 +15,12 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentTransaction
 import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.dci.dev.appinfobadge.AppInfoBadge
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.parseus.codecinfo.R
@@ -109,24 +113,50 @@ class SettingsActivity : AppCompatActivity() {
                 }
 
                 "help" -> {
-                    val builder = MaterialAlertDialogBuilder(requireActivity())
-                    val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
-                    builder.setView(dialogView)
-                    val alertDialog = builder.create()
-
-                    dialogView.findViewById<View>(R.id.ok_button).setOnClickListener { alertDialog.dismiss() }
-
-                    try {
-                        val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
-                        versionTextView.text = getString(R.string.app_version,
-                                requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0).versionName)
-                    } catch (e : Exception) {}
-
-                    alertDialog.show()
+                    if (activity != null && Build.VERSION.SDK_INT >= 21) {
+                        showNewAppInfoDialog()
+                    } else {
+                        showOldAppInfoDialog()
+                    }
                     true
                 }
 
                 else -> super.onPreferenceTreeClick(preference)
+            }
+        }
+
+        private fun showOldAppInfoDialog() {
+            val builder = MaterialAlertDialogBuilder(requireActivity())
+            val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
+            builder.setView(dialogView)
+            val alertDialog = builder.create()
+
+            dialogView.findViewById<View>(R.id.ok_button).setOnClickListener { alertDialog.dismiss() }
+
+            try {
+                val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
+                versionTextView.text = getString(R.string.app_version,
+                        requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0).versionName)
+            } catch (e: Exception) {}
+
+            alertDialog.show()
+        }
+
+        private fun showNewAppInfoDialog() {
+            activity?.let {
+                val isInDarkMode = (it.resources.configuration.uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES
+                val appInfoFragment = AppInfoBadge
+                        .darkMode { isInDarkMode }
+                        .withRater { false }
+                        .withPermissions { false }
+                        .withEmail { getString(R.string.feedback_email) }
+                        .withSite { getString(R.string.source_code_link) }
+                        .show()
+                it.supportFragmentManager.beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .add(android.R.id.content, appInfoFragment)
+                        .addToBackStack(null)
+                        .commit()
             }
         }
 

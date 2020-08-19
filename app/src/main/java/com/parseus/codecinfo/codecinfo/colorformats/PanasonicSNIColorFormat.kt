@@ -1,3 +1,5 @@
+@file:Suppress("EnumEntryName", "unused")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
 enum class PanasonicSNIColorFormat(val value: Int) {

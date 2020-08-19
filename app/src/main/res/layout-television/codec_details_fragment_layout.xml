@@ -16,7 +16,7 @@
         android:paddingStart="@dimen/list_content_padding"
         android:paddingEnd="@dimen/list_content_padding"
         android:maxLines="1"
-        android:textColor="@color/colorPrimary"
+        android:textColor="?attr/colorPrimary"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
         tools:text="Codec full name"/>
 

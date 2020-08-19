@@ -37,7 +37,7 @@
             android:paddingStart="@dimen/list_content_padding"
             android:paddingEnd="@dimen/list_content_padding"
             android:maxLines="1"
-            android:textColor="@color/colorPrimary"
+            android:textColor="?attr/colorPrimary"
             android:textAppearance="?attr/textAppearanceHeadline6"
             app:autoSizeMinTextSize="12sp"
             app:autoSizeMaxTextSize="20sp"

@@ -26,7 +26,7 @@
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"
         android:alpha="0.87"
         android:textAppearance="?attr/textAppearanceOverline"
-        android:textColor="@color/colorPrimary"
+        android:textColor="?attr/colorPrimary"
         tools:text="Codec name"/>
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -49,7 +49,7 @@
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         android:alpha="0.87"
-        android:textColor="@color/colorSecondaryDark"
+        android:textColor="?attr/colorSecondary"
         android:textAppearance="?attr/textAppearanceBody2"
         app:autoSizeMinTextSize="12sp"
         app:autoSizeMaxTextSize="16sp"

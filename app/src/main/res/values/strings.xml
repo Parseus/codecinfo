@@ -53,6 +53,7 @@
     <string name="max_frame_rate_per_resolution">Max frame rate per resolution</string>
     <string name="color_profiles">Color profiles</string>
 
+    <string name="feature_support_format">%1$s (required: %2$s)</string>
     <string name="adaptive_playback">Adaptive playback</string>
     <string name="dynamic_timestamp">Dynamic timestamp</string>
     <string name="intra_refresh">Intra refresh</string>

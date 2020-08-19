@@ -3,11 +3,13 @@ package com.parseus.codecinfo.codecinfo
 import android.annotation.SuppressLint
 import android.content.Context
 import android.media.MediaCodecInfo
+import android.media.MediaCodecInfo.CodecCapabilities.*
 import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.os.Build.VERSION.SDK_INT
 import android.util.Range
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.preference.PreferenceManager
 import com.parseus.codecinfo.*
 import com.parseus.codecinfo.codecinfo.colorformats.*
@@ -137,9 +139,7 @@ private val platformSupportedTypes = arrayOf(
         codecInfoMap[context.getString(R.string.software_only)] = isSoftwareOnly(mediaCodecInfo).toString()
 
         if (!isEncoder && SDK_INT >= 30) {
-            codecInfoMap[context.getString(R.string.low_latency)] =
-                    capabilities.isFeatureSupported(
-                            MediaCodecInfo.CodecCapabilities.FEATURE_LowLatency).toString()
+            codecInfoMap.addFeature(context, capabilities, FEATURE_LowLatency, R.string.low_latency)
         }
 
         codecInfoMap[context.getString(R.string.codec_provider)] =
@@ -159,50 +159,33 @@ private val platformSupportedTypes = arrayOf(
 
             if (!isEncoder) {
                 if (SDK_INT >= 19) {
-                    codecInfoMap[context.getString(R.string.adaptive_playback)] =
-                            capabilities.isFeatureSupported(
-                                    MediaCodecInfo.CodecCapabilities.FEATURE_AdaptivePlayback).toString()
+                    codecInfoMap.addFeature(context, capabilities, FEATURE_AdaptivePlayback, R.string.adaptive_playback)
                 }
 
                 if (SDK_INT >= 26) {
-                    codecInfoMap[context.getString(R.string.partial_frames)] =
-                            capabilities.isFeatureSupported(
-                                    MediaCodecInfo.CodecCapabilities.FEATURE_PartialFrame).toString()
+                    codecInfoMap.addFeature(context, capabilities, FEATURE_PartialFrame, R.string.partial_frames)
                 }
 
                 if (SDK_INT >= 21) {
-                    codecInfoMap[context.getString(R.string.secure_playback)] =
-                            capabilities.isFeatureSupported(
-                                    MediaCodecInfo.CodecCapabilities.FEATURE_SecurePlayback).toString()
+                    codecInfoMap.addFeature(context, capabilities, FEATURE_SecurePlayback, R.string.secure_playback)
                 }
             } else {
                 if (SDK_INT >= 24) {
-                    codecInfoMap[context.getString(R.string.intra_refresh)] =
-                            capabilities.isFeatureSupported(
-                                    MediaCodecInfo.CodecCapabilities.FEATURE_IntraRefresh).toString()
+                    codecInfoMap.addFeature(context, capabilities, FEATURE_IntraRefresh, R.string.intra_refresh)
                 }
             }
         }
 
         if (SDK_INT >= 29) {
-            codecInfoMap[context.getString(R.string.dynamic_timestamp)] =
-                    capabilities.isFeatureSupported(
-                            MediaCodecInfo.CodecCapabilities.FEATURE_DynamicTimestamp).toString()
-
-            codecInfoMap[context.getString(R.string.multiple_access_units)] =
-                    capabilities.isFeatureSupported(
-                            MediaCodecInfo.CodecCapabilities.FEATURE_MultipleFrames).toString()
+            codecInfoMap.addFeature(context, capabilities, FEATURE_DynamicTimestamp, R.string.dynamic_timestamp)
+            codecInfoMap.addFeature(context, capabilities, FEATURE_MultipleFrames, R.string.multiple_access_units)
         }
 
         if (!isEncoder && SDK_INT >= 21) {
-            codecInfoMap[context.getString(R.string.tunneled_playback)] =
-                    capabilities.isFeatureSupported(
-                            MediaCodecInfo.CodecCapabilities.FEATURE_TunneledPlayback).toString()
+            codecInfoMap.addFeature(context, capabilities, FEATURE_TunneledPlayback, R.string.tunneled_playback)
 
             if (SDK_INT >= 29) {
-                codecInfoMap[context.getString(R.string.partial_access_units)] =
-                        capabilities.isFeatureSupported(
-                                MediaCodecInfo.CodecCapabilities.FEATURE_FrameParsing).toString()
+                codecInfoMap.addFeature(context, capabilities, FEATURE_FrameParsing, R.string.partial_access_units)
             }
         }
 
@@ -710,6 +693,23 @@ private val platformSupportedTypes = arrayOf(
             "$profileString: $levelString\n"
         } else {
             "$profileString\n"
+        }
+    }
+
+    @Suppress("NOTHING_TO_INLINE")
+    @RequiresApi(19)
+    private inline fun HashMap<String, String>.addFeature(context: Context,
+                                                          capabilities: MediaCodecInfo.CodecCapabilities,
+                                                          capability: String,
+                                                          @StringRes featureResId: Int) {
+        val featureSupported = capabilities.isFeatureSupported(capability)
+
+        this[context.getString(featureResId)] = if (SDK_INT >= 21 && featureSupported) {
+            context.getString(R.string.feature_support_format,
+                    featureSupported.toString(),
+                    capabilities.isFeatureRequired(capability).toString())
+        } else {
+            featureSupported.toString()
         }
     }
 

@@ -21,6 +21,10 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 
+// Source:
+// https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android10-release/media/java/android/media/MediaCodecInfo.java#1052
+private const val DEFAULT_MAX_INPUT_CHANNEL_LIMIT = 30
+
 private val platformSupportedTypes = arrayOf(
         "audio/3gpp",
         "audio/amr-mb",
@@ -59,8 +63,6 @@ private val framerateClasses = arrayOf(
 )
 
 private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()
-private var audioCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList()
-private var videoCodecSimpleInfoList: ArrayList<CodecSimpleInfo> = ArrayList()
 
 
 fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): ArrayList<CodecSimpleInfo> {
@@ -111,12 +113,6 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): ArrayList<CodecS
     }
 
     codecSimpleInfoList = codecSimpleInfoList.sortedWith(comparator).distinct() as ArrayList<CodecSimpleInfo>
-
-    if (isAudio) {
-        audioCodecSimpleInfoList = codecSimpleInfoList
-    } else {
-        videoCodecSimpleInfoList = codecSimpleInfoList
-    }
 
     return codecSimpleInfoList
 }
@@ -201,53 +197,8 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
         codecInfoMap[context.getString(R.string.bitrate_modes)] = bitrateModesString
 
         val defaultMediaFormat = capabilities.defaultFormat
-
-        val complexityLower = encoderCapabilities.complexityRange.lower
-        val complexityUpper = encoderCapabilities.complexityRange.upper
-
-        if (complexityLower != complexityUpper) {
-            var defaultComplexity = 0
-
-            if (defaultMediaFormat.containsKey(MediaFormat.KEY_COMPLEXITY)) {
-                defaultComplexity = defaultMediaFormat.getInteger(MediaFormat.KEY_COMPLEXITY)
-            }
-
-            val complexityRangeString = "$complexityLower — $complexityUpper " +
-                    "(${context.getString(R.string.range_default)}: $defaultComplexity)"
-
-            codecInfoMap[context.getString(R.string.complexity_range)] = complexityRangeString
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        val qualityRange = if (SDK_INT >= 28) {
-            encoderCapabilities.qualityRange
-        } else {
-            // Before P quality range was actually available, but hidden as a private API.
-            try {
-                val qualityRangeMethod = encoderCapabilities::class.java
-                        .getDeclaredMethod("getQualityRange")
-                qualityRangeMethod.invoke(encoderCapabilities) as Range<Int>
-            } catch (e: Exception) {
-                null
-            }
-        }
-
-        qualityRange?.let {
-            val qualityRangeLower = qualityRange.lower
-            val qualityRangeUpper = qualityRange.upper
-
-            var defaultQuality = 0
-
-            if (defaultMediaFormat.containsKey("quality")) {
-                defaultQuality = defaultMediaFormat.getInteger("quality")
-            }
-
-            if (qualityRangeLower != qualityRangeUpper) {
-                codecInfoMap[context.getString(R.string.quality_range)] =
-                        "$qualityRangeLower — $qualityRangeUpper " +
-                                "(${context.getString(R.string.range_default)}: $defaultQuality)"
-            }
-        }
+        handleComplexityRange(encoderCapabilities, defaultMediaFormat, context, codecInfoMap)
+        handleQualityRange(encoderCapabilities, defaultMediaFormat, codecInfoMap, context)
     }
 
     val profileString = if (codecId.contains("mp4a-latm") || codecId.contains("wma")) {
@@ -261,6 +212,65 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
     }
 
     return codecInfoMap
+}
+
+@RequiresApi(21)
+private fun handleQualityRange(encoderCapabilities: MediaCodecInfo.EncoderCapabilities,
+                               defaultMediaFormat: MediaFormat,
+                               codecInfoMap: HashMap<String, String>,
+                               context: Context) {
+    @Suppress("UNCHECKED_CAST")
+    val qualityRange = if (SDK_INT >= 28) {
+        encoderCapabilities.qualityRange
+    } else {
+        // Before P quality range was actually available, but hidden as a private API.
+        try {
+            val qualityRangeMethod = encoderCapabilities::class.java
+                    .getDeclaredMethod("getQualityRange")
+            qualityRangeMethod.invoke(encoderCapabilities) as Range<Int>
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    qualityRange?.let {
+        val qualityRangeLower = qualityRange.lower
+        val qualityRangeUpper = qualityRange.upper
+
+        var defaultQuality = 0
+
+        if (defaultMediaFormat.containsKey("quality")) {
+            defaultQuality = defaultMediaFormat.getInteger("quality")
+        }
+
+        if (qualityRangeLower != qualityRangeUpper) {
+            codecInfoMap[context.getString(R.string.quality_range)] =
+                    "$qualityRangeLower — $qualityRangeUpper " +
+                            "(${context.getString(R.string.range_default)}: $defaultQuality)"
+        }
+    }
+}
+
+@RequiresApi(21)
+private fun handleComplexityRange(encoderCapabilities: MediaCodecInfo.EncoderCapabilities,
+                                  defaultMediaFormat: MediaFormat,
+                                  context: Context,
+                                  codecInfoMap: HashMap<String, String>) {
+    val complexityLower = encoderCapabilities.complexityRange.lower
+    val complexityUpper = encoderCapabilities.complexityRange.upper
+
+    if (complexityLower != complexityUpper) {
+        var defaultComplexity = 0
+
+        if (defaultMediaFormat.containsKey(MediaFormat.KEY_COMPLEXITY)) {
+            defaultComplexity = defaultMediaFormat.getInteger(MediaFormat.KEY_COMPLEXITY)
+        }
+
+        val complexityRangeString = "$complexityLower — $complexityUpper " +
+                "(${context.getString(R.string.range_default)}: $defaultComplexity)"
+
+        codecInfoMap[context.getString(R.string.complexity_range)] = complexityRangeString
+    }
 }
 
 @RequiresApi(21)
@@ -356,9 +366,7 @@ private fun getAudioCapabilities(context: Context, codecId: String, codecName: S
  */
 private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxChannelCount: Int,
                                        capabilities: MediaCodecInfo.CodecCapabilities): Int {
-    val platformLimit = 30
-
-    if (maxChannelCount != platformLimit) {
+    if (maxChannelCount != DEFAULT_MAX_INPUT_CHANNEL_LIMIT) {
         if (maxChannelCount > 1) {
             // The maximum channel count looks like it's been set correctly.
             return maxChannelCount
@@ -425,7 +433,7 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
         // source: https://mpeg.chiariglione.org/standards/mpeg-1/audio
         "audio/mpeg", "audio/mpeg-l1", "audio/mpeg-l2" -> 2
         // Default to the platform limit, which is 30.
-        else -> platformLimit
+        else -> DEFAULT_MAX_INPUT_CHANNEL_LIMIT
     }
 }
 

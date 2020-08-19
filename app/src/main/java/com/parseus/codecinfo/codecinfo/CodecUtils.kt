@@ -740,16 +740,12 @@ private val platformSupportedTypes = arrayOf(
     }
 
     private fun isVendor(codecInfo: MediaCodecInfo): Boolean {
-        return if (SDK_INT >= 29) {
-            codecInfo.isVendor
-        } else {
-            val codecName = codecInfo.name.toLowerCase(Locale.ENGLISH)
-            return (!codecName.startsWith("omx.google.")
-                    && !codecName.startsWith("c2.android.")
-                    && !codecName.startsWith("c2.google.")
-                    && !codecName.startsWith("c2.vda.arc")
-                    && !codecName.startsWith("arc."))
-        }
+        val codecName = codecInfo.name.toLowerCase(Locale.ENGLISH)
+        return (!codecName.startsWith("omx.google.")
+                && !codecName.startsWith("c2.android.")
+                && !codecName.startsWith("c2.google.")
+                && !codecName.startsWith("c2.vda.arc")
+                && !codecName.startsWith("arc."))
     }
 
     private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {

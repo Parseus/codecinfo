@@ -33,6 +33,7 @@
     <string name="encoder">Encoder</string>
 
     <string name="codec_details">Codec details</string>
+    <string name="alias_for">Alias for</string>
 
     <string name="frames_per_second">fps</string>
     <string name="unknown">Unknown</string>

@@ -127,6 +127,10 @@ private val platformSupportedTypes = arrayOf(
 
         val codecInfoMap = LinkedHashMap<String, String>()
 
+        if (SDK_INT >= 29 && mediaCodecInfo.isAlias) {
+            codecInfoMap[context.getString(R.string.alias_for)] = mediaCodecInfo.canonicalName
+        }
+
         codecInfoMap[context.getString(R.string.hardware_acceleration)] =
                 isHardwareAccelerated(mediaCodecInfo).toString()
 

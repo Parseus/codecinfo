@@ -12,7 +12,7 @@ import com.parseus.codecinfo.codecinfo.CodecSimpleInfo
 
 class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
 
-    inner class ViewHolder(view: View) : Presenter.ViewHolder(view) {
+    class ViewHolder(view: View) : Presenter.ViewHolder(view) {
         val cardView = view as ImageCardView
         lateinit var simpleInfo: CodecSimpleInfo
     }

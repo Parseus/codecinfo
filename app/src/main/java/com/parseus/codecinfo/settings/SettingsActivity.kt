@@ -106,7 +106,7 @@ class SettingsActivity : AppCompatActivity() {
                         val clipboard = ContextCompat.getSystemService(requireContext(), ClipboardManager::class.java)
                         clipboard!!.setPrimaryClip(ClipData.newPlainText("email", feedbackEmail))
 
-                        Snackbar.make(requireActivity().findViewById<View>(android.R.id.content),
+                        Snackbar.make(requireActivity().findViewById(android.R.id.content),
                                 R.string.no_email_apps, Snackbar.LENGTH_LONG).show()
                     }
                     true

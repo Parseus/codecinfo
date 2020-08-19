@@ -18,7 +18,7 @@ data class OtherActionDescriptor(
 
 class OtherActionsPresenter : Presenter() {
 
-    inner class ViewHolder(view: View) : Presenter.ViewHolder(view) {
+    class ViewHolder(view: View) : Presenter.ViewHolder(view) {
         val cardView = view as ImageCardView
         lateinit var descriptor: OtherActionDescriptor
     }

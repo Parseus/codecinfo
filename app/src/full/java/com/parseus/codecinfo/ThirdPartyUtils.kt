@@ -28,7 +28,8 @@ fun initializeAppRating(activity: AppCompatActivity) {
                 @Suppress("DEPRECATION")
                 packageManager.getInstallerPackageName(packageName)
             }
-            if (installSourcePackage == InstallSource.PlayStore.installerPackageName) {
+            if (installSourcePackage == InstallSource.PlayStore.installerPackageName
+                    && Build.VERSION.SDK_INT >= 21) {
                 val manager = ReviewManagerFactory.create(activity)
                 val request = manager.requestReviewFlow()
                 request.addOnCompleteListener {

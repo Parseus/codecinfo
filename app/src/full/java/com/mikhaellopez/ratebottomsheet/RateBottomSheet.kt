@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -18,7 +17,8 @@ import kotlinx.android.synthetic.full.rate_bottom_sheet_layout.*
  * Licensed under the Apache License Version 2.0
  */
 class RateBottomSheet(
-    private val listener: ActionListener? = null
+        private val installSource: InstallSource?,
+        private val listener: ActionListener? = null
 ) : ABaseRateBottomSheet() {
 
     /**
@@ -40,8 +40,8 @@ class RateBottomSheet(
     }
 
     companion object {
-        internal fun show(manager: FragmentManager, listener: ActionListener? = null) {
-            RateBottomSheet(listener).show(manager, "rateBottomSheet")
+        internal fun show(manager: FragmentManager, installSource: InstallSource?, listener: ActionListener? = null) {
+            RateBottomSheet(installSource, listener).show(manager, "rateBottomSheet")
         }
 
         /**
@@ -52,11 +52,13 @@ class RateBottomSheet(
          */
         fun showRateBottomSheetIfMeetsConditions(
             activity: AppCompatActivity,
+            installSource: InstallSource?,
             listener: AskRateBottomSheet.ActionListener? = null
         ) {
             showRateBottomSheetIfMeetsConditions(
                 activity.applicationContext,
                 activity.supportFragmentManager,
+                installSource,
                 listener
             )
         }
@@ -69,12 +71,14 @@ class RateBottomSheet(
          */
         fun showRateBottomSheetIfMeetsConditions(
             fragment: Fragment,
+            installSource: InstallSource,
             listener: AskRateBottomSheet.ActionListener? = null
         ) {
             (fragment.activity as? AppCompatActivity)?.also {
                 showRateBottomSheetIfMeetsConditions(
                     it.applicationContext,
                     fragment.childFragmentManager,
+                    installSource,
                     listener
                 )
             }
@@ -90,13 +94,14 @@ class RateBottomSheet(
         fun showRateBottomSheetIfMeetsConditions(
             context: Context,
             fragmentManager: FragmentManager,
+            installSource: InstallSource?,
             listener: AskRateBottomSheet.ActionListener? = null
         ) {
             if (RateBottomSheetManager(context).shouldShowRateBottomSheet()) {
                 if (RateBottomSheetManager.showAskBottomSheet) {
-                    AskRateBottomSheet.show(fragmentManager, listener)
+                    AskRateBottomSheet.show(fragmentManager, installSource, listener)
                 } else {
-                    show(fragmentManager)
+                    show(fragmentManager, installSource)
                 }
             }
         }
@@ -116,22 +121,13 @@ class RateBottomSheet(
 
         btnRateBottomSheetOk.setOnClickListener {
             activity?.run {
-                val installSourcePackage = if (!RateBottomSheetManager.debugForceOpenEnable) {
-                    if (Build.VERSION.SDK_INT >= 30) {
-                        packageManager.getInstallSourceInfo(packageName).installingPackageName
-                    } else {
-                        @Suppress("DEPRECATION")
-                        packageManager.getInstallerPackageName(packageName)
-                    }
+                val source = if (!RateBottomSheetManager.debugForceOpenEnable) {
+                    installSource
                 } else {
-                    InstallSource.PlayStore.installerPackageName
+                    InstallSource.PlayStore
                 }
-                installSourcePackage?.let { source ->
-                    val installSource = InstallSource.fromInstallSource(source)
-                    if (installSource != null) {
-                        openStore(packageName, installSource)
-                    }
-                    RateBottomSheetManager(it.context).disableAgreeShowDialog()
+                if (source != null) {
+                    openStore(packageName, source)
                 }
             }
             dismiss()

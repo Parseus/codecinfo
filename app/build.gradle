@@ -30,6 +30,7 @@ android {
     productFlavors {
         full {
             dimension "app"
+            multiDexEnabled true
         }
 
         openSource {
@@ -67,4 +68,7 @@ dependencies {
     implementation 'com.github.ditacristianionut:AppInfoBadge:1.3'
 
     fullImplementation fileTree(include: ['*.jar'], dir: 'libs')
+    fullImplementation 'androidx.multidex:multidex:2.0.1'
+    fullImplementation 'com.google.android.play:core:1.8.0'
+    fullImplementation 'com.google.android.play:core-ktx:1.8.1'
 }

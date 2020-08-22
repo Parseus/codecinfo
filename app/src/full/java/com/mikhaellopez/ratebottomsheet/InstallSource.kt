@@ -25,7 +25,7 @@ enum class InstallSource(val installerPackageName: String,
     fun getWebUri(packageName: String): Uri = Uri.parse("$webPrefix$packageName")
 
     companion object {
-        fun fromInstallSource(installSource: String): InstallSource? {
+        fun fromInstallSource(installSource: String?): InstallSource? {
             return values().find { it.installerPackageName == installSource }
         }
     }

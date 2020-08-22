@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.full.rate_bottom_sheet_layout.*
  * Licensed under the Apache License Version 2.0
  */
 class AskRateBottomSheet(
+    private val installSource: InstallSource?,
     private val listener: ActionListener? = null
 ) : ABaseRateBottomSheet() {
 
@@ -28,8 +29,8 @@ class AskRateBottomSheet(
     }
 
     companion object {
-        internal fun show(manager: FragmentManager, listener: ActionListener? = null) {
-            AskRateBottomSheet(listener).show(manager, "askRateBottomSheet")
+        internal fun show(manager: FragmentManager, installSource: InstallSource?, listener: ActionListener? = null) {
+            AskRateBottomSheet(installSource, listener).show(manager, "askRateBottomSheet")
         }
     }
 
@@ -43,7 +44,7 @@ class AskRateBottomSheet(
         btnRateBottomSheetOk.text = getString(R.string.rate_popup_ask_ok)
 
         btnRateBottomSheetOk.setOnClickListener {
-            activity?.run { RateBottomSheet.show(supportFragmentManager, listener) }
+            activity?.run { RateBottomSheet.show(supportFragmentManager, installSource, listener) }
             dismiss()
         }
 

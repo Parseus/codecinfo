@@ -10,4 +10,5 @@
     <string name="rate_popup_ok">Rate it now</string>
     <string name="rate_popup_later">Remind me later</string>
     <string name="rate_popup_no">No, thanks</string>
+    <string name="rate_popup_close_description">Close</string>
 </resources>

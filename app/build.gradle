@@ -1,3 +1,6 @@
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -25,12 +28,20 @@ android {
         }
     }
 
+    applicationVariants.all { variant ->
+        if (isFullDebugVariant()) {
+            variant.mergedFlavor.manifestPlaceholders = [appClass:"androidx.multidex.MultidexApplication"]
+        } else {
+            variant.mergedFlavor.manifestPlaceholders = [appClass:"android.app.Application"]
+        }
+    }
+
     flavorDimensions "app"
 
     productFlavors {
         full {
             dimension "app"
-            multiDexEnabled true
+            multiDexEnabled isFullDebugVariant()
         }
 
         openSource {
@@ -55,6 +66,10 @@ android {
     }
 }
 
+configurations {
+    fullDebugImplementation {}
+}
+
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
@@ -67,8 +82,29 @@ dependencies {
 
     implementation 'com.github.ditacristianionut:AppInfoBadge:1.3'
 
+    fullDebugImplementation 'androidx.multidex:multidex:2.0.1'
+
     fullImplementation fileTree(include: ['*.jar'], dir: 'libs')
-    fullImplementation 'androidx.multidex:multidex:2.0.1'
     fullImplementation 'com.google.android.play:core:1.8.0'
     fullImplementation 'com.google.android.play:core-ktx:1.8.1'
+}
+
+def isFullDebugVariant() {
+    Gradle gradle = getGradle()
+    String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
+
+    Pattern pattern
+
+    if (tskReqStr.contains("assemble"))
+        pattern = Pattern.compile("assemble(\\w+)(Release|Debug)")
+    else
+        pattern = Pattern.compile("generate(\\w+)(Release|Debug)")
+
+    Matcher matcher = pattern.matcher(tskReqStr)
+
+    if (matcher.find()){
+        return matcher.group(1).toLowerCase() == "full" && matcher.group(2).toLowerCase() == "debug"
+    }else{
+        return false
+    }
 }

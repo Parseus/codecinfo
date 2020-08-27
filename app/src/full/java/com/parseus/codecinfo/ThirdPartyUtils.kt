@@ -34,7 +34,8 @@ fun initializeAppRating(activity: AppCompatActivity) {
                 val request = manager.requestReviewFlow()
                 request.addOnCompleteListener {
                     if (it.isSuccessful) {
-                        manager.launchReviewFlow(activity, it.result)
+                        val flow = manager.launchReviewFlow(activity, it.result)
+                        flow.addOnCompleteListener { rateManager.disableAgreeShowDialog() }
                     }
                 }
             } else {

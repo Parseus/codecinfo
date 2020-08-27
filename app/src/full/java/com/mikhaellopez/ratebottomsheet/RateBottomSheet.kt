@@ -129,6 +129,7 @@ class RateBottomSheet(
                 if (source != null) {
                     openStore(packageName, source)
                 }
+                RateBottomSheetManager(it.context).disableAgreeShowDialog()
             }
             dismiss()
             listener?.onRateClickListener()

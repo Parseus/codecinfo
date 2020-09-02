@@ -1,6 +1,7 @@
+@file:Suppress("EnumEntryName", "unused")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
-@Suppress("EnumEntryName")
 enum class OpenMAXILColorFormat(val value: Int) {
 
     OMX_COLOR_FormatUnused(0x00),

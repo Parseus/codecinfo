@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.parseus.codecinfo.codecinfo.profilelevels
 
 enum class VP8Profiles(val value: Int) {

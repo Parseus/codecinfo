@@ -1,4 +1,4 @@
-@file:Suppress("EnumEntryName")
+@file:Suppress("EnumEntryName", "unused")
 
 package com.parseus.codecinfo.codecinfo.profilelevels
 

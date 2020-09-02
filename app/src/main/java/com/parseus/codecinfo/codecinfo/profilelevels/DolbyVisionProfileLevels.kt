@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.parseus.codecinfo.codecinfo.profilelevels
 
 enum class DolbyVisionProfiles(val value: Int) {
@@ -12,6 +14,7 @@ enum class DolbyVisionProfiles(val value: Int) {
     DolbyVisionProfileDvheDtb(0x80),
     DolbyVisionProfileDvheSt(0x100),
     DolbyVisionProfileDvavSe(0x200),
+    DolbyVisionProfileDvav110(0x400),
     DolbyVisionProfileMax(0x7FFFFFFF);
 
     companion object {

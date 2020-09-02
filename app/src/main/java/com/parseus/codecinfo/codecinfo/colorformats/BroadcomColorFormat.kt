@@ -1,6 +1,7 @@
+@file:Suppress("unused", "EnumEntryName")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
-@Suppress("EnumEntryName")
 enum class BroadcomColorFormat(val value: Int) {
 
     OMX_COLOR_Format32bitABGR8888(0x7F000001),

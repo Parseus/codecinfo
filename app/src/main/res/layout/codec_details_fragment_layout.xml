@@ -10,22 +10,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/dialogToolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimaryDark"
-            app:titleTextColor="@color/white"
-            android:theme="@style/ToolbarStyle"
-            app:popupTheme="@style/Theme.MaterialComponents.Light"
-            tools:ignore="InconsistentLayout"/>
+            app:title="@string/app_name"
+            style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/details_dialog_background"
+        android:background="?android:colorBackground"
         android:orientation="vertical"
         app:layout_behavior="@string/appbarlayout_scrolling_view_behavior">
 
@@ -39,8 +36,8 @@
             android:paddingStart="@dimen/list_content_padding"
             android:paddingEnd="@dimen/list_content_padding"
             android:maxLines="1"
-            android:textColor="@color/colorPrimary"
-            android:textAppearance="@style/MaterialHeadline"
+            android:textColor="?attr/colorPrimary"
+            android:textAppearance="?attr/textAppearanceHeadline6"
             app:autoSizeMinTextSize="12sp"
             app:autoSizeMaxTextSize="20sp"
             app:autoSizeStepGranularity="1sp"

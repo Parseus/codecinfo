@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE resources [
-    <!ENTITY app_name "Codec Info">
-    ]>
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE resources [<!ENTITY app_name "Codec Info">]>
 
 <resources>
     <string name="app_name" translatable="false">&app_name;</string>
     <string name="appbarlayout_scrolling_view_behavior" translatable="false">
         com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
+    <string name="app_version_name">Version %1$s\n\u00A9 2018–2020 KN-Soft</string>
+
+    <string name="close_details">Close details</string>
 
     <string name="share">Share</string>
     <string name="choose_share">Choose info to share</string>
@@ -17,22 +17,24 @@
     <string name="settings">Settings</string>
     <string name="about_app">About &app_name;…</string>
     <string name="app_version">Version %s</string>
-    <string name="copyright" translatable="false">\u00A9 2018-2019 KN-Soft</string>
+    <string name="copyright" translatable="false">\u00A9 2018-2020 KN-Soft</string>
     <string name="source_code_link" translatable="false">https://github.com/Parseus/codecinfo</string>
 
     <string name="feedback_email" translatable="false">parseus.dev@gmail.com</string>
     <string name="email_subject">Feedback</string>
     <string name="choose_email">Send feedback via…</string>
-    <string name="no_email_apps">No apps can perform this action.</string>
+    <string name="no_email_apps">No apps can perform this action. Email address was copied to the clipboard.</string>
 
-    <string name="audio">Audio</string>
-    <string name="video">Video</string>
+    <string name="category_audio">Audio</string>
+    <string name="category_video">Video</string>
+    <string name="category_other">Other</string>
 
     <string name="decoder">Decoder</string>
     <string name="encoder">Encoder</string>
 
     <string name="codec_details">Codec details</string>
-    
+    <string name="alias_for">Alias for</string>
+
     <string name="frames_per_second">fps</string>
     <string name="unknown">Unknown</string>
 
@@ -51,6 +53,7 @@
     <string name="max_frame_rate_per_resolution">Max frame rate per resolution</string>
     <string name="color_profiles">Color profiles</string>
 
+    <string name="feature_support_format">%1$s (required: %2$s)</string>
     <string name="adaptive_playback">Adaptive playback</string>
     <string name="dynamic_timestamp">Dynamic timestamp</string>
     <string name="intra_refresh">Intra refresh</string>
@@ -59,7 +62,8 @@
     <string name="partial_frames">Partial frames queuing</string>
     <string name="secure_playback">Secure playback decryption</string>
     <string name="tunneled_playback">Tunneled playback</string>
-    
+    <string name="low_latency">Low latency decoding</string>
+
     <string name="bitrate_modes">Bitrate modes</string>
     <string name="cbr" translatable="false">Constant bitrate (CBR)</string>
     <string name="cq" translatable="false">Constant quality (CQ)</string>
@@ -70,6 +74,16 @@
     <string name="range_default">default</string>
 
     <string name="hardware_acceleration">Hardware acceleration</string>
+    <string name="software_only">Software-only</string>
+
+    <string name="codec_provider">Codec provider</string>
+    <string name="codec_provider_android">Android platform</string>
+    <string name="codec_provider_oem">Device vendor / OEM</string>
+
+    <string name="app_theme_light">Light</string>
+    <string name="app_theme_dark">Dark</string>
+    <string name="app_theme_battery_saver">Set by Battery Saver</string>
+    <string name="app_theme_system_default">System default</string>
 
     <string name="more_info">Tap to see more info…</string>
 

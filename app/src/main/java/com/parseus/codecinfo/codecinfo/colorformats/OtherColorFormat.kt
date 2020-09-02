@@ -1,6 +1,7 @@
+@file:Suppress("EnumEntryName", "unused")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
-@Suppress("EnumEntryName")
 enum class OtherColorFormat(val value: Int) {
 
     // Intel

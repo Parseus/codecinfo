@@ -1,6 +1,7 @@
+@file:Suppress("EnumEntryName", "unused")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
-@Suppress("EnumEntryName")
 enum class RenesasColorFormat(val value: Int) {
 
     OMF_MC_COLOR_FormatYUV411HV22(0x13),

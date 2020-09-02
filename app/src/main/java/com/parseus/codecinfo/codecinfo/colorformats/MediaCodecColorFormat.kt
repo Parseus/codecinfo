@@ -1,6 +1,7 @@
+@file:Suppress("unused", "EnumEntryName")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
-@Suppress("EnumEntryName")
 enum class MediaCodecColorFormat(val value: Int) {
     COLOR_FormatMonochrome(1),
     COLOR_Format16bitARGB1555(5),

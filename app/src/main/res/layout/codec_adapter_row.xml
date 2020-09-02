@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/simpleCodecRow"
@@ -11,38 +11,46 @@
     android:paddingRight="@dimen/list_content_padding"
     android:paddingStart="@dimen/list_content_padding"
     android:paddingEnd="@dimen/list_content_padding"
-    android:paddingBottom="12dp"
+    android:paddingBottom="@dimen/list_content_padding"
     android:background="?attr/selectableItemBackground">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/codec_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@id/codec_type"
+        android:layout_toLeftOf="@id/codec_type"
+        android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
-        android:textColor="@color/colorPrimary"
+        android:alpha="0.87"
+        android:textAppearance="?attr/textAppearanceOverline"
+        android:textColor="?attr/colorPrimary"
         tools:text="Codec name"/>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/codec_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/codec_name"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
+        android:gravity="center_vertical"
+        android:layout_alignBottom="@id/codec_name"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:alpha="0.87"
+        android:textAppearance="?attr/textAppearanceOverline"
         tools:text="Encoder/decoder"/>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/codec_full_name"
         android:layout_width="match_parent"
         android:layout_height="24dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/codec_name"
+        android:layout_below="@id/codec_name"
+        android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
-        android:textColor="@color/colorSecondaryDark"
-        android:textAppearance="@style/MaterialBody1"
+        android:alpha="0.87"
+        android:textColor="?attr/colorSecondary"
+        android:textAppearance="?attr/textAppearanceBody2"
         app:autoSizeMinTextSize="12sp"
         app:autoSizeMaxTextSize="16sp"
         app:autoSizeStepGranularity="1sp"
@@ -53,11 +61,13 @@
         android:id="@+id/more_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/codec_full_name"
+        android:layout_below="@id/codec_full_name"
+        android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+        android:alpha="0.87"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="?attr/colorOnSurface"
         android:text="@string/more_info"/>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

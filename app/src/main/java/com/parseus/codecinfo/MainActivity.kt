@@ -4,60 +4,53 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Looper
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
-import androidx.viewpager.widget.ViewPager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayout
-import com.kobakei.ratethisapp.RateThisApp
 import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
+import com.parseus.codecinfo.databinding.ActivityMainBinding
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
 import com.parseus.codecinfo.settings.DarkTheme
 import com.parseus.codecinfo.settings.SettingsActivity
-import com.samsung.android.sdk.SsdkVendorCheck
-import com.samsung.android.sdk.gesture.Sgesture
-import com.samsung.android.sdk.gesture.SgestureHand
-import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
+class MainActivity : AppCompatActivity() {
 
-    private var gestureHand: SgestureHand? = null
+    private lateinit var binding: ActivityMainBinding
+
     private var shouldRecreateActivity = false
+
+    private val useImmersiveMode: Boolean
+        get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("immersive_mode", true)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
 
         super.onCreate(savedInstanceState)
 
-        val defaultThemeMode = when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> DarkTheme.SystemDefault.value
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP -> DarkTheme.BatterySaver.value
-            else -> DarkTheme.Light.value
-        }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val defaultThemeMode = getDefaultThemeOption()
         val darkTheme = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString("dark_theme", defaultThemeMode.toString())!!.toInt()
         AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
-        val config = RateThisApp.Config(3, 5)
-        RateThisApp.init(config)
-        RateThisApp.onCreate(this)
-        RateThisApp.showRateDialogIfNeeded(this)
+        initializeAppRating(this)
 
-        val tabs = tabLayout
-        val viewPager = pager.apply {
+        val tabs = binding.tabLayout
+        val viewPager = binding.pager.apply {
             val pagerAdapter = PagerAdapter(this@MainActivity, supportFragmentManager)
             adapter = pagerAdapter
             addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
@@ -71,7 +64,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         })
         tabs.setupWithViewPager(viewPager)
 
-        initializeSamsungGesture(viewPager)
+        initializeSamsungGesture(this, viewPager, tabs)
 
         if (isInTwoPaneMode()) {
             return
@@ -87,9 +80,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == OPEN_SETTINGS) {
-            if (data != null && (data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)
-                            || data.getBooleanExtra(SettingsActivity.SORTING_CHANGED, false))) {
+        if (requestCode == OPEN_SETTINGS && data != null) {
+            if (data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)
+                    || data.getBooleanExtra(SettingsActivity.SORTING_CHANGED, false)
+                    || data.getBooleanExtra(SettingsActivity.IMMERSIVE_CHANGED, false)) {
                 shouldRecreateActivity = true
             }
         }
@@ -109,31 +103,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         shouldRecreateActivity = false
     }
 
-    private fun initializeSamsungGesture(pager: ViewPager) {
-        if (SsdkVendorCheck.isSamsungDevice()) {
-            try {
-                val gesture = Sgesture()
-                gesture.initialize(this)
-
-                if (gesture.isFeatureEnabled(Sgesture.TYPE_HAND_PRIMITIVE)) {
-                    gestureHand = SgestureHand(Looper.getMainLooper(), gesture)
-                    gestureHand!!.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
-                        if (info.angle in 225..315) {        // to the left
-                            tabLayout.setScrollPosition(0, 0f, true)
-                            pager.currentItem = 0
-                        } else if (info.angle in 45..135) {  // to the right
-                            tabLayout.setScrollPosition(1, 0f, true)
-                            pager.currentItem = 1
-                        }
-                    }
-                }
-            } catch (e: Exception) {}
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
-        gestureHand?.stop()
+        destroySamsungGestures()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -148,11 +120,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus) setImmersiveMode()
+        if (hasFocus && useImmersiveMode) setImmersiveMode()
     }
 
+    @Suppress("DEPRECATION")
     private fun setImmersiveMode() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.apply {
+                hide(WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars())
+                systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -182,7 +160,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                             getString(R.string.codec_all_info))
                 }
 
-                val builder = AlertDialog.Builder(this)
+                val builder = MaterialAlertDialogBuilder(this)
                 var alertDialog: AlertDialog? = null
                 builder.setTitle(R.string.choose_share)
                 builder.setSingleChoiceItems(codecShareOptions, -1) { _, option ->

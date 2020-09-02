@@ -1,6 +1,7 @@
+@file:Suppress("EnumEntryName", "unused")
+
 package com.parseus.codecinfo.codecinfo.colorformats
 
-@Suppress("EnumEntryName")
 enum class SonyColorFormat(val value: Int) {
 
     OMX_STE_COLOR_FormatYUV420PackedSemiPlanarMB(0x7FA00000),

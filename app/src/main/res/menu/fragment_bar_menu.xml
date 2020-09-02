@@ -5,10 +5,12 @@
     <item android:id="@+id/fragment_menu_item_share"
         app:showAsAction="ifRoom"
         android:title="@string/share"
+        android:contentDescription="@string/share"
         android:icon="@drawable/ic_share" />
 
     <item android:id="@+id/menu_item_settings"
         app:showAsAction="ifRoom"
         android:title="@string/settings"
+        android:contentDescription="@string/settings"
         android:icon="@drawable/ic_settings"/>
 </menu>

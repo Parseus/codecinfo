@@ -40,7 +40,7 @@
         <activity
             android:name=".tv.TvActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Leanback">
+            android:theme="@style/Theme.AppCompat.Leanback">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
@@ -48,7 +48,7 @@
         </activity>
         <activity android:name=".tv.TvCodecDetailsActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Leanback"
+            android:theme="@style/Theme.AppCompat.Leanback"
             android:parentActivityName=".tv.TvActivity"/>
         <activity android:name=".tv.TvSettingsActivity"
             android:label="@string/app_name"
@@ -56,7 +56,7 @@
             android:parentActivityName=".tv.TvActivity" />
         <activity android:name=".tv.TvAboutActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Leanback"
+            android:theme="@style/Theme.AppCompat.Leanback"
             android:parentActivityName=".tv.TvActivity" />
 
         <uses-library

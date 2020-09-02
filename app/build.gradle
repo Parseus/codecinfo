@@ -30,7 +30,7 @@ android {
 
     applicationVariants.all { variant ->
         if (isFullDebugVariant()) {
-            variant.mergedFlavor.manifestPlaceholders = [appClass:"androidx.multidex.MultidexApplication"]
+            variant.mergedFlavor.manifestPlaceholders = [appClass:"androidx.multidex.MultiDexApplication"]
         } else {
             variant.mergedFlavor.manifestPlaceholders = [appClass:"android.app.Application"]
         }

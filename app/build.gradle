@@ -78,7 +78,7 @@ dependencies {
     implementation 'androidx.leanback:leanback-preference:1.1.0-alpha04'
     implementation 'androidx.preference:preference:1.1.1'
 
-    implementation 'com.google.android.material:material:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
 
     implementation 'com.github.ditacristianionut:AppInfoBadge:1.3'
 

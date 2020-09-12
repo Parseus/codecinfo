@@ -13,14 +13,20 @@ import com.parseus.codecinfo.databinding.CodecDetailsFragmentLayoutBinding
 
 class TvCodecDetailsFragment : Fragment() {
 
-    private lateinit var binding: CodecDetailsFragmentLayoutBinding
+    private var _binding: CodecDetailsFragmentLayoutBinding? = null
+    private val binding get() = _binding!!
 
     private var codecId: String? = null
     private var codecName: String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = CodecDetailsFragmentLayoutBinding.inflate(inflater)
+        _binding = CodecDetailsFragmentLayoutBinding.inflate(inflater)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

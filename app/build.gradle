@@ -82,6 +82,8 @@ dependencies {
 
     implementation 'com.github.ditacristianionut:AppInfoBadge:1.3'
 
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
+
     fullDebugImplementation 'androidx.multidex:multidex:2.0.1'
 
     fullImplementation fileTree(include: ['*.jar'], dir: 'libs')

@@ -11,8 +11,7 @@ import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.parseus.codecinfo.R
-import kotlinx.android.synthetic.full.rate_bottom_sheet_layout.*
+import com.parseus.codecinfo.databinding.RateBottomSheetLayoutBinding
 
 /**
  * Copyright (C) 2020 Mikhael LOPEZ
@@ -20,11 +19,15 @@ import kotlinx.android.synthetic.full.rate_bottom_sheet_layout.*
  */
 abstract class ABaseRateBottomSheet : BottomSheetDialogFragment() {
 
+    private var _binding: RateBottomSheetLayoutBinding? = null
+    protected val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _binding = RateBottomSheetLayoutBinding.inflate(inflater, container, false)
         dialog?.setOnShowListener { dialog ->
             (dialog as? BottomSheetDialog)?.also {
                 it.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
@@ -34,23 +37,30 @@ abstract class ABaseRateBottomSheet : BottomSheetDialogFragment() {
                     }
             }
         }
-        return inflater.inflate(R.layout.rate_bottom_sheet_layout, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        btnRateBottomSheetCancel.visibility =
-            if (RateBottomSheetManager.showCloseButtonIcon) View.VISIBLE else View.GONE
+        binding.apply {
+            btnRateBottomSheetCancel.visibility =
+                    if (RateBottomSheetManager.showCloseButtonIcon) View.VISIBLE else View.GONE
 
-        context?.also {
-            btnRateBottomSheetOk.backgroundTintList =
-                ColorStateList.valueOf(getThemeAccentColor(it))
+            context?.also {
+                btnRateBottomSheetOk.backgroundTintList =
+                        ColorStateList.valueOf(getThemeAccentColor(it))
+            }
+
+            btnRateBottomSheetCancel.setOnClickListener { dismiss() }
+            btnRateBottomSheetNo.setOnClickListener { defaultBtnNoClickAction(it) }
+            btnRateBottomSheetLater.setOnClickListener { defaultBtnLaterClickAction(it) }
         }
-
-        btnRateBottomSheetCancel.setOnClickListener { dismiss() }
-        btnRateBottomSheetNo.setOnClickListener { defaultBtnNoClickAction(it) }
-        btnRateBottomSheetLater.setOnClickListener { defaultBtnLaterClickAction(it) }
     }
 
     protected fun defaultBtnNoClickAction(view: View) {

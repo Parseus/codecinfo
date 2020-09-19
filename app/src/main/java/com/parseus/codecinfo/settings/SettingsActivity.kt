@@ -43,6 +43,7 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun finish() {
         setResult(Activity.RESULT_OK, Intent().apply {
+            putExtra(ALIASES_CHANGED, aliasesChanged)
             putExtra(FILTER_TYPE_CHANGED, filterTypeChanged)
             putExtra(SORTING_CHANGED, sortingChanged)
             putExtra(IMMERSIVE_CHANGED, immersiveChanged)
@@ -59,6 +60,17 @@ class SettingsActivity : AppCompatActivity() {
                 if (Build.VERSION.SDK_INT >= 19) {
                     setOnPreferenceChangeListener { _, _ ->
                         immersiveChanged = true
+                        true
+                    }
+                } else {
+                    isVisible = false
+                }
+            }
+
+            findPreference<CheckBoxPreference>("show_aliases")?.apply {
+                if (Build.VERSION.SDK_INT >= 29) {
+                    setOnPreferenceChangeListener { _, _ ->
+                        aliasesChanged = true
                         true
                     }
                 } else {
@@ -190,9 +202,11 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     companion object {
+        var aliasesChanged = false
         var filterTypeChanged = false
         var sortingChanged = false
         var immersiveChanged = false
+        const val ALIASES_CHANGED = "aliases_changed"
         const val FILTER_TYPE_CHANGED = "filter_type_changed"
         const val SORTING_CHANGED = "sorting_changed"
         const val IMMERSIVE_CHANGED = "immersive_changed"

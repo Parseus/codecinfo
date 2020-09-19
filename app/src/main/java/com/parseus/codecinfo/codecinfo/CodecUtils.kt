@@ -86,6 +86,14 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): ArrayList<CodecS
             continue
         }
 
+        if (SDK_INT >= 29) {
+            val showAliases = prefs.getBoolean("show_aliases", false)
+
+            if (!showAliases && mediaCodecInfo.isAlias) {
+                continue
+            }
+        }
+
         for (codecId in mediaCodecInfo.supportedTypes) {
             try {
                 mediaCodecInfo.getCapabilitiesForType(codecId)

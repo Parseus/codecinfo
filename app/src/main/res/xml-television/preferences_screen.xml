@@ -45,6 +45,11 @@
             app:title="Sort codecs"
             app:useSimpleSummaryProvider="true"/>
 
+        <androidx.preference.CheckBoxPreference
+            app:key="show_aliases"
+            app:title="Show aliases for another underlying codecs"
+            app:defaultValue="false" />
+
     </PreferenceCategory>
 
 </androidx.preference.PreferenceScreen>

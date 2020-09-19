@@ -83,7 +83,8 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == OPEN_SETTINGS && data != null) {
             if (data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)
                     || data.getBooleanExtra(SettingsActivity.SORTING_CHANGED, false)
-                    || data.getBooleanExtra(SettingsActivity.IMMERSIVE_CHANGED, false)) {
+                    || data.getBooleanExtra(SettingsActivity.IMMERSIVE_CHANGED, false)
+                    || data.getBooleanExtra(SettingsActivity.ALIASES_CHANGED, false)) {
                 shouldRecreateActivity = true
             }
         }

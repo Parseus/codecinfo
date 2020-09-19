@@ -783,6 +783,11 @@ private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {
         return false
     }
 
+    // Qualcomm codecs which specifically mention HW acceleration in their names
+    if (codecName.startsWith("omx.qcom") && codecName.endsWith("hw")) {
+        return false
+    }
+
     // ARC/ARC++ (App Runtime for Chrome) codecs are always HW-only.
     if (codecName.startsWith("c2.vda.arc") || codecName.startsWith("arc.")) {
         return false

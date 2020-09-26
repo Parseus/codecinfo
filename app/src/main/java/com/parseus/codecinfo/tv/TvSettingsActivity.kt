@@ -8,7 +8,9 @@ class TvSettingsActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportFragmentManager.beginTransaction().replace(android.R.id.content, TvSettingsFragment()).commit()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction().replace(android.R.id.content, TvSettingsFragment()).commit()
+        }
     }
 
     override fun onBackPressed() {

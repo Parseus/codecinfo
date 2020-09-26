@@ -38,7 +38,9 @@ class SettingsActivity : AppCompatActivity() {
         binding = SettingsMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        supportFragmentManager.beginTransaction().replace(R.id.content, SettingsFragment()).commit()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction().replace(R.id.content, SettingsFragment()).commit()
+        }
     }
 
     override fun finish() {

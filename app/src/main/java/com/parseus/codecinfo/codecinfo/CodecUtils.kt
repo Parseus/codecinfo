@@ -113,7 +113,12 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): ArrayList<CodecS
         }
     }
 
-    val comparator: Comparator<CodecSimpleInfo> = when (prefs.getString("sort_type", "0")!!.toInt()) {
+    val sortType = try {
+        prefs.getString("sort_type", "0")!!.toInt()
+    } catch (e: Exception) {
+        prefs.getInt("sort_type", 0)
+    }
+    val comparator: Comparator<CodecSimpleInfo> = when (sortType) {
         0 -> compareBy({ it.codecId }, { it.codecName })
         1 -> compareByDescending<CodecSimpleInfo> { it.codecId }.thenBy { it.codecName }
         2 -> compareBy({ it.codecName }, { it.codecId })

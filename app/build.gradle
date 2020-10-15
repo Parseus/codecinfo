@@ -60,7 +60,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.leanback:leanback:1.1.0-alpha05'
     implementation 'androidx.leanback:leanback-preference:1.1.0-alpha05'
-    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.preference:preference-ktx:1.1.1'
     implementation 'com.google.android.material:material:1.2.1'
 
     implementation 'com.github.ditacristianionut:AppInfoBadge:1.3'

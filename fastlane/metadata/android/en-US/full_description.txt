@@ -1,0 +1,7 @@
+<p><i>Codec Info</i> is a simple tool that provides detailed listing of multimedia encoders and decoders (codecs) that are available on your Android device.</p>
+<p><br><b>Features:</b></p><ul>
+<li>Get info about audio codecs (max supported instances, input channels, bitrate range, sample rates and tunneled playback)</li>
+<li>Get info about video codecs (max resolution, frame rate, color profiles, adaptive playback, secure decryption and more)</li>
+<li>Easily share codec info with others</li>
+<li>No ads!</li></ul>
+<p><br><b>NOTE:</b> Available info may vary depending on a device and the Android version. Bluetooth codecs are NOT supported.</p>

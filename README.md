@@ -9,14 +9,16 @@ Features:
 - Easily share codec info with others
 - No ads!
 
-![audio_list](https://user-images.githubusercontent.com/3923037/42893647-3a220d62-8ab5-11e8-87ef-111b9f3997e2.png)
-![audio_details](https://user-images.githubusercontent.com/3923037/42893644-377a219e-8ab5-11e8-9aa6-3ec36cd15ed0.png)
+![phone_screen2](https://user-images.githubusercontent.com/3923037/92001672-41bf4c80-ed3f-11ea-916d-0dd2d62931b1.png)
+![phone_screen3](https://user-images.githubusercontent.com/3923037/92001686-4552d380-ed3f-11ea-9421-dce8936601d5.png)
 
-![video_list](https://user-images.githubusercontent.com/3923037/42893656-40478c08-8ab5-11e8-984f-4dc9cffad1a3.png)
-![video_details](https://user-images.githubusercontent.com/3923037/42893650-3d00eb2a-8ab5-11e8-930c-16891919eab5.png)
+![phone_screen4](https://user-images.githubusercontent.com/3923037/92001692-47b52d80-ed3f-11ea-9330-79a972432246.png)
+![phone_screen5](https://user-images.githubusercontent.com/3923037/92001696-484dc400-ed3f-11ea-8cf4-b66169007832.png)
 
 
 
 <a href='https://play.google.com/store/apps/details?id=com.parseus.codecinfo&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
 
 <a href='http://www.amazon.com/gp/product/B07H4ZR164/ref=mas_pm_codec_info'><img alt='Available at Amazon Appstore for Android' src='https://images-na.ssl-images-amazon.com/images/G/01/mobile-apps/devportal2/res/images/amazon-appstore-badge-english-black.png' /></a>
+
+<a href="https://galaxy.store/codecinfo"><img src="https://img.samsungapps.com/seller/images/badges/galaxyStore/png_big/GalaxyStore_English.png?ver=1598854688000" alt="Available on Samsung Galaxy Store" style="max-width: 100%; height: auto;"></a>

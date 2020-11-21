@@ -2,6 +2,7 @@ package com.parseus.codecinfo.tv
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
@@ -9,12 +10,13 @@ import com.parseus.codecinfo.R
 import com.parseus.codecinfo.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
 
+@Suppress("unused")
 class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
 
     private lateinit var adapter: ArrayObjectAdapter
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         brandColor = ContextCompat.getColor(requireContext(), R.color.colorPrimary)
         searchAffordanceColor = ContextCompat.getColor(requireContext(), R.color.colorSecondary)

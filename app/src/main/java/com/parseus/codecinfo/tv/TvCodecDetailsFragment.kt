@@ -11,6 +11,7 @@ import com.parseus.codecinfo.adapters.CodecInfoAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.databinding.CodecDetailsFragmentLayoutBinding
 
+@Suppress("unused")
 class TvCodecDetailsFragment : Fragment() {
 
     private var _binding: CodecDetailsFragmentLayoutBinding? = null
@@ -29,8 +30,8 @@ class TvCodecDetailsFragment : Fragment() {
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         requireActivity().intent?.let {
             codecId = it.getStringExtra("codecId")

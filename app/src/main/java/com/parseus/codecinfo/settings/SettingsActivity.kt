@@ -16,10 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
-import androidx.preference.CheckBoxPreference
-import androidx.preference.ListPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.*
 import com.dci.dev.appinfobadge.AppInfoBadge
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -208,6 +205,8 @@ class SettingsActivity : AppCompatActivity() {
             listPreference.entries = entries.toTypedArray()
             listPreference.entryValues = entryValues.toTypedArray()
             listPreference.setDefaultValue(getDefaultThemeOption().toString())
+            listPreference.value = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                    .getString("dark_theme", getDefaultThemeOption().toString())
         }
 
     }

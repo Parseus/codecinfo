@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.Window
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -20,6 +21,7 @@ import androidx.preference.*
 import com.dci.dev.appinfobadge.AppInfoBadge
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.SettingsMainBinding
 import com.parseus.codecinfo.getDefaultThemeOption
@@ -32,6 +34,24 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            val enter = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
+                excludeTarget(android.R.id.statusBarBackground, true)
+                excludeTarget(android.R.id.navigationBarBackground, true)
+            }
+            val exit = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
+                excludeTarget(android.R.id.statusBarBackground, true)
+                excludeTarget(android.R.id.navigationBarBackground, true)
+            }
+            window.apply {
+                requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+                enterTransition = enter
+                exitTransition = exit
+                allowReturnTransitionOverlap = true
+            }
+        }
+
         binding = SettingsMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)

@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
@@ -33,6 +34,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT >= 21) {
+            val reenter = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
+                excludeTarget(android.R.id.statusBarBackground, true)
+                excludeTarget(android.R.id.navigationBarBackground, true)
+            }
+            val exit = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
+                excludeTarget(android.R.id.statusBarBackground, true)
+                excludeTarget(android.R.id.navigationBarBackground, true)
+            }
+            window.apply {
+                requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+                reenterTransition = reenter
+                exitTransition = exit
+            }
+        }
+
         setTheme(R.style.AppTheme)
 
         super.onCreate(savedInstanceState)

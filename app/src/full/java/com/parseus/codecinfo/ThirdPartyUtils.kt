@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.mikhaellopez.ratebottomsheet.InstallSource
@@ -46,7 +46,7 @@ fun initializeAppRating(activity: AppCompatActivity) {
     }
 }
 
-fun initializeSamsungGesture(context: Context, pager: ViewPager, tabLayout: TabLayout) {
+fun initializeSamsungGesture(context: Context, pager: ViewPager2, tabLayout: TabLayout) {
     if (SsdkVendorCheck.isSamsungDevice()) {
         try {
             val gesture = Sgesture()

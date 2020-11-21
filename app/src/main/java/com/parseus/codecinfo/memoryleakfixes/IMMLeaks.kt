@@ -104,7 +104,7 @@ class IMMLeaks {
     }
 
     companion object {
-        @SuppressLint("DiscouragedPrivateApi")
+        @SuppressLint("DiscouragedPrivateApi", "PrivateApi")
         fun fixFocusedViewLeak(application: Application) {
             // Can't use refelction on API >= 28.
             if (Build.VERSION.SDK_INT >= 28) {

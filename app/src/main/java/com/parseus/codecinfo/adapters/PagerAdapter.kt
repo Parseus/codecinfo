@@ -1,17 +1,14 @@
 package com.parseus.codecinfo.adapters
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.parseus.codecinfo.fragments.CodecFragment
-import com.parseus.codecinfo.R
 
-class PagerAdapter(private val context: Context, fragmentManager: FragmentManager)
-    : FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+class PagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
 
-    override fun getItem(position: Int): Fragment {
+    override fun createFragment(position: Int): Fragment {
         return CodecFragment().apply {
             val bundle = Bundle()
             bundle.putBoolean("isAudio", position == 0)
@@ -19,14 +16,6 @@ class PagerAdapter(private val context: Context, fragmentManager: FragmentManage
         }
     }
 
-    override fun getCount() = 2
-
-    override fun getPageTitle(position: Int): CharSequence? {
-        return when (position) {
-            0 -> context.getString(R.string.category_audio)
-            1 -> context.getString(R.string.category_video)
-            else -> null
-        }
-    }
+    override fun getItemCount() = 2
 
 }

@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val defaultThemeMode = getDefaultThemeOption()
+        val defaultThemeMode = getDefaultThemeOption(this)
         val darkTheme = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString("dark_theme", defaultThemeMode.toString())!!.toInt()
         AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))

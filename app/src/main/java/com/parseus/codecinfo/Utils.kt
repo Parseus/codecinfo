@@ -1,6 +1,7 @@
 package com.parseus.codecinfo
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import com.parseus.codecinfo.settings.DarkTheme
 
@@ -21,14 +22,20 @@ val isMiUi: Boolean
 val isLgUx: Boolean
     get() = !getSystemProperty("ro.lge.lguiversion").isNullOrEmpty()
 
-fun isBatterySaverDisallowed(): Boolean {
+val isEmUi: Boolean
+    get() = !getSystemProperty("ro.build.version.emui").isNullOrEmpty()
+
+fun isChromebook(context: Context) = context.packageManager.hasSystemFeature("org.chromium.arc")
+
+fun isBatterySaverDisallowed(context: Context): Boolean {
     return Build.VERSION.SDK_INT !in 21..28
             || isLgUx
             || isMiUi
+            || isChromebook(context)
 }
 
-fun getDefaultThemeOption() = when {
+fun getDefaultThemeOption(context: Context) = when {
     Build.VERSION.SDK_INT >= 28 -> DarkTheme.SystemDefault.value
-    !isBatterySaverDisallowed() -> DarkTheme.BatterySaver.value
+    !isBatterySaverDisallowed(context) -> DarkTheme.BatterySaver.value
     else -> DarkTheme.Light.value
 }

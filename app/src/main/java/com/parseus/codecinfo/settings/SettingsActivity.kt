@@ -211,7 +211,7 @@ class SettingsActivity : AppCompatActivity() {
             entryValues.add(DarkTheme.Dark.value.toString())
 
             // Set by battery saver (if not blacklisted)
-            if (!isBatterySaverDisallowed()) {
+            if (!isBatterySaverDisallowed(requireContext())) {
                 entries.add(getString(R.string.app_theme_battery_saver))
                 entryValues.add(DarkTheme.BatterySaver.value.toString())
             }
@@ -224,9 +224,9 @@ class SettingsActivity : AppCompatActivity() {
 
             listPreference.entries = entries.toTypedArray()
             listPreference.entryValues = entryValues.toTypedArray()
-            listPreference.setDefaultValue(getDefaultThemeOption().toString())
+            listPreference.setDefaultValue(getDefaultThemeOption(requireContext()).toString())
             listPreference.value = PreferenceManager.getDefaultSharedPreferences(requireContext())
-                    .getString("dark_theme", getDefaultThemeOption().toString())
+                    .getString("dark_theme", getDefaultThemeOption(requireContext()).toString())
         }
 
     }

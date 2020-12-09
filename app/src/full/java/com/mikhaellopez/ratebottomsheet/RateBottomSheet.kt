@@ -10,16 +10,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.parseus.codecinfo.R
-import kotlinx.android.synthetic.full.rate_bottom_sheet_layout.*
 
 /**
  * Copyright (C) 2020 Mikhael LOPEZ
  * Licensed under the Apache License Version 2.0
  */
-class RateBottomSheet(
-        private val installSource: InstallSource?,
-        private val listener: ActionListener? = null
-) : ABaseRateBottomSheet() {
+@Suppress("ProtectedInFinal")
+class RateBottomSheet : ABaseRateBottomSheet() {
+
+    protected var installSource: InstallSource? = null
+    protected var actionListener: ActionListener? = null
 
     /**
      * You can use this listener if you choose to setShowAskBottomSheet(false)
@@ -40,8 +40,12 @@ class RateBottomSheet(
     }
 
     companion object {
-        internal fun show(manager: FragmentManager, installSource: InstallSource?, listener: ActionListener? = null) {
-            RateBottomSheet(installSource, listener).show(manager, "rateBottomSheet")
+        internal fun showDialog(manager: FragmentManager, source: InstallSource?, listener: ActionListener? = null) {
+            RateBottomSheet().apply {
+                installSource = source
+                actionListener = listener
+                show(manager, "rateBottomSheet")
+            }
         }
 
         /**
@@ -99,9 +103,9 @@ class RateBottomSheet(
         ) {
             if (RateBottomSheetManager(context).shouldShowRateBottomSheet()) {
                 if (RateBottomSheetManager.showAskBottomSheet) {
-                    AskRateBottomSheet.show(fragmentManager, installSource, listener)
+                    AskRateBottomSheet.showDialog(fragmentManager, installSource, listener)
                 } else {
-                    show(fragmentManager, installSource)
+                    showDialog(fragmentManager, installSource)
                 }
             }
         }
@@ -110,34 +114,36 @@ class RateBottomSheet(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        btnRateBottomSheetLater.visibility =
-            if (RateBottomSheetManager.showLaterButton) View.VISIBLE else View.GONE
+        binding.apply {
+            btnRateBottomSheetLater.visibility =
+                    if (RateBottomSheetManager.showLaterButton) View.VISIBLE else View.GONE
 
-        textRateBottomSheetTitle.text = getString(R.string.rate_popup_title)
-        textRateBottomSheetMessage.text = getString(R.string.rate_popup_message)
-        btnRateBottomSheetNo.text = getString(R.string.rate_popup_no)
-        btnRateBottomSheetLater.text = getString(R.string.rate_popup_later)
-        btnRateBottomSheetOk.text = getString(R.string.rate_popup_ok)
+            textRateBottomSheetTitle.text = getString(R.string.rate_popup_title)
+            textRateBottomSheetMessage.text = getString(R.string.rate_popup_message)
+            btnRateBottomSheetNo.text = getString(R.string.rate_popup_no)
+            btnRateBottomSheetLater.text = getString(R.string.rate_popup_later)
+            btnRateBottomSheetOk.text = getString(R.string.rate_popup_ok)
 
-        btnRateBottomSheetOk.setOnClickListener {
-            activity?.run {
-                val source = if (!RateBottomSheetManager.debugForceOpenEnable) {
-                    installSource
-                } else {
-                    InstallSource.PlayStore
+            btnRateBottomSheetOk.setOnClickListener {
+                activity?.run {
+                    val source = if (!RateBottomSheetManager.debugForceOpenEnable) {
+                        installSource
+                    } else {
+                        InstallSource.PlayStore
+                    }
+                    if (source != null) {
+                        openStore(packageName, source)
+                    }
+                    RateBottomSheetManager(it.context).disableAgreeShowDialog()
                 }
-                if (source != null) {
-                    openStore(packageName, source)
-                }
-                RateBottomSheetManager(it.context).disableAgreeShowDialog()
+                dismiss()
+                actionListener?.onRateClickListener()
             }
-            dismiss()
-            listener?.onRateClickListener()
-        }
 
-        btnRateBottomSheetNo.setOnClickListener {
-            defaultBtnNoClickAction(it)
-            listener?.onNoClickListener()
+            btnRateBottomSheetNo.setOnClickListener {
+                defaultBtnNoClickAction(it)
+                actionListener?.onNoClickListener()
+            }
         }
     }
 

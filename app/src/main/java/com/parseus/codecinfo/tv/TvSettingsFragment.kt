@@ -1,12 +1,10 @@
 package com.parseus.codecinfo.tv
 
+import android.os.Build
 import android.os.Bundle
 import androidx.leanback.preference.LeanbackPreferenceFragmentCompat
 import androidx.leanback.preference.LeanbackSettingsFragmentCompat
-import androidx.preference.Preference
-import androidx.preference.PreferenceDialogFragmentCompat
-import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceScreen
+import androidx.preference.*
 import com.parseus.codecinfo.R
 
 class TvSettingsFragment : LeanbackSettingsFragmentCompat() {
@@ -40,6 +38,16 @@ class TvSettingsFragment : LeanbackSettingsFragmentCompat() {
     }
 
     class TvPreferenceFragment : LeanbackPreferenceFragmentCompat() {
+
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+
+            findPreference<CheckBoxPreference>("show_aliases")?.apply {
+                if (Build.VERSION.SDK_INT < 29) {
+                    isVisible = false
+                }
+            }
+        }
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences_screen, rootKey)

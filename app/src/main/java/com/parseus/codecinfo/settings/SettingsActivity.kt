@@ -11,18 +11,17 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.Window
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
-import androidx.preference.CheckBoxPreference
-import androidx.preference.ListPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.*
 import com.dci.dev.appinfobadge.AppInfoBadge
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.SettingsMainBinding
 import com.parseus.codecinfo.getDefaultThemeOption
@@ -35,19 +34,49 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            val enter = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
+                excludeTarget(android.R.id.statusBarBackground, true)
+                excludeTarget(android.R.id.navigationBarBackground, true)
+            }
+            val exit = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
+                excludeTarget(android.R.id.statusBarBackground, true)
+                excludeTarget(android.R.id.navigationBarBackground, true)
+            }
+            window.apply {
+                requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+                enterTransition = enter
+                exitTransition = exit
+                allowReturnTransitionOverlap = true
+            }
+        }
+
         binding = SettingsMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        supportFragmentManager.beginTransaction().replace(R.id.content, SettingsFragment()).commit()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction().replace(R.id.content, SettingsFragment()).commit()
+        }
     }
 
     override fun finish() {
         setResult(Activity.RESULT_OK, Intent().apply {
+            putExtra(ALIASES_CHANGED, aliasesChanged)
             putExtra(FILTER_TYPE_CHANGED, filterTypeChanged)
             putExtra(SORTING_CHANGED, sortingChanged)
             putExtra(IMMERSIVE_CHANGED, immersiveChanged)
         })
         super.finish()
+    }
+
+    override fun onBackPressed() {
+        if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
+            // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
+            finishAfterTransition()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
@@ -59,6 +88,17 @@ class SettingsActivity : AppCompatActivity() {
                 if (Build.VERSION.SDK_INT >= 19) {
                     setOnPreferenceChangeListener { _, _ ->
                         immersiveChanged = true
+                        true
+                    }
+                } else {
+                    isVisible = false
+                }
+            }
+
+            findPreference<CheckBoxPreference>("show_aliases")?.apply {
+                if (Build.VERSION.SDK_INT >= 29) {
+                    setOnPreferenceChangeListener { _, _ ->
+                        aliasesChanged = true
                         true
                     }
                 } else {
@@ -171,7 +211,7 @@ class SettingsActivity : AppCompatActivity() {
             entryValues.add(DarkTheme.Dark.value.toString())
 
             // Set by battery saver (if not blacklisted)
-            if (!isBatterySaverDisallowed()) {
+            if (!isBatterySaverDisallowed(requireContext())) {
                 entries.add(getString(R.string.app_theme_battery_saver))
                 entryValues.add(DarkTheme.BatterySaver.value.toString())
             }
@@ -184,15 +224,19 @@ class SettingsActivity : AppCompatActivity() {
 
             listPreference.entries = entries.toTypedArray()
             listPreference.entryValues = entryValues.toTypedArray()
-            listPreference.setDefaultValue(getDefaultThemeOption().toString())
+            listPreference.setDefaultValue(getDefaultThemeOption(requireContext()).toString())
+            listPreference.value = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                    .getString("dark_theme", getDefaultThemeOption(requireContext()).toString())
         }
 
     }
 
     companion object {
+        var aliasesChanged = false
         var filterTypeChanged = false
         var sortingChanged = false
         var immersiveChanged = false
+        const val ALIASES_CHANGED = "aliases_changed"
         const val FILTER_TYPE_CHANGED = "filter_type_changed"
         const val SORTING_CHANGED = "sorting_changed"
         const val IMMERSIVE_CHANGED = "immersive_changed"

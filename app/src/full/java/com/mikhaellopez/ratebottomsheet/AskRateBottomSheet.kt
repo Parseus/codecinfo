@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.parseus.codecinfo.R
-import kotlinx.android.synthetic.full.rate_bottom_sheet_layout.*
 
 /**
  * Copyright (C) 2020 Mikhael LOPEZ
  * Licensed under the Apache License Version 2.0
  */
-class AskRateBottomSheet(
-    private val installSource: InstallSource?,
-    private val listener: ActionListener? = null
-) : ABaseRateBottomSheet() {
+@Suppress("ProtectedInFinal")
+class AskRateBottomSheet : ABaseRateBottomSheet() {
+
+    protected var installSource: InstallSource? = null
+    protected var actionListener: ActionListener? = null
 
     /**
      * You can use this listener if you choose to setShowAskBottomSheet(true)
@@ -29,28 +29,34 @@ class AskRateBottomSheet(
     }
 
     companion object {
-        internal fun show(manager: FragmentManager, installSource: InstallSource?, listener: ActionListener? = null) {
-            AskRateBottomSheet(installSource, listener).show(manager, "askRateBottomSheet")
+        internal fun showDialog(manager: FragmentManager, source: InstallSource?, listener: ActionListener? = null) {
+            AskRateBottomSheet().apply {
+                installSource = source
+                actionListener = listener
+                show(manager, "askRateBottomSheet")
+            }
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        btnRateBottomSheetLater.visibility = View.GONE
-        textRateBottomSheetTitle.text = getString(R.string.rate_popup_ask_title)
-        textRateBottomSheetMessage.text = getString(R.string.rate_popup_ask_message)
-        btnRateBottomSheetNo.text = getString(R.string.rate_popup_ask_no)
-        btnRateBottomSheetOk.text = getString(R.string.rate_popup_ask_ok)
+        binding.apply {
+            btnRateBottomSheetLater.visibility = View.GONE
+            textRateBottomSheetTitle.text = getString(R.string.rate_popup_ask_title)
+            textRateBottomSheetMessage.text = getString(R.string.rate_popup_ask_message)
+            btnRateBottomSheetNo.text = getString(R.string.rate_popup_ask_no)
+            btnRateBottomSheetOk.text = getString(R.string.rate_popup_ask_ok)
 
-        btnRateBottomSheetOk.setOnClickListener {
-            activity?.run { RateBottomSheet.show(supportFragmentManager, installSource, listener) }
-            dismiss()
-        }
+            btnRateBottomSheetOk.setOnClickListener {
+                dismiss()
+                activity?.run { RateBottomSheet.showDialog(supportFragmentManager, installSource, actionListener) }
+            }
 
-        btnRateBottomSheetNo.setOnClickListener {
-            defaultBtnNoClickAction(it)
-            listener?.onDislikeClickListener()
+            btnRateBottomSheetNo.setOnClickListener {
+                defaultBtnNoClickAction(it)
+                actionListener?.onDislikeClickListener()
+            }
         }
     }
 

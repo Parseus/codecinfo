@@ -57,6 +57,7 @@ class CodecDetailsDialogFragment : DialogFragment() {
     }
 
     override fun onDestroyView() {
+        (requireActivity() as MainActivity).setSupportActionBar(null)
         super.onDestroyView()
         _binding = null
     }

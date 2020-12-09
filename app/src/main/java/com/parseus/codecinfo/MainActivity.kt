@@ -1,7 +1,6 @@
 package com.parseus.codecinfo
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.*
@@ -12,14 +11,14 @@ import androidx.core.app.ShareCompat
 import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.databinding.ActivityMainBinding
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
 import com.parseus.codecinfo.settings.DarkTheme
-import com.parseus.codecinfo.settings.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,7 +29,27 @@ class MainActivity : AppCompatActivity() {
     private val useImmersiveMode: Boolean
         get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("immersive_mode", true)
 
+    private val settingsContract = registerForActivityResult(SettingsContract()) { result ->
+        shouldRecreateActivity = result
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (Build.VERSION.SDK_INT >= 21) {
+            val reenter = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
+                excludeTarget(android.R.id.statusBarBackground, true)
+                excludeTarget(android.R.id.navigationBarBackground, true)
+            }
+            val exit = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
+                excludeTarget(android.R.id.statusBarBackground, true)
+                excludeTarget(android.R.id.navigationBarBackground, true)
+            }
+            window.apply {
+                requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+                reenterTransition = reenter
+                exitTransition = exit
+            }
+        }
+
         setTheme(R.style.AppTheme)
 
         super.onCreate(savedInstanceState)
@@ -38,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val defaultThemeMode = getDefaultThemeOption()
+        val defaultThemeMode = getDefaultThemeOption(this)
         val darkTheme = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString("dark_theme", defaultThemeMode.toString())!!.toInt()
         AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
@@ -50,19 +69,12 @@ class MainActivity : AppCompatActivity() {
         initializeAppRating(this)
 
         val tabs = binding.tabLayout
-        val viewPager = binding.pager.apply {
-            val pagerAdapter = PagerAdapter(this@MainActivity, supportFragmentManager)
-            adapter = pagerAdapter
-            addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
-        }
-        tabs.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                viewPager.currentItem = tab?.position ?: 0
-            }
-        })
-        tabs.setupWithViewPager(viewPager)
+        val viewPager = binding.pager
+        val pagerAdapter = PagerAdapter(this)
+        viewPager.adapter = pagerAdapter
+        TabLayoutMediator(tabs, viewPager) { tab, position ->
+            tab.text = if (position == 0) getString(R.string.category_audio) else getString(R.string.category_video)
+        }.attach()
 
         initializeSamsungGesture(this, viewPager, tabs)
 
@@ -74,18 +86,6 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.executePendingTransactions()
             val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment)
             fragmentById?.let { supportFragmentManager.beginTransaction().remove(fragmentById).commit() }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == OPEN_SETTINGS && data != null) {
-            if (data.getBooleanExtra(SettingsActivity.FILTER_TYPE_CHANGED, false)
-                    || data.getBooleanExtra(SettingsActivity.SORTING_CHANGED, false)
-                    || data.getBooleanExtra(SettingsActivity.IMMERSIVE_CHANGED, false)) {
-                shouldRecreateActivity = true
-            }
         }
     }
 
@@ -125,12 +125,13 @@ class MainActivity : AppCompatActivity() {
 
     @Suppress("DEPRECATION")
     private fun setImmersiveMode() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= 30) {
+            window.setDecorFitsSystemWindows(false)
             window.insetsController?.apply {
                 hide(WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars())
                 systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        } else if (Build.VERSION.SDK_INT >= 19) {
             window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -172,7 +173,7 @@ class MainActivity : AppCompatActivity() {
 
                 return true
             }
-            R.id.menu_item_settings -> startActivityForResult(Intent(this, SettingsActivity::class.java), OPEN_SETTINGS)
+            R.id.menu_item_settings -> settingsContract.launch(Unit)
         }
 
         return super.onOptionsItemSelected(item)
@@ -247,8 +248,13 @@ class MainActivity : AppCompatActivity() {
                 .setText(codecStringBuilder.toString()).startChooser()
     }
 
-    companion object {
-        private const val OPEN_SETTINGS = 42
+    override fun onBackPressed() {
+        if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
+            // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
+            finishAfterTransition()
+        } else {
+            super.onBackPressed()
+        }
     }
 
 }

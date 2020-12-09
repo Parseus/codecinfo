@@ -19,7 +19,7 @@ class CodecDetailsFragment : Fragment() {
     var codecId: String? = null
     var codecName: String? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = CodecDetailsFragmentLayoutBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -29,8 +29,8 @@ class CodecDetailsFragment : Fragment() {
         _binding = null
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         arguments?.let {
             codecId = requireArguments().getString("codecId")

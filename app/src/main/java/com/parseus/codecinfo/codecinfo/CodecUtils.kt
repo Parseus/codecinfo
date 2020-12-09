@@ -86,6 +86,14 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): ArrayList<CodecS
             continue
         }
 
+        if (SDK_INT >= 29) {
+            val showAliases = prefs.getBoolean("show_aliases", false)
+
+            if (!showAliases && mediaCodecInfo.isAlias) {
+                continue
+            }
+        }
+
         for (codecId in mediaCodecInfo.supportedTypes) {
             try {
                 mediaCodecInfo.getCapabilitiesForType(codecId)
@@ -105,7 +113,12 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): ArrayList<CodecS
         }
     }
 
-    val comparator: Comparator<CodecSimpleInfo> = when (prefs.getString("sort_type", "0")!!.toInt()) {
+    val sortType = try {
+        prefs.getString("sort_type", "0")!!.toInt()
+    } catch (e: Exception) {
+        prefs.getInt("sort_type", 0)
+    }
+    val comparator: Comparator<CodecSimpleInfo> = when (sortType) {
         0 -> compareBy({ it.codecId }, { it.codecName })
         1 -> compareByDescending<CodecSimpleInfo> { it.codecId }.thenBy { it.codecName }
         2 -> compareBy({ it.codecName }, { it.codecId })
@@ -780,6 +793,11 @@ private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {
 
     // Intel codecs which specifically mention HW acceleration in their names
     if (codecName.startsWith("omx.intel.hw_vd", true)) {
+        return false
+    }
+
+    // Qualcomm codecs which specifically mention HW acceleration in their names
+    if (codecName.startsWith("omx.qcom") && codecName.endsWith("hw")) {
         return false
     }
 

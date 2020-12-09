@@ -4,9 +4,10 @@ package com.parseus.codecinfo.codecinfo.profilelevels
 
 enum class AV1Profiles(val value: Int) {
 
-    AV1Profile0(0x01),
-    AV1Profile1(0x02),
-    AV1Profile2(0x04),
+    AV1ProfileMain8(0x01),
+    AV1ProfileMain10(0x02),
+    AV1ProfileMain10HDR10(0x1000),
+    AV1ProfileMain10HDR10Plus(0x2000),
 
     AV1ProfileMax(0x7FFFFFFF);
 

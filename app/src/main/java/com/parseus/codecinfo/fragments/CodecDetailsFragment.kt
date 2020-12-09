@@ -19,7 +19,7 @@ class CodecDetailsFragment : Fragment() {
     var codecId: String? = null
     var codecName: String? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = CodecDetailsFragmentLayoutBinding.inflate(inflater, container, false)
         return binding.root
     }

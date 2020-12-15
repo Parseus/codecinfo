@@ -137,7 +137,8 @@ class SettingsActivity : AppCompatActivity() {
                 "feedback" -> {
                     val feedbackEmail = getString(R.string.feedback_email)
                     val intent = Intent(Intent.ACTION_SENDTO).apply {
-                        data = Uri.parse("mailto:$feedbackEmail")
+                        data = Uri.parse("mailto:")
+                        putExtra(Intent.EXTRA_EMAIL, arrayOf(feedbackEmail))
                         putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject))
                     }
                     if (intent.resolveActivity(requireActivity().packageManager) != null) {

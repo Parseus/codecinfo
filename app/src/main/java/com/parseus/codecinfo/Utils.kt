@@ -31,6 +31,7 @@ fun isBatterySaverDisallowed(context: Context): Boolean {
     return Build.VERSION.SDK_INT !in 21..28
             || isLgUx
             || isMiUi
+            || isEmUi
             || isChromebook(context)
 }
 

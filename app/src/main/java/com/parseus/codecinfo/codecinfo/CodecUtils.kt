@@ -473,8 +473,10 @@ private fun getVideoCapabilities(context: Context, codecName: String,
         }
         codecInfoMap[context.getString(R.string.frame_rate)] = framerateString
 
-        codecInfoMap[context.getString(R.string.max_frame_rate_per_resolution)] =
-                getFrameRatePerResolutions(context, videoCapabilities)
+        val frameRatePerResolutions = getFrameRatePerResolutions(context, videoCapabilities)
+        if (frameRatePerResolutions.isNotEmpty()) {
+            codecInfoMap[context.getString(R.string.max_frame_rate_per_resolution)] = frameRatePerResolutions
+        }
     }
 
     addColorFormats(capabilities, codecName, context, codecInfoMap)
@@ -722,9 +724,8 @@ private fun getFormattedProfileLevelString(context: Context, profile: String?, p
     }
 }
 
-@Suppress("NOTHING_TO_INLINE")
 @RequiresApi(19)
-private inline fun HashMap<String, String>.addFeature(context: Context,
+private fun HashMap<String, String>.addFeature(context: Context,
                                                       capabilities: MediaCodecInfo.CodecCapabilities,
                                                       capability: String,
                                                       @StringRes featureResId: Int) {

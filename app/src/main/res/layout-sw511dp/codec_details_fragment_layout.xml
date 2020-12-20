@@ -20,7 +20,7 @@
         android:textAppearance="?attr/textAppearanceHeadline6"
         app:autoSizeMinTextSize="12sp"
         app:autoSizeMaxTextSize="20sp"
-        app:autoSizeStepGranularity="1sp"
+        app:autoSizeStepGranularity="1px"
         app:autoSizeTextType="uniform"
         tools:text="Codec full name"/>
 

@@ -10,9 +10,7 @@
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:layout_alignParentTop="true">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
@@ -29,10 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/appBarLayout"
-        android:layout_toStartOf="@id/separator"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/separator"
-        app:layout_constraintTop_toBottomOf="@id/appBarLayout">
+        android:layout_toStartOf="@id/separator">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="match_parent"
@@ -51,10 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/tabLayout"
-        android:layout_toStartOf="@id/separator"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/separator"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"/>
+        android:layout_toStartOf="@id/separator"/>
 
     <View
         android:id="@+id/separator"
@@ -64,10 +56,7 @@
         android:layout_below="@id/appBarLayout"
         android:layout_centerHorizontal="true"
         android:alpha="0.1"
-        android:background="?attr/colorOnSurface"
-        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:background="?attr/colorOnSurface"/>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/codecDetailsFragment"
@@ -78,9 +67,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:name="com.parseus.codecinfo.fragments.CodecDetailsFragment"
-        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
-        app:layout_constraintStart_toEndOf="@id/separator"
-        app:layout_constraintEnd_toEndOf="parent"
         tools:layout="@layout/codec_details_fragment_layout"
         tools:ignore="InconsistentLayout">
     </androidx.fragment.app.FragmentContainerView>

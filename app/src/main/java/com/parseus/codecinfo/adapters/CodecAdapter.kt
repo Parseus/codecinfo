@@ -1,11 +1,12 @@
 package com.parseus.codecinfo.adapters
 
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.RecyclerView
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.codecinfo.CodecSimpleInfo
@@ -46,25 +47,26 @@ class CodecAdapter(private val codecList: List<CodecSimpleInfo>) : RecyclerView.
             }
 
             layout.setOnClickListener {
-                val detailsFragment = if (itemView.context.isInTwoPaneMode()) {
+                val activity = (layout.context as FragmentActivity)
+                val detailsFragment = if (activity.isInTwoPaneMode()) {
                     CodecDetailsFragment()
                 } else {
                     CodecDetailsDialogFragment()
                 }
-                val bundle = Bundle().apply {
-                    putString("codecId", codecInfo.codecId)
-                    putString("codecName", codecInfo.codecName)
-                }
-                detailsFragment.arguments = bundle
-                val activity = (layout.context as FragmentActivity)
+                detailsFragment.arguments = bundleOf(
+                        "codecId" to codecInfo.codecId,
+                        "codecName" to codecInfo.codecName
+                )
 
-                if (itemView.context.isInTwoPaneMode()) {
-                    activity.supportFragmentManager.beginTransaction()
-                            .replace(R.id.codecDetailsFragment, detailsFragment).commit()
-                } else {
-                    val transaction = activity.supportFragmentManager.beginTransaction()
-                    transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    transaction.add(android.R.id.content, detailsFragment).addToBackStack(null).commit()
+                activity.supportFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    if (activity.isInTwoPaneMode()) {
+                        replace(R.id.codecDetailsFragment, detailsFragment)
+                    } else {
+                        add(android.R.id.content, detailsFragment)
+                        addToBackStack(null)
+                    }
                 }
             }
         }

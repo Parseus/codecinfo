@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.commit
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.tabs.TabLayoutMediator
@@ -85,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState != null) {
             supportFragmentManager.executePendingTransactions()
             val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment)
-            fragmentById?.let { supportFragmentManager.beginTransaction().remove(fragmentById).commit() }
+            fragmentById?.let { supportFragmentManager.commit { remove(fragmentById) } }
         }
     }
 
@@ -227,7 +228,7 @@ class MainActivity : AppCompatActivity() {
                 val codecId = fragmentById.codecId
                 val codecName = fragmentById.codecName
 
-                val codecInfoMap = getDetailedCodecInfo(this, codecId!!, codecName!!)
+                val codecInfoMap = getDetailedCodecInfo(this, codecId, codecName)
                 codecStringBuilder.append("${getString(R.string.codec_details)}: $codecName\n\n")
 
                 for (key in codecInfoMap.keys) {

@@ -16,8 +16,8 @@ class CodecDetailsFragment : Fragment() {
     private var _binding: CodecDetailsFragmentLayoutBinding? = null
     private val binding get() = _binding!!
 
-    var codecId: String? = null
-    var codecName: String? = null
+    var codecId = ""
+    var codecName = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = CodecDetailsFragmentLayoutBinding.inflate(inflater, container, false)
@@ -32,21 +32,33 @@ class CodecDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        arguments?.let {
-            codecId = requireArguments().getString("codecId")
-            codecName = requireArguments().getString("codecName")
+        val bundle = savedInstanceState ?: arguments
+
+        bundle?.let {
+            codecId = it.getString("codecId")!!
+            codecName = it.getString("codecName")!!
+            getFullDetails()
+        }
+    }
+
+    private fun getFullDetails() {
+        if (codecId.isNotEmpty() && codecName.isNotEmpty()) {
             binding.fullCodecInfoName.text = codecName
 
-            codecId?.let {
-                val codecInfoMap = getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
-                val codecAdapter = CodecInfoAdapter(codecInfoMap)
-                binding.fullCodecInfoContent.apply {
-                    layoutManager = LinearLayoutManager(context)
-                    adapter = codecAdapter
-                    ViewCompat.setNestedScrollingEnabled(this, false)
-                }
+            val codecInfoMap = getDetailedCodecInfo(requireContext(), codecId, codecName)
+            val codecAdapter = CodecInfoAdapter(codecInfoMap)
+            binding.fullCodecInfoContent.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = codecAdapter
+                ViewCompat.setNestedScrollingEnabled(this, false)
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString("codecId", codecId)
+        outState.putString("codecName", codecName)
     }
 
 }

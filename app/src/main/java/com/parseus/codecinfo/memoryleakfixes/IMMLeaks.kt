@@ -7,10 +7,12 @@ import android.content.Context
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.ContextWrapper
 import android.os.Build
+import android.os.Bundle
 import android.os.Looper
 import android.os.MessageQueue
 import android.view.View
 import android.view.ViewTreeObserver
+import android.view.Window
 import android.view.inputmethod.InputMethodManager
 import java.lang.reflect.Field
 import java.lang.reflect.Method
@@ -106,8 +108,8 @@ class IMMLeaks {
     companion object {
         @SuppressLint("DiscouragedPrivateApi", "PrivateApi")
         fun fixFocusedViewLeak(application: Application) {
-            // Can't use refelction on API >= 28.
-            if (Build.VERSION.SDK_INT >= 28) {
+            // Fixed in API 24.
+            if (Build.VERSION.SDK_INT > 23) {
                 return
             }
 
@@ -132,14 +134,83 @@ class IMMLeaks {
             }
 
             application.registerActivityLifecycleCallbacks(object : LifecycleCallbacksAdapter() {
-                override fun onActivityStarted(activity: Activity) {
-                    val cleaner = ReferenceCleaner(inputMethodManager, mHField, mServedViewField,
-                            finishInputLockedMethod)
-                    val rootView = activity.window.decorView.rootView
-                    val viewTreeObserver = rootView.viewTreeObserver
-                    viewTreeObserver.addOnGlobalFocusChangeListener(cleaner)
+                override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                    activity.window.onDecorViewReady {
+                        val cleaner = ReferenceCleaner(inputMethodManager, mHField, mServedViewField,
+                                finishInputLockedMethod)
+                        val rootView = activity.window.decorView.rootView
+                        val viewTreeObserver = rootView.viewTreeObserver
+                        viewTreeObserver.addOnGlobalFocusChangeListener(cleaner)
+                    }
                 }
             })
+        }
+
+        fun fixCurRootViewLeak(application: Application) {
+            if (Build.VERSION.SDK_INT >= 29) {
+                return
+            }
+
+            val inputMethodManager = application.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            val mCurRootViewField: Field
+            try {
+                mCurRootViewField = InputMethodManager::class.java.getDeclaredField("mCurRootView")
+                mCurRootViewField.isAccessible = true
+            } catch (e: Exception) {
+                return
+            }
+
+            application.registerActivityLifecycleCallbacks(object : LifecycleCallbacksAdapter() {
+                override fun onActivityDestroyed(activity: Activity) {
+                    try {
+                        val rootView = mCurRootViewField[inputMethodManager] as View?
+                        if (rootView != null && activity.window != null && activity.window.decorView == rootView) {
+                            mCurRootViewField[inputMethodManager] = null
+                        }
+                    } catch (e: Exception) {}
+                }
+            })
+        }
+
+        internal fun Window.onDecorViewReady(callback: () -> Unit) {
+            if (peekDecorView() == null) {
+                onContentChanged {
+                    callback()
+                    return@onContentChanged false
+                }
+            } else {
+                callback()
+            }
+        }
+
+        private fun Window.onContentChanged(block: () -> Boolean) {
+            val callback = wrapCallback()
+            callback.onContentChangedCallbacks += block
+        }
+
+        private fun Window.wrapCallback(): WindowDelegateCallback {
+            val currentCallback = callback
+            return if (currentCallback is WindowDelegateCallback) {
+                currentCallback
+            } else {
+                val newCallback = WindowDelegateCallback(currentCallback)
+                callback = newCallback
+                newCallback
+            }
+        }
+
+        private class WindowDelegateCallback constructor(
+                private val delegate: Window.Callback
+        ) : Window.Callback by delegate {
+
+            val onContentChangedCallbacks = mutableListOf<() -> Boolean>()
+
+            override fun onContentChanged() {
+                onContentChangedCallbacks.removeAll { callback ->
+                    !callback()
+                }
+                delegate.onContentChanged()
+            }
         }
     }
 

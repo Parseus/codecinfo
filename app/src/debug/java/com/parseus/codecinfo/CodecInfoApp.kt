@@ -8,6 +8,7 @@ class CodecInfoApp : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
         IMMLeaks.fixFocusedViewLeak(this)
+        IMMLeaks.fixCurRootViewLeak(this)
     }
 
 }

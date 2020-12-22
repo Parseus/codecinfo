@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:installLocation="auto"
+    android:installLocation="preferExternal"
     package="com.parseus.codecinfo">
 
     <uses-sdk tools:overrideLibrary="androidx.leanback, androidx.leanback.preference, com.dci.dev.appinfobadge, com.afollestad.recyclical" />

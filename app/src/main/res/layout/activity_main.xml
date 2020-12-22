@@ -22,16 +22,21 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:tabInlineLabel="true">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:contentDescription="@string/category_audio"
+                android:icon="@drawable/ic_audio"
                 android:text="@string/category_audio" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:contentDescription="@string/category_video"
+                android:icon="@drawable/ic_video"
                 android:text="@string/category_video" />
 
         </com.google.android.material.tabs.TabLayout>

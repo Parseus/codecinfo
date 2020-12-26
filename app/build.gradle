@@ -30,6 +30,10 @@ android {
     productFlavors {
         full {
             dimension "app"
+
+            dependenciesInfo {
+                includeInApk = false
+            }
         }
 
         openSource {

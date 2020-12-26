@@ -507,15 +507,10 @@ private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, code
             else -> null
         }
 
-        // When in doubt, use a standard color formats from the SDK...
+        // When in doubt, use a standard color formats from the SDK / OpenMAX IL
+        // (at least MSVDX/Topaz codecs tend to use some of those from the second one)
         if (colorFormat == null) {
-            colorFormat = MediaCodecColorFormat.from(colorFormats[it])
-        }
-
-        // ...unless it's a standard OpenMAX IL color format that's not defined in the SDK
-        // (at least MSVDX/Topaz codecs tend to use some of those)
-        if (colorFormat == null) {
-            colorFormat = OpenMAXILColorFormat.from(colorFormats[it])
+            colorFormat = StandardColorFormat.from(colorFormats[it])
         }
 
         getFormattedColorProfileString(context, colorFormat
@@ -578,7 +573,7 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
                 profile, VP9Profiles.VP9Profile0.value, level, vp9Level))
 
         return stringBuilder.toString()
-    } else if (profileLevels == null || profileLevels.isEmpty()) {
+    } else if (profileLevels.isNullOrEmpty()) {
         return null
     }
 

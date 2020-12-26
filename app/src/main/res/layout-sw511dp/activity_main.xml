@@ -28,23 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/appBarLayout"
         android:layout_toStartOf="@id/separator"
-        app:tabInlineLabel="true">
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:icon="@drawable/ic_audio"
-            android:contentDescription="@string/category_audio"
-            android:text="@string/category_audio"/>
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:icon="@drawable/ic_video"
-            android:contentDescription="@string/category_video"
-            android:text="@string/category_video" />
-
-    </com.google.android.material.tabs.TabLayout>
+        app:tabInlineLabel="true" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"

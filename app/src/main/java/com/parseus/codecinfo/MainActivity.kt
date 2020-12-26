@@ -7,6 +7,7 @@ import android.view.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ShareCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.commit
@@ -74,7 +75,16 @@ class MainActivity : AppCompatActivity() {
         val pagerAdapter = PagerAdapter(this)
         viewPager.adapter = pagerAdapter
         TabLayoutMediator(tabs, viewPager) { tab, position ->
-            tab.text = if (position == 0) getString(R.string.category_audio) else getString(R.string.category_video)
+            val isAudio = position == 0
+            if (isAudio) {
+                tab.contentDescription = getString(R.string.category_audio)
+                tab.icon = AppCompatResources.getDrawable(this, R.drawable.ic_audio)
+                tab.text = getString(R.string.category_audio)
+            } else {
+                tab.contentDescription = getString(R.string.category_video)
+                tab.icon = AppCompatResources.getDrawable(this, R.drawable.ic_video)
+                tab.text = getString(R.string.category_video)
+            }
         }.attach()
 
         initializeSamsungGesture(this, viewPager, tabs)

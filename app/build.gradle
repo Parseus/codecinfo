@@ -12,11 +12,14 @@ android {
         resConfigs "en"
 
         vectorDrawables.useSupportLibrary = true
+
+        manifestPlaceholders = [appName:"android.app.Application"]
     }
     buildTypes {
         debug {
             versionNameSuffix "-dev"
             multiDexEnabled true
+            manifestPlaceholders = [appName:"androidx.multidex.MultiDexApplication"]
         }
         release {
             minifyEnabled true

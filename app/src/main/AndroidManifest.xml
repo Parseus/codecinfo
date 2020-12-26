@@ -19,16 +19,17 @@
         </intent>
     </queries>
 
+    <!--suppress AndroidDomInspection -->
     <application
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
         android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name=".CodecInfoApp"
+        android:name="${appName}"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="UnusedAttribute">
+        tools:ignore="MissingClass,UnusedAttribute">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name">

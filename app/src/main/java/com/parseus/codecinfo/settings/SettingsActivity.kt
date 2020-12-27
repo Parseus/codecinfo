@@ -10,6 +10,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.View
 import android.view.Window
 import android.widget.TextView
@@ -17,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.commit
 import androidx.preference.*
 import com.dci.dev.appinfobadge.AppInfoBadge
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -56,7 +58,7 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().replace(R.id.content, SettingsFragment()).commit()
+            supportFragmentManager.commit { replace(R.id.content, SettingsFragment::class.java, null) }
         }
     }
 
@@ -145,7 +147,7 @@ class SettingsActivity : AppCompatActivity() {
                         startActivity(Intent.createChooser(intent, getString(R.string.choose_email)))
                     } else {
                         val clipboard = ContextCompat.getSystemService(requireContext(), ClipboardManager::class.java)
-                        clipboard!!.setPrimaryClip(ClipData.newPlainText("email", feedbackEmail))
+                        clipboard?.setPrimaryClip(ClipData.newPlainText("email", feedbackEmail))
 
                         Snackbar.make(requireActivity().findViewById(android.R.id.content),
                                 R.string.no_email_apps, Snackbar.LENGTH_LONG).show()
@@ -167,7 +169,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         private fun showOldAppInfoDialog() {
-            val builder = MaterialAlertDialogBuilder(requireActivity())
+            val builder = MaterialAlertDialogBuilder(requireContext())
             val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
             builder.setView(dialogView)
             val alertDialog = builder.create()
@@ -176,6 +178,7 @@ class SettingsActivity : AppCompatActivity() {
 
             try {
                 val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
+                versionTextView.movementMethod = LinkMovementMethod()
                 versionTextView.text = getString(R.string.app_version,
                         requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0).versionName)
             } catch (e: Exception) {}
@@ -193,11 +196,11 @@ class SettingsActivity : AppCompatActivity() {
                         .withEmail { getString(R.string.feedback_email) }
                         .withSite { getString(R.string.source_code_link) }
                         .show()
-                it.supportFragmentManager.beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        .add(android.R.id.content, appInfoFragment)
-                        .addToBackStack(null)
-                        .commit()
+                it.supportFragmentManager.commit {
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    add(android.R.id.content, appInfoFragment)
+                    addToBackStack(null)
+                }
             }
         }
 
@@ -223,11 +226,13 @@ class SettingsActivity : AppCompatActivity() {
                 entryValues.add(DarkTheme.SystemDefault.value.toString())
             }
 
-            listPreference.entries = entries.toTypedArray()
-            listPreference.entryValues = entryValues.toTypedArray()
-            listPreference.setDefaultValue(getDefaultThemeOption(requireContext()).toString())
-            listPreference.value = PreferenceManager.getDefaultSharedPreferences(requireContext())
-                    .getString("dark_theme", getDefaultThemeOption(requireContext()).toString())
+            listPreference.apply {
+                this.entries = entries.toTypedArray()
+                this.entryValues = entryValues.toTypedArray()
+                setDefaultValue(getDefaultThemeOption(requireContext()).toString())
+                value = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                        .getString("dark_theme", getDefaultThemeOption(requireContext()).toString())
+            }
         }
 
     }

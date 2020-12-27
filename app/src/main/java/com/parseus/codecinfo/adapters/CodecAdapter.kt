@@ -60,10 +60,10 @@ class CodecAdapter(private val codecList: List<CodecSimpleInfo>) : RecyclerView.
 
                 activity.supportFragmentManager.commit {
                     setReorderingAllowed(true)
-                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     if (activity.isInTwoPaneMode()) {
                         replace(R.id.codecDetailsFragment, detailsFragment)
                     } else {
+                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         add(android.R.id.content, detailsFragment)
                         addToBackStack(null)
                     }

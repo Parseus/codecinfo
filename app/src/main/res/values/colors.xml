@@ -5,7 +5,4 @@
     <color name="colorSecondary">#03DAC6</color>
     <color name="colorSecondaryDark">#018786</color>
 
-    <!-- OEMs can't be trusted -->
-    <color name="white">#FFFFFF</color>
-
 </resources>

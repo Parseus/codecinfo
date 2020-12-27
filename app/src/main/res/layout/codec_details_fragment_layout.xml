@@ -33,8 +33,6 @@
             android:paddingTop="@dimen/list_content_padding"
             android:paddingLeft="@dimen/list_content_padding"
             android:paddingRight="@dimen/list_content_padding"
-            android:paddingStart="@dimen/list_content_padding"
-            android:paddingEnd="@dimen/list_content_padding"
             android:maxLines="1"
             android:textColor="?attr/colorPrimary"
             android:textAppearance="?attr/textAppearanceHeadline6"

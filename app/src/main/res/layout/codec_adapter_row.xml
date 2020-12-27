@@ -9,8 +9,6 @@
     android:layout_height="96dp"
     android:paddingLeft="@dimen/list_content_padding"
     android:paddingRight="@dimen/list_content_padding"
-    android:paddingStart="@dimen/list_content_padding"
-    android:paddingEnd="@dimen/list_content_padding"
     android:paddingBottom="@dimen/list_content_padding"
     android:background="?attr/selectableItemBackground">
 

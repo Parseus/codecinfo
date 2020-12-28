@@ -28,7 +28,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/appBarLayout"
         android:layout_toStartOf="@id/separator"
-        app:tabInlineLabel="true" />
+        android:elevation="@dimen/tab_layout_elevation"
+        app:tabInlineLabel="true"
+        tools:ignore="UnusedAttribute" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"

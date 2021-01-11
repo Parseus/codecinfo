@@ -16,6 +16,7 @@ import android.view.Window
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
@@ -110,8 +111,15 @@ class SettingsActivity : AppCompatActivity() {
 
             findPreference<ListPreference>("dark_theme")!!.apply {
                 setDarkThemeOptions(this)
-                setOnPreferenceChangeListener { _, newValue ->
-                    AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue((newValue as String).toInt()))
+                val currentTheme = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                        .getString("dark_theme", getDefaultThemeOption(requireContext()).toString())!!
+                icon = AppCompatResources.getDrawable(requireContext(),
+                        getCurrentThemeIcon(currentTheme.toInt()))
+                setOnPreferenceChangeListener { pref, newValue ->
+                    (newValue as String)
+                    pref.icon = AppCompatResources.getDrawable(requireContext(),
+                            getCurrentThemeIcon(newValue.toInt()))
+                    AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(newValue.toInt()))
                     true
                 }
             }
@@ -203,6 +211,13 @@ class SettingsActivity : AppCompatActivity() {
                     addToBackStack(null)
                 }
             }
+        }
+
+        private fun getCurrentThemeIcon(type: Int) = when (type) {
+            DarkTheme.SystemDefault.value -> R.drawable.ic_app_theme_system
+            DarkTheme.BatterySaver.value -> R.drawable.ic_app_theme_battery
+            DarkTheme.Dark.value -> R.drawable.ic_app_theme_dark
+            else -> R.drawable.ic_app_theme_light
         }
 
         private fun setDarkThemeOptions(listPreference: ListPreference) {

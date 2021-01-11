@@ -10,6 +10,7 @@
     android:paddingLeft="@dimen/list_content_padding"
     android:paddingRight="@dimen/list_content_padding"
     android:paddingBottom="@dimen/list_content_padding"
+    android:importantForAccessibility="yes"
     android:background="?attr/selectableItemBackground">
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -23,6 +24,7 @@
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"
         android:alpha="0.87"
+        android:importantForAccessibility="no"
         android:textAppearance="?attr/textAppearanceOverline"
         android:textColor="?attr/colorPrimary"
         tools:text="Codec name"/>
@@ -36,6 +38,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:alpha="0.87"
+        android:importantForAccessibility="no"
         android:textAppearance="?attr/textAppearanceOverline"
         tools:text="Encoder/decoder"/>
 
@@ -47,7 +50,8 @@
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         android:alpha="0.87"
-        android:textColor="?attr/colorSecondary"
+        android:importantForAccessibility="no"
+        android:textColor="?attr/colorSecondaryVariant"
         android:textAppearance="?attr/textAppearanceBody2"
         app:autoSizeMinTextSize="12sp"
         app:autoSizeMaxTextSize="16sp"
@@ -63,6 +67,7 @@
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         android:alpha="0.87"
+        android:importantForAccessibility="no"
         android:textAppearance="?attr/textAppearanceBody2"
         android:textColor="?attr/colorOnSurface"
         android:text="@string/more_info"/>

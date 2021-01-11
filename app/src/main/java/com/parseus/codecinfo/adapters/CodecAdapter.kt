@@ -3,15 +3,16 @@ package com.parseus.codecinfo.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentTransaction
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.transition.MaterialContainerTransform
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.databinding.CodecAdapterRowBinding
-import com.parseus.codecinfo.fragments.CodecDetailsDialogFragment
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
 import com.parseus.codecinfo.isInTwoPaneMode
 
@@ -24,7 +25,7 @@ class CodecAdapter(private val codecList: List<CodecSimpleInfo>) : RecyclerView.
 
     override fun onBindViewHolder(holder: CodecInfoViewHolder, position: Int) {
         val codecInfoItem = codecList[position]
-        holder.bindCodecInfo(codecInfoItem)
+        holder.bindCodecInfo(codecInfoItem, position)
     }
 
     override fun getItemCount() = codecList.size
@@ -37,7 +38,7 @@ class CodecAdapter(private val codecList: List<CodecSimpleInfo>) : RecyclerView.
         private val codecType = binding.codecType
         private val moreInfo = binding.moreInfo
 
-        fun bindCodecInfo(codecInfo: CodecSimpleInfo) {
+        fun bindCodecInfo(codecInfo: CodecSimpleInfo, position: Int) {
             codecId.text = codecInfo.codecId
             codecName.text = codecInfo.codecName
             codecType.text = itemView.resources.getString(
@@ -45,29 +46,49 @@ class CodecAdapter(private val codecList: List<CodecSimpleInfo>) : RecyclerView.
             if (itemView.context.isInTwoPaneMode()) {
                 moreInfo.visibility = View.GONE
             }
+            layout.contentDescription = layout.context.getString(R.string.codec_row_content_description,
+                    position, codecName, codecId)
 
+            ViewCompat.setTransitionName(layout, "$codecId/$codecName")
             layout.setOnClickListener {
-                val activity = (layout.context as FragmentActivity)
-                val detailsFragment = if (activity.isInTwoPaneMode()) {
-                    CodecDetailsFragment()
-                } else {
-                    CodecDetailsDialogFragment()
+                val activity = (layout.context as AppCompatActivity)
+                val detailsFragment = CodecDetailsFragment().also { fragment ->
+                    fragment.arguments = bundleOf(
+                            "codecId" to codecInfo.codecId,
+                            "codecName" to codecInfo.codecName
+                    )
+                    if (!activity.isInTwoPaneMode()) {
+                        fragment.sharedElementEnterTransition = buildContainerTransform(true)
+                        fragment.sharedElementReturnTransition = buildContainerTransform(false)
+                    }
                 }
-                detailsFragment.arguments = bundleOf(
-                        "codecId" to codecInfo.codecId,
-                        "codecName" to codecInfo.codecName
-                )
 
                 activity.supportFragmentManager.commit {
                     setReorderingAllowed(true)
                     if (activity.isInTwoPaneMode()) {
-                        replace(R.id.codecDetailsFragment, detailsFragment)
+                        replace(R.id.codecDetailsFragment, detailsFragment,
+                                activity.getString(R.string.details_fragment_tag))
                     } else {
-                        setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                        add(android.R.id.content, detailsFragment)
+                        addSharedElement(layout, ViewCompat.getTransitionName(layout)!!)
+                        replace(R.id.content_fragment, detailsFragment,
+                                activity.getString(R.string.details_fragment_tag))
                         addToBackStack(null)
+
+                        activity.supportActionBar!!.apply {
+                            setDisplayHomeAsUpEnabled(true)
+                            setHomeButtonEnabled(true)
+                            setHomeActionContentDescription(R.string.close_details)
+                        }
                     }
                 }
+            }
+        }
+
+        private fun buildContainerTransform(entering: Boolean): MaterialContainerTransform {
+            val colorSurface = MaterialColors.getColor(layout, com.google.android.material.R.attr.colorSurface)
+            return MaterialContainerTransform().also {
+                it.setAllContainerColors(colorSurface)
+                it.drawingViewId = if (entering) R.id.end_root else R.id.start_root
             }
         }
 

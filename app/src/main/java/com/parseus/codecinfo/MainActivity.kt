@@ -1,26 +1,31 @@
 package com.parseus.codecinfo
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
+import android.content.ClipData
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.app.ShareCompat
-import androidx.fragment.app.DialogFragment
+import androidx.core.content.FileProvider
 import androidx.fragment.app.commit
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.tabs.TabLayoutMediator
 import com.google.android.material.transition.platform.MaterialSharedAxis
-import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.databinding.ActivityMainBinding
 import com.parseus.codecinfo.fragments.CodecDetailsFragment
 import com.parseus.codecinfo.settings.DarkTheme
+import com.parseus.codecinfo.settings.SettingsContract
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
@@ -70,33 +75,38 @@ class MainActivity : AppCompatActivity() {
 
         initializeAppRating(this)
 
-        val tabs = binding.tabLayout
-        val viewPager = binding.pager
-        val pagerAdapter = PagerAdapter(this)
-        viewPager.adapter = pagerAdapter
-        TabLayoutMediator(tabs, viewPager) { tab, position ->
-            val isAudio = position == 0
-            if (isAudio) {
-                tab.contentDescription = getString(R.string.category_audio)
-                tab.icon = AppCompatResources.getDrawable(this, R.drawable.ic_audio)
-                tab.text = getString(R.string.category_audio)
-            } else {
-                tab.contentDescription = getString(R.string.category_video)
-                tab.icon = AppCompatResources.getDrawable(this, R.drawable.ic_video)
-                tab.text = getString(R.string.category_video)
-            }
-        }.attach()
-
-        initializeSamsungGesture(this, viewPager, tabs)
-
-        if (isInTwoPaneMode()) {
-            return
-        }
-
         if (savedInstanceState != null) {
-            supportFragmentManager.executePendingTransactions()
-            val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment)
-            fragmentById?.let { supportFragmentManager.commit { remove(fragmentById) } }
+            recreateDetailFragmentIfNeedded()
+        }
+    }
+
+    private fun recreateDetailFragmentIfNeedded() {
+        supportFragmentManager.executePendingTransactions()
+        val detailsFragment = supportFragmentManager.findFragmentByTag(getString(R.string.details_fragment_tag))
+        detailsFragment?.let {
+            val bundle = it.arguments
+            supportFragmentManager.commit {
+                remove(it)
+            }
+
+            supportFragmentManager.commit {
+                if (isInTwoPaneMode()) {
+                    supportFragmentManager.popBackStack()
+                    replace(R.id.codecDetailsFragment, CodecDetailsFragment::class.java,
+                            bundle, getString(R.string.details_fragment_tag))
+                } else {
+                    replace(R.id.content_fragment, CodecDetailsFragment::class.java,
+                            bundle, getString(R.string.details_fragment_tag))
+                    addToBackStack(null)
+
+                    supportActionBar!!.apply {
+                        if (displayOptions and ActionBar.DISPLAY_HOME_AS_UP == 0) {
+                            setDisplayHomeAsUpEnabled(true)
+                            setHomeActionContentDescription(R.string.close_details)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -117,16 +127,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         destroySamsungGestures()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        if (isInTwoPaneMode()) {
-            supportFragmentManager.findFragmentByTag("SINGLE_PANE_DETAILS")?.let {
-                (it as DialogFragment).dialog?.takeIf { dialog -> dialog.isShowing }?.dismiss()
-            }
-        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -155,13 +155,15 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("InflateParams")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_item_share -> {
-                val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment) as CodecDetailsFragment?
-                val codecId = fragmentById?.codecId
-                val codecName = fragmentById?.codecName
+            android.R.id.home -> {
+                supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+                supportFragmentManager.popBackStack()
+            }
 
-                val codecShareOptions = if (isInTwoPaneMode()
-                        && (codecId != null && codecName != null)) {
+            R.id.menu_item_share -> {
+                val detailsFragment = supportFragmentManager.findFragmentByTag(
+                        getString(R.string.details_fragment_tag)) as? CodecDetailsFragment
+                val codecShareOptions = if (detailsFragment != null) {
                     arrayOf(
                             getString(R.string.codec_list),
                             getString(R.string.codec_all_info),
@@ -172,31 +174,41 @@ class MainActivity : AppCompatActivity() {
                             getString(R.string.codec_all_info))
                 }
 
-                val builder = MaterialAlertDialogBuilder(this)
-                var alertDialog: AlertDialog? = null
-                builder.setTitle(R.string.choose_share)
-                builder.setSingleChoiceItems(codecShareOptions, -1) { _, option ->
-                    launchShareIntent(option)
-                    alertDialog!!.dismiss()
+                var codecId = ""
+                var codecName = ""
+
+                detailsFragment?.let { fragment ->
+                    if (fragment.isVisible) {
+                        codecId = fragment.codecId
+                        codecName = fragment.codecName
+                    }
                 }
-                alertDialog = builder.create()
-                alertDialog.show()
+
+                MaterialAlertDialogBuilder(this).run {
+                    setTitle(R.string.choose_share)
+                    setSingleChoiceItems(codecShareOptions, -1) { dialog, option ->
+                        launchShareIntent(option, codecId, codecName)
+                        dialog.dismiss()
+                    }
+                    show()
+                }
 
                 return true
             }
+
             R.id.menu_item_settings -> settingsContract.launch(Unit)
         }
 
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu?.clear()
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menu.clear()
         menuInflater.inflate(R.menu.app_bar_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
-    private fun launchShareIntent(option: Int) {
+    private fun launchShareIntent(option: Int, codecId: String, codecName: String) {
         val codecStringBuilder = StringBuilder()
 
         when (option) {
@@ -234,10 +246,6 @@ class MainActivity : AppCompatActivity() {
             }
 
             2 -> {
-                val fragmentById = supportFragmentManager.findFragmentById(R.id.codecDetailsFragment) as CodecDetailsFragment
-                val codecId = fragmentById.codecId
-                val codecName = fragmentById.codecName
-
                 val codecInfoMap = getDetailedCodecInfo(this, codecId, codecName)
                 codecStringBuilder.append("${getString(R.string.codec_details)}: $codecName\n\n")
 
@@ -255,8 +263,48 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        ShareCompat.IntentBuilder.from(this).setType("text/plain")
-                .setText(codecStringBuilder.toString()).startChooser()
+        val shareIntent = Intent.createChooser(Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, codecStringBuilder.toString())
+
+            val title = if (option != 2) {
+                getString(R.string.codec_list)
+            } else {
+                "${getString(R.string.codec_details)}: $codecName"
+            }
+
+            putExtra(Intent.EXTRA_TITLE, title)
+
+            if (Build.VERSION.SDK_INT >= 29) {
+                storeInfoIconForShare()?.let {
+                    clipData = it
+                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                }
+            }
+
+        }, null)
+        startActivity(shareIntent)
+    }
+
+    @TargetApi(29)
+    private fun storeInfoIconForShare(): ClipData? {
+        return try {
+            val iconFile = File(filesDir, INFO_ICON_FILE_NAME)
+            val drawable = AppCompatResources.getDrawable(this, R.drawable.ic_info) as VectorDrawable
+            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.setTint(getAttributeColor(com.google.android.material.R.attr.colorPrimary))
+            drawable.draw(canvas)
+
+            iconFile.outputStream().use {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+            }
+
+            val imageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", iconFile)
+            ClipData.newUri(contentResolver, null, imageUri)
+        } catch (e: Exception) { null }
     }
 
     override fun onBackPressed() {
@@ -266,6 +314,10 @@ class MainActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+
+    companion object {
+        private const val INFO_ICON_FILE_NAME = "info_icon.png"
     }
 
 }

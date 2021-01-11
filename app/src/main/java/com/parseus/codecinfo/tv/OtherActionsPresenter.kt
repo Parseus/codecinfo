@@ -27,7 +27,7 @@ class OtherActionsPresenter : Presenter() {
         val cardView = ImageCardView(parent.context).apply {
             isFocusable = true
             isFocusableInTouchMode = true
-            setBackgroundColor(ContextCompat.getColor(parent.context, R.color.colorSecondaryDark))
+            setBackgroundColor(ContextCompat.getColor(parent.context, R.color.teal_700))
         }
         return ViewHolder(cardView)
     }

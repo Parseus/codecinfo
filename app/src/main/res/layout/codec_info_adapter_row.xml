@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"
         android:textAppearance="?attr/textAppearanceBody1"
-        android:textColor="?attr/colorSecondary"
+        android:textColor="?attr/colorSecondaryVariant"
         tools:text="Codec info property"/>
 
     <androidx.appcompat.widget.AppCompatTextView

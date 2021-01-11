@@ -188,7 +188,8 @@ class SettingsActivity : AppCompatActivity() {
 
         private fun showNewAppInfoDialog() {
             activity?.let {
-                val isInDarkMode = (it.resources.configuration.uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES
+                val isInDarkMode = (it.resources.configuration
+                        .uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES
                 val appInfoFragment = AppInfoBadge
                         .darkMode { isInDarkMode }
                         .withRater { false }

@@ -4,7 +4,7 @@
     <string name="app_name" translatable="false">&app_name;</string>
     <string name="appbarlayout_scrolling_view_behavior" translatable="false">
         com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
-    <string name="app_version_name">Version %1$s\n\u00A9 2018–2020 KN-Soft</string>
+    <string name="app_version_name">Version %1$s\n\u00A9 2018–2021 KN-Soft</string>
 
     <string name="close_details">Close details</string>
 
@@ -17,7 +17,7 @@
     <string name="settings">Settings</string>
     <string name="about_app">About &app_name;…</string>
     <string name="app_version">Version %s</string>
-    <string name="copyright" translatable="false">\u00A9 2018-2020 KN-Soft</string>
+    <string name="copyright" translatable="false">\u00A9 2018-2021 KN-Soft</string>
     <string name="source_code_link" translatable="false">https://github.com/Parseus/codecinfo</string>
 
     <string name="feedback_email" translatable="false">parseus.dev@gmail.com</string>
@@ -86,5 +86,9 @@
     <string name="app_theme_system_default">System default</string>
 
     <string name="more_info">Tap to see more info…</string>
+
+    <string name="details_fragment_tag" translatable="false">codec_details</string>
+
+    <string name="codec_row_content_description">Codec %1$d: %2$s for %3$s</string>
 
 </resources>

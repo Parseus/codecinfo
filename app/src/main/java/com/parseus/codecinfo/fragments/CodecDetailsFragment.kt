@@ -25,15 +25,14 @@ class CodecDetailsFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val bundle = savedInstanceState ?: arguments
-
         bundle?.let {
             codecId = it.getString("codecId")!!
             codecName = it.getString("codecName")!!

@@ -1,55 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/end_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="?attr/colorSurface">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/full_codec_info_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="48dp"
+        android:paddingTop="@dimen/list_content_padding"
+        android:paddingLeft="@dimen/list_content_padding"
+        android:paddingRight="@dimen/list_content_padding"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="?attr/colorPrimary"
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeMaxTextSize="20sp"
+        app:autoSizeStepGranularity="1px"
+        app:autoSizeTextType="uniform"
+        tools:text="Codec full name"/>
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/dialogToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="@string/app_name"
-            style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/full_codec_info_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?android:colorBackground"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbarlayout_scrolling_view_behavior">
+        android:layout_marginTop="5dp"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false"
+        tools:listitem="@layout/codec_info_adapter_row"/>
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/full_codec_info_name"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:paddingTop="@dimen/list_content_padding"
-            android:paddingLeft="@dimen/list_content_padding"
-            android:paddingRight="@dimen/list_content_padding"
-            android:maxLines="1"
-            android:textColor="?attr/colorPrimary"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            app:autoSizeMinTextSize="12sp"
-            app:autoSizeMaxTextSize="20sp"
-            app:autoSizeStepGranularity="1sp"
-            tools:text="Codec full name"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/full_codec_info_content"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
-            android:scrollbars="vertical"
-            android:fadeScrollbars="false"
-            tools:listitem="@layout/codec_info_adapter_row"/>
-
-    </LinearLayout>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

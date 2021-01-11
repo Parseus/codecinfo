@@ -1,10 +1,9 @@
-package com.parseus.codecinfo
+package com.parseus.codecinfo.settings
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContract
-import com.parseus.codecinfo.settings.SettingsActivity
 
 class SettingsContract : ActivityResultContract<Unit, Boolean>() {
 

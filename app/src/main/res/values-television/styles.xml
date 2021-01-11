@@ -6,7 +6,7 @@
 
     <style name="MyHeaderStyle.MyHeaderText" parent="TextAppearance.Leanback.Header">
         <item name="android:textSize">@dimen/lb_browse_header_text_size</item>
-        <item name="android:textColor">@color/colorSecondary</item>
+        <item name="android:textColor">@color/teal_200</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
     </style>

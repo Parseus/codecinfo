@@ -19,13 +19,12 @@ import androidx.fragment.app.commit
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.platform.MaterialSharedAxis
-import com.parseus.codecinfo.codecinfo.getDetailedCodecInfo
-import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.databinding.ActivityMainBinding
-import com.parseus.codecinfo.fragments.CodecDetailsFragment
+import com.parseus.codecinfo.fragments.DetailsFragment
 import com.parseus.codecinfo.settings.DarkTheme
 import com.parseus.codecinfo.settings.SettingsContract
 import java.io.File
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -92,10 +91,10 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.commit {
                 if (isInTwoPaneMode()) {
                     supportFragmentManager.popBackStack()
-                    replace(R.id.codecDetailsFragment, CodecDetailsFragment::class.java,
+                    replace(R.id.itemDetailsFragment, DetailsFragment::class.java,
                             bundle, getString(R.string.details_fragment_tag))
                 } else {
-                    replace(R.id.content_fragment, CodecDetailsFragment::class.java,
+                    replace(R.id.content_fragment, DetailsFragment::class.java,
                             bundle, getString(R.string.details_fragment_tag))
                     addToBackStack(null)
 
@@ -162,32 +161,23 @@ class MainActivity : AppCompatActivity() {
 
             R.id.menu_item_share -> {
                 val detailsFragment = supportFragmentManager.findFragmentByTag(
-                        getString(R.string.details_fragment_tag)) as? CodecDetailsFragment
+                        getString(R.string.details_fragment_tag)) as? DetailsFragment
+                val isCodecShared = InfoType.currentInfoType != InfoType.DRM
                 val codecShareOptions = if (detailsFragment != null) {
                     arrayOf(
-                            getString(R.string.codec_list),
-                            getString(R.string.codec_all_info),
-                            getString(R.string.codec_details_selected))
+                            getString(if (isCodecShared) R.string.codec_list else R.string.drm_list),
+                            getString(R.string.codec_drm_all_info),
+                            getString(if (isCodecShared) R.string.codec_details_selected else R.string.drm_details_selected))
                 } else {
                     arrayOf(
-                            getString(R.string.codec_list),
-                            getString(R.string.codec_all_info))
-                }
-
-                var codecId = ""
-                var codecName = ""
-
-                detailsFragment?.let { fragment ->
-                    if (fragment.isVisible) {
-                        codecId = fragment.codecId
-                        codecName = fragment.codecName
-                    }
+                            getString(if (isCodecShared) R.string.codec_list else R.string.drm_list),
+                            getString(R.string.codec_drm_all_info))
                 }
 
                 MaterialAlertDialogBuilder(this).run {
                     setTitle(R.string.choose_share)
                     setSingleChoiceItems(codecShareOptions, -1) { dialog, option ->
-                        launchShareIntent(option, codecId, codecName)
+                        launchShareIntent(option, detailsFragment)
                         dialog.dismiss()
                     }
                     show()
@@ -208,70 +198,45 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    private fun launchShareIntent(option: Int, codecId: String, codecName: String) {
-        val codecStringBuilder = StringBuilder()
+    private fun launchShareIntent(option: Int, detailsFragment: DetailsFragment?) {
+        var codecId: String? = null
+        var codecName: String? = null
+        var drmName: String? = null
+        var drmUuid: UUID? = null
 
-        when (option) {
-            0 -> {
-                codecStringBuilder.append("${getString(R.string.codec_list)}:\n\n")
-                val codecSimpleInfoList = getSimpleCodecInfoList(this, true)
-                codecSimpleInfoList.addAll(getSimpleCodecInfoList(this, false))
-
-                for (info in codecSimpleInfoList) {
-                    codecStringBuilder.append("$info\n")
-                }
+        detailsFragment?.let { fragment ->
+            if (fragment.isVisible) {
+                codecId = fragment.codecId
+                codecName = fragment.codecName
+                drmName = fragment.drmName
+                drmUuid = fragment.drmUuid
             }
-
-            1 -> {
-                codecStringBuilder.append("${getString(R.string.codec_list)}:\n")
-                val codecSimpleInfoList = getSimpleCodecInfoList(this, true)
-                codecSimpleInfoList.addAll(getSimpleCodecInfoList(this, false))
-
-                for (info in codecSimpleInfoList) {
-                    codecStringBuilder.append("\n$info\n")
-                    val codecInfoMap = getDetailedCodecInfo(this, info.codecId, info.codecName)
-
-                    for (key in codecInfoMap.keys) {
-                        val stringToAppend = if (key != getString(R.string.bitrate_modes)
-                            && key != getString(R.string.color_profiles)
-                            && key != getString(R.string.profile_levels)
-                            && key != getString(R.string.max_frame_rate_per_resolution)) {
-                            "$key: ${codecInfoMap[key]}\n"
-                        } else {
-                            "$key:\n${codecInfoMap[key]}\n"
-                        }
-                        codecStringBuilder.append(stringToAppend)
-                    }
-                }
+        }
+        val isCodecShared = InfoType.currentInfoType != InfoType.DRM
+        val textToShare = when (option) {
+            0 -> getItemListString(this)
+            1 -> getAllInfoString(this)
+            2 -> if (isCodecShared) {
+                getSelectedCodecInfoString(this, codecId!!, codecName!!)
+            } else {
+                getSelectedDrmInfoString(this, drmName!!, drmUuid!!)
             }
-
-            2 -> {
-                val codecInfoMap = getDetailedCodecInfo(this, codecId, codecName)
-                codecStringBuilder.append("${getString(R.string.codec_details)}: $codecName\n\n")
-
-                for (key in codecInfoMap.keys) {
-                    val stringToAppend = if (key != getString(R.string.bitrate_modes)
-                            && key != getString(R.string.color_profiles)
-                            && key != getString(R.string.profile_levels)
-                            && key != getString(R.string.max_frame_rate_per_resolution)) {
-                        "$key: ${codecInfoMap[key]}\n"
-                    } else {
-                        "$key:\n${codecInfoMap[key]}\n"
-                    }
-                    codecStringBuilder.append(stringToAppend)
-                }
-            }
+            else -> ""
         }
 
         val shareIntent = Intent.createChooser(Intent().apply {
             action = Intent.ACTION_SEND
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, codecStringBuilder.toString())
+            putExtra(Intent.EXTRA_TEXT, textToShare)
 
             val title = if (option != 2) {
-                getString(R.string.codec_list)
+                getString(if (isCodecShared) R.string.codec_list else R.string.drm_list)
             } else {
-                "${getString(R.string.codec_details)}: $codecName"
+                if (isCodecShared) {
+                    "${getString(R.string.codec_details)}: $codecName"
+                } else {
+                    "${getString(R.string.drm_details)}: $drmName"
+                }
             }
 
             putExtra(Intent.EXTRA_TITLE, title)
@@ -294,9 +259,11 @@ class MainActivity : AppCompatActivity() {
             val drawable = AppCompatResources.getDrawable(this, R.drawable.ic_info) as VectorDrawable
             val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
             val canvas = Canvas(bitmap)
-            drawable.setBounds(0, 0, canvas.width, canvas.height)
-            drawable.setTint(getAttributeColor(com.google.android.material.R.attr.colorPrimary))
-            drawable.draw(canvas)
+            drawable.run {
+                setBounds(0, 0, canvas.width, canvas.height)
+                setTint(getAttributeColor(com.google.android.material.R.attr.colorPrimary))
+                draw(canvas)
+            }
 
             iconFile.outputStream().use {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/simpleDrmRow"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/codec_adapter_row_height"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/list_content_padding"
+    android:paddingRight="@dimen/list_content_padding"
+    android:paddingBottom="@dimen/list_content_padding"
+    android:importantForAccessibility="yes"
+    android:background="?attr/selectableItemBackground"
+    tools:ignore="SelectableText">
+
+    <TextView
+        android:id="@+id/drmId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        app:firstBaselineToTopHeight="@dimen/list_baseline_primary"
+        android:alpha="0.87"
+        android:importantForAccessibility="no"
+        android:text="@string/category_drm"
+        android:textAppearance="?attr/textAppearanceOverline"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintStart_toStartOf="@id/drmName"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/drmName"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:alpha="0.87"
+        android:importantForAccessibility="no"
+        android:textColor="?attr/colorSecondaryVariant"
+        android:textAppearance="?attr/textAppearanceBody2"
+        app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/drmId"
+        tools:text="DRM name"
+        tools:ignore="SelectableText" />
+
+    <TextView
+        android:id="@+id/moreInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
+        android:alpha="0.87"
+        android:importantForAccessibility="no"
+        android:textAppearance="?attr/textAppearanceBody2"
+        android:textColor="?attr/colorOnSurface"
+        android:text="@string/more_info"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/drmName"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:alpha="0.87"
+        android:importantForAccessibility="no"
+        android:text="@string/category_drm"
+        android:textAppearance="?attr/textAppearanceOverline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/drmId"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

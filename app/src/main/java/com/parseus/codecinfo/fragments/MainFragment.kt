@@ -6,8 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.parseus.codecinfo.R
+import com.parseus.codecinfo.InfoType
 import com.parseus.codecinfo.adapters.PagerAdapter
 import com.parseus.codecinfo.databinding.FragmentMainBinding
 import com.parseus.codecinfo.initializeSamsungGesture
@@ -27,20 +28,21 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val tabs = binding.tabLayout
+        tabs.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                InfoType.currentInfoType = InfoType.fromInt(tab.position)
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
         val viewPager = binding.pager
         val pagerAdapter = PagerAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
         viewPager.adapter = pagerAdapter
         TabLayoutMediator(tabs, viewPager) { tab, position ->
-            val isAudio = position == 0
-            if (isAudio) {
-                tab.contentDescription = getString(R.string.category_audio)
-                tab.icon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_audio)
-                tab.text = getString(R.string.category_audio)
-            } else {
-                tab.contentDescription = getString(R.string.category_video)
-                tab.icon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_video)
-                tab.text = getString(R.string.category_video)
-            }
+            val infoType = InfoType.fromInt(position)
+            tab.contentDescription = getString(infoType.tabTextResId)
+            tab.icon = AppCompatResources.getDrawable(requireContext(), infoType.tabIconResId)
+            tab.text = getString(infoType.tabTextResId)
         }.attach()
 
         initializeSamsungGesture(requireContext(), viewPager, tabs)

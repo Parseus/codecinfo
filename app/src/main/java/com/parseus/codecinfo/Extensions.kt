@@ -36,6 +36,10 @@ fun Int.toHexHstring(): String {
     return "0x${this.toString(16).toUpperCase(Locale.getDefault())}"
 }
 
+fun ByteArray.toHexString(): String {
+    return this.joinToString("") { String.format("%02x", it) }
+}
+
 fun MediaCodecInfo.isAudioCodec(): Boolean {
     return supportedTypes.joinToString().contains("audio")
 }

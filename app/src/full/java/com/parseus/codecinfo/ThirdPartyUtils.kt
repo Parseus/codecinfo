@@ -56,11 +56,13 @@ fun initializeSamsungGesture(context: Context, pager: ViewPager2, tabLayout: Tab
                 gestureHand = SgestureHand(Looper.getMainLooper(), gesture)
                 gestureHand!!.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
                     if (info.angle in 225..315) {        // to the left
-                        tabLayout.setScrollPosition(0, 0f, true)
-                        pager.currentItem = 0
+                        val newPosition = (pager.currentItem - 1) and tabLayout.tabCount
+                        tabLayout.setScrollPosition(newPosition, 0f, true)
+                        pager.currentItem = newPosition
                     } else if (info.angle in 45..135) {  // to the right
-                        tabLayout.setScrollPosition(1, 0f, true)
-                        pager.currentItem = 1
+                        val newPosition = (pager.currentItem + 1) and tabLayout.tabCount
+                        tabLayout.setScrollPosition(newPosition, 0f, true)
+                        pager.currentItem = newPosition
                     }
                 }
             }

@@ -9,6 +9,8 @@ import androidx.leanback.widget.*
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.codecinfo.getSimpleCodecInfoList
+import com.parseus.codecinfo.drm.DrmSimpleInfo
+import com.parseus.codecinfo.drm.getSimpleDrmInfoList
 
 @Suppress("unused")
 class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
@@ -47,7 +49,17 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
 
         adapter.add(ListRow(videoPresenterHeader, videoPresentAdapter))
 
-        val otherPresenterHeader = HeaderItem(3, getString(R.string.category_other))
+        val drmInfoList = getSimpleDrmInfoList()
+        val drmPresenterHeader = HeaderItem(3, getString(R.string.category_drm))
+        val drmPresentAdapter = ArrayObjectAdapter(DrmPresenter(R.drawable.ic_lock))
+
+        for (drmInfo in drmInfoList) {
+            drmPresentAdapter.add(drmInfo)
+        }
+
+        adapter.add(ListRow(drmPresenterHeader, drmPresentAdapter))
+
+        val otherPresenterHeader = HeaderItem(4, getString(R.string.category_other))
         val otherPresenterAdapter = ArrayObjectAdapter(OtherActionsPresenter())
 
         otherPresenterAdapter.add(OtherActionDescriptor(ACTION_SETTINGS_ID, R.drawable.ic_settings, R.string.settings))
@@ -64,6 +76,12 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
             val intent = Intent(requireActivity(), TvCodecDetailsActivity::class.java).apply {
                 putExtra("codecId", item.codecId)
                 putExtra("codecName", item.codecName)
+            }
+            startActivity(intent)
+        } else if (item is DrmSimpleInfo) {
+            val intent = Intent(requireActivity(), TvCodecDetailsActivity::class.java).apply {
+                putExtra("drmName", item.drmName)
+                putExtra("drmUuid", item.drmUuid)
             }
             startActivity(intent)
         } else if (item is OtherActionDescriptor) {

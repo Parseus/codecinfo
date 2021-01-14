@@ -17,7 +17,7 @@
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         android:textColor="@color/teal_200"
-        tools:text="Codec info property"/>
+        tools:text="Item property"/>
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/codec_value"
@@ -25,6 +25,6 @@
         android:layout_height="wrap_content"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-        tools:text="Codec info value"/>
+        tools:text="Item value"/>
 
 </LinearLayout>

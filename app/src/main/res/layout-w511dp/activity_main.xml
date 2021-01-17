@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ui.MainActivity">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/separatorGuideline"
@@ -32,7 +32,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/content_fragment"
-        android:name="com.parseus.codecinfo.fragments.MainFragment"
+        android:name="com.parseus.codecinfo.ui.fragments.MainFragment"
         android:tag="content_fragment"
         android:layout_width="0dp"
         android:layout_height="0dp"

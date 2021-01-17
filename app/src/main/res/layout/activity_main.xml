@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".ui.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
@@ -26,7 +26,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/content_fragment"
-        android:name="com.parseus.codecinfo.fragments.MainFragment"
+        android:name="com.parseus.codecinfo.ui.fragments.MainFragment"
         android:tag="content_fragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"

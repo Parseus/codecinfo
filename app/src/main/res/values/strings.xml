@@ -8,13 +8,13 @@
 
     <string name="close_details">Close details</string>
 
-    <string name="share">Share</string>
+    <string name="action_share">Share</string>
     <string name="choose_share">Choose info to share</string>
     <string name="codec_list">Codec list</string>
     <string name="codec_details_selected">Selected codec details</string>
     <string name="codec_drm_all_info">All codecs and DRMs with details</string>
 
-    <string name="settings">Settings</string>
+    <string name="action_settings">Settings</string>
     <string name="about_app">About &app_name;…</string>
     <string name="app_version">Version %s</string>
     <string name="copyright" translatable="false">\u00A9 2018-2021 KN-Soft</string>
@@ -24,6 +24,8 @@
     <string name="email_subject">Feedback</string>
     <string name="choose_email">Send feedback via…</string>
     <string name="no_email_apps">No apps can perform this action. Email address was copied to the clipboard.</string>
+
+    <string name="action_search">Search</string>
 
     <string name="category_audio">Audio</string>
     <string name="category_video">Video</string>

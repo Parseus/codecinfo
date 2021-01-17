@@ -1,0 +1,66 @@
+package com.parseus.codecinfo.utils
+
+import android.content.Context
+import com.parseus.codecinfo.R
+import com.parseus.codecinfo.data.InfoType
+import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
+import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
+import com.parseus.codecinfo.data.drm.DrmVendor
+import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
+import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
+import java.util.*
+
+fun getItemListString(context: Context): String {
+    val builder = StringBuilder()
+
+    if (InfoType.currentInfoType != InfoType.DRM) {
+        builder.append("${context.getString(R.string.codec_list)}:\n\n")
+        val codecSimpleInfoList = getSimpleCodecInfoList(context, true)
+        codecSimpleInfoList.addAll(getSimpleCodecInfoList(context, false))
+        codecSimpleInfoList.forEach { builder.append("$it\n") }
+    } else {
+        builder.append("${context.getString(R.string.drm_list)}:\n\n")
+        getSimpleDrmInfoList().forEach { builder.append("$it\n") }
+    }
+
+    return builder.toString()
+}
+
+fun getAllInfoString(context: Context): String {
+    val builder = StringBuilder()
+
+    builder.append("${context.getString(R.string.codec_list)}:\n")
+    val codecSimpleInfoList = getSimpleCodecInfoList(context, true)
+    codecSimpleInfoList.addAll(getSimpleCodecInfoList(context, false))
+
+    for (info in codecSimpleInfoList) {
+        builder.append("\n$info\n")
+        getDetailedCodecInfo(context, info.codecId, info.codecName).forEach { builder.append("$it\n") }
+    }
+
+    builder.append("\n\n${context.getString(R.string.drm_list)}:\n")
+    getSimpleDrmInfoList().forEach { infoItem ->
+        builder.append("\n$infoItem\n")
+        getDetailedDrmInfo(context, DrmVendor.getFromUuid(infoItem.drmUuid)).forEach { builder.append("$it\n") }
+    }
+
+    return builder.toString()
+}
+
+fun getSelectedCodecInfoString(context: Context, codecId: String, codecName: String): String {
+    val builder = StringBuilder()
+    builder.append("${context.getString(R.string.codec_details)}: $codecName\n\n")
+
+    getDetailedCodecInfo(context, codecId, codecName).forEach { builder.append("$it\n") }
+
+    return builder.toString()
+}
+
+fun getSelectedDrmInfoString(context: Context, drmName: String, drmUuid: UUID): String {
+    val builder = StringBuilder()
+    builder.append("${context.getString(R.string.drm_details)}: $drmName\n\n")
+
+    getDetailedDrmInfo(context, DrmVendor.getFromUuid(drmUuid)).forEach { builder.append(it) }
+
+    return builder.toString()
+}

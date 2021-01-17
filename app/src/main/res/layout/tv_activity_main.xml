@@ -5,7 +5,7 @@
     android:id="@+id/main_tv_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="com.parseus.codecinfo.tv.MainTvFragment"
-    tools:context=".tv.TvActivity"
+    android:name="com.parseus.codecinfo.ui.tv.MainTvFragment"
+    tools:context=".ui.tv.TvActivity"
     tools:deviceIds="tv"
     tools:ignore="MissingDefaultResource" />

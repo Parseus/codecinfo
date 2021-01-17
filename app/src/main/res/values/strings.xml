@@ -114,14 +114,6 @@
     <string name="drm_property_origin">Origin</string>
     <string name="drm_property_service_certificate">Service certificate</string>
 
-    <string name="drm_security_level_combined_format">%1$s (%2$s)</string>
-    <string name="drm_security_level_unknown">@string/unknown</string>
-    <string name="drm_security_level_sw_secure_crypto">Software-based (DRM key management only)</string>
-    <string name="drm_security_level_sw_secure_decode">Software-based (DRM key management, decoding)</string>
-    <string name="drm_security_level_hw_secure_crypto">Hardware-based (DRM key management only)</string>
-    <string name="drm_security_level_hw_secure_decode">Hardware-based (DRM key management, decoding)</string>
-    <string name="drm_security_level_hw_secure_all">Hardware-based (all operations)</string>
-
     <string name="hdcp_level_unknown">@string/unknown</string>
     <string name="hdcp_level_none">Unprotected</string>
     <string name="hdcp_level_v1">HDCP 1.0</string>

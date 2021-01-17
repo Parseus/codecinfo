@@ -34,8 +34,6 @@ fun getDetailedDrmInfo(context: Context, drmVendor: DrmVendor): List<DetailsProp
     drmPropertyList.addByteArrayProperties(context, mediaDrm, drmVendor.getVendorByteArrayProperties())
 
     if (Build.VERSION.SDK_INT >= 28) {
-        addReadableSecurityLevel(context, MediaDrm.getMaxSecurityLevel(), drmPropertyList)
-
         addReadableHdcpLevel(context, mediaDrm.connectedHdcpLevel,
                 context.getString(R.string.drm_property_hdcp_level), drmPropertyList)
         addReadableHdcpLevel(context, mediaDrm.maxHdcpLevel,
@@ -59,32 +57,6 @@ fun getDetailedDrmInfo(context: Context, drmVendor: DrmVendor): List<DetailsProp
     mediaDrm.closeDrmInstance()
 
     return drmPropertyList
-}
-
-private fun addReadableSecurityLevel(context: Context, securityLevel: Int,
-                                     propertyList: MutableList<DetailsProperty>) {
-    val stringResId = when (securityLevel) {
-        MediaDrm.SECURITY_LEVEL_SW_SECURE_CRYPTO -> R.string.drm_security_level_sw_secure_crypto
-        MediaDrm.SECURITY_LEVEL_SW_SECURE_DECODE -> R.string.drm_security_level_sw_secure_decode
-        MediaDrm.SECURITY_LEVEL_HW_SECURE_CRYPTO -> R.string.drm_security_level_hw_secure_crypto
-        MediaDrm.SECURITY_LEVEL_HW_SECURE_DECODE -> R.string.drm_security_level_hw_secure_decode
-        MediaDrm.SECURITY_LEVEL_HW_SECURE_ALL    -> R.string.drm_security_level_hw_secure_all
-        else                                     -> R.string.drm_security_level_unknown
-    }
-
-    val slKey = context.getString(R.string.drm_property_security_level)
-    val slFrameworkValue = context.getString(stringResId)
-
-    // Prefer the framework property value over the vendor one.
-    val existingEntry = propertyList.find { it.name == slKey }
-    if (existingEntry != null) {
-        val index = propertyList.indexOf(existingEntry)
-        propertyList.remove(existingEntry)
-        existingEntry.value = context.getString(R.string.drm_security_level_combined_format, existingEntry.value, slFrameworkValue)
-        propertyList.add(index, existingEntry)
-    } else {
-        propertyList.add(DetailsProperty(propertyList.size.toLong(), slKey, slFrameworkValue))
-    }
 }
 
 private fun addReadableHdcpLevel(context: Context, hdcpLevel: Int, key: String,

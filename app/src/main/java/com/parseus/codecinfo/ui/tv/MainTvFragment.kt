@@ -49,7 +49,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
 
         adapter.add(ListRow(videoPresenterHeader, videoPresentAdapter))
 
-        val drmInfoList = getSimpleDrmInfoList()
+        val drmInfoList = getSimpleDrmInfoList(requireContext())
         val drmPresenterHeader = HeaderItem(3, getString(R.string.category_drm))
         val drmPresentAdapter = ArrayObjectAdapter(DrmPresenter(R.drawable.ic_lock))
 

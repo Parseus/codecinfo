@@ -12,13 +12,13 @@ import com.parseus.codecinfo.utils.toHexString
 
 private val drmList: MutableList<DrmSimpleInfo> = arrayListOf()
 
-fun getSimpleDrmInfoList(): List<DrmSimpleInfo> {
+fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
     return if (drmList.isNotEmpty()) {
         drmList
     } else {
         DrmVendor.values()
                 .filter { MediaDrm.isCryptoSchemeSupported(it.uuid) }
-                .mapNotNull { it.getIfSupported() }
+                .mapNotNull { it.getIfSupported(context) }
                 .also { drmList.addAll(it) }
     }
 }
@@ -26,6 +26,9 @@ fun getSimpleDrmInfoList(): List<DrmSimpleInfo> {
 fun getDetailedDrmInfo(context: Context, drmVendor: DrmVendor): List<DetailsProperty> {
     val drmPropertyList = mutableListOf<DetailsProperty>()
     val mediaDrm = MediaDrm(drmVendor.uuid)
+
+    drmPropertyList.add(DetailsProperty(drmPropertyList.size.toLong(),
+            context.getString(R.string.drm_property_uuid), drmVendor.uuid.toString()))
 
     drmPropertyList.addStringProperties(context, mediaDrm, DrmVendor.STANDARD_STRING_PROPERTIES)
     drmPropertyList.addByteArrayProperties(context, mediaDrm, DrmVendor.STANDARD_BYTE_ARRAY_PROPERTIES)
@@ -84,9 +87,14 @@ private fun addReadableHdcpLevel(context: Context, hdcpLevel: Int, key: String,
     }
 }
 
-private fun DrmVendor.getIfSupported() = try {
+private fun DrmVendor.getIfSupported(context: Context) = try {
     val mediaDrm = MediaDrm(uuid)
-    DrmSimpleInfo(ordinal.toLong(), mediaDrm.getPropertyString(MediaDrm.PROPERTY_DESCRIPTION), uuid).also {
+    val drmName = if (properNameResId == -1) {
+        mediaDrm.getPropertyString(MediaDrm.PROPERTY_DESCRIPTION)
+    } else {
+        context.getString(properNameResId)
+    }
+    DrmSimpleInfo(ordinal.toLong(), drmName, uuid).also {
         mediaDrm.closeDrmInstance()
     }
 } catch (e: Exception) {

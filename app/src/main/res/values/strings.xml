@@ -87,6 +87,7 @@
     <string name="drm_details">DRM details</string>
     <string name="drm_details_selected">Selected DRM details</string>
 
+    <string name="drm_property_uuid">UUID</string>
     <string name="drm_property_vendor">Vendor</string>
     <string name="drm_property_version">Version</string>
     <string name="drm_property_device_id">Device unique ID</string>
@@ -113,6 +114,10 @@
     <string name="drm_property_app_id">Application ID</string>
     <string name="drm_property_origin">Origin</string>
     <string name="drm_property_service_certificate">Service certificate</string>
+
+    <string name="drm_clearkey_dash_if">ClearKey (DASH-IF)</string>
+    <string name="drm_clearkey_pssh_name">ClearKey (Common PSSH box format)</string>
+    <string name="drm_fairplay_netflix_name">Apple FairPlay (unofficial; Netflix)</string>
 
     <string name="hdcp_level_unknown">@string/unknown</string>
     <string name="hdcp_level_none">Unprotected</string>

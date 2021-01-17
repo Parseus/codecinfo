@@ -42,7 +42,7 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
             CodecAdapter().also { it.add(getSimpleCodecInfoList(requireContext(),
                     infoType == InfoType.Audio)) }
         } else {
-            val drmSimpleInfoList = getSimpleDrmInfoList()
+            val drmSimpleInfoList = getSimpleDrmInfoList(requireContext())
             DrmAdapter(drmSimpleInfoList)
         }
 
@@ -75,7 +75,7 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
             adapter.replaceAll(filterCodecs(fullList, query))
         } else {
             (adapter as DrmAdapter)
-            val fullList = getSimpleDrmInfoList()
+            val fullList = getSimpleDrmInfoList(requireContext())
             adapter.replaceAll(filterDrm(fullList, query))
         }
     }

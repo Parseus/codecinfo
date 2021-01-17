@@ -20,7 +20,7 @@ fun getItemListString(context: Context): String {
         codecSimpleInfoList.forEach { builder.append("$it\n") }
     } else {
         builder.append("${context.getString(R.string.drm_list)}:\n\n")
-        getSimpleDrmInfoList().forEach { builder.append("$it\n") }
+        getSimpleDrmInfoList(context).forEach { builder.append("$it\n") }
     }
 
     return builder.toString()
@@ -39,7 +39,7 @@ fun getAllInfoString(context: Context): String {
     }
 
     builder.append("\n\n${context.getString(R.string.drm_list)}:\n")
-    getSimpleDrmInfoList().forEach { infoItem ->
+    getSimpleDrmInfoList(context).forEach { infoItem ->
         builder.append("\n$infoItem\n")
         getDetailedDrmInfo(context, DrmVendor.getFromUuid(infoItem.drmUuid)).forEach { builder.append("$it\n") }
     }

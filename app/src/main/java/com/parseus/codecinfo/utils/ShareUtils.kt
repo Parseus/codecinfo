@@ -60,7 +60,7 @@ fun getSelectedDrmInfoString(context: Context, drmName: String, drmUuid: UUID): 
     val builder = StringBuilder()
     builder.append("${context.getString(R.string.drm_details)}: $drmName\n\n")
 
-    getDetailedDrmInfo(context, DrmVendor.getFromUuid(drmUuid)).forEach { builder.append(it) }
+    getDetailedDrmInfo(context, DrmVendor.getFromUuid(drmUuid)).forEach { builder.append("$it\n") }
 
     return builder.toString()
 }

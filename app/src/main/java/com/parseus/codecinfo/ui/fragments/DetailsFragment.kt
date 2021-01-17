@@ -13,6 +13,7 @@ import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
+import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
 import java.util.*
 
@@ -35,6 +36,10 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroyView() {
+        (requireActivity() as MainActivity).apply {
+            searchListeners.remove(this)
+            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+        }
         _binding = null
         super.onDestroyView()
     }
@@ -72,12 +77,16 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        handleSearch(newText)
+        if (isVisible) {
+            handleSearch(newText)
+        }
         return true
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
-        handleSearch(query)
+        if (isVisible) {
+            handleSearch(query)
+        }
         return true
     }
 

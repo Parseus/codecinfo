@@ -41,8 +41,19 @@ fun getDetailedDrmInfo(context: Context, drmVendor: DrmVendor): List<DetailsProp
         addReadableHdcpLevel(context, mediaDrm.maxHdcpLevel,
                 context.getString(R.string.drm_property_max_hdcp_level), drmPropertyList)
 
-        drmPropertyList.add(DetailsProperty(drmPropertyList.size.toLong(), context.getString(R.string.drm_property_max_sessions),
-                mediaDrm.maxSessionCount.toString()))
+        val maxSessionCount = mediaDrm.maxSessionCount.toString()
+        val maxSessionsEntry = drmPropertyList.find {
+            it.name == context.getString(R.string.drm_property_max_sessions)
+        }
+        if (maxSessionsEntry != null) {
+            val index = drmPropertyList.indexOf(maxSessionsEntry)
+            drmPropertyList.remove(maxSessionsEntry)
+            maxSessionsEntry.value = maxSessionCount
+            drmPropertyList.add(index, maxSessionsEntry)
+        } else {
+            drmPropertyList.add(DetailsProperty(drmPropertyList.size.toLong(),
+                    context.getString(R.string.drm_property_max_sessions), maxSessionCount))
+        }
     }
 
     mediaDrm.closeDrmInstance()

@@ -55,12 +55,16 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        handleSearch(newText)
+        if (isVisible) {
+            handleSearch(newText)
+        }
         return true
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
-        handleSearch(query)
+        if (isVisible) {
+            handleSearch(query)
+        }
         return true
     }
 

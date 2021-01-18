@@ -23,6 +23,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.parseus.codecinfo.*
 import com.parseus.codecinfo.data.InfoType
+import com.parseus.codecinfo.data.codecinfo.audioCodecList
+import com.parseus.codecinfo.data.codecinfo.videoCodecList
+import com.parseus.codecinfo.data.drm.drmList
 import com.parseus.codecinfo.databinding.ActivityMainBinding
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.ui.settings.DarkTheme
@@ -143,7 +146,14 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     override fun recreate() {
         super.recreate()
+        clearSavedLists()
         shouldRecreateActivity = false
+    }
+
+    private fun clearSavedLists() {
+        audioCodecList.clear()
+        videoCodecList.clear()
+        drmList.clear()
     }
 
     override fun onDestroy() {

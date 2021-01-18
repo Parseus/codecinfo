@@ -67,8 +67,8 @@ private val framerateClasses = arrayOf(
 
 private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()
 
-private val audioCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
-private val videoCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
+val audioCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
+val videoCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
 
 
 fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<CodecSimpleInfo> {

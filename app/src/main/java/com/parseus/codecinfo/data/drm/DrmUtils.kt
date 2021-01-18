@@ -10,7 +10,7 @@ import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.utils.toHexString
 
-private val drmList: MutableList<DrmSimpleInfo> = arrayListOf()
+val drmList: MutableList<DrmSimpleInfo> = arrayListOf()
 
 fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
     return if (drmList.isNotEmpty()) {

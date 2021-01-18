@@ -68,6 +68,8 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         adapter.add(ListRow(otherPresenterHeader, otherPresenterAdapter))
 
         onItemViewClickedListener = this
+
+        setOnSearchClickedListener { startActivity(Intent(requireActivity(), TvSearchActivity::class.java)) }
     }
 
     override fun onItemClicked(itemViewHolder: Presenter.ViewHolder?, item: Any?,

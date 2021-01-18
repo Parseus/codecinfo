@@ -72,6 +72,10 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat.Leanback"
             android:parentActivityName="com.parseus.codecinfo.ui.tv.TvActivity" />
+        <activity android:name="com.parseus.codecinfo.ui.tv.TvSearchActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.Leanback"
+            android:parentActivityName="com.parseus.codecinfo.ui.tv.TvActivity" />
         
         <provider
             android:authorities="${applicationId}.fileprovider"

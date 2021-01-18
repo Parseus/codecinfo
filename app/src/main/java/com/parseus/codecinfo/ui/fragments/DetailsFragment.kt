@@ -15,6 +15,7 @@ import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
+import com.parseus.codecinfo.utils.isTv
 import java.util.*
 
 class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -36,7 +37,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroyView() {
-        (requireActivity() as MainActivity).apply {
+        (requireActivity() as? MainActivity)?.apply {
             searchListeners.remove(this)
             supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         }
@@ -47,22 +48,31 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val bundle = savedInstanceState ?: arguments
-        bundle?.let {
-            codecId = it.getString("codecId")
-            codecName = it.getString("codecName")
-            drmName = it.getString("drmName")
-            drmUuid = it.getSerializable("drmUuid") as UUID?
-
-            propertyList = when {
-                codecId != null && codecName != null ->
-                    getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
-                drmName != null && drmUuid != null ->
-                    getDetailedDrmInfo(requireContext(), DrmVendor.getFromUuid(drmUuid!!))
-                else -> emptyList()
+        if (requireContext().isTv()) {
+            requireActivity().intent?.let {
+                codecId = it.getStringExtra("codecId")
+                codecName = it.getStringExtra("codecName")
+                drmName = it.getStringExtra("drmName")
+                drmUuid = it.getSerializableExtra("drmUuid") as UUID?
             }
-            getFullDetails()
+        } else {
+            val bundle = savedInstanceState ?: arguments
+            bundle?.let {
+                codecId = it.getString("codecId")
+                codecName = it.getString("codecName")
+                drmName = it.getString("drmName")
+                drmUuid = it.getSerializable("drmUuid") as UUID?
+            }
         }
+
+        propertyList = when {
+            codecId != null && codecName != null ->
+                getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+            drmName != null && drmUuid != null ->
+                getDetailedDrmInfo(requireContext(), DrmVendor.getFromUuid(drmUuid!!))
+            else -> emptyList()
+        }
+        getFullDetails()
     }
 
     private fun getFullDetails() {

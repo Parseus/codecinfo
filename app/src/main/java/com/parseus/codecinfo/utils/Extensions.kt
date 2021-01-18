@@ -1,6 +1,8 @@
 package com.parseus.codecinfo.utils
 
+import android.app.UiModeManager
 import android.content.Context
+import android.content.res.Configuration
 import android.media.MediaCodecInfo
 import android.util.TypedValue
 import androidx.annotation.AttrRes
@@ -17,6 +19,11 @@ fun Context.getAttributeColor(@AttrRes attrColor: Int,
 ): Int {
     theme.resolveAttribute(attrColor, typedValue, resolveRefs)
     return typedValue.data
+}
+
+fun Context.isTv(): Boolean {
+    val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+    return uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
 }
 
 fun Int.toKiloHertz(): Float {

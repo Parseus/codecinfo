@@ -2,6 +2,7 @@ package com.parseus.codecinfo.ui
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
+import android.app.SearchManager
 import android.content.ClipData
 import android.content.Intent
 import android.graphics.Bitmap
@@ -83,6 +84,8 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         if (savedInstanceState != null) {
             recreateDetailFragmentIfNeedded()
         }
+
+        handleIntent(intent)
     }
 
     private fun recreateDetailFragmentIfNeedded() {
@@ -111,6 +114,20 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent) {
+        if (intent.action == Intent.ACTION_SEARCH) {
+            intent.getStringExtra(SearchManager.QUERY)?.also { query ->
+                onQueryTextChange(query)
             }
         }
     }
@@ -203,9 +220,15 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menu.clear()
         menuInflater.inflate(R.menu.app_bar_menu, menu)
+
+        val searchManager = getSystemService(SEARCH_SERVICE) as SearchManager
         val searchItem = menu.findItem(R.id.menu_item_search)
-        val searchView = searchItem.actionView as SearchView
-        searchView.setOnQueryTextListener(this)
+       (searchItem.actionView as SearchView).apply {
+           isSubmitButtonEnabled = true
+           setSearchableInfo(searchManager.getSearchableInfo(componentName))
+           setOnQueryTextListener(this@MainActivity)
+       }
+
         return super.onCreateOptionsMenu(menu)
     }
 

@@ -112,6 +112,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
                     supportActionBar!!.apply {
                         if (displayOptions and ActionBar.DISPLAY_HOME_AS_UP == 0) {
+                            setHomeButtonEnabled(true)
                             setDisplayHomeAsUpEnabled(true)
                             setHomeActionContentDescription(R.string.close_details)
                         }
@@ -334,6 +335,10 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             finishAfterTransition()
         } else {
             super.onBackPressed()
+
+            if (!isInTwoPaneMode()) {
+                supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+            }
         }
     }
 

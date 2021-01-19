@@ -39,7 +39,6 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onDestroyView() {
         (requireActivity() as? MainActivity)?.apply {
             searchListeners.remove(this)
-            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         }
         _binding = null
         super.onDestroyView()

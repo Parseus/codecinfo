@@ -3,7 +3,7 @@
     <PreferenceCategory app:title="Display">
         <androidx.preference.ListPreference
             app:key="dark_theme"
-            app:title="Dark theme"
+            app:title="App theme"
             app:useSimpleSummaryProvider="true"/>
 
         <androidx.preference.CheckBoxPreference

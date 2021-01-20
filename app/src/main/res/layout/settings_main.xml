@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".settings.SettingsActivity">
+    tools:context=".ui.settings.SettingsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -15,9 +15,9 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="@string/settings"
+            app:title="@string/action_settings"
             app:layout_scrollFlags="scroll|enterAlways"
-            style="@style/Widget.MaterialComponents.Toolbar.Primary"/>
+            style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

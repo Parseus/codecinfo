@@ -6,7 +6,8 @@ Codec Info is a simple tool that provides detailed listing of multimedia encoder
 Features:
 - Get info about audio codecs (max supported instances, input channels, bitrate range, sample rates and tunneled playback)
 - Get info about video codecs (max resolution, frame rate, color profiles, adaptive playback, secure decryption and more)
-- Easily share codec info with others
+- Get info about DRM supported by the device
+- Easily share codec/DRM info with others
 - No ads!
 
 ![phone_screen2](https://user-images.githubusercontent.com/3923037/92001672-41bf4c80-ed3f-11ea-916d-0dd2d62931b1.png)

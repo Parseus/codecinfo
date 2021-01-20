@@ -2,9 +2,9 @@
 <androidx.fragment.app.FragmentContainerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/details_fragment"
-    android:name="com.parseus.codecinfo.tv.TvCodecDetailsFragment"
+    android:name="com.parseus.codecinfo.ui.fragments.DetailsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".tv.TvCodecDetailsActivity"
+    tools:context=".ui.tv.TvCodecDetailsActivity"
     tools:deviceIds="tv"
     tools:ignore="MissingDefaultResource" />

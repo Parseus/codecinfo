@@ -4,20 +4,20 @@
     <string name="app_name" translatable="false">&app_name;</string>
     <string name="appbarlayout_scrolling_view_behavior" translatable="false">
         com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
-    <string name="app_version_name">Version %1$s\n\u00A9 2018–2020 KN-Soft</string>
+    <string name="app_version_name">Version %1$s\n\u00A9 2018–2021 KN-Soft</string>
 
     <string name="close_details">Close details</string>
 
-    <string name="share">Share</string>
+    <string name="action_share">Share</string>
     <string name="choose_share">Choose info to share</string>
     <string name="codec_list">Codec list</string>
     <string name="codec_details_selected">Selected codec details</string>
-    <string name="codec_all_info">All codecs with details</string>
+    <string name="codec_drm_all_info">All codecs and DRMs with details</string>
 
-    <string name="settings">Settings</string>
+    <string name="action_settings">Settings</string>
     <string name="about_app">About &app_name;…</string>
     <string name="app_version">Version %s</string>
-    <string name="copyright" translatable="false">\u00A9 2018-2020 KN-Soft</string>
+    <string name="copyright" translatable="false">\u00A9 2018-2021 KN-Soft</string>
     <string name="source_code_link" translatable="false">https://github.com/Parseus/codecinfo</string>
 
     <string name="feedback_email" translatable="false">parseus.dev@gmail.com</string>
@@ -25,8 +25,13 @@
     <string name="choose_email">Send feedback via…</string>
     <string name="no_email_apps">No apps can perform this action. Email address was copied to the clipboard.</string>
 
+    <string name="action_search">Search</string>
+    <string name="search_hint">Search codec/DRM info</string>
+    <string name="search_settings_description">Codec/DRM info</string>
+
     <string name="category_audio">Audio</string>
     <string name="category_video">Video</string>
+    <string name="category_drm">DRM</string>
     <string name="category_other">Other</string>
 
     <string name="decoder">Decoder</string>
@@ -80,11 +85,61 @@
     <string name="codec_provider_android">Android platform</string>
     <string name="codec_provider_oem">Device vendor / OEM</string>
 
+    <string name="drm_list">DRM list</string>
+    <string name="drm_details">DRM details</string>
+    <string name="drm_details_selected">Selected DRM details</string>
+
+    <string name="drm_property_uuid">UUID</string>
+    <string name="drm_property_vendor">Vendor</string>
+    <string name="drm_property_version">Version</string>
+    <string name="drm_property_device_id">Device unique ID</string>
+    <string name="drm_property_algorithms">Algorithms</string>
+    <string name="drm_property_security_level">Max security level</string>
+    <string name="drm_property_system_id">System ID</string>
+    <string name="drm_property_provisioning_id">Provisioning unique ID</string>
+    <string name="drm_property_hdcp_level">Current HDCP level</string>
+    <string name="drm_property_max_hdcp_level">Max HDCP level supported</string>
+    <string name="drm_property_usage_reporting_support">Usage reporting supported</string>
+    <string name="drm_property_open_sessions">Number of open sessions</string>
+    <string name="drm_property_max_sessions">Max number of sessions</string>
+    <string name="drm_property_oem_crypto_api_version">OEM Crypto API version</string>
+    <string name="drm_property_oem_crypto_api_session_id">OEM Crypto session ID</string>
+    <string name="drm_property_license_type">License type</string>
+    <string name="drm_property_play_allowed">Playback allowed</string>
+    <string name="drm_property_persist_allowed">Persisting allowed</string>
+    <string name="drm_property_renew_allowed">Renewal allowed</string>
+    <string name="drm_property_license_duration_rem">License duration remaining</string>
+    <string name="drm_property_playback_duration_rem">Playback duration remaining</string>
+    <string name="drm_property_privacy_mode">Privacy mode</string>
+    <string name="drm_property_renewal_server_url">Renewal server URL</string>
+    <string name="drm_property_session_sharing">Session sharing</string>
+    <string name="drm_property_app_id">Application ID</string>
+    <string name="drm_property_origin">Origin</string>
+    <string name="drm_property_service_certificate">Service certificate</string>
+
+    <string name="drm_clearkey_dash_if">ClearKey (DASH-IF)</string>
+    <string name="drm_clearkey_pssh_name">ClearKey (Common PSSH box format)</string>
+    <string name="drm_fairplay_netflix_name">Apple FairPlay (unofficial; Netflix)</string>
+
+    <string name="hdcp_level_unknown">@string/unknown</string>
+    <string name="hdcp_level_none">Unprotected</string>
+    <string name="hdcp_level_v1">HDCP 1.0</string>
+    <string name="hdcp_level_v2">HDCP 2.0 Type 1</string>
+    <string name="hdcp_level_v2_1">HDCP 2.1 Type 1</string>
+    <string name="hdcp_level_v2_2">HDCP 2.2 Type 1</string>
+    <string name="hdcp_level_v2_3">HDCP 2.3 Type 1</string>
+    <string name="hdcp_level_no_digital_output">No digital output (implicitly secure)</string>
+
     <string name="app_theme_light">Light</string>
     <string name="app_theme_dark">Dark</string>
     <string name="app_theme_battery_saver">Set by Battery Saver</string>
     <string name="app_theme_system_default">System default</string>
 
     <string name="more_info">Tap to see more info…</string>
+
+    <string name="details_fragment_tag" translatable="false">item_details</string>
+
+    <string name="codec_row_content_description">Codec %1$d: %2$s for %3$s</string>
+    <string name="drm_row_content_description">DRM %1$d: %2$s</string>
 
 </resources>

@@ -10,3 +10,9 @@
 -dontwarn com.samsung.**
 #noinspection ShrinkerUnresolvedReference
 -keep class com.samsung.** { *; }
+
+# TODO: Remove after LeakCanary 2.7 is released
+# Enum values are referenced reflectively in EnumSet initialization
+-keepclassmembers,allowoptimization enum leakcanary.AndroidLeakFixes {
+    public static **[] values();
+}

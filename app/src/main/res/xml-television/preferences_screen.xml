@@ -27,13 +27,14 @@
             app:useSimpleSummaryProvider="true"/>
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="Sorting/filtering">
+    <PreferenceCategory app:title="Sorting &amp; Filtering">
 
         <androidx.preference.ListPreference
             app:entries="@array/settings_filter_type_titles"
             app:entryValues="@array/settings_filter_type_values"
             app:defaultValue="2"
             app:key="filter_type"
+            app:icon="@drawable/ic_filter"
             app:title="Filter codecs"
             app:useSimpleSummaryProvider="true"/>
 
@@ -42,6 +43,7 @@
             app:entryValues="@array/settings_sort_codecs_values"
             app:defaultValue="0"
             app:key="sort_type"
+            app:icon="@drawable/ic_sort"
             app:title="Sort codecs"
             app:useSimpleSummaryProvider="true"/>
 

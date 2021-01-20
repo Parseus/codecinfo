@@ -4,9 +4,9 @@
     <!-- Base application theme. -->
     <style name="BaseAppTheme" parent="Theme.AppCompat.Leanback">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorSecondary">@color/teal_200</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>

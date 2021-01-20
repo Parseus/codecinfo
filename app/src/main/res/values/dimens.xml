@@ -4,10 +4,9 @@
     <dimen name="list_baseline_secondary">20dp</dimen>
     <dimen name="list_content_padding">16dp</dimen>
 
-    <dimen name="dialog_baseline_primary">40dp</dimen>
-    <dimen name="dialog_baseline_secondary">36dp</dimen>
-    <dimen name="dialog_margin_size">24dp</dimen>
+    <dimen name="codec_adapter_row_height">96dp</dimen>
     <dimen name="dialog_button_margin_size">8dp</dimen>
+    <dimen name="tab_layout_elevation">4dp</dimen>
 
     <dimen name="icon_size">24dp</dimen>
 

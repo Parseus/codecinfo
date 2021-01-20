@@ -7,16 +7,19 @@ android {
         applicationId "com.parseus.codecinfo"
         minSdkVersion 16
         targetSdkVersion 30
-        versionCode 15
-        versionName "1.11.0"
+        versionCode 16
+        versionName "2.0.0"
         resConfigs "en"
 
         vectorDrawables.useSupportLibrary = true
+
+        manifestPlaceholders = [appName:"android.app.Application"]
     }
     buildTypes {
         debug {
             versionNameSuffix "-dev"
             multiDexEnabled true
+            manifestPlaceholders = [appName:"androidx.multidex.MultiDexApplication"]
         }
         release {
             minifyEnabled true
@@ -30,10 +33,18 @@ android {
     productFlavors {
         full {
             dimension "app"
+
+            dependenciesInfo {
+                includeInApk = false
+            }
         }
 
         openSource {
             dimension "app"
+
+            dependenciesInfo {
+                includeInApk = false
+            }
         }
     }
 
@@ -57,17 +68,19 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    implementation 'androidx.appcompat:appcompat:1.3.0-alpha02'
-    implementation "androidx.core:core-ktx:1.5.0-alpha05"
+    implementation 'androidx.appcompat:appcompat:1.3.0-beta01'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation "androidx.core:core-ktx:1.5.0-beta01"
     implementation 'androidx.leanback:leanback:1.1.0-beta01'
     implementation 'androidx.leanback:leanback-preference:1.1.0-beta01'
     implementation 'androidx.preference:preference-ktx:1.1.1'
-    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'com.google.android.material:material:1.3.0-rc01'
 
     implementation 'com.github.ditacristianionut:AppInfoBadge:1.3'
+    implementation "com.squareup.leakcanary:plumber-android:$leakCanary_version"
 
     debugImplementation 'androidx.multidex:multidex:2.0.1'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanary_version"
 
     fullImplementation fileTree(include: ['*.jar'], dir: 'libs')
     fullImplementation 'com.google.android.play:core:1.9.0'

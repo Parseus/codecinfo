@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:installLocation="auto"
+    android:installLocation="preferExternal"
     package="com.parseus.codecinfo">
 
     <uses-sdk tools:overrideLibrary="androidx.leanback, androidx.leanback.preference, com.dci.dev.appinfobadge, com.afollestad.recyclical" />
@@ -19,19 +19,22 @@
         </intent>
     </queries>
 
+    <!--suppress AndroidDomInspection -->
     <application
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
         android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name=".CodecInfoApp"
+        android:name="${appName}"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="UnusedAttribute">
+        tools:ignore="MissingClass,RtlEnabled,UnusedAttribute">
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:name=".ui.MainActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,14 +42,18 @@
                 <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
                 <category android:name="android.intent.category.PENWINDOW_LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable" android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".settings.SettingsActivity"
-            android:label="@string/settings"
-            android:parentActivityName=".MainActivity" />
+            android:name="com.parseus.codecinfo.ui.settings.SettingsActivity"
+            android:label="@string/action_settings"
+            android:parentActivityName=".ui.MainActivity" />
 
         <activity
-            android:name=".tv.TvActivity"
+            android:name="com.parseus.codecinfo.ui.tv.TvActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat.Leanback">
             <intent-filter>
@@ -54,18 +61,32 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".tv.TvCodecDetailsActivity"
+        <activity android:name="com.parseus.codecinfo.ui.tv.TvCodecDetailsActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat.Leanback"
-            android:parentActivityName=".tv.TvActivity"/>
-        <activity android:name=".tv.TvSettingsActivity"
+            android:parentActivityName="com.parseus.codecinfo.ui.tv.TvActivity"/>
+        <activity android:name="com.parseus.codecinfo.ui.tv.TvSettingsActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.Preference"
-            android:parentActivityName=".tv.TvActivity" />
-        <activity android:name=".tv.TvAboutActivity"
+            android:parentActivityName="com.parseus.codecinfo.ui.tv.TvActivity" />
+        <activity android:name="com.parseus.codecinfo.ui.tv.TvAboutActivity"
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat.Leanback"
-            android:parentActivityName=".tv.TvActivity" />
+            android:parentActivityName="com.parseus.codecinfo.ui.tv.TvActivity" />
+        <activity android:name="com.parseus.codecinfo.ui.tv.TvSearchActivity"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.Leanback"
+            android:parentActivityName="com.parseus.codecinfo.ui.tv.TvActivity" />
+        
+        <provider
+            android:authorities="${applicationId}.fileprovider"
+            android:name="androidx.core.content.FileProvider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <uses-library
             android:name="com.sec.android.app.multiwindow"

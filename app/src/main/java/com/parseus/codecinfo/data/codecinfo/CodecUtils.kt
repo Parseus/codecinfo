@@ -82,7 +82,14 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
 
     if (mediaCodecInfos.isEmpty()) {
         mediaCodecInfos = if (SDK_INT >= 21) {
-            MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
+            try {
+                MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
+            } catch (e: Exception) {
+                // Some devices (like Xiaomi Redmi Note 4) seem to
+                // throw an exception when trying to list codecs.
+                // Return an empty list to inform the user abput it.
+                return mutableListOf()
+            }
         } else {
             @Suppress("DEPRECATION")
             Array(MediaCodecList.getCodecCount()) { i -> MediaCodecList.getCodecInfoAt(i) }

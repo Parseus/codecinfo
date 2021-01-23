@@ -9,6 +9,8 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
+import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
@@ -18,10 +20,14 @@ import com.parseus.codecinfo.databinding.TabContentLayoutBinding
 import com.parseus.codecinfo.ui.adapters.CodecAdapter
 import com.parseus.codecinfo.ui.adapters.DrmAdapter
 
+internal var emptyListInformed = false
+
 class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private var _binding: TabContentLayoutBinding? = null
     private val binding get() = _binding!!
+
+    private var emptyList = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = TabContentLayoutBinding.inflate(inflater, container, false)
@@ -39,18 +45,35 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
 
         val infoType = InfoType.fromInt(requireArguments().getInt("infoType"))
         val itemAdapter = if (infoType != InfoType.DRM) {
-            CodecAdapter().also { it.add(getSimpleCodecInfoList(requireContext(),
-                    infoType == InfoType.Audio)) }
+            val codecSimpleInfoList = getSimpleCodecInfoList(requireContext(),
+                    infoType == InfoType.Audio)
+            if (codecSimpleInfoList.isEmpty()) emptyList = true
+            CodecAdapter().also {
+                if (!emptyList) {
+                    it.add(codecSimpleInfoList)
+                }
+            }
         } else {
             val drmSimpleInfoList = getSimpleDrmInfoList(requireContext())
+            if (drmSimpleInfoList.isEmpty()) emptyList = true
             DrmAdapter(drmSimpleInfoList)
         }
 
-        binding.simpleCodecListView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = itemAdapter
-            ViewCompat.setNestedScrollingEnabled(this, false)
-            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+        if (!emptyList) {
+            binding.simpleCodecListView.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = itemAdapter
+                ViewCompat.setNestedScrollingEnabled(this, false)
+                addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            }
+        } else if (!emptyListInformed) {
+            // Do not spam the user with multiple snackbars.
+            emptyListInformed = true
+            val errorId = if (InfoType.currentInfoType != InfoType.DRM)
+                R.string.unable_to_get_codec_info_error
+                else R.string.unable_to_get_drm_info_error
+            Snackbar.make(requireActivity().findViewById(android.R.id.content),
+                    errorId, Snackbar.LENGTH_LONG).show()
         }
     }
 
@@ -69,6 +92,10 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun handleSearch(query: String) {
+        if (emptyList) {
+            return
+        }
+
         val adapter = binding.simpleCodecListView.adapter
         if (adapter is CodecAdapter) {
             val fullList = getSimpleCodecInfoList(requireContext(), InfoType.currentInfoType == InfoType.Audio)

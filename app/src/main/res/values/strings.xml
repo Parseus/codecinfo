@@ -29,6 +29,9 @@
     <string name="search_hint">Search codec/DRM info</string>
     <string name="search_settings_description">Codec/DRM info</string>
 
+    <string name="unable_to_get_codec_info_error">Unable to get the list of codecs due to an Android platform bug.</string>
+    <string name="unable_to_get_drm_info_error">Unable to get the list of DRM due to an Android platform bug.</string>
+
     <string name="category_audio">Audio</string>
     <string name="category_video">Video</string>
     <string name="category_drm">DRM</string>

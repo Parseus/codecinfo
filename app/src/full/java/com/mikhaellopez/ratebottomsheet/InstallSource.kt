@@ -13,8 +13,8 @@ enum class InstallSource(val installerPackageName: String,
             "https://www.amazon.com/gp/mas/dl/android?p="),
 
     GalaxyStore("com.sec.android.app.samsungapps",
-            "samsungapps://ProductDetail/",
-            "https://www.samsungapps.com/appquery/appDetail.as?appId="),
+            "samsungapps://AppRating/",
+            "https://www.samsungapps.com/appquery/AppRating.as?appId="),
 
     PlayStore("com.android.vending",
             "market://details?id=",

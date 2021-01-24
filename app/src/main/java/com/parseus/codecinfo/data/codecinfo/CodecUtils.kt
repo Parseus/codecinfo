@@ -600,11 +600,10 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
     var profile: String?
     var level: String? = ""
 
-    // On versions L and M, VP9 codecCapabilities do not advertise profile level support.
+    // On Android <=6.0, some devices do not advertise VP9 profile level support.
     // In this case, estimate the level from MediaCodecInfo.VideoCapabilities instead.
-    // Assume VP9 is not supported before L.
-    if (SDK_INT in 21..23 && codecId.endsWith("vp9")) {
-        val vp9Level = getMaxVP9ProfileLevel(capabilities.videoCapabilities)
+    if (SDK_INT <= 23 && codecId.endsWith("vp9") && profileLevels.isEmpty()) {
+        val vp9Level = getMaxVP9ProfileLevel(if (SDK_INT >= 21) capabilities else null)
         // Assume all platforms before N only support VP9 profile 0.
         profile = VP9Profiles.VP9Profile0.name
         level = VP9Levels.from(vp9Level)!!
@@ -777,27 +776,25 @@ private fun MutableList<DetailsProperty>.addFeature(context: Context,
 /**
  * Needed on M and older to get correct information about VP9 support.
  */
-@RequiresApi(21)
-private fun getMaxVP9ProfileLevel(capabilities: MediaCodecInfo.VideoCapabilities): Int {
+private fun getMaxVP9ProfileLevel(capabilities: MediaCodecInfo.CodecCapabilities?): Int {
+    val maxBitrate = if (SDK_INT >= 21 && capabilities?.videoCapabilities != null) {
+        capabilities.videoCapabilities.bitrateRange.upper
+    } else 0
+
     // https://www.webmproject.org/vp9/levels
-    val bitrateMapping = arrayOf(
-            intArrayOf(200, VP9Level1.value), intArrayOf(800, VP9Level11.value),
-            intArrayOf(1800, VP9Level2.value), intArrayOf(3600, VP9Level21.value),
-            intArrayOf(7200, VP9Level3.value), intArrayOf(12000, VP9Level31.value),
-            intArrayOf(18000, VP9Level4.value), intArrayOf(30000, VP9Level41.value),
-            intArrayOf(60000, VP9Level5.value), intArrayOf(120000, VP9Level51.value),
-            intArrayOf(180000, VP9Level52.value))
-    var maxBitrateRange = 0
-
-    for (entry in bitrateMapping) {
-        val bitrate = entry[0]
-        val level = entry[1]
-        if (capabilities.bitrateRange.contains(bitrate)) {
-            maxBitrateRange = level
-        }
+    return when {
+        maxBitrate >= 180_000_000 -> VP9Level52.value
+        maxBitrate >= 120_000_000 -> VP9Level51.value
+        maxBitrate >= 60_000_000  -> VP9Level5.value
+        maxBitrate >= 30_000_000  -> VP9Level41.value
+        maxBitrate >= 18_000_000  -> VP9Level4.value
+        maxBitrate >= 12_000_000  -> VP9Level31.value
+        maxBitrate >= 7_200_000   -> VP9Level3.value
+        maxBitrate >= 3_600_000   -> VP9Level21.value
+        maxBitrate >= 1_800_000   -> VP9Level2.value
+        maxBitrate >= 800_000     -> VP9Level11.value
+        else                      -> VP9Level1.value    // Assume level 1 is always supported.
     }
-
-    return maxBitrateRange
 }
 
 private fun isVendor(codecInfo: MediaCodecInfo): Boolean {

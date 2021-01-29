@@ -12,9 +12,9 @@
         android:id="@+id/full_codec_info_name"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:paddingTop="@dimen/list_content_padding"
         android:paddingLeft="@dimen/list_content_padding"
         android:paddingRight="@dimen/list_content_padding"
+        android:elevation="1dp"
         android:gravity="center"
         android:maxLines="1"
         android:textColor="?attr/colorPrimary"
@@ -23,15 +23,39 @@
         app:autoSizeMaxTextSize="20sp"
         app:autoSizeStepGranularity="1px"
         app:autoSizeTextType="uniform"
-        tools:text="Item full name"/>
+        tools:text="Item full name"
+        tools:ignore="UnusedAttribute" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/full_codec_info_content"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
-        android:scrollbars="vertical"
-        android:fadeScrollbars="false"
-        tools:listitem="@layout/item_details_adapter_row"/>
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="?attr/colorSurface">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/known_problems_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:scrollbars="vertical"
+                android:fadeScrollbars="false"
+                tools:listitem="@layout/expandable_item_header" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/full_codec_info_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:scrollbars="vertical"
+                android:fadeScrollbars="false"
+                tools:listitem="@layout/item_details_adapter_row"/>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

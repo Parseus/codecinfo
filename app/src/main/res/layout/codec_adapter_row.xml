@@ -47,6 +47,8 @@
         android:layout_width="match_parent"
         android:layout_height="24dp"
         android:layout_below="@id/codec_name"
+        android:layout_toLeftOf="@id/known_problem_icon"
+        android:layout_toStartOf="@id/known_problem_icon"
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         android:alpha="0.87"
@@ -72,5 +74,15 @@
         android:textColor="?attr/colorOnSurface"
         android:text="@string/more_info"/>
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/known_problem_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_below="@id/codec_type"
+        android:layout_alignParentEnd="true"
+        android:visibility="gone"
+        app:srcCompat="@drawable/mtrl_ic_error"
+        app:tint="?colorError"
+        tools:visibility="visible" />
 
 </RelativeLayout>

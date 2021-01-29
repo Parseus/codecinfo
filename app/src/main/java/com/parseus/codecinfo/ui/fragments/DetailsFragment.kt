@@ -6,15 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
+import com.parseus.codecinfo.ui.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
+import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
+import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
 import com.parseus.codecinfo.utils.isTv
 import java.util.*
 
@@ -64,6 +69,22 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         }
 
+        if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
+            val knownProblems = KNOWN_PROBLEMS_DB.filter {
+                it.isAffected(requireContext(), codecName!!)
+            }
+            if (knownProblems.isNotEmpty()) {
+                binding.knownProblemsList?.apply {
+                    layoutManager = LinearLayoutManager(context)
+                    ViewCompat.setNestedScrollingEnabled(this, false)
+                    addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+                    itemAnimator = ExpandableItemAnimator()
+                    isVisible = true
+                    adapter = ExpandableItemAdapter(knownProblems)
+                }
+            }
+        }
+
         propertyList = when {
             codecId != null && codecName != null ->
                 getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
@@ -76,6 +97,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun getFullDetails() {
         binding.fullCodecInfoName.text = codecName ?: drmName
+
         val detailsAdapter = DetailsAdapter()
         detailsAdapter.add(propertyList)
         binding.fullCodecInfoContent.apply {

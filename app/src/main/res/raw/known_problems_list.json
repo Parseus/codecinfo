@@ -1,0 +1,451 @@
+[
+  {
+    "id": 1,
+    "codec_name": "OMX.MTK.AUDIO.DECODER.DSPAC3",
+    "description": "MTK E-AC3 decoder doesn't support decoding JOC streams in 2-D.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/blob/c40d1c6620afa33134dc15195fe97ac800c95437/library/core/src/main/java/com/google/android/exoplayer2/mediacodec/MediaCodecUtil.java#L516"
+    ]
+  },
+  {
+    "id": 2,
+    "codec_name": "OMX.SEC.vp8.dec",
+    "description": "This VP8 decoder on Samsung Galaxy S3/S4/S4 Mini/Tab 3/Note 2 is unable to play WebM videos correctly.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 19
+      }
+    ],
+    "devices": [
+      {
+        "op": "startsWith",
+        "value": "d2"
+      },
+      {
+        "op": "startsWith",
+        "value": "serrano"
+      },
+      {
+        "op": "startsWith",
+        "value": "jflte"
+      },
+      {
+        "op": "startsWith",
+        "value": "santos"
+      },
+      {
+        "op": "startsWith",
+        "value": "t0"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/548"
+    ]
+  },
+  {
+    "id": 3,
+    "codec_name": "OMX.qcom.audio.decoder.aac",
+    "description": "Large audio timestamps are not propagated correctly when using this codec on Android 4.1.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 16
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "C1504"
+      },
+      {
+        "op": "equals",
+        "value": "C1505"
+      },
+      {
+        "op": "equals",
+        "value": "C1604"
+      },
+      {
+        "op": "equals",
+        "value": "C1605"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/blob/c40d1c6620afa33134dc15195fe97ac800c95437/library/core/src/main/java/com/google/android/exoplayer2/mediacodec/MediaCodecUtil.java#L472"
+    ]
+  },
+  {
+    "id": 4,
+    "codec_name": "OMX.SEC.aac.dec",
+    "description": "This codec is unable to play 7.1 audio encoded with AAC on some Samsung devices with Android <7.0.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 24
+      }
+    ],
+    "devices": [
+      {
+        "op": "startsWith",
+        "value": "zeroflte"
+      },
+      {
+        "op": "startsWith",
+        "value": "zenlte"
+      },
+      {
+        "op": "equals",
+        "value": "SC-05G"
+      },
+      {
+        "op": "equals",
+        "value": "marinelteatt"
+      },
+      {
+        "op": "equals",
+        "value": "404SC"
+      },
+      {
+        "op": "equals",
+        "value": "SC-04G"
+      },
+      {
+        "op": "equals",
+        "value": "SCV31"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/3249"
+    ]
+  },
+  {
+    "id": 5,
+    "codec_name": "OMX.Exynos.AAC.Decoder",
+    "description": "This codec is unable to play 7.1 audio encoded with AAC on Android <7.0.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 24
+      }
+    ],
+    "devices": [
+      {
+        "op": "startsWith",
+        "value": "zeroflte"
+      },
+      {
+        "op": "startsWith",
+        "value": "zenlte"
+      },
+      {
+        "op": "equals",
+        "value": "SC-05G"
+      },
+      {
+        "op": "equals",
+        "value": "marinelteatt"
+      },
+      {
+        "op": "equals",
+        "value": "404SC"
+      },
+      {
+        "op": "equals",
+        "value": "SC-04G"
+      },
+      {
+        "op": "equals",
+        "value": "SCV31"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/3249"
+    ]
+  },
+  {
+    "id": 6,
+    "codec_name": "OMX.MTK.AUDIO.DECODER.AAC",
+    "description": "This codec is unable to play some SmoothStreaming content on Gionee Elife E3 and its rebranded variants.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 18
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "a70"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/1528"
+    ]
+  },
+  {
+    "id": 7,
+    "codec_name": "OMX.MTK.AUDIO.DECODER.AAC",
+    "description": "This codec is unable to play some AAC content on Xiaomi Redmi.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 18
+      }
+    ],
+    "devices": [
+      {
+        "op": "startsWith",
+        "value": "HM",
+        "manufacturer": "xiaomi"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/3171"
+    ]
+  },
+  {
+    "id": 8,
+    "codec_name": "OMX.qcom.audio.decoder.mp3",
+    "description": "Creating and/or querying this codec results in failure on some devices with Android 4.1.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 16
+      }
+    ],
+    "devices": [
+      {
+        "op": "startsWith",
+        "value": "gee"
+      },
+      {
+        "op": "equals",
+        "value": "dlxu"
+      },
+      {
+        "op": "equals",
+        "value": "protou"
+      },
+      {
+        "op": "equals",
+        "value": "ville"
+      },
+      {
+        "op": "equals",
+        "value": "villeplus"
+      },
+      {
+        "op": "equals",
+        "value": "villec2"
+      },
+      {
+        "op": "equals",
+        "value": "C6602"
+      },
+      {
+        "op": "equals",
+        "value": "C6603"
+      },
+      {
+        "op": "equals",
+        "value": "C6606"
+      },
+      {
+        "op": "equals",
+        "value": "C6616"
+      },
+      {
+        "op": "equals",
+        "value": "L36h"
+      },
+      {
+        "op": "equals",
+        "value": "SO-02E"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/377",
+      "https://github.com/google/ExoPlayer/issues/1714"
+    ]
+  },
+  {
+    "id": 9,
+    "codec_name": "OMX.SEC.aac.dec",
+    "description": "This decoder is known to output six audio channels when provided with input with fewer than six channels on Samsung Galaxy S6/S7.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 24
+      }
+    ],
+    "devices": [
+      {
+        "op": "startsWith",
+        "value": "zeroflte"
+      },
+      {
+        "op": "startsWith",
+        "value": "herolte"
+      },
+      {
+        "op": "startsWith",
+        "value": "heroqlte"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/blob/abccbcf24795730b68efd489727b2df034dc960c/library/core/src/main/java/com/google/android/exoplayer2/audio/MediaCodecAudioRenderer.java#L804"
+    ]
+  },
+  {
+    "id": 10,
+    "codec_name": "OMX.google.raw.decoder",
+    "description": "OMX.google.raw.decoder doesn't resize its output buffers correctly prior on Android <7.0, except on Android TV running 6.0. This will cause a native crash when attempting to fill an input buffer is bigger than the output one.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 24,
+        "platform": "mobile"
+      },
+      {
+        "op": "<",
+        "value": 23,
+        "platform": "tv"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/4057"
+    ]
+  },
+  {
+    "id": 11,
+    "codec_name": "OMX.MTK.VIDEO.DECODER.HEVC",
+    "description": "HEVC codec on LG Q7 inaccurately reports capabilities for playing vertical videos.",
+    "devices": [
+      {
+        "op": "equals",
+        "value": "mcv5a"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/6612"
+    ]
+  },
+  {
+    "id": 12,
+    "codec_name": "OMX.MARVELL.VIDEO.HW.CODA7542DECODER",
+    "description": "This decoder is known to fail when an attempt is made to reconfigure it with a new format's configuration data.",
+    "models": [
+      {
+        "op": "startsWith",
+        "value": "SM-T230"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/blob/abccbcf24795730b68efd489727b2df034dc960c/library/core/src/main/java/com/google/android/exoplayer2/mediacodec/MediaCodecInfo.java#L764"
+    ]
+  },
+  {
+    "id": 13,
+    "codec_name": "OMX.Exynos.AVC.Decoder",
+    "description": "This decoder is known to fail on Odroid-XU3 and Nexus 10 when adapting, despite advertising itself as an adaptive decoder.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 22
+      }
+    ],
+    "models": [
+      {
+        "op": "equals",
+        "value": "ODROID-XU3"
+      },
+      {
+        "op": "equals",
+        "value": "Nexus 10"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/2806",
+      "https://github.com/google/ExoPlayer/pull/2612"
+    ]
+  },
+  {
+    "id": 14,
+    "codec_name": "OMX.Exynos.AVC.Decoder.secure",
+    "description": "This decoder is known to fail on Odroid-XU3 and Nexus 10 when adapting, despite advertising itself as an adaptive decoder.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 22
+      }
+    ],
+    "models": [
+      {
+        "op": "equals",
+        "value": "ODROID-XU3"
+      },
+      {
+        "op": "equals",
+        "value": "Nexus 10"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/2806",
+      "https://github.com/google/ExoPlayer/pull/2612"
+    ]
+  },
+  {
+    "id": 15,
+    "codec_name": "OMX.SEC.mp3.dec",
+    "description": "This decoder is known to cause issues on Samsung devices with Android <5.0, ranging from playing audio twice to not playing audio at all.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 21
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/398",
+      "https://github.com/google/ExoPlayer/issues/4519",
+      "https://github.com/google/ExoPlayer/pull/5216"
+    ]
+  },
+  {
+    "id": 16,
+    "codec_name": "OMX.SEC.MP3.Decoder",
+    "description": "This decoder is known to cause issues on Samsung devices with Android <5.0, ranging from playing audio twice to not playing audio at all.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 21
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/398",
+      "https://github.com/google/ExoPlayer/issues/4519",
+      "https://github.com/google/ExoPlayer/pull/5216"
+    ]
+  },
+  {
+    "id": 17,
+    "codec_name": "OMX.brcm.audio.mp3.decoder",
+    "description": "This decoder is known to cause issues on Samsung devices with Android <5.0, ranging from playing audio twice to not playing audio at all.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 21
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/398",
+      "https://github.com/google/ExoPlayer/issues/4519",
+      "https://github.com/google/ExoPlayer/pull/5216"
+    ]
+  }
+]

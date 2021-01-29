@@ -96,18 +96,16 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         }
     }
 
+    val showAliases = prefs.getBoolean("show_aliases", false)
+    val filteringOption = prefs.getString("filter_type", "2")!!.toInt()
     var codecSimpleInfoList = ArrayList<CodecSimpleInfo>()
 
-    for (mediaCodecInfo in mediaCodecInfos) {
-        val option = prefs.getString("filter_type", "2")!!.toInt()
-
-        if ((option == 0 && mediaCodecInfo.isEncoder) || (option == 1 && !mediaCodecInfo.isEncoder)) {
+    for ((codecIndex, mediaCodecInfo) in mediaCodecInfos.withIndex()) {
+        if ((filteringOption == 0 && mediaCodecInfo.isEncoder) || (filteringOption == 1 && !mediaCodecInfo.isEncoder)) {
             continue
         }
 
         if (SDK_INT >= 29) {
-            val showAliases = prefs.getBoolean("show_aliases", false)
-
             if (!showAliases && mediaCodecInfo.isAlias) {
                 continue
             }
@@ -125,9 +123,14 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
             val isAudioCodec = mediaCodecInfo.isAudioCodec()
 
             if (isAudio == isAudioCodec) {
-                val codecSimpleInfo = CodecSimpleInfo(index.toLong(), codecId, mediaCodecInfo.name,
+                val codecSimpleInfo = CodecSimpleInfo((codecIndex * 100 + index).toLong(), codecId, mediaCodecInfo.name,
                         isAudioCodec, mediaCodecInfo.isEncoder)
-                codecSimpleInfoList.add(codecSimpleInfo)
+                if (codecSimpleInfoList.find {
+                    it.codecId == codecSimpleInfo.codecId
+                            && it.codecName == codecSimpleInfo.codecName
+                } == null) {
+                    codecSimpleInfoList.add(codecSimpleInfo)
+                }
             }
         }
     }

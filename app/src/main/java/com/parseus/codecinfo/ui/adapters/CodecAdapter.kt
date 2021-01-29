@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.databinding.CodecAdapterRowBinding
+import com.parseus.codecinfo.ui.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.utils.buildContainerTransform
@@ -51,6 +53,18 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
 
     })
 
+    init {
+        setHasStableIds(true)
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
     fun add(infoList: List<CodecSimpleInfo>) {
         sortedList.addAll(infoList)
     }
@@ -84,6 +98,7 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
     class CodecInfoViewHolder(binding: CodecAdapterRowBinding) : RecyclerView.ViewHolder(binding.root) {
 
         private val layout = binding.simpleCodecRow
+        private val knownIssueIcon = binding.knownProblemIcon
         private val codecId = binding.codecName
         private val codecName = binding.codecFullName
         private val codecType = binding.codecType
@@ -97,8 +112,28 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
             if (itemView.context.isInTwoPaneMode()) {
                 moreInfo.visibility = View.GONE
             }
-            layout.contentDescription = layout.context.getString(R.string.codec_row_content_description,
-                    position, codecName, codecId)
+
+            if (KNOWN_PROBLEMS_DB.isNotEmpty()) {
+                val knownProblems = KNOWN_PROBLEMS_DB.filter {
+                    it.isAffected(itemView.context, codecInfo.codecName)
+                }
+                if (knownProblems.isNotEmpty()) {
+                    knownIssueIcon.isVisible = true
+                }
+            }
+
+            val codecTypeString = layout.context.getString(
+                    if (codecInfo.isEncoder) R.string.encoder else R.string.decoder)
+            val codecMediaTypeString = layout.context.getString(
+                    if (codecInfo.isAudio) R.string.category_audio else R.string.category_video)
+
+            layout.contentDescription = if (knownIssueIcon.isVisible) {
+                layout.context.getString(R.string.codec_row_with_issue_content_description,
+                        codecMediaTypeString, position, codecTypeString, codecName, codecId)
+            } else {
+                layout.context.getString(R.string.codec_row_content_description,
+                        codecMediaTypeString, position, codecTypeString, codecName, codecId)
+            }
 
             ViewCompat.setTransitionName(layout, "$codecId/$codecName")
             layout.setOnClickListener {

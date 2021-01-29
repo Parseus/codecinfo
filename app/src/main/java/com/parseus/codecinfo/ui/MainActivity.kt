@@ -26,13 +26,20 @@ import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
 import com.parseus.codecinfo.data.codecinfo.videoCodecList
 import com.parseus.codecinfo.data.drm.drmList
+import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.databinding.ActivityMainBinding
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.ui.settings.DarkTheme
 import com.parseus.codecinfo.ui.settings.SettingsContract
 import com.parseus.codecinfo.utils.*
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import okio.buffer
+import okio.source
 import java.io.File
 import java.util.*
+
+lateinit var KNOWN_PROBLEMS_DB: List<KnownProblem>
 
 class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
@@ -89,6 +96,19 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         }
 
         handleIntent(intent)
+
+        if (!::KNOWN_PROBLEMS_DB.isInitialized) {
+            val moshi = Moshi.Builder().build()
+            val type = Types.newParameterizedType(List::class.java, KnownProblem::class.java)
+            val adapter = moshi.adapter<List<KnownProblem>>(type)
+            try {
+                resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
+                    KNOWN_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
+                }
+            } catch (e: Exception) {
+                KNOWN_PROBLEMS_DB = emptyList()
+            }
+        }
     }
 
     private fun recreateDetailFragmentIfNeedded() {

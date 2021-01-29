@@ -4,11 +4,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
+import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 
 class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
 
@@ -39,6 +41,16 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
             setMainImageDimensions(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
             mainImage = ContextCompat.getDrawable(context, drawable)
             setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
+
+            if (KNOWN_PROBLEMS_DB.isNotEmpty()) {
+                val knownProblems = KNOWN_PROBLEMS_DB.filter {
+                    it.isAffected(context, info.codecName)
+                }
+                if (knownProblems.isNotEmpty()) {
+                    badgeImage = AppCompatResources.getDrawable(context,
+                            com.google.android.material.R.drawable.mtrl_ic_error)
+                }
+            }
         }
     }
 

@@ -26,6 +26,7 @@ import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
 import com.parseus.codecinfo.data.codecinfo.videoCodecList
 import com.parseus.codecinfo.data.drm.drmList
+import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.databinding.ActivityMainBinding
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
@@ -38,8 +39,6 @@ import okio.buffer
 import okio.source
 import java.io.File
 import java.util.*
-
-lateinit var KNOWN_PROBLEMS_DB: List<KnownProblem>
 
 class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
@@ -97,7 +96,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         handleIntent(intent)
 
-        if (!::KNOWN_PROBLEMS_DB.isInitialized) {
+        if (KNOWN_PROBLEMS_DB.isEmpty()) {
             val moshi = Moshi.Builder().build()
             val type = Types.newParameterizedType(List::class.java, KnownProblem::class.java)
             val adapter = moshi.adapter<List<KnownProblem>>(type)

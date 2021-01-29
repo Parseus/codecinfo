@@ -11,6 +11,12 @@ import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
+import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
+import com.parseus.codecinfo.data.knownproblems.KnownProblem
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
+import okio.buffer
+import okio.source
 
 @Suppress("unused")
 class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
@@ -70,6 +76,19 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         onItemViewClickedListener = this
 
         setOnSearchClickedListener { startActivity(Intent(requireActivity(), TvSearchActivity::class.java)) }
+
+        if (KNOWN_PROBLEMS_DB.isEmpty()) {
+            val moshi = Moshi.Builder().build()
+            val type = Types.newParameterizedType(List::class.java, KnownProblem::class.java)
+            val adapter = moshi.adapter<List<KnownProblem>>(type)
+            try {
+                resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
+                    KNOWN_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
+                }
+            } catch (e: Exception) {
+                KNOWN_PROBLEMS_DB = emptyList()
+            }
+        }
     }
 
     override fun onItemClicked(itemViewHolder: Presenter.ViewHolder?, item: Any?,

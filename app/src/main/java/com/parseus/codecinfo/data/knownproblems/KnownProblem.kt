@@ -6,6 +6,8 @@ import com.parseus.codecinfo.utils.isTv
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+var KNOWN_PROBLEMS_DB: List<KnownProblem> = emptyList()
+
 @JsonClass(generateAdapter = true)
 data class KnownProblem(
         val id: Long,

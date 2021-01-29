@@ -14,8 +14,8 @@ import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
+import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
-import com.parseus.codecinfo.ui.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
@@ -74,7 +74,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
                 it.isAffected(requireContext(), codecName!!)
             }
             if (knownProblems.isNotEmpty()) {
-                binding.knownProblemsList?.apply {
+                binding.knownProblemsList.apply {
                     layoutManager = LinearLayoutManager(context)
                     ViewCompat.setNestedScrollingEnabled(this, false)
                     addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))

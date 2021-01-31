@@ -3,7 +3,7 @@
 package com.parseus.codecinfo.data.codecinfo.colorformats
 
 /**
- * Combines color formats from framework's MediaCodec with those from OpenMAX IL 1.2.0.
+ * Combines color formats from MediaCodec, Stagefright and OpenMAX IL 1.2.0.
  */
 enum class StandardColorFormat(val value: Int) {
 
@@ -72,11 +72,14 @@ enum class StandardColorFormat(val value: Int) {
     COLOR_Format24BitRGBA6666(0x3E),
     COLOR_FormatSurface (0x7F000789),
     COLOR_Format32bitABGR8888(0x7F00A000),
+    COLOR_FormatRGBAFlexible (0x7F36A888),
+    COLOR_FormatRGBFlexible(0x7F36B888),
+    COLOR_FormatYUV420Planar16(0x7F42016B),
     COLOR_FormatYUV420Flexible(0x7F420888),
     COLOR_FormatYUV422Flexible(0x7F422888),
     COLOR_FormatYUV444Flexible(0x7F444888),
-    COLOR_FormatRGBFlexible(0x7F36B888),
-    COLOR_FormatRGBAFlexible (0x7F36A888),
+    COLOR_FormatYUV444Y410(0x7F444AAA),
+
     COLOR_QCOM_FormatYUV420SemiPlanar (0x7FA30C00),
     COLOR_TI_FormatYUV420PackedSemiPlanar(0x7F000100),
 

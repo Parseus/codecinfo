@@ -21,12 +21,23 @@ import com.parseus.codecinfo.utils.toBytesPerSecond
 import com.parseus.codecinfo.utils.toHexHstring
 import com.parseus.codecinfo.utils.toKiloHertz
 import java.util.*
-import kotlin.Comparator
 import kotlin.collections.ArrayList
 
 // Source:
 // https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android10-release/media/java/android/media/MediaCodecInfo.java#1052
 private const val DEFAULT_MAX_INPUT_CHANNEL_LIMIT = 30
+private const val DEFAULT_MAX_FRAME_RATE = 960
+private const val DEFAULT_MAX_SIZE = 32768
+
+// Source:
+// https://web.archive.org/web/20170503180053/http://www.divx.com/files/DivX-Profiles_Tech-Specs.pdf
+// Assume the best possible resolution and framerate, if unknown.
+private const val DIVX4_480P_MAX_FRAME_RATE = 30
+private const val DIVX4_576P_MAX_FRAME_RATE = 25
+private const val DIVX6_720P_MAX_FRAME_RATE = 60
+private const val DIVX6_1080P_MAX_FRAME_RATE = 30
+private val DIVX4_MAX_RESOLUTION = intArrayOf(720, 576)
+private val DIVX6_MAX_RESOLUTION = intArrayOf(1920, 1080)
 
 private val platformSupportedTypes = arrayOf(
         "audio/3gpp",
@@ -160,7 +171,17 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
 
 fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): List<DetailsProperty> {
     val mediaCodecInfo = mediaCodecInfos.first { it.name == codecName }
-    val capabilities = mediaCodecInfo.getCapabilitiesForType(codecId)
+
+    // Google uses the same decoder for both DP and non-DP content for MPEG-4,
+    // but in the first case codec capabilities can't be queried properly,
+    // so copying capabilities for video/mp4v-es seems like the best possible thing to do.
+    val overrideM4pvEsdp = codecId == "video/mp4v-esdp" && codecName == "OMX.google.mpeg4.decoder"
+    val capabilities = if (!overrideM4pvEsdp) {
+        mediaCodecInfo.getCapabilitiesForType(codecId)
+    } else {
+        mediaCodecInfo.getCapabilitiesForType("video/mp4v-es")
+    }
+
     val isAudio = mediaCodecInfo.isAudioCodec()
     val isEncoder = mediaCodecInfo.isEncoder
 
@@ -195,7 +216,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             getAudioCapabilities(context, codecId, codecName, capabilities, propertyList)
         }
     } else {
-        getVideoCapabilities(context, codecName, capabilities, propertyList)
+        getVideoCapabilities(context, codecId, codecName, capabilities, propertyList)
 
         if (!isEncoder) {
             if (SDK_INT >= 19) {
@@ -485,25 +506,22 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
     }
 }
 
-private fun getVideoCapabilities(context: Context, codecName: String,
+private fun getVideoCapabilities(context: Context, codecId: String, codecName: String,
                                  capabilities: MediaCodecInfo.CodecCapabilities,
                                  propertyList: MutableList<DetailsProperty>) {
     if (SDK_INT >= 21) {
         val videoCapabilities = capabilities.videoCapabilities
 
-        val bitrateRange = videoCapabilities.bitrateRange
-        val framerates = videoCapabilities.supportedFrameRates
-        val maxWidth = videoCapabilities.supportedWidths.upper
-        val maxHeight = videoCapabilities.getSupportedHeightsFor(maxWidth).upper
-
-        val maxResolution = "${maxWidth}x$maxHeight"
+        val maxResolution = getMaxResolution(codecId, videoCapabilities)
         propertyList.add(DetailsProperty(propertyList.size.toLong(),
-                context.getString(R.string.max_resolution), maxResolution))
+                context.getString(R.string.max_resolution), "${maxResolution[0]}x${maxResolution[1]}"))
 
+        val bitrateRange = videoCapabilities.bitrateRange
         propertyList.add(DetailsProperty(propertyList.size.toLong(),
                 context.getString(R.string.max_bitrate),
                 bitrateRange.upper.toBytesPerSecond()))
 
+        val framerates = getSupportedFrameRates(codecId, videoCapabilities)
         val framerateString = if (framerates.lower == framerates.upper) {
             "${framerates.upper} ${context.getString(R.string.frames_per_second)}"
         } else {
@@ -512,7 +530,7 @@ private fun getVideoCapabilities(context: Context, codecName: String,
         propertyList.add(DetailsProperty(propertyList.size.toLong(),
                 context.getString(R.string.frame_rate), framerateString))
 
-        val frameRatePerResolutions = getFrameRatePerResolutions(context, videoCapabilities)
+        val frameRatePerResolutions = getFrameRatePerResolutions(context, codecId, videoCapabilities)
         if (frameRatePerResolutions.isNotEmpty()) {
             propertyList.add(DetailsProperty(propertyList.size.toLong(),
                     context.getString(R.string.max_frame_rate_per_resolution), frameRatePerResolutions))
@@ -572,17 +590,70 @@ private fun getFormattedColorProfileString(context: Context, colorFormat: String
 }
 
 @RequiresApi(21)
-private fun getFrameRatePerResolutions(context: Context,
+private fun getMaxResolution(codecId: String, videoCapabilities: MediaCodecInfo.VideoCapabilities): IntArray {
+    val maxWidth = videoCapabilities.supportedWidths.upper
+    val maxHeight = videoCapabilities.getSupportedHeightsFor(maxWidth).upper
+    val defaultResolution = intArrayOf(maxWidth, maxHeight)
+
+    return if (!areCapabilitiesUnknown(videoCapabilities)) {
+        defaultResolution
+    } else when {
+        codecId.endsWith("divx311") || codecId.endsWith("divx4") -> DIVX4_MAX_RESOLUTION
+        codecId.endsWith("divx") -> DIVX6_MAX_RESOLUTION
+        else -> {
+            defaultResolution
+        }
+    }
+}
+
+@RequiresApi(21)
+private fun getSupportedFrameRates(codecId: String, videoCapabilities: MediaCodecInfo.VideoCapabilities): Range<Int> {
+    val defaultFrameRates = videoCapabilities.supportedFrameRates
+
+    return if (!areCapabilitiesUnknown(videoCapabilities)) {
+        defaultFrameRates
+    } else when {
+        codecId.endsWith("divx311") || codecId.endsWith("divx4") -> Range(0, DIVX4_480P_MAX_FRAME_RATE)
+        codecId.endsWith("divx") -> Range(0, DIVX6_720P_MAX_FRAME_RATE)
+        else -> videoCapabilities.supportedFrameRates
+    }
+}
+
+@RequiresApi(21)
+private fun getSupportedFrameRatesFor(codecId: String, videoCapabilities: MediaCodecInfo.VideoCapabilities,
+                                      width: Int, height: Int): Range<Double> {
+    return if (!areCapabilitiesUnknown(videoCapabilities)) {
+        videoCapabilities.getSupportedFrameRatesFor(width, height)
+    } else when {
+        codecId.endsWith("divx311") || codecId.endsWith("divx4") -> {
+            val upper = (if (height < 576) DIVX4_480P_MAX_FRAME_RATE else DIVX4_576P_MAX_FRAME_RATE).toDouble()
+            Range(0.0, upper)
+        }
+        codecId.endsWith("divx") -> {
+            val upper = (if (height < 1080) DIVX6_720P_MAX_FRAME_RATE else DIVX6_1080P_MAX_FRAME_RATE).toDouble()
+            Range(0.0, upper)
+        }
+        else -> Range(0.0, getSupportedFrameRates(codecId, videoCapabilities).upper.toDouble())
+    }
+}
+
+@RequiresApi(21)
+private fun getFrameRatePerResolutions(context: Context, codecId: String,
                                        videoCapabilities: MediaCodecInfo.VideoCapabilities): String {
     val capabilities = StringBuilder()
     var maxFrameRate: Double
     val fpsString = context.getString(R.string.frames_per_second)
     val prefs = PreferenceManager.getDefaultSharedPreferences(context)
     val option = prefs.getString("known_resolutions", "0")!!.toInt()
+    val maxResolution = getMaxResolution(codecId, videoCapabilities)
 
     framerateResolutions.forEachIndexed { index, resolution ->
+        if (resolution[0] > maxResolution[0]) {
+            return@forEachIndexed
+        }
+
         if (videoCapabilities.isSizeSupported(resolution[0], resolution[1])) {
-            maxFrameRate = videoCapabilities.getSupportedFrameRatesFor(resolution[0], resolution[1]).upper
+            maxFrameRate = getSupportedFrameRatesFor(codecId, videoCapabilities, resolution[0], resolution[1]).upper
 
             if (option == 0) {
                 capabilities.append("${framerateClasses[index]}: ${"%.1f".format(maxFrameRate)} $fpsString\n")
@@ -862,4 +933,11 @@ private fun isHardwareAccelerated(codecInfo: MediaCodecInfo): Boolean {
     } else {
         !isSoftwareOnly(codecInfo)
     }
+}
+
+@RequiresApi(21)
+private fun areCapabilitiesUnknown(videoCapabilities: MediaCodecInfo.VideoCapabilities): Boolean {
+    return videoCapabilities.supportedFrameRates.upper == DEFAULT_MAX_FRAME_RATE
+            && videoCapabilities.supportedWidths.upper == DEFAULT_MAX_SIZE
+            && videoCapabilities.supportedHeights.upper == DEFAULT_MAX_SIZE
 }

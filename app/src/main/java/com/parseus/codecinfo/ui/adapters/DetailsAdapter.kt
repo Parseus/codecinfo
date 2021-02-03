@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.databinding.ItemDetailsAdapterRowBinding
 
-class DetailsAdapter() : RecyclerView.Adapter<DetailsAdapter.DetailsViewHolder>() {
+class DetailsAdapter : RecyclerView.Adapter<DetailsAdapter.DetailsViewHolder>() {
 
     private val sortedList = SortedList(DetailsProperty::class.java, object : SortedListAdapterCallback<DetailsProperty>(this) {
         override fun compare(o1: DetailsProperty, o2: DetailsProperty): Int {

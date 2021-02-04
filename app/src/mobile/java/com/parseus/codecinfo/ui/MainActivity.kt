@@ -287,6 +287,11 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             }
         }
         val isCodecShared = InfoType.currentInfoType != InfoType.DRM
+        if ((isCodecShared && (codecId == null || codecName == null))
+                || (!isCodecShared && (drmName == null || drmUuid == null))) {
+            return
+        }
+
         val textToShare = when (option) {
             0 -> getItemListString(this)
             1 -> getAllInfoString(this)

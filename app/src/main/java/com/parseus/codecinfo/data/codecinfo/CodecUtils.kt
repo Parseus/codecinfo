@@ -170,7 +170,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
 }
 
 fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): List<DetailsProperty> {
-    val mediaCodecInfo = mediaCodecInfos.first { it.name == codecName }
+    val mediaCodecInfo = mediaCodecInfos.find { it.name == codecName } ?: return emptyList()
 
     // Google uses the same decoder for both DP and non-DP content for MPEG-4,
     // but in the first case codec capabilities can't be queried properly,

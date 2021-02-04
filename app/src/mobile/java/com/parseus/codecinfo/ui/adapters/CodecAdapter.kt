@@ -58,7 +58,7 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
     }
 
     override fun getItemId(position: Int): Long {
-        return position.toLong()
+        return sortedList.get(position).id
     }
 
     override fun getItemViewType(position: Int): Int {

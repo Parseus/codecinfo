@@ -305,7 +305,7 @@
   {
     "id": 10,
     "codec_name": "OMX.google.raw.decoder",
-    "description": "OMX.google.raw.decoder doesn't resize its output buffers correctly prior on Android <7.0, except on Android TV running 6.0. This will cause a native crash when attempting to fill an input buffer is bigger than the output one.",
+    "description": "OMX.google.raw.decoder doesn't resize its output buffers correctly prior on Android <7.0, except on Android TV running 6.0. This will cause a native crash when attempting to fill an input buffer that is bigger than the output one.",
     "versions": [
       {
         "op": "<",

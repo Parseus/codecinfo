@@ -37,7 +37,7 @@ class ImprovedBulletSpan(
     companion object {
         // Bullet is slightly bigger to avoid aliasing artifacts on mdpi devices.
         private const val STANDARD_BULLET_RADIUS = 4
-        private const val STANDARD_GAP_WIDTH = 2
+        private const val STANDARD_GAP_WIDTH = 10
         private const val STANDARD_COLOR = 0
     }
 

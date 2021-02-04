@@ -5,23 +5,26 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/list_content_padding"
+    android:layout_marginLeft="@dimen/list_content_padding"
+    android:layout_marginRight="@dimen/list_content_padding"
+    android:layout_marginBottom="@dimen/list_content_padding"
     android:importantForAccessibility="yes"
     android:focusable="true"
     android:screenReaderFocusable="true"
     tools:ignore="UnusedAttribute">
 
     <com.google.android.material.textview.MaterialTextView
-        style="?attr/textAppearanceHeadline6"
+        style="?attr/textAppearanceBody1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:importantForAccessibility="no"
         android:text="@string/known_issue_desc_header"
+        android:textStyle="bold"
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"/>
 
     <com.google.android.material.textview.MaterialTextView
-        style="?attr/textAppearanceBody1"
+        style="?attr/textAppearanceBody2"
         android:id="@+id/known_issue_item_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,16 +34,17 @@
         tools:text="@tools:sample/lorem" />
 
     <com.google.android.material.textview.MaterialTextView
-        style="?attr/textAppearanceHeadline6"
+        style="?attr/textAppearanceBody1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:importantForAccessibility="no"
         android:text="@string/known_issue_sources_header"
+        android:textStyle="bold"
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"/>
 
     <com.google.android.material.textview.MaterialTextView
-        style="?attr/textAppearanceSubtitle1"
+        style="?attr/textAppearanceBody2"
         android:id="@+id/known_issue_item_sources"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -50,11 +50,13 @@ android {
 
         mobile {
             dimension "platform"
+            versionCode 10000 + android.defaultConfig.versionCode
         }
 
         tv {
             dimension "platform"
             minSdkVersion 21
+            versionCode 20000 + android.defaultConfig.versionCode
         }
     }
 

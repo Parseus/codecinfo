@@ -26,9 +26,11 @@
         tools:text="Item full name"
         tools:ignore="UnusedAttribute" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,21 +42,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:scrollbars="vertical"
-                android:fadeScrollbars="false"
-                tools:listitem="@layout/expandable_item_header" />
+                tools:listitem="@layout/expandable_item_header"
+                tools:itemCount="1"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/full_codec_info_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="5dp"
-                android:scrollbars="vertical"
-                android:fadeScrollbars="false"
                 tools:listitem="@layout/item_details_adapter_row"/>
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

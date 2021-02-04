@@ -23,11 +23,15 @@
     <string name="feedback_email" translatable="false">parseus.dev@gmail.com</string>
     <string name="email_subject">Feedback</string>
     <string name="choose_email">Send feedback via…</string>
-    <string name="no_email_apps">No apps can perform this action. Email address was copied to the clipboard.</string>
+    <string name="no_email_apps">No apps can perform this action.</string>
+    <string name="no_email_apps_clipboard">No apps can perform this action. Email address was copied to the clipboard.</string>
 
     <string name="action_search">Search</string>
     <string name="search_hint">Search codec/DRM info</string>
     <string name="search_settings_description">Codec/DRM info</string>
+
+    <string name="unable_to_get_codec_info_error">Unable to get the list of codecs due to an Android platform bug.</string>
+    <string name="unable_to_get_drm_info_error">Unable to get the list of DRM due to an Android platform bug.</string>
 
     <string name="category_audio">Audio</string>
     <string name="category_video">Video</string>
@@ -135,11 +139,17 @@
     <string name="app_theme_battery_saver">Set by Battery Saver</string>
     <string name="app_theme_system_default">System default</string>
 
-    <string name="more_info">Tap to see more info…</string>
+    <string name="more_info">Tap here to see more info…</string>
 
     <string name="details_fragment_tag" translatable="false">item_details</string>
 
-    <string name="codec_row_content_description">Codec %1$d: %2$s for %3$s</string>
+    <string name="codec_row_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s</string>
+    <string name="codec_row_with_issue_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s. Known issue detected!</string>
     <string name="drm_row_content_description">DRM %1$d: %2$s</string>
+
+    <string name="known_issue_warning">Known issue(s) detected:</string>
+    <string name="known_issue_desc_header">Description:</string>
+    <string name="known_issue_sources_header">Sources:</string>
+    <string name="known_issue_content_description">Known issue %1$d: %2$s Sources: %3$s</string>
 
 </resources>

@@ -4,10 +4,9 @@
     android:installLocation="preferExternal"
     package="com.parseus.codecinfo">
 
-    <uses-sdk tools:overrideLibrary="androidx.leanback, androidx.leanback.preference, com.dci.dev.appinfobadge, com.afollestad.recyclical" />
+    <uses-sdk tools:overrideLibrary="com.dci.dev.appinfobadge, com.afollestad.recyclical" />
 
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-    <uses-feature android:name="android.software.leanback" android:required="false" />
 
     <queries>
         <intent>
@@ -23,7 +22,6 @@
     <application
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
-        android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:name="${appName}"
@@ -31,52 +29,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="MissingClass,RtlEnabled,UnusedAttribute">
-        <activity
-            android:name=".ui.MainActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleTop">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-                <category android:name="android.intent.category.PENWINDOW_LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-            <meta-data android:name="android.app.searchable" android:resource="@xml/searchable" />
-        </activity>
-        <activity
-            android:name="com.parseus.codecinfo.ui.settings.SettingsActivity"
-            android:label="@string/action_settings"
-            android:parentActivityName=".ui.MainActivity" />
-
-        <activity
-            android:name="com.parseus.codecinfo.ui.tv.TvActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Leanback">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name="com.parseus.codecinfo.ui.tv.TvCodecDetailsActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Leanback"
-            android:parentActivityName="com.parseus.codecinfo.ui.tv.TvActivity"/>
-        <activity android:name="com.parseus.codecinfo.ui.tv.TvSettingsActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.Preference"
-            android:parentActivityName="com.parseus.codecinfo.ui.tv.TvActivity" />
-        <activity android:name="com.parseus.codecinfo.ui.tv.TvAboutActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Leanback"
-            android:parentActivityName="com.parseus.codecinfo.ui.tv.TvActivity" />
-        <activity android:name="com.parseus.codecinfo.ui.tv.TvSearchActivity"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Leanback"
-            android:parentActivityName="com.parseus.codecinfo.ui.tv.TvActivity" />
         
         <provider
             android:authorities="${applicationId}.fileprovider"
@@ -88,34 +40,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <uses-library
-            android:name="com.sec.android.app.multiwindow"
-            android:required="false" />
-
-        <meta-data
-            android:name="com.samsung.android.sdk.multiwindow.enable"
-            android:value="true" />
-        <meta-data
-            android:name="com.samsung.android.sdk.multiwindow.penwindow.enable"
-            android:value="true" />
-        <meta-data
-            android:name="com.sec.android.support.multiwindow"
-            android:value="true" />
-        <meta-data
-            android:name="com.sec.android.multiwindow.DEFAULT_SIZE_W"
-            android:value="632.0dip" />
-        <meta-data
-            android:name="com.sec.android.multiwindow.DEFAULT_SIZE_H"
-            android:value="598.0dip" />
-        <meta-data
-            android:name="com.sec.android.multiwindow.MINIMUM_SIZE_W"
-            android:value="632.0dip" />
-        <meta-data
-            android:name="com.sec.android.multiwindow.MINIMUM_SIZE_H"
-            android:value="598.0dip" />
-        <meta-data
-            android:name="com.lge.support.SPLIT_WINDOW"
-            android:value="true" />
     </application>
 
 </manifest>

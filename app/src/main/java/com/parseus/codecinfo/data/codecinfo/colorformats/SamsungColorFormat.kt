@@ -13,6 +13,8 @@ enum class SamsungColorFormat(val value: Int) {
     OMX_SEC_COLOR_FormatNV21Linear(0x7F000011),
     OMX_SEC_COLOR_FormatYVU420Planar(0x7F000012),
     OMX_SEC_COLOR_Format32bitABGR8888(0x7F000013),
+    OMX_SEC_COLOR_FormatYUV420SemiPlanarInterlace(0x7F000014),
+    OMX_SEC_COLOR_Format10bitYUV420SemiPlanar(0x7F000015),
     OMX_SEC_COLOR_FormatNV12Tiled(0x7FC00002),
     OMX_SEC_COLOR_FormatNV12Tiled_SBS_LR(0x7FC00003),
     OMX_SEC_COLOR_FormatNV12Tiled_SBS_RL(0x7FC00004),

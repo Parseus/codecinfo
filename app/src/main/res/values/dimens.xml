@@ -1,13 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <dimen name="list_baseline_primary">28dp</dimen>
     <dimen name="list_baseline_secondary">20dp</dimen>
     <dimen name="list_content_padding">16dp</dimen>
-
-    <dimen name="codec_adapter_row_height">96dp</dimen>
-    <dimen name="dialog_button_margin_size">8dp</dimen>
-    <dimen name="tab_layout_elevation">4dp</dimen>
-
-    <dimen name="icon_size">24dp</dimen>
 
 </resources>

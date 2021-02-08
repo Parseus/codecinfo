@@ -102,9 +102,25 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
                 return mutableListOf()
             }
         } else {
-            @Suppress("DEPRECATION")
-            Array(MediaCodecList.getCodecCount()) { i -> MediaCodecList.getCodecInfoAt(i) }
+            try {
+                @Suppress("DEPRECATION")
+                Array(MediaCodecList.getCodecCount()) { i -> MediaCodecList.getCodecInfoAt(i) }
+            } catch (e: Exception) {
+                return mutableListOf()
+            }
         }
+    }
+
+    if (SDK_INT in 21..23 && mediaCodecInfos.find { it.name.endsWith("secure") } == null) {
+        // Some devices don't list secure decoders on API 21 with a newer way of querying codecs,
+        // but potentially could also happen on API levels 22 and 23.
+        // In that case try the old way.
+        try {
+            @Suppress("DEPRECATION")
+            val oldCodecInfos = Array(MediaCodecList.getCodecCount())
+                { i -> MediaCodecList.getCodecInfoAt(i) }.filter { it.name.endsWith("secure") }
+            mediaCodecInfos += oldCodecInfos
+        } catch (e: Exception) {}
     }
 
     val showAliases = prefs.getBoolean("show_aliases", false)

@@ -2,10 +2,12 @@ package com.parseus.codecinfo.data.codecinfo
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaCodecInfo.CodecCapabilities.*
 import android.media.MediaCodecList
 import android.media.MediaFormat
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.util.Range
 import androidx.annotation.RequiresApi
@@ -38,6 +40,9 @@ private const val DIVX6_720P_MAX_FRAME_RATE = 60
 private const val DIVX6_1080P_MAX_FRAME_RATE = 30
 private val DIVX4_MAX_RESOLUTION = intArrayOf(720, 576)
 private val DIVX6_MAX_RESOLUTION = intArrayOf(1920, 1080)
+
+private const val GOOGLE_RAW_DECODER = "OMX.google.raw.decoder"
+private const val MEDIATEK_RAW_DECODER = "OMX.MTK.AUDIO.DECODER.RAW"
 
 private val platformSupportedTypes = arrayOf(
         "audio/3gpp",
@@ -120,6 +125,17 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
             val oldCodecInfos = Array(MediaCodecList.getCodecCount())
                 { i -> MediaCodecList.getCodecInfoAt(i) }.filter { it.name.endsWith("secure") }
             mediaCodecInfos += oldCodecInfos
+        } catch (e: Exception) {}
+    }
+
+    if (SDK_INT in 22..25 && Build.DEVICE == "R9"
+        && mediaCodecInfos.find { it.name == GOOGLE_RAW_DECODER } == null
+        && mediaCodecInfos.find { it.name == MEDIATEK_RAW_DECODER } != null) {
+        // Oppo R9 does not list a generic raw audio decoder, yet it can be instantiated by name.
+        try {
+            val rawMediaCodec = MediaCodec.createByCodecName(GOOGLE_RAW_DECODER)
+            //noinspection NewApi
+            mediaCodecInfos += rawMediaCodec.codecInfo
         } catch (e: Exception) {}
     }
 

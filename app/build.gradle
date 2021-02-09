@@ -19,8 +19,13 @@ android {
     buildTypes {
         debug {
             versionNameSuffix "-dev"
-            multiDexEnabled true
-            manifestPlaceholders = [appName:"androidx.multidex.MultiDexApplication"]
+            variantFilter { variant ->
+                def names = variant.flavors*.name
+                if (!names.contains("tv")) {
+                    multiDexEnabled true
+                    manifestPlaceholders = [appName:"androidx.multidex.MultiDexApplication"]
+                }
+            }
         }
         release {
             minifyEnabled true
@@ -85,6 +90,7 @@ android {
 }
 
 configurations {
+    mobileDebugImplementation {}
     nonFreeMobileImplementation {}
 }
 
@@ -95,19 +101,20 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation "androidx.core:core-ktx:1.5.0-beta01"
     implementation 'androidx.preference:preference-ktx:1.1.1'
-    implementation 'com.google.android.material:material:1.3.0'
 
-    implementation 'com.github.ditacristianionut:AppInfoBadge:1.3'
     implementation "com.squareup.leakcanary:plumber-android:$leakCanary_version"
     implementation "com.squareup.moshi:moshi:$moshi_version"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
     implementation "com.squareup.okio:okio:2.10.0"
 
-    debugImplementation 'androidx.multidex:multidex:2.0.1'
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanary_version"
 
     tvImplementation 'androidx.leanback:leanback:1.1.0-beta01'
     tvImplementation 'androidx.leanback:leanback-preference:1.1.0-beta01'
+
+    mobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
+    mobileImplementation 'com.github.ditacristianionut:AppInfoBadge:1.3'
+    mobileImplementation 'com.google.android.material:material:1.3.0'
 
     nonFreeMobileImplementation fileTree(include: ['*.jar'], dir: 'libs')
     nonFreeMobileImplementation 'com.google.android.play:core:1.9.1'

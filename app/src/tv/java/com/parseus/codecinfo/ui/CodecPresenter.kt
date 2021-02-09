@@ -47,8 +47,7 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
                     it.isAffected(context, info.codecName)
                 }
                 if (knownProblems.isNotEmpty()) {
-                    badgeImage = AppCompatResources.getDrawable(context,
-                            com.google.android.material.R.drawable.mtrl_ic_error)
+                    badgeImage = AppCompatResources.getDrawable(context, R.drawable.ic_error)
                 }
             }
         }

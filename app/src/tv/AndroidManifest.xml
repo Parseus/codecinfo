@@ -6,7 +6,8 @@
     <uses-feature android:name="android.software.leanback" android:required="true" />
 
     <application
-        android:banner="@drawable/banner">
+        android:banner="@drawable/banner"
+        tools:remove="android:roundIcon">
 
         <activity
             android:name="com.parseus.codecinfo.ui.TvMainActivity"

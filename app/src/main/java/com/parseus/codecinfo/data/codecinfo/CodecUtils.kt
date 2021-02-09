@@ -624,7 +624,7 @@ private fun getFormattedColorProfileString(context: Context, colorFormat: String
 @RequiresApi(21)
 private fun getMaxResolution(codecId: String, videoCapabilities: MediaCodecInfo.VideoCapabilities): IntArray {
     val maxWidth = videoCapabilities.supportedWidths.upper
-    val maxHeight = videoCapabilities.getSupportedHeightsFor(maxWidth).upper
+    val maxHeight = videoCapabilities.supportedHeights.upper
     val defaultResolution = intArrayOf(maxWidth, maxHeight)
 
     return if (!areCapabilitiesUnknown(videoCapabilities)) {

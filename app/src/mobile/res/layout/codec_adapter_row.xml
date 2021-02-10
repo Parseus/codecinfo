@@ -13,7 +13,7 @@
     android:importantForAccessibility="yes"
     android:background="?attr/selectableItemBackground">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/codec_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
         android:textColor="?attr/colorPrimary"
         tools:text="Codec name"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/codec_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
         android:textAppearance="?attr/textAppearanceOverline"
         tools:text="Encoder/decoder"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/codec_full_name"
         android:layout_width="match_parent"
         android:layout_height="24dp"
@@ -55,13 +55,13 @@
         android:importantForAccessibility="no"
         android:textColor="?attr/colorSecondaryVariant"
         android:textAppearance="?attr/textAppearanceBody2"
-        app:autoSizeMinTextSize="12sp"
+        app:autoSizeMinTextSize="8sp"
         app:autoSizeMaxTextSize="16sp"
         app:autoSizeStepGranularity="1sp"
         app:autoSizeTextType="uniform"
         tools:text="Codec full name"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/more_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -80,6 +80,7 @@
         android:layout_height="24dp"
         android:layout_below="@id/codec_type"
         android:layout_alignParentEnd="true"
+        android:importantForAccessibility="no"
         android:visibility="gone"
         app:srcCompat="@drawable/mtrl_ic_error"
         app:tint="?colorError"

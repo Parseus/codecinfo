@@ -614,7 +614,7 @@ private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, code
 private fun getFormattedColorProfileString(context: Context, colorFormat: String, colorFormatInt: Int): String {
     val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
-    return when (prefs.getString("known_values_color_profiles", "0")!!.toInt()) {
+    return when (prefs.getString("known_values_color_profiles", "1")!!.toInt()) {
         0 -> colorFormat
         1 -> "$colorFormat (${colorFormatInt.toHexHstring()})"
         else -> "$colorFormat ($colorFormatInt)"
@@ -835,7 +835,7 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
 private fun getFormattedProfileLevelString(context: Context, profile: String?, profileInt: Int,
                                            level: String?, levelInt: Int): String {
     val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-    val option = prefs.getString("known_values_profile_levels", "0")!!.toInt()
+    val option = prefs.getString("known_values_profile_levels", "1")!!.toInt()
     val unknownString = context.getString(R.string.unknown)
 
     val profileString = when (option) {

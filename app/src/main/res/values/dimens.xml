@@ -3,6 +3,7 @@
 
     <dimen name="list_baseline_primary">28dp</dimen>
     <dimen name="list_baseline_secondary">20dp</dimen>
-    <dimen name="list_content_padding">16dp</dimen>
+    <dimen name="list_content_horizontal_padding">16dp</dimen>
+    <dimen name="list_content_bottom_padding">16dp</dimen>
 
 </resources>

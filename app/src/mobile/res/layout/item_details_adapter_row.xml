@@ -6,9 +6,9 @@
     android:gravity="center_vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/list_content_padding"
-    android:paddingLeft="@dimen/list_content_padding"
-    android:paddingRight="@dimen/list_content_padding">
+    android:paddingBottom="@dimen/list_content_horizontal_padding"
+    android:paddingLeft="@dimen/list_content_horizontal_padding"
+    android:paddingRight="@dimen/list_content_horizontal_padding">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/codec_property"

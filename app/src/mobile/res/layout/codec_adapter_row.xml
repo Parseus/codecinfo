@@ -7,9 +7,9 @@
     android:gravity="center_vertical"
     android:layout_width="match_parent"
     android:layout_height="@dimen/codec_adapter_row_height"
-    android:paddingLeft="@dimen/list_content_padding"
-    android:paddingRight="@dimen/list_content_padding"
-    android:paddingBottom="@dimen/list_content_padding"
+    android:paddingLeft="@dimen/list_content_horizontal_padding"
+    android:paddingRight="@dimen/list_content_horizontal_padding"
+    android:paddingBottom="@dimen/list_content_bottom_padding"
     android:importantForAccessibility="yes"
     android:background="?attr/selectableItemBackground">
 

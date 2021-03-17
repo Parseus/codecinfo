@@ -3,11 +3,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion("android-S")
     defaultConfig {
         applicationId "com.parseus.codecinfo"
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion("S")
         versionCode 19
         versionName "2.3.0"
         resConfigs "en"

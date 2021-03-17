@@ -379,8 +379,13 @@ private fun getAudioCapabilities(context: Context, codecId: String, codecName: S
     val audioCapabilities = capabilities.audioCapabilities
 
     propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.input_channels),
+        if (SDK_INT >= 31) {
+            audioCapabilities.inputChannelCountRanges.toString()
+        } else {
             adjustMaxInputChannelCount(codecId, codecName,
-                audioCapabilities.maxInputChannelCount, capabilities).toString()))
+                audioCapabilities.maxInputChannelCount, capabilities).toString()
+        }
+    ))
 
     val bitrateRangeString = when {
         codecId == "audio/amr-wb-plus" -> // Source: http://www.voiceage.com/AMR-WBplus.html

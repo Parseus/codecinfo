@@ -35,7 +35,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: SettingsMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
+        setTheme(R.style.Theme_CodecInfo)
         super.onCreate(savedInstanceState)
 
         if (Build.VERSION.SDK_INT >= 21) {

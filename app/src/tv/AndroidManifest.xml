@@ -12,7 +12,7 @@
             android:name="com.parseus.codecinfo.ui.TvMainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Leanback">
+            android:theme="@style/Theme.CodecInfo">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
@@ -20,19 +20,19 @@
         </activity>
         <activity android:name="com.parseus.codecinfo.ui.TvCodecDetailsActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Leanback"
+            android:theme="@style/Theme.CodecInfo"
             android:parentActivityName="com.parseus.codecinfo.ui.TvMainActivity"/>
         <activity android:name="com.parseus.codecinfo.ui.settings.TvSettingsActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.Preference"
+            android:theme="@style/Theme.CodecInfo.Preference"
             android:parentActivityName="com.parseus.codecinfo.ui.TvMainActivity" />
         <activity android:name="com.parseus.codecinfo.ui.TvAboutActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Leanback"
+            android:theme="@style/Theme.CodecInfo"
             android:parentActivityName="com.parseus.codecinfo.ui.TvMainActivity" />
         <activity android:name="com.parseus.codecinfo.ui.TvSearchActivity"
             android:label="@string/app_name"
-            android:theme="@style/Theme.AppCompat.Leanback"
+            android:theme="@style/Theme.CodecInfo"
             android:parentActivityName="com.parseus.codecinfo.ui.TvMainActivity" />
 
     </application>

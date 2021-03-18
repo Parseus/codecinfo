@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             }
         }
 
-        setTheme(R.style.AppTheme)
+        setTheme(R.style.Theme_CodecInfo)
 
         super.onCreate(savedInstanceState)
 

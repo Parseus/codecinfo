@@ -1,5 +1,6 @@
 package com.parseus.codecinfo.ui.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -40,6 +41,7 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
         _binding = null
     }
 
+    @SuppressLint("NewApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -91,6 +93,7 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
         return true
     }
 
+    @SuppressLint("NewApi")
     private fun handleSearch(query: String) {
         if (emptyList) {
             return

@@ -1,5 +1,6 @@
 package com.parseus.codecinfo.ui.adapters
 
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -137,7 +138,9 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
 
             ViewCompat.setTransitionName(layout, "$codecId/$codecName")
             layout.setOnClickListener {
-                val activity = (layout.context as MainActivity)
+                val context = layout.context
+                val activity = if (context is MainActivity) context
+                    else (layout.context as ContextThemeWrapper).baseContext as MainActivity
 
                 // Do not create the same fragment again.
                 activity.supportFragmentManager

@@ -1,5 +1,6 @@
 package com.parseus.codecinfo.ui.adapters
 
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -96,7 +97,9 @@ class DrmAdapter(private val drmList: List<DrmSimpleInfo>) : RecyclerView.Adapte
 
             ViewCompat.setTransitionName(layout, "$drmName")
             layout.setOnClickListener {
-                val activity = (itemView.context as MainActivity)
+                val context = layout.context
+                val activity = if (context is MainActivity) context
+                    else (layout.context as ContextThemeWrapper).baseContext as MainActivity
 
                 // Do not create the same fragment again.
                 activity.supportFragmentManager

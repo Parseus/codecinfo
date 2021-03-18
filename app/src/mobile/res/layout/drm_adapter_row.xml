@@ -2,6 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.CodecInfo.ItemLayout"
+    android:theme="@style/Widget.CodecInfo.ItemLayout.ChildView"
     android:id="@+id/simpleDrmRow"
     android:layout_width="match_parent"
     android:layout_height="@dimen/codec_adapter_row_height"
@@ -10,8 +12,6 @@
     android:paddingLeft="@dimen/list_content_horizontal_padding"
     android:paddingRight="@dimen/list_content_horizontal_padding"
     android:paddingBottom="@dimen/list_content_bottom_padding"
-    android:importantForAccessibility="yes"
-    android:background="?attr/selectableItemBackground"
     tools:ignore="SelectableText">
 
     <TextView
@@ -21,7 +21,6 @@
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"
         android:alpha="0.87"
-        android:importantForAccessibility="no"
         android:text="@string/category_drm"
         android:textAppearance="?attr/textAppearanceOverline"
         android:textColor="?attr/colorPrimary"
@@ -33,7 +32,6 @@
         android:layout_width="wrap_content"
         android:layout_height="24dp"
         android:alpha="0.87"
-        android:importantForAccessibility="no"
         android:textColor="?attr/colorSecondaryVariant"
         android:textAppearance="?attr/textAppearanceBody2"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
@@ -43,8 +41,7 @@
         app:autoSizeTextType="uniform"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/drmId"
-        tools:text="DRM name"
-        tools:ignore="SelectableText" />
+        tools:text="DRM name" />
 
     <TextView
         android:id="@+id/moreInfo"
@@ -52,7 +49,6 @@
         android:layout_height="wrap_content"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         android:alpha="0.87"
-        android:importantForAccessibility="no"
         android:textAppearance="?attr/textAppearanceBody2"
         android:textColor="?attr/colorOnSurface"
         android:text="@string/more_info"
@@ -65,7 +61,6 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:alpha="0.87"
-        android:importantForAccessibility="no"
         android:text="@string/category_drm"
         android:textAppearance="?attr/textAppearanceOverline"
         app:layout_constraintEnd_toEndOf="parent"

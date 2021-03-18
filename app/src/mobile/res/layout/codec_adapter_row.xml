@@ -2,6 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.CodecInfo.ItemLayout"
+    android:theme="@style/Widget.CodecInfo.ItemLayout.ChildView"
     android:id="@+id/simpleCodecRow"
     android:orientation="vertical"
     android:gravity="center_vertical"
@@ -10,8 +12,7 @@
     android:paddingLeft="@dimen/list_content_horizontal_padding"
     android:paddingRight="@dimen/list_content_horizontal_padding"
     android:paddingBottom="@dimen/list_content_bottom_padding"
-    android:importantForAccessibility="yes"
-    android:background="?attr/selectableItemBackground">
+    tools:ignore="SelectableText">
 
     <TextView
         android:id="@+id/codec_name"
@@ -24,7 +25,6 @@
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"
         android:alpha="0.87"
-        android:importantForAccessibility="no"
         android:textAppearance="?attr/textAppearanceOverline"
         android:textColor="?attr/colorPrimary"
         tools:text="Codec name"/>
@@ -38,7 +38,6 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:alpha="0.87"
-        android:importantForAccessibility="no"
         android:textAppearance="?attr/textAppearanceOverline"
         tools:text="Encoder/decoder"/>
 
@@ -52,7 +51,6 @@
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         android:alpha="0.87"
-        android:importantForAccessibility="no"
         android:textColor="?attr/colorSecondaryVariant"
         android:textAppearance="?attr/textAppearanceBody2"
         app:autoSizeMinTextSize="8sp"
@@ -69,7 +67,6 @@
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         android:alpha="0.87"
-        android:importantForAccessibility="no"
         android:textAppearance="?attr/textAppearanceBody2"
         android:textColor="?attr/colorOnSurface"
         android:text="@string/more_info"/>
@@ -80,7 +77,6 @@
         android:layout_height="24dp"
         android:layout_below="@id/codec_type"
         android:layout_alignParentEnd="true"
-        android:importantForAccessibility="no"
         android:visibility="gone"
         app:srcCompat="@drawable/mtrl_ic_error"
         app:tint="?colorError"

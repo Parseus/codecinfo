@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Widget.CodecInfo.ItemLayout" parent="">
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:descendantFocusability">blocksDescendants</item>
+        <item name="android:screenReaderFocusable" tools:targetApi="p">true</item>
+    </style>
+
+    <style name="Widget.CodecInfo.ItemLayout.ChildView" parent="">
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:importantForAccessibility">no</item>
+    </style>
+</resources>

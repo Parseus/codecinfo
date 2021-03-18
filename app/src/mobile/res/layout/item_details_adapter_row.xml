@@ -10,7 +10,7 @@
     android:paddingLeft="@dimen/list_content_horizontal_padding"
     android:paddingRight="@dimen/list_content_horizontal_padding">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/codec_property"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
         android:textColor="?attr/colorSecondaryVariant"
         tools:text="Item property"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/codec_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

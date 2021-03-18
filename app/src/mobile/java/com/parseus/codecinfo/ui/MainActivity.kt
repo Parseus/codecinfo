@@ -287,8 +287,8 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             }
         }
         val isCodecShared = InfoType.currentInfoType != InfoType.DRM
-        if ((isCodecShared && (codecId == null || codecName == null))
-                || (!isCodecShared && (drmName == null || drmUuid == null))) {
+        if (option > 1 && ((isCodecShared && (codecId == null || codecName == null))
+                || (!isCodecShared && (drmName == null || drmUuid == null)))) {
             return
         }
 

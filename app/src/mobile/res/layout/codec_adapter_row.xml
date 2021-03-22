@@ -52,7 +52,7 @@
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         android:alpha="@dimen/list_item_text_alpha"
         android:textColor="?attr/colorSecondaryVariant"
-        android:textAppearance="?attr/textAppearanceBody2"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
         app:autoSizeMinTextSize="8sp"
         app:autoSizeMaxTextSize="16sp"
         app:autoSizeStepGranularity="1sp"
@@ -67,7 +67,7 @@
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         android:alpha="@dimen/list_item_text_alpha"
-        android:textAppearance="?attr/textAppearanceBody2"
+        android:textAppearance="?attr/textAppearanceCaption"
         android:textColor="?attr/colorOnSurface"
         android:text="@string/more_info"/>
 

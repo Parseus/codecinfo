@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
@@ -12,20 +13,19 @@ import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
+import com.parseus.codecinfo.ui.ItemDetailsHeaderView
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
 import com.parseus.codecinfo.utils.getAttributeColor
 import com.parseus.codecinfo.utils.isInTwoPaneMode
-import com.parseus.codecinfo.utils.isTv
 import java.util.*
 
 class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -72,7 +72,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
 
         if (Build.VERSION.SDK_INT >= 21) {
             binding.itemDetailsContent.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener {
-                    _, _, scrollY, _, _ -> binding.fullCodecInfoName.isHeaderLifted = scrollY > 0
+                    _, _, scrollY, _, _ -> (binding.fullCodecInfoName as ItemDetailsHeaderView).isHeaderLifted = scrollY > 0
             })
         }
 
@@ -104,7 +104,8 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun getFullDetails() {
-        binding.fullCodecInfoName.text = codecName ?: drmName
+        @Suppress("USELESS_CAST")
+        (binding.fullCodecInfoName as TextView).text = codecName ?: drmName
 
         val detailsAdapter = DetailsAdapter()
         detailsAdapter.add(propertyList)

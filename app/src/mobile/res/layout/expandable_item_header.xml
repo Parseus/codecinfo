@@ -23,6 +23,7 @@
         android:maxLines="1"
         android:singleLine="true"
         android:text="@string/known_issue_warning"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
         android:textColor="@color/error_text_tint_selector" />
 
     <Space

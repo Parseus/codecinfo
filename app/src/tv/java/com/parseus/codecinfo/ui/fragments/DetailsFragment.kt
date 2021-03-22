@@ -48,21 +48,11 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (requireContext().isTv()) {
-            requireActivity().intent?.let {
-                codecId = it.getStringExtra("codecId")
-                codecName = it.getStringExtra("codecName")
-                drmName = it.getStringExtra("drmName")
-                drmUuid = it.getSerializableExtra("drmUuid") as UUID?
-            }
-        } else {
-            val bundle = savedInstanceState ?: arguments
-            bundle?.let {
-                codecId = it.getString("codecId")
-                codecName = it.getString("codecName")
-                drmName = it.getString("drmName")
-                drmUuid = it.getSerializable("drmUuid") as UUID?
-            }
+        requireActivity().intent?.let {
+            codecId = it.getStringExtra("codecId")
+            codecName = it.getStringExtra("codecName")
+            drmName = it.getStringExtra("drmName")
+            drmUuid = it.getSerializableExtra("drmUuid") as UUID?
         }
 
         if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {

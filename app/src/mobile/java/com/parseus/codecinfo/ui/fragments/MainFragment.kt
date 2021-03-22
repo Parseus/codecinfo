@@ -1,13 +1,11 @@
 package com.parseus.codecinfo.ui.fragments
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
-import com.google.android.material.navigationrail.NavigationRailView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.parseus.codecinfo.R
@@ -16,7 +14,6 @@ import com.parseus.codecinfo.databinding.FragmentMainBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.PagerAdapter
 import com.parseus.codecinfo.utils.initializeSamsungGesture
-import com.parseus.codecinfo.utils.isChromebook
 
 @Suppress("unused")
 class MainFragment : Fragment() {
@@ -59,11 +56,6 @@ class MainFragment : Fragment() {
         binding.navigationRail?.let { navigationRail ->
             addFragmentToViewHierarchy()
 
-            navigationRail.menuGravity = if (isChromebook(requireContext())) {
-                Gravity.TOP or Gravity.CENTER_HORIZONTAL
-            } else {
-                Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            }
             navigationRail.setOnNavigationItemSelectedListener { item ->
                 when (item.itemId) {
                     R.id.audio -> InfoType.currentInfoType = InfoType.Audio

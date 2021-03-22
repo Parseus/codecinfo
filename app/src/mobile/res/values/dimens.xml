@@ -3,7 +3,6 @@
     <dimen name="codec_adapter_row_height">88dp</dimen>
     <dimen name="list_content_bottom_padding">0dp</dimen>
     <dimen name="dialog_button_margin_size">8dp</dimen>
-    <dimen name="tab_layout_elevation">4dp</dimen>
 
     <dimen name="icon_size">24dp</dimen>
 

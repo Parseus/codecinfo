@@ -298,6 +298,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             2 -> if (isCodecShared) {
                 getSelectedCodecInfoString(this, codecId!!, codecName!!)
             } else {
+                //noinspection NewApi
                 getSelectedDrmInfoString(this, drmName!!, drmUuid!!)
             }
             else -> ""

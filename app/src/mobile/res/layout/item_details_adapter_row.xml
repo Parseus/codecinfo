@@ -8,7 +8,8 @@
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/list_content_horizontal_padding"
     android:paddingLeft="@dimen/list_content_horizontal_padding"
-    android:paddingRight="@dimen/list_content_horizontal_padding">
+    android:paddingRight="@dimen/list_content_horizontal_padding"
+    tools:ignore="SelectableText">
 
     <TextView
         android:id="@+id/codec_property"

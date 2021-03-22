@@ -24,7 +24,7 @@
         android:layout_toLeftOf="@id/codec_type"
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"
-        android:alpha="0.87"
+        android:alpha="@dimen/list_item_text_alpha"
         android:textAppearance="?attr/textAppearanceOverline"
         android:textColor="?attr/colorPrimary"
         tools:text="Codec name"/>
@@ -37,7 +37,7 @@
         android:layout_alignBottom="@id/codec_name"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:alpha="0.87"
+        android:alpha="@dimen/list_item_text_alpha"
         android:textAppearance="?attr/textAppearanceOverline"
         tools:text="Encoder/decoder"/>
 
@@ -50,7 +50,7 @@
         android:layout_toStartOf="@id/known_problem_icon"
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
-        android:alpha="0.87"
+        android:alpha="@dimen/list_item_text_alpha"
         android:textColor="?attr/colorSecondaryVariant"
         android:textAppearance="?attr/textAppearanceBody2"
         app:autoSizeMinTextSize="8sp"
@@ -66,15 +66,15 @@
         android:layout_below="@id/codec_full_name"
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
-        android:alpha="0.87"
+        android:alpha="@dimen/list_item_text_alpha"
         android:textAppearance="?attr/textAppearanceBody2"
         android:textColor="?attr/colorOnSurface"
         android:text="@string/more_info"/>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/known_problem_icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
         android:layout_below="@id/codec_type"
         android:layout_alignParentEnd="true"
         android:visibility="gone"

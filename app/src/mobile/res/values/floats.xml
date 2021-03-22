@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <item name="list_item_text_alpha" format="float" type="dimen">0.87</item>
     <item name="separator_guideline_percent" format="float" type="dimen">0.4</item>
 </resources>

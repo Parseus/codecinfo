@@ -20,6 +20,7 @@ import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.databinding.TabContentLayoutBinding
 import com.parseus.codecinfo.ui.adapters.CodecAdapter
 import com.parseus.codecinfo.ui.adapters.DrmAdapter
+import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
 
 internal var emptyListInformed = false
 
@@ -30,6 +31,8 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private var emptyList = false
 
+    var searchListenerDestroyedListener: SearchListenerDestroyedListener? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = TabContentLayoutBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
@@ -37,8 +40,11 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
+        searchListenerDestroyedListener?.onSearchListenerDestroyed(this)
+        searchListenerDestroyedListener = null
         _binding = null
+
+        super.onDestroyView()
     }
 
     @SuppressLint("NewApi")

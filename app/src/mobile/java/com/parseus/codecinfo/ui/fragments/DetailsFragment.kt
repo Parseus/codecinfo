@@ -22,6 +22,7 @@ import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
 import com.parseus.codecinfo.ui.ItemDetailsHeaderView
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
+import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
 import com.parseus.codecinfo.utils.getAttributeColor
@@ -32,6 +33,8 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private var _binding: ItemDetailsFragmentLayoutBinding? = null
     internal val binding get() = _binding!!
+
+    var searchListenerDestroyedListener: SearchListenerDestroyedListener? = null
 
     private lateinit var propertyList: List<DetailsProperty>
 
@@ -47,9 +50,8 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroyView() {
-        (requireActivity() as? MainActivity)?.apply {
-            searchListeners.remove(this)
-        }
+        searchListenerDestroyedListener?.onSearchListenerDestroyed(this)
+        searchListenerDestroyedListener = null
         _binding = null
         super.onDestroyView()
     }

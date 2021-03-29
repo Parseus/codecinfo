@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="codec_adapter_row_height">72dp</dimen>
+    <dimen name="list_baseline_primary">24dp</dimen>
     <dimen name="list_content_bottom_padding">16dp</dimen>
 </resources>

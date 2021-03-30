@@ -120,10 +120,6 @@
     <string name="hdcp_level_v2_3">HDCP 2.3 Type 1</string>
     <string name="hdcp_level_no_digital_output">No digital output (implicitly secure)</string>
 
-    <string name="codec_row_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s</string>
-    <string name="codec_row_with_issue_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s. Known issue detected!</string>
-    <string name="drm_row_content_description">DRM %1$d: %2$s</string>
-
     <string name="known_issue_warning">Known issue(s) detected:</string>
     <string name="known_issue_desc_header">Description:</string>
     <string name="known_issue_sources_header">Sources:</string>

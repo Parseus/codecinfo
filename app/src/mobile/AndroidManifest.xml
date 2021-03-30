@@ -26,7 +26,7 @@
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/action_settings"
-            android:parentActivityName=".ui.settings.SettingsActivity">
+            android:parentActivityName=".ui.MainActivity">
             <!-- Hide the back button on Chromebooks. -->
             <meta-data android:name="WindowManagerPreference:SuppressWindowControlNavigationButton" android:value="true" />
         </activity>

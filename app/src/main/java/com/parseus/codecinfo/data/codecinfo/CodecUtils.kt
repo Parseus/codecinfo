@@ -18,10 +18,7 @@ import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.colorformats.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.VP9Levels.*
-import com.parseus.codecinfo.utils.isAudioCodec
-import com.parseus.codecinfo.utils.toBytesPerSecond
-import com.parseus.codecinfo.utils.toHexHstring
-import com.parseus.codecinfo.utils.toKiloHertz
+import com.parseus.codecinfo.utils.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -479,12 +476,12 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
         }
     }
 
-    if (SDK_INT < 28) {
+    if (CAN_USE_REFLECTION_FOR_MCAPABILITIESINFO) {
         /*
             mCapabilitiesInfo, a private MediaFormat instance hidden in MediaCodecInfo,
             can actually provide max input channel count (as well as other useful info).
-            Unfortunately, with P restricting non-API usage via reflection, I can only hope
-            that everything will work fine on newer versions.
+            Android 9.0 put it on a dark greylist, though, so it can't be easily accessed anymore
+            (although it is bypassed on a non-store mobile flavor). Newer versions are SOL here.
          */
         try {
             val capabilitiesInfo = capabilities::class.java.getDeclaredField("mCapabilitiesInfo")
@@ -494,8 +491,7 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
             if (mediaFormat.containsKey("max-channel-count")) {
                 return mediaFormat.getString("max-channel-count")!!.toInt()
             }
-        } catch (e: Exception) {
-        }
+        } catch (e: Exception) {}
     }
 
     if (codecId.endsWith("flac") || codecId.endsWith("alac")) {

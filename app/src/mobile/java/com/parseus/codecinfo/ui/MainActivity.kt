@@ -56,6 +56,8 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     val searchListeners = mutableListOf<SearchView.OnQueryTextListener>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        disableApiBlacklistOnPie()
+
         if (Build.VERSION.SDK_INT >= 21) {
             val reenter = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
                 excludeTarget(android.R.id.statusBarBackground, true)

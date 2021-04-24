@@ -22,4 +22,8 @@
     <string name="more_info">Tap here to see more info…</string>
 
     <string name="details_fragment_tag" translatable="false">item_details</string>
+
+    <string name="codec_row_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s</string>
+    <string name="codec_row_with_issue_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s. Known issue detected!</string>
+    <string name="drm_row_content_description">DRM %1$d: %2$s</string>
 </resources>

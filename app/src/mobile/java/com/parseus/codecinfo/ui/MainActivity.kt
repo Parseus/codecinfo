@@ -56,6 +56,8 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     val searchListeners = mutableListOf<SearchView.OnQueryTextListener>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        disableApiBlacklistOnPie()
+
         if (Build.VERSION.SDK_INT >= 21) {
             val reenter = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
                 excludeTarget(android.R.id.statusBarBackground, true)
@@ -72,7 +74,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             }
         }
 
-        setTheme(R.style.AppTheme)
+        setTheme(R.style.Theme_CodecInfo)
 
         super.onCreate(savedInstanceState)
 
@@ -287,8 +289,8 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             }
         }
         val isCodecShared = InfoType.currentInfoType != InfoType.DRM
-        if ((isCodecShared && (codecId == null || codecName == null))
-                || (!isCodecShared && (drmName == null || drmUuid == null))) {
+        if (option > 1 && ((isCodecShared && (codecId == null || codecName == null))
+                || (!isCodecShared && (drmName == null || drmUuid == null)))) {
             return
         }
 
@@ -298,6 +300,7 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             2 -> if (isCodecShared) {
                 getSelectedCodecInfoString(this, codecId!!, codecName!!)
             } else {
+                //noinspection NewApi
                 getSelectedDrmInfoString(this, drmName!!, drmUuid!!)
             }
             else -> ""

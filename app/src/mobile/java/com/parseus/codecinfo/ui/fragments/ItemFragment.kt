@@ -1,5 +1,6 @@
 package com.parseus.codecinfo.ui.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,7 @@ import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.databinding.TabContentLayoutBinding
 import com.parseus.codecinfo.ui.adapters.CodecAdapter
 import com.parseus.codecinfo.ui.adapters.DrmAdapter
+import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
 
 internal var emptyListInformed = false
 
@@ -29,6 +31,8 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private var emptyList = false
 
+    var searchListenerDestroyedListener: SearchListenerDestroyedListener? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = TabContentLayoutBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
@@ -36,10 +40,14 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
+        searchListenerDestroyedListener?.onSearchListenerDestroyed(this)
+        searchListenerDestroyedListener = null
         _binding = null
+
+        super.onDestroyView()
     }
 
+    @SuppressLint("NewApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -91,6 +99,7 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
         return true
     }
 
+    @SuppressLint("NewApi")
     private fun handleSearch(query: String) {
         if (emptyList) {
             return

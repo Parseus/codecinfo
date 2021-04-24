@@ -1,8 +1,10 @@
 package com.parseus.codecinfo.ui.adapters
 
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
@@ -137,7 +139,9 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
 
             ViewCompat.setTransitionName(layout, "$codecId/$codecName")
             layout.setOnClickListener {
-                val activity = (layout.context as MainActivity)
+                val context = layout.context
+                val activity = if (context is MainActivity) context
+                    else (layout.context as ContextThemeWrapper).baseContext as MainActivity
 
                 // Do not create the same fragment again.
                 activity.supportFragmentManager
@@ -156,6 +160,11 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
                     if (!activity.isInTwoPaneMode()) {
                         fragment.sharedElementEnterTransition = buildContainerTransform(layout, true)
                         fragment.sharedElementReturnTransition = buildContainerTransform(layout, false)
+                    }
+                    fragment.searchListenerDestroyedListener = object : SearchListenerDestroyedListener {
+                        override fun onSearchListenerDestroyed(queryTextListener: SearchView.OnQueryTextListener) {
+                            activity.searchListeners.remove(queryTextListener)
+                        }
                     }
                 }
 

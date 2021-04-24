@@ -1,24 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="NewApi">
-
-    <!-- Base application theme. -->
-    <style name="BaseAppTheme" parent="Theme.AppCompat.Leanback">
-        <!-- Customize your theme here. -->
+<resources>
+    <style name="Theme.CodecInfo" parent="Base.Theme.CodecInfo">
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryDark">@color/purple_700</item>
         <item name="colorAccent">@color/teal_200</item>
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
-        <item name="android:windowAllowReturnTransitionOverlap">true</item>
+    </style>
+
+    <style name="Base.Theme.CodecInfo" parent="Platform.Theme.CodecInfo">
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="headerStyle">@style/MyHeaderStyle</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="rowHeaderStyle">@style/MyHeaderStyle</item>
     </style>
 
-    <style name="AppTheme.Preference" parent="Theme.AppCompat.Leanback">
-        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Leanback</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
+    <style name="Theme.CodecInfo.Preference" parent="Platform.Theme.CodecInfo">
         <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Leanback</item>
     </style>
+
+    <style name="Platform.Tv.Theme.CodecInfo" parent="Theme.AppCompat.Leanback" />
+    <style name="Platform.Theme.CodecInfo" parent="Platform.Tv.Theme.CodecInfo" />
 
 </resources>

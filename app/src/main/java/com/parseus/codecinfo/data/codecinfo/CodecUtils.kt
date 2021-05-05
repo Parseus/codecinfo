@@ -900,7 +900,7 @@ private fun getMaxVP9ProfileLevel(capabilities: MediaCodecInfo.CodecCapabilities
 }
 
 private fun isVendor(codecInfo: MediaCodecInfo): Boolean {
-    val codecName = codecInfo.name.toLowerCase(Locale.ENGLISH)
+    val codecName = codecInfo.name.lowercase(Locale.ENGLISH)
     return (!codecName.startsWith("omx.google.")
             && !codecName.startsWith("c2.android.")
             && !codecName.startsWith("c2.google.")
@@ -913,7 +913,7 @@ private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {
         return codecInfo.isSoftwareOnly
     }
 
-    val codecName = codecInfo.name.toLowerCase(Locale.ENGLISH)
+    val codecName = codecInfo.name.lowercase(Locale.ENGLISH)
 
     // Broadcom codecs which specifically mention HW acceleration in their names
     if (codecName.contains("omx.brcm.video", true) && codecName.contains("hw", true)) {

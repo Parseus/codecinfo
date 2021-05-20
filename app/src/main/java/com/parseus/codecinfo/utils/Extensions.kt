@@ -26,7 +26,7 @@ fun Int.toBytesPerSecond(): String {
 }
 
 fun Int.toHexHstring(): String {
-    return "0x${this.toString(16).toUpperCase(Locale.getDefault())}"
+    return "0x${this.toString(16).uppercase(Locale.getDefault())}"
 }
 
 fun ByteArray.toHexString(): String {

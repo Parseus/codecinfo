@@ -56,7 +56,7 @@ class MainFragment : Fragment() {
         binding.navigationRail?.let { navigationRail ->
             addFragmentToViewHierarchy()
 
-            navigationRail.setOnNavigationItemSelectedListener { item ->
+            navigationRail.setOnItemSelectedListener { item ->
                 when (item.itemId) {
                     R.id.audio -> InfoType.currentInfoType = InfoType.Audio
                     R.id.video -> InfoType.currentInfoType = InfoType.Video

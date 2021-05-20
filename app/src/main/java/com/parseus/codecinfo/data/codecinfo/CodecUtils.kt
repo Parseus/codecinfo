@@ -263,6 +263,9 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             if (SDK_INT >= 24) {
                 propertyList.addFeature(context, capabilities, FEATURE_IntraRefresh, R.string.intra_refresh)
             }
+            if (SDK_INT >= 31) {
+                propertyList.addFeature(context, capabilities, FEATURE_QpBounds, R.string.qp_bounds)
+            }
         }
     }
 
@@ -281,13 +284,17 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
 
     if (isEncoder && SDK_INT >= 21) {
         val encoderCapabilities = capabilities.encoderCapabilities
-        val bitrateModesString =
+        var bitrateModesString =
                 "${context.getString(R.string.cbr)}: " +
                         "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR)}" +
                         "\n${context.getString(R.string.cq)}: " +
                         "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CQ)}" +
                         "\n${context.getString(R.string.vbr)}: " +
                         "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)}"
+        if (SDK_INT >= 31) {
+            bitrateModesString += "\n${context.getString(R.string.cbr_fd)}: " +
+                    "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR_FD)}"
+        }
         propertyList.add(DetailsProperty(propertyList.size.toLong(),
                 context.getString(R.string.bitrate_modes), bitrateModesString))
 

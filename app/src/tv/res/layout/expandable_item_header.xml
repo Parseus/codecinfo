@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:contentDescription="@string/known_issue_warning"
+    android:clickable="true"
+    android:focusable="true"
+    android:descendantFocusability="blocksDescendants"
+    android:screenReaderFocusable="true"
+    tools:ignore="UnusedAttribute">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/list_content_horizontal_padding"
+        android:importantForAccessibility="no"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:text="@string/known_issue_warning"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:textColor="@color/error_text_tint_selector" />
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:importantForAccessibility="no"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/expand_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="@dimen/list_content_horizontal_padding"
+        android:layout_marginEnd="@dimen/list_content_horizontal_padding"
+        android:importantForAccessibility="no"
+        android:rotation="180"
+        app:srcCompat="@drawable/ic_arrow"
+        app:tint="@color/error_text_tint_selector"/>
+
+</LinearLayout>

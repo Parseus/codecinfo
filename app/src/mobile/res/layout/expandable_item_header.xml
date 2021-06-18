@@ -18,11 +18,12 @@
         style="?attr/textAppearanceSubtitle1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/list_content_padding"
+        android:layout_marginStart="@dimen/list_content_horizontal_padding"
         android:importantForAccessibility="no"
         android:maxLines="1"
         android:singleLine="true"
         android:text="@string/known_issue_warning"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
         android:textColor="@color/error_text_tint_selector" />
 
     <Space
@@ -33,10 +34,10 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/expand_icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="@dimen/list_content_padding"
-        android:layout_marginEnd="@dimen/list_content_padding"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
+        android:layout_marginStart="@dimen/list_content_horizontal_padding"
+        android:layout_marginEnd="@dimen/list_content_horizontal_padding"
         android:importantForAccessibility="no"
         android:rotation="180"
         app:srcCompat="@drawable/ic_arrow"

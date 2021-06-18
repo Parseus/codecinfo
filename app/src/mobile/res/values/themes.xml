@@ -1,0 +1,19 @@
+<resources>
+    <style name="Theme.CodecInfo" parent="Base.Theme.CodecInfo">
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+    </style>
+
+    <style name="Base.Theme.CodecInfo" parent="Platform.Theme.CodecInfo">
+        <item name="navigationRailStyle">@style/Widget.MaterialComponents.NavigationRailView.PrimarySurface</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <item name="settingsIconColor">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="Platform.V16.Theme.CodecInfo" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="Platform.Theme.CodecInfo" parent="Platform.V16.Theme.CodecInfo" />
+</resources>

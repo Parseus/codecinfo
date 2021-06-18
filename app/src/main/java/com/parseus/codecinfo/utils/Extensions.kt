@@ -7,8 +7,8 @@ import android.media.MediaCodecInfo
 import java.util.*
 
 fun Context.isTv(): Boolean {
-    val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
-    return uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+    val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
+    return uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
 }
 
 fun Int.toKiloHertz(): Float {
@@ -26,7 +26,7 @@ fun Int.toBytesPerSecond(): String {
 }
 
 fun Int.toHexHstring(): String {
-    return "0x${this.toString(16).toUpperCase(Locale.getDefault())}"
+    return "0x${this.toString(16).uppercase(Locale.getDefault())}"
 }
 
 fun ByteArray.toHexString(): String {

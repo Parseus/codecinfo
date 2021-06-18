@@ -2,29 +2,13 @@
 
 <resources>
     <string name="app_name" translatable="false">&app_name;</string>
-    <string name="appbarlayout_scrolling_view_behavior" translatable="false">
-        com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
     <string name="app_version_name">Version %1$s\n\u00A9 2018–2021 KN-Soft</string>
-
-    <string name="close_details">Close details</string>
-
-    <string name="action_share">Share</string>
-    <string name="choose_share">Choose info to share</string>
-    <string name="codec_list">Codec list</string>
-    <string name="codec_details_selected">Selected codec details</string>
-    <string name="codec_drm_all_info">All codecs and DRMs with details</string>
 
     <string name="action_settings">Settings</string>
     <string name="about_app">About &app_name;…</string>
     <string name="app_version">Version %s</string>
     <string name="copyright" translatable="false">\u00A9 2018-2021 KN-Soft</string>
     <string name="source_code_link" translatable="false">https://github.com/Parseus/codecinfo</string>
-
-    <string name="feedback_email" translatable="false">parseus.dev@gmail.com</string>
-    <string name="email_subject">Feedback</string>
-    <string name="choose_email">Send feedback via…</string>
-    <string name="no_email_apps">No apps can perform this action.</string>
-    <string name="no_email_apps_clipboard">No apps can perform this action. Email address was copied to the clipboard.</string>
 
     <string name="action_search">Search</string>
     <string name="search_hint">Search codec/DRM info</string>
@@ -120,6 +104,8 @@
     <string name="drm_property_app_id">Application ID</string>
     <string name="drm_property_origin">Origin</string>
     <string name="drm_property_service_certificate">Service certificate</string>
+    <string name="drm_property_current_srm_version">Current System Renewability Message (SRM) version</string>
+    <string name="drm_property_srm_update_support">System Renewability Message (SRM) update supported</string>
 
     <string name="drm_clearkey_dash_if">ClearKey (DASH-IF)</string>
     <string name="drm_clearkey_pssh_name">ClearKey (Common PSSH box format)</string>
@@ -133,19 +119,6 @@
     <string name="hdcp_level_v2_2">HDCP 2.2 Type 1</string>
     <string name="hdcp_level_v2_3">HDCP 2.3 Type 1</string>
     <string name="hdcp_level_no_digital_output">No digital output (implicitly secure)</string>
-
-    <string name="app_theme_light">Light</string>
-    <string name="app_theme_dark">Dark</string>
-    <string name="app_theme_battery_saver">Set by Battery Saver</string>
-    <string name="app_theme_system_default">System default</string>
-
-    <string name="more_info">Tap here to see more info…</string>
-
-    <string name="details_fragment_tag" translatable="false">item_details</string>
-
-    <string name="codec_row_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s</string>
-    <string name="codec_row_with_issue_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s. Known issue detected!</string>
-    <string name="drm_row_content_description">DRM %1$d: %2$s</string>
 
     <string name="known_issue_warning">Known issue(s) detected:</string>
     <string name="known_issue_desc_header">Description:</string>

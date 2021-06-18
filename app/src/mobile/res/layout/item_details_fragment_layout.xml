@@ -5,16 +5,14 @@
     android:id="@+id/end_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="?attr/colorSurface">
+    android:orientation="vertical">
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/full_codec_info_name"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:paddingLeft="@dimen/list_content_padding"
-        android:paddingRight="@dimen/list_content_padding"
-        android:elevation="1dp"
+        android:paddingLeft="@dimen/list_content_horizontal_padding"
+        android:paddingRight="@dimen/list_content_horizontal_padding"
         android:gravity="center"
         android:maxLines="1"
         android:textColor="?attr/colorPrimary"
@@ -24,9 +22,10 @@
         app:autoSizeStepGranularity="1px"
         app:autoSizeTextType="uniform"
         tools:text="Item full name"
-        tools:ignore="UnusedAttribute" />
+        tools:ignore="SelectableText" />
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/item_details_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"

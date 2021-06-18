@@ -2,10 +2,12 @@ package com.parseus.codecinfo.data.codecinfo
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaCodecInfo.CodecCapabilities.*
 import android.media.MediaCodecList
 import android.media.MediaFormat
+import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.util.Range
 import androidx.annotation.RequiresApi
@@ -16,10 +18,7 @@ import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.colorformats.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.VP9Levels.*
-import com.parseus.codecinfo.utils.isAudioCodec
-import com.parseus.codecinfo.utils.toBytesPerSecond
-import com.parseus.codecinfo.utils.toHexHstring
-import com.parseus.codecinfo.utils.toKiloHertz
+import com.parseus.codecinfo.utils.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -38,6 +37,9 @@ private const val DIVX6_720P_MAX_FRAME_RATE = 60
 private const val DIVX6_1080P_MAX_FRAME_RATE = 30
 private val DIVX4_MAX_RESOLUTION = intArrayOf(720, 576)
 private val DIVX6_MAX_RESOLUTION = intArrayOf(1920, 1080)
+
+private const val GOOGLE_RAW_DECODER = "OMX.google.raw.decoder"
+private const val MEDIATEK_RAW_DECODER = "OMX.MTK.AUDIO.DECODER.RAW"
 
 private val platformSupportedTypes = arrayOf(
         "audio/3gpp",
@@ -102,9 +104,36 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
                 return mutableListOf()
             }
         } else {
-            @Suppress("DEPRECATION")
-            Array(MediaCodecList.getCodecCount()) { i -> MediaCodecList.getCodecInfoAt(i) }
+            try {
+                @Suppress("DEPRECATION")
+                Array(MediaCodecList.getCodecCount()) { i -> MediaCodecList.getCodecInfoAt(i) }
+            } catch (e: Exception) {
+                return mutableListOf()
+            }
         }
+    }
+
+    if (SDK_INT in 21..23 && mediaCodecInfos.find { it.name.endsWith("secure") } == null) {
+        // Some devices don't list secure decoders on API 21 with a newer way of querying codecs,
+        // but potentially could also happen on API levels 22 and 23.
+        // In that case try the old way.
+        try {
+            @Suppress("DEPRECATION")
+            val oldCodecInfos = Array(MediaCodecList.getCodecCount())
+                { i -> MediaCodecList.getCodecInfoAt(i) }.filter { it.name.endsWith("secure") }
+            mediaCodecInfos += oldCodecInfos
+        } catch (e: Exception) {}
+    }
+
+    if (SDK_INT in 22..25 && Build.DEVICE == "R9"
+        && mediaCodecInfos.find { it.name == GOOGLE_RAW_DECODER } == null
+        && mediaCodecInfos.find { it.name == MEDIATEK_RAW_DECODER } != null) {
+        // Oppo R9 does not list a generic raw audio decoder, yet it can be instantiated by name.
+        try {
+            val rawMediaCodec = MediaCodec.createByCodecName(GOOGLE_RAW_DECODER)
+            //noinspection NewApi
+            mediaCodecInfos += rawMediaCodec.codecInfo
+        } catch (e: Exception) {}
     }
 
     val showAliases = prefs.getBoolean("show_aliases", false)
@@ -447,12 +476,12 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
         }
     }
 
-    if (SDK_INT < 28) {
+    if (CAN_USE_REFLECTION_FOR_MCAPABILITIESINFO) {
         /*
             mCapabilitiesInfo, a private MediaFormat instance hidden in MediaCodecInfo,
             can actually provide max input channel count (as well as other useful info).
-            Unfortunately, with P restricting non-API usage via reflection, I can only hope
-            that everything will work fine on newer versions.
+            Android 9.0 put it on a dark greylist, though, so it can't be easily accessed anymore
+            (although it is bypassed on a non-store mobile flavor). Newer versions are SOL here.
          */
         try {
             val capabilitiesInfo = capabilities::class.java.getDeclaredField("mCapabilitiesInfo")
@@ -462,8 +491,7 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
             if (mediaFormat.containsKey("max-channel-count")) {
                 return mediaFormat.getString("max-channel-count")!!.toInt()
             }
-        } catch (e: Exception) {
-        }
+        } catch (e: Exception) {}
     }
 
     if (codecId.endsWith("flac") || codecId.endsWith("alac")) {
@@ -582,7 +610,7 @@ private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, code
 private fun getFormattedColorProfileString(context: Context, colorFormat: String, colorFormatInt: Int): String {
     val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
-    return when (prefs.getString("known_values_color_profiles", "0")!!.toInt()) {
+    return when (prefs.getString("known_values_color_profiles", "1")!!.toInt()) {
         0 -> colorFormat
         1 -> "$colorFormat (${colorFormatInt.toHexHstring()})"
         else -> "$colorFormat ($colorFormatInt)"
@@ -592,7 +620,7 @@ private fun getFormattedColorProfileString(context: Context, colorFormat: String
 @RequiresApi(21)
 private fun getMaxResolution(codecId: String, videoCapabilities: MediaCodecInfo.VideoCapabilities): IntArray {
     val maxWidth = videoCapabilities.supportedWidths.upper
-    val maxHeight = videoCapabilities.getSupportedHeightsFor(maxWidth).upper
+    val maxHeight = videoCapabilities.supportedHeights.upper
     val defaultResolution = intArrayOf(maxWidth, maxHeight)
 
     return if (!areCapabilitiesUnknown(videoCapabilities)) {
@@ -803,7 +831,7 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
 private fun getFormattedProfileLevelString(context: Context, profile: String?, profileInt: Int,
                                            level: String?, levelInt: Int): String {
     val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-    val option = prefs.getString("known_values_profile_levels", "0")!!.toInt()
+    val option = prefs.getString("known_values_profile_levels", "1")!!.toInt()
     val unknownString = context.getString(R.string.unknown)
 
     val profileString = when (option) {
@@ -872,7 +900,7 @@ private fun getMaxVP9ProfileLevel(capabilities: MediaCodecInfo.CodecCapabilities
 }
 
 private fun isVendor(codecInfo: MediaCodecInfo): Boolean {
-    val codecName = codecInfo.name.toLowerCase(Locale.ENGLISH)
+    val codecName = codecInfo.name.lowercase(Locale.ENGLISH)
     return (!codecName.startsWith("omx.google.")
             && !codecName.startsWith("c2.android.")
             && !codecName.startsWith("c2.google.")
@@ -885,7 +913,7 @@ private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {
         return codecInfo.isSoftwareOnly
     }
 
-    val codecName = codecInfo.name.toLowerCase(Locale.ENGLISH)
+    val codecName = codecInfo.name.lowercase(Locale.ENGLISH)
 
     // Broadcom codecs which specifically mention HW acceleration in their names
     if (codecName.contains("omx.brcm.video", true) && codecName.contains("hw", true)) {

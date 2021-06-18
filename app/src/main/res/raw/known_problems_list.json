@@ -447,5 +447,25 @@
       "https://github.com/google/ExoPlayer/issues/4519",
       "https://github.com/google/ExoPlayer/pull/5216"
     ]
+  },
+  {
+    "id": 18,
+    "codec_name": "OMX.google.raw.decoder",
+    "description": "This device does not list a generic raw audio decoder, yet it can be instantiated by name.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 26
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "R9"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/5782"
+    ]
   }
 ]

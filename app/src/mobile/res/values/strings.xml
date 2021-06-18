@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="close_details">Close details</string>
+
+    <string name="action_share">Share</string>
+    <string name="choose_share">Choose info to share</string>
+    <string name="codec_list">Codec list</string>
+    <string name="codec_details_selected">Selected codec details</string>
+    <string name="codec_drm_all_info">All codecs and DRMs with details</string>
+
+    <string name="feedback_email" translatable="false">parseus.dev@gmail.com</string>
+    <string name="email_subject">Feedback</string>
+    <string name="choose_email">Send feedback via…</string>
+    <string name="no_email_apps">No apps can perform this action.</string>
+    <string name="no_email_apps_clipboard">No apps can perform this action. Email address was copied to the clipboard.</string>
+
+    <string name="app_theme_light">Light</string>
+    <string name="app_theme_dark">Dark</string>
+    <string name="app_theme_battery_saver">Set by Battery Saver</string>
+    <string name="app_theme_system_default">System default</string>
+
+    <string name="more_info">Tap here to see more info…</string>
+
+    <string name="details_fragment_tag" translatable="false">item_details</string>
+
+    <string name="codec_row_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s</string>
+    <string name="codec_row_with_issue_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s. Known issue detected!</string>
+    <string name="drm_row_content_description">DRM %1$d: %2$s</string>
+</resources>

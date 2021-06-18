@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    tools:viewBindingIgnore="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="@dimen/abc_dialog_title_divider_material" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:id="@+id/version_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -41,7 +42,7 @@
         android:text="@string/app_version"
         style="@style/MaterialAlertDialog.MaterialComponents.Body.Text" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="?attr/dialogPreferredPadding"
@@ -49,7 +50,7 @@
         android:text="@string/copyright"
         style="@style/MaterialAlertDialog.MaterialComponents.Body.Text"/>
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="?attr/dialogPreferredPadding"
@@ -58,7 +59,7 @@
         android:text="@string/source_code_link"
         style="@style/MaterialAlertDialog.MaterialComponents.Body.Text"/>
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/ok_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

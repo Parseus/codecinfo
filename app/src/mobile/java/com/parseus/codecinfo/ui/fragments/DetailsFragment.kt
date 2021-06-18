@@ -1,12 +1,15 @@
 package com.parseus.codecinfo.ui.fragments
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,17 +19,21 @@ import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
-import com.parseus.codecinfo.ui.MainActivity
+import com.parseus.codecinfo.ui.ItemDetailsHeaderView
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
+import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
-import com.parseus.codecinfo.utils.isTv
+import com.parseus.codecinfo.utils.getAttributeColor
+import com.parseus.codecinfo.utils.isInTwoPaneMode
 import java.util.*
 
 class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private var _binding: ItemDetailsFragmentLayoutBinding? = null
-    private val binding get() = _binding!!
+    internal val binding get() = _binding!!
+
+    var searchListenerDestroyedListener: SearchListenerDestroyedListener? = null
 
     private lateinit var propertyList: List<DetailsProperty>
 
@@ -42,9 +49,8 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroyView() {
-        (requireActivity() as? MainActivity)?.apply {
-            searchListeners.remove(this)
-        }
+        searchListenerDestroyedListener?.onSearchListenerDestroyed(this)
+        searchListenerDestroyedListener = null
         _binding = null
         super.onDestroyView()
     }
@@ -52,21 +58,23 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (requireContext().isTv()) {
-            requireActivity().intent?.let {
-                codecId = it.getStringExtra("codecId")
-                codecName = it.getStringExtra("codecName")
-                drmName = it.getStringExtra("drmName")
-                drmUuid = it.getSerializableExtra("drmUuid") as UUID?
-            }
-        } else {
-            val bundle = savedInstanceState ?: arguments
-            bundle?.let {
-                codecId = it.getString("codecId")
-                codecName = it.getString("codecName")
-                drmName = it.getString("drmName")
-                drmUuid = it.getSerializable("drmUuid") as UUID?
-            }
+        if (!requireContext().isInTwoPaneMode()) {
+            // Apply background color only on mobile to reduce overdraw on bigger devices
+            binding.endRoot.setBackgroundColor(requireContext().getAttributeColor(com.google.android.material.R.attr.colorSurface))
+        }
+
+        val bundle = savedInstanceState ?: arguments
+        bundle?.let {
+            codecId = it.getString("codecId")
+            codecName = it.getString("codecName")
+            drmName = it.getString("drmName")
+            drmUuid = it.getSerializable("drmUuid") as UUID?
+        }
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            binding.itemDetailsContent.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener {
+                    _, _, scrollY, _, _ -> (binding.fullCodecInfoName as ItemDetailsHeaderView).isHeaderLifted = scrollY > 0
+            })
         }
 
         if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
@@ -89,6 +97,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
             codecId != null && codecName != null ->
                 getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
             drmName != null && drmUuid != null ->
+                //noinspection NewApi
                 getDetailedDrmInfo(requireContext(), DrmVendor.getFromUuid(drmUuid!!))
             else -> emptyList()
         }
@@ -96,7 +105,8 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun getFullDetails() {
-        binding.fullCodecInfoName.text = codecName ?: drmName
+        @Suppress("USELESS_CAST")
+        (binding.fullCodecInfoName as TextView).text = codecName ?: drmName
 
         val detailsAdapter = DetailsAdapter()
         detailsAdapter.add(propertyList)

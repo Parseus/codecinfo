@@ -37,23 +37,40 @@ fun getDetailedDrmInfo(context: Context, drmVendor: DrmVendor): List<DetailsProp
     drmPropertyList.addByteArrayProperties(context, mediaDrm, drmVendor.getVendorByteArrayProperties())
 
     if (Build.VERSION.SDK_INT >= 28) {
-        addReadableHdcpLevel(context, mediaDrm.connectedHdcpLevel,
-                context.getString(R.string.drm_property_hdcp_level), drmPropertyList)
-        addReadableHdcpLevel(context, mediaDrm.maxHdcpLevel,
-                context.getString(R.string.drm_property_max_hdcp_level), drmPropertyList)
-
-        val maxSessionCount = mediaDrm.maxSessionCount.toString()
-        val maxSessionsEntry = drmPropertyList.find {
-            it.name == context.getString(R.string.drm_property_max_sessions)
+        val connectedHdcpLevel = try {
+            mediaDrm.connectedHdcpLevel
+        } catch (e: Exception) {
+            MediaDrm.HDCP_LEVEL_UNKNOWN
         }
-        if (maxSessionsEntry != null) {
-            val index = drmPropertyList.indexOf(maxSessionsEntry)
-            drmPropertyList.remove(maxSessionsEntry)
-            maxSessionsEntry.value = maxSessionCount
-            drmPropertyList.add(index, maxSessionsEntry)
-        } else {
-            drmPropertyList.add(DetailsProperty(drmPropertyList.size.toLong(),
-                    context.getString(R.string.drm_property_max_sessions), maxSessionCount))
+        addReadableHdcpLevel(context, connectedHdcpLevel,
+            context.getString(R.string.drm_property_hdcp_level), drmPropertyList)
+
+        val maxHdcpLevel = try {
+            mediaDrm.maxHdcpLevel
+        } catch (e: Exception) {
+            MediaDrm.HDCP_LEVEL_UNKNOWN
+        }
+        addReadableHdcpLevel(context, maxHdcpLevel,
+            context.getString(R.string.drm_property_max_hdcp_level), drmPropertyList)
+
+        val maxSessionCount = try {
+            mediaDrm.maxSessionCount
+        } catch (e: Exception) {
+            0
+        }
+        if (maxSessionCount > 0) {
+            val maxSessionsEntry = drmPropertyList.find {
+                it.name == context.getString(R.string.drm_property_max_sessions)
+            }
+            if (maxSessionsEntry != null) {
+                val index = drmPropertyList.indexOf(maxSessionsEntry)
+                drmPropertyList.remove(maxSessionsEntry)
+                maxSessionsEntry.value = maxSessionCount.toString()
+                drmPropertyList.add(index, maxSessionsEntry)
+            } else {
+                drmPropertyList.add(DetailsProperty(drmPropertyList.size.toLong(),
+                    context.getString(R.string.drm_property_max_sessions), maxSessionCount.toString()))
+            }
         }
     }
 

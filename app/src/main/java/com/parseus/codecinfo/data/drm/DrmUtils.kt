@@ -16,10 +16,20 @@ fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
     return if (drmList.isNotEmpty()) {
         drmList
     } else {
-        DrmVendor.values()
-                .filter { MediaDrm.isCryptoSchemeSupported(it.uuid) }
-                .mapNotNull { it.getIfSupported(context) }
-                .also { drmList.addAll(it) }
+        val list = mutableListOf<DrmSimpleInfo>()
+        DrmVendor.values().forEach {
+            try {
+                // This can crash in native code if something goes wrong while querying it.
+                val schemeSupported = MediaDrm.isCryptoSchemeSupported(it.uuid)
+                if (schemeSupported) {
+                    val drmInfo = it.getIfSupported(context)
+                    if (drmInfo != null) {
+                        list.add(drmInfo)
+                    }
+                }
+            } catch (e: Exception) {}
+        }
+        list
     }
 }
 
@@ -36,6 +46,7 @@ fun getDetailedDrmInfo(context: Context, drmVendor: DrmVendor): List<DetailsProp
     drmPropertyList.addStringProperties(context, mediaDrm, drmVendor.getVendorStringProperties())
     drmPropertyList.addByteArrayProperties(context, mediaDrm, drmVendor.getVendorByteArrayProperties())
 
+    // These can crash in native code if something goes wrong while querying it.
     if (Build.VERSION.SDK_INT >= 28) {
         val connectedHdcpLevel = try {
             mediaDrm.connectedHdcpLevel

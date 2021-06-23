@@ -51,6 +51,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onDestroyView() {
         searchListenerDestroyedListener?.onSearchListenerDestroyed(this)
         searchListenerDestroyedListener = null
+        binding.itemDetailsContent.setOnScrollChangeListener(null as NestedScrollView.OnScrollChangeListener?)
         _binding = null
         super.onDestroyView()
     }

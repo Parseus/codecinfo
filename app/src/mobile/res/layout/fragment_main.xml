@@ -13,6 +13,13 @@
         app:tabMode="auto"
         app:tabInlineLabel="true" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:alpha="0.1"
+        android:background="?attr/colorOnSurface"
+        android:importantForAccessibility="no" />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/pager"
         android:layout_width="match_parent"

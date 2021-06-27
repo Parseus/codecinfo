@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -21,6 +23,8 @@ import com.parseus.codecinfo.databinding.TabContentLayoutBinding
 import com.parseus.codecinfo.ui.adapters.CodecAdapter
 import com.parseus.codecinfo.ui.adapters.DrmAdapter
 import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 internal var emptyListInformed = false
 
@@ -51,37 +55,45 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val infoType = InfoType.fromInt(requireArguments().getInt("infoType"))
-        val itemAdapter = if (infoType != InfoType.DRM) {
-            val codecSimpleInfoList = getSimpleCodecInfoList(requireContext(),
-                    infoType == InfoType.Audio)
-            if (codecSimpleInfoList.isEmpty()) emptyList = true
-            CodecAdapter().also {
-                if (!emptyList) {
-                    it.add(codecSimpleInfoList)
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            binding.loadingProgress.isVisible = true
+
+            val infoType = InfoType.fromInt(requireArguments().getInt("infoType"))
+            val itemAdapter = withContext(Dispatchers.IO) {
+                if (infoType != InfoType.DRM) {
+                    val codecSimpleInfoList = getSimpleCodecInfoList(requireContext(),
+                        infoType == InfoType.Audio)
+                    if (codecSimpleInfoList.isEmpty()) emptyList = true
+                    CodecAdapter().also {
+                        if (!emptyList) {
+                            it.add(codecSimpleInfoList)
+                        }
+                    }
+                } else {
+                    val drmSimpleInfoList = getSimpleDrmInfoList(requireContext())
+                    if (drmSimpleInfoList.isEmpty()) emptyList = true
+                    DrmAdapter(drmSimpleInfoList)
                 }
             }
-        } else {
-            val drmSimpleInfoList = getSimpleDrmInfoList(requireContext())
-            if (drmSimpleInfoList.isEmpty()) emptyList = true
-            DrmAdapter(drmSimpleInfoList)
-        }
 
-        if (!emptyList) {
-            binding.simpleCodecListView.apply {
-                layoutManager = LinearLayoutManager(context)
-                adapter = itemAdapter
-                ViewCompat.setNestedScrollingEnabled(this, false)
-                addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-            }
-        } else if (!emptyListInformed) {
-            // Do not spam the user with multiple snackbars.
-            emptyListInformed = true
-            val errorId = if (InfoType.currentInfoType != InfoType.DRM)
-                R.string.unable_to_get_codec_info_error
+            binding.loadingProgress.isVisible = false
+
+            if (!emptyList) {
+                binding.simpleCodecListView.apply {
+                    layoutManager = LinearLayoutManager(context)
+                    adapter = itemAdapter
+                    ViewCompat.setNestedScrollingEnabled(this, false)
+                    addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+                }
+            } else if (!emptyListInformed) {
+                // Do not spam the user with multiple snackbars.
+                emptyListInformed = true
+                val errorId = if (InfoType.currentInfoType != InfoType.DRM)
+                    R.string.unable_to_get_codec_info_error
                 else R.string.unable_to_get_drm_info_error
-            Snackbar.make(requireActivity().findViewById(android.R.id.content),
+                Snackbar.make(requireActivity().findViewById(android.R.id.content),
                     errorId, Snackbar.LENGTH_LONG).show()
+            }
         }
     }
 

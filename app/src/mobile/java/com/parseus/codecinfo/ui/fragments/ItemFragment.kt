@@ -20,6 +20,7 @@ import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.databinding.TabContentLayoutBinding
+import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.CodecAdapter
 import com.parseus.codecinfo.ui.adapters.DrmAdapter
 import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
@@ -46,6 +47,12 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onDestroyView() {
         searchListenerDestroyedListener?.onSearchListenerDestroyed(this)
         searchListenerDestroyedListener = null
+
+        if (activity as? MainActivity != null) {
+            val searchListenerList = (activity as MainActivity).searchListeners
+            searchListenerList.remove(this)
+        }
+
         _binding = null
 
         super.onDestroyView()

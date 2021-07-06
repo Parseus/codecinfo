@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.parseus.codecinfo.data.DetailsProperty
@@ -26,6 +27,8 @@ import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
 import com.parseus.codecinfo.utils.getAttributeColor
 import com.parseus.codecinfo.utils.isInTwoPaneMode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -51,6 +54,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onDestroyView() {
         searchListenerDestroyedListener?.onSearchListenerDestroyed(this)
         searchListenerDestroyedListener = null
+        binding.itemDetailsContent.setOnScrollChangeListener(null as NestedScrollView.OnScrollChangeListener?)
         _binding = null
         super.onDestroyView()
     }
@@ -93,18 +97,26 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         }
 
-        propertyList = when {
-            codecId != null && codecName != null ->
-                getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
-            drmName != null && drmUuid != null ->
-                //noinspection NewApi
-                getDetailedDrmInfo(requireContext(), DrmVendor.getFromUuid(drmUuid!!))
-            else -> emptyList()
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            binding.loadingProgress.isVisible = true
+
+            propertyList = withContext(Dispatchers.IO) {
+                when {
+                    codecId != null && codecName != null ->
+                        getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+                    drmName != null && drmUuid != null ->
+                        //noinspection NewApi
+                        getDetailedDrmInfo(requireContext(), DrmVendor.getFromUuid(drmUuid!!))
+                    else -> emptyList()
+                }
+            }
+
+            binding.loadingProgress.isVisible = false
+            showFullDetails()
         }
-        getFullDetails()
     }
 
-    private fun getFullDetails() {
+    private fun showFullDetails() {
         @Suppress("USELESS_CAST")
         (binding.fullCodecInfoName as TextView).text = codecName ?: drmName
 

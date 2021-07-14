@@ -48,7 +48,7 @@
         android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
         android:layout_centerHorizontal="true"
-        android:alpha="0.1"
+        android:alpha="0.12"
         android:background="?attr/colorOnSurface"
         android:importantForAccessibility="no"
         app:layout_constraintTop_toBottomOf="@id/appBar"

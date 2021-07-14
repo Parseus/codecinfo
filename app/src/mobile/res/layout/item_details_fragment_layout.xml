@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/end_root"
@@ -13,6 +13,7 @@
         android:layout_height="48dp"
         android:paddingLeft="@dimen/list_content_horizontal_padding"
         android:paddingRight="@dimen/list_content_horizontal_padding"
+        android:layout_gravity="top"
         android:gravity="center"
         android:maxLines="1"
         android:textColor="?attr/colorPrimary"
@@ -28,6 +29,7 @@
         android:id="@+id/item_details_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="48dp"
         android:scrollbars="vertical"
         android:fadeScrollbars="false">
 
@@ -55,4 +57,11 @@
 
     </androidx.core.widget.NestedScrollView>
 
-</LinearLayout>
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/loadingProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true" />
+
+</FrameLayout>

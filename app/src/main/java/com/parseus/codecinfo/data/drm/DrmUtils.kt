@@ -16,10 +16,20 @@ fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
     return if (drmList.isNotEmpty()) {
         drmList
     } else {
-        DrmVendor.values()
-                .filter { MediaDrm.isCryptoSchemeSupported(it.uuid) }
-                .mapNotNull { it.getIfSupported(context) }
-                .also { drmList.addAll(it) }
+        val list = mutableListOf<DrmSimpleInfo>()
+        DrmVendor.values().forEach {
+            try {
+                // This can crash in native code if something goes wrong while querying it.
+                val schemeSupported = MediaDrm.isCryptoSchemeSupported(it.uuid)
+                if (schemeSupported) {
+                    val drmInfo = it.getIfSupported(context)
+                    if (drmInfo != null) {
+                        list.add(drmInfo)
+                    }
+                }
+            } catch (e: Exception) {}
+        }
+        list
     }
 }
 
@@ -36,24 +46,42 @@ fun getDetailedDrmInfo(context: Context, drmVendor: DrmVendor): List<DetailsProp
     drmPropertyList.addStringProperties(context, mediaDrm, drmVendor.getVendorStringProperties())
     drmPropertyList.addByteArrayProperties(context, mediaDrm, drmVendor.getVendorByteArrayProperties())
 
+    // These can crash in native code if something goes wrong while querying it.
     if (Build.VERSION.SDK_INT >= 28) {
-        addReadableHdcpLevel(context, mediaDrm.connectedHdcpLevel,
-                context.getString(R.string.drm_property_hdcp_level), drmPropertyList)
-        addReadableHdcpLevel(context, mediaDrm.maxHdcpLevel,
-                context.getString(R.string.drm_property_max_hdcp_level), drmPropertyList)
-
-        val maxSessionCount = mediaDrm.maxSessionCount.toString()
-        val maxSessionsEntry = drmPropertyList.find {
-            it.name == context.getString(R.string.drm_property_max_sessions)
+        val connectedHdcpLevel = try {
+            mediaDrm.connectedHdcpLevel
+        } catch (e: Exception) {
+            MediaDrm.HDCP_LEVEL_UNKNOWN
         }
-        if (maxSessionsEntry != null) {
-            val index = drmPropertyList.indexOf(maxSessionsEntry)
-            drmPropertyList.remove(maxSessionsEntry)
-            maxSessionsEntry.value = maxSessionCount
-            drmPropertyList.add(index, maxSessionsEntry)
-        } else {
-            drmPropertyList.add(DetailsProperty(drmPropertyList.size.toLong(),
-                    context.getString(R.string.drm_property_max_sessions), maxSessionCount))
+        addReadableHdcpLevel(context, connectedHdcpLevel,
+            context.getString(R.string.drm_property_hdcp_level), drmPropertyList)
+
+        val maxHdcpLevel = try {
+            mediaDrm.maxHdcpLevel
+        } catch (e: Exception) {
+            MediaDrm.HDCP_LEVEL_UNKNOWN
+        }
+        addReadableHdcpLevel(context, maxHdcpLevel,
+            context.getString(R.string.drm_property_max_hdcp_level), drmPropertyList)
+
+        val maxSessionCount = try {
+            mediaDrm.maxSessionCount
+        } catch (e: Exception) {
+            0
+        }
+        if (maxSessionCount > 0) {
+            val maxSessionsEntry = drmPropertyList.find {
+                it.name == context.getString(R.string.drm_property_max_sessions)
+            }
+            if (maxSessionsEntry != null) {
+                val index = drmPropertyList.indexOf(maxSessionsEntry)
+                drmPropertyList.remove(maxSessionsEntry)
+                maxSessionsEntry.value = maxSessionCount.toString()
+                drmPropertyList.add(index, maxSessionsEntry)
+            } else {
+                drmPropertyList.add(DetailsProperty(drmPropertyList.size.toLong(),
+                    context.getString(R.string.drm_property_max_sessions), maxSessionCount.toString()))
+            }
         }
     }
 

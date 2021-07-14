@@ -81,8 +81,8 @@ class MainFragment : Fragment() {
             val bundle = Bundle()
             bundle.putInt("infoType", InfoType.currentInfoType.tabPosition)
             arguments = bundle
-            if (activity as? MainActivity != null) {
-                val searchListenerList = (activity as? MainActivity)!!.searchListeners
+            if (this@MainFragment.activity as? MainActivity != null) {
+                val searchListenerList = (this@MainFragment.activity as? MainActivity)!!.searchListeners
                 val existingFragment = searchListenerList.find {
                     it is ItemFragment && (it.requireArguments().getInt("infoType")
                         == InfoType.currentInfoType.tabPosition)

@@ -382,12 +382,19 @@ private fun getAudioCapabilities(context: Context, codecId: String, codecName: S
                                  propertyList: MutableList<DetailsProperty>) {
     val audioCapabilities = capabilities.audioCapabilities
 
+    var minChannelCount = 1
+    val maxChannelCount = adjustMaxInputChannelCount(codecId, codecName,
+        audioCapabilities.maxInputChannelCount, capabilities)
+
+    if (SDK_INT >= 31) {
+        minChannelCount = audioCapabilities.minInputChannelCount
+    }
+
     propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.input_channels),
-        if (SDK_INT >= 31) {
-            audioCapabilities.inputChannelCountRanges.toString()
+        if (minChannelCount != maxChannelCount) {
+            "$minChannelCount \u2014 $maxChannelCount"
         } else {
-            adjustMaxInputChannelCount(codecId, codecName,
-                audioCapabilities.maxInputChannelCount, capabilities).toString()
+            maxChannelCount.toString()
         }
     ))
 

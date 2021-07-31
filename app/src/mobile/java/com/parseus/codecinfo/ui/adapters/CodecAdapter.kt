@@ -1,6 +1,5 @@
 package com.parseus.codecinfo.ui.adapters
 
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +18,7 @@ import com.parseus.codecinfo.databinding.CodecAdapterRowBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.utils.buildContainerTransform
+import com.parseus.codecinfo.utils.getActivity
 import com.parseus.codecinfo.utils.isInTwoPaneMode
 
 class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
@@ -140,53 +140,53 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
             ViewCompat.setTransitionName(layout, "$codecId/$codecName")
             layout.setOnClickListener {
                 val context = layout.context
-                val activity = if (context is MainActivity) context
-                    else (layout.context as ContextThemeWrapper).baseContext as MainActivity
-
-                // Do not create the same fragment again.
-                activity.supportFragmentManager
-                        .findFragmentByTag(activity.getString(R.string.details_fragment_tag))?.let {
+                val activity = context.getActivity() as? MainActivity
+                activity?.let { act ->
+                    // Do not create the same fragment again.
+                    act.supportFragmentManager
+                        .findFragmentByTag(act.getString(R.string.details_fragment_tag))?.let {
                             (it as DetailsFragment)
                             if (codecInfo.codecId == it.codecId && codecInfo.codecName == it.codecName) {
                                 return@setOnClickListener
                             }
                         }
 
-                val detailsFragment = DetailsFragment().also { fragment ->
-                    fragment.arguments = bundleOf(
+                    val detailsFragment = DetailsFragment().also { fragment ->
+                        fragment.arguments = bundleOf(
                             "codecId" to codecInfo.codecId,
                             "codecName" to codecInfo.codecName
-                    )
-                    if (!activity.isInTwoPaneMode()) {
-                        fragment.sharedElementEnterTransition = buildContainerTransform(layout, true)
-                        fragment.sharedElementReturnTransition = buildContainerTransform(layout, false)
-                    }
-                    fragment.searchListenerDestroyedListener = object : SearchListenerDestroyedListener {
-                        override fun onSearchListenerDestroyed(queryTextListener: SearchView.OnQueryTextListener) {
-                            activity.searchListeners.remove(queryTextListener)
+                        )
+                        if (!act.isInTwoPaneMode()) {
+                            fragment.sharedElementEnterTransition = buildContainerTransform(layout, true)
+                            fragment.sharedElementReturnTransition = buildContainerTransform(layout, false)
+                        }
+                        fragment.searchListenerDestroyedListener = object : SearchListenerDestroyedListener {
+                            override fun onSearchListenerDestroyed(queryTextListener: SearchView.OnQueryTextListener) {
+                                act.searchListeners.remove(queryTextListener)
+                            }
                         }
                     }
-                }
 
-                val existingFragment = activity.searchListeners.find { it is DetailsFragment }
-                existingFragment?.let { activity.searchListeners.remove(it) }
-                activity.searchListeners.add(detailsFragment)
+                    val existingFragment = act.searchListeners.find { it is DetailsFragment }
+                    existingFragment?.let { act.searchListeners.remove(it) }
+                    act.searchListeners.add(detailsFragment)
 
-                activity.supportFragmentManager.commit {
-                    setReorderingAllowed(true)
-                    if (activity.isInTwoPaneMode()) {
-                        replace(R.id.itemDetailsFragment, detailsFragment,
-                                activity.getString(R.string.details_fragment_tag))
-                    } else {
-                        addSharedElement(layout, ViewCompat.getTransitionName(layout)!!)
-                        replace(R.id.content_fragment, detailsFragment,
-                                activity.getString(R.string.details_fragment_tag))
-                        addToBackStack(null)
+                    act.supportFragmentManager.commit {
+                        setReorderingAllowed(true)
+                        if (act.isInTwoPaneMode()) {
+                            replace(R.id.itemDetailsFragment, detailsFragment,
+                                act.getString(R.string.details_fragment_tag))
+                        } else {
+                            addSharedElement(layout, ViewCompat.getTransitionName(layout)!!)
+                            replace(R.id.content_fragment, detailsFragment,
+                                act.getString(R.string.details_fragment_tag))
+                            addToBackStack(null)
 
-                        activity.supportActionBar!!.apply {
-                            setDisplayHomeAsUpEnabled(true)
-                            setHomeButtonEnabled(true)
-                            setHomeActionContentDescription(R.string.close_details)
+                            act.supportActionBar!!.apply {
+                                setDisplayHomeAsUpEnabled(true)
+                                setHomeButtonEnabled(true)
+                                setHomeActionContentDescription(R.string.close_details)
+                            }
                         }
                     }
                 }

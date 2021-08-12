@@ -2,10 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.parseus.codecinfo">
 
+    <uses-sdk tools:overrideLibrary="androidx.core.splashscreen, com.dci.dev.appinfobadge, com.afollestad.recyclical" />
+
     <application
         android:resizeableActivity="true"
         android:roundIcon="@mipmap/ic_launcher_round"
-        tools:ignore="UnusedAttribute">
+        android:theme="@style/Theme.CodecInfo.Starting"
+        tools:ignore="UnusedAttribute"
+        tools:replace="android:theme">
 
         <activity
             android:name=".ui.MainActivity"

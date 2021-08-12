@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <style name="Theme.CodecInfo.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/purple_500</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+
+        <item name="postSplashScreenTheme">@style/Theme.CodecInfo</item>
+    </style>
+
     <style name="Platform.V21.Theme.CodecInfo" parent="Platform.V16.Theme.CodecInfo">
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
     </style>

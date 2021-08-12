@@ -1,4 +1,6 @@
 <resources>
+    <style name="Theme.CodecInfo.Starting" parent="Theme.CodecInfo" />
+
     <style name="Theme.CodecInfo" parent="Base.Theme.CodecInfo">
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>

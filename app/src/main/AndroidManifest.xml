@@ -4,8 +4,6 @@
     android:installLocation="preferExternal"
     package="com.parseus.codecinfo">
 
-    <uses-sdk tools:overrideLibrary="com.dci.dev.appinfobadge, com.afollestad.recyclical" />
-
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
     <queries>

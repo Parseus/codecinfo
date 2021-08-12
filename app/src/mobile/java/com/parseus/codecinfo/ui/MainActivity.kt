@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.FileProvider
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.commit
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -72,6 +73,8 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                 reenterTransition = reenter
                 exitTransition = exit
             }
+
+            installSplashScreen()
         }
 
         setTheme(R.style.Theme_CodecInfo)

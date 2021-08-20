@@ -341,17 +341,20 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     private fun storeInfoIconForShare(): ClipData? {
         return try {
             val iconFile = File(filesDir, INFO_ICON_FILE_NAME)
-            val drawable = AppCompatResources.getDrawable(this, R.drawable.ic_info) as VectorDrawable
-            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            drawable.run {
-                setBounds(0, 0, canvas.width, canvas.height)
-                setTint(getAttributeColor(com.google.android.material.R.attr.colorPrimary))
-                draw(canvas)
-            }
 
-            iconFile.outputStream().use {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+            if (!iconFile.exists()) {
+                val drawable = AppCompatResources.getDrawable(this, R.drawable.ic_info) as VectorDrawable
+                val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+                drawable.run {
+                    setBounds(0, 0, canvas.width, canvas.height)
+                    setTint(getAttributeColor(com.google.android.material.R.attr.colorPrimary))
+                    draw(canvas)
+                }
+
+                iconFile.outputStream().use {
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+                }
             }
 
             val imageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", iconFile)

@@ -200,11 +200,17 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus && useImmersiveMode) setImmersiveMode()
+        if (hasFocus) {
+            if (useImmersiveMode) {
+                enableImmersiveMode()
+            } else {
+                disableImmersiveMode()
+            }
+        }
     }
 
     @Suppress("DEPRECATION")
-    private fun setImmersiveMode() {
+    private fun enableImmersiveMode() {
         if (Build.VERSION.SDK_INT >= 30) {
             window.setDecorFitsSystemWindows(false)
             window.insetsController?.apply {
@@ -212,12 +218,45 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                 systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } else if (Build.VERSION.SDK_INT >= 19) {
-            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            val decorView = window.decorView
+            val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                     or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                     or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+            decorView.systemUiVisibility = flags
+            decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+                if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+                    decorView.systemUiVisibility = flags
+                }
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun disableImmersiveMode() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            window.setDecorFitsSystemWindows(true)
+            window.insetsController?.apply {
+                show(WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars())
+                systemBarsBehavior =  if (Build.VERSION.SDK_INT >= 31) {
+                    WindowInsetsController.BEHAVIOR_DEFAULT
+                } else {
+                    WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_SWIPE
+                }
+            }
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            val decorView = window.decorView
+            val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+            decorView.systemUiVisibility = flags
+            decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+                if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+                    decorView.systemUiVisibility = flags
+                }
+            }
         }
     }
 

@@ -27,7 +27,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        brandColor = ContextCompat.getColor(requireContext(), R.color.purple_500)
+        brandColor = ContextCompat.getColor(requireContext(), R.color.purple_600)
         searchAffordanceColor = ContextCompat.getColor(requireContext(), R.color.teal_700)
         title = getString(R.string.app_name)
         headersState = HEADERS_ENABLED

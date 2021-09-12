@@ -2,10 +2,10 @@
     <style name="Theme.CodecInfo.Starting" parent="Theme.CodecInfo" />
 
     <style name="Theme.CodecInfo" parent="Base.Theme.CodecInfo">
-        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimary">@color/purple_600</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondary">@color/teal_600</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
     </style>

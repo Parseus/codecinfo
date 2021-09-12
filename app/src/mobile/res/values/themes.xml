@@ -16,6 +16,6 @@
         <item name="settingsIconColor">?android:attr/textColorSecondary</item>
     </style>
 
-    <style name="Platform.V16.Theme.CodecInfo" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+    <style name="Platform.V16.Theme.CodecInfo" parent="Theme.Material3.DayNight.NoActionBar" />
     <style name="Platform.Theme.CodecInfo" parent="Platform.V16.Theme.CodecInfo" />
 </resources>

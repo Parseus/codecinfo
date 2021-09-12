@@ -16,10 +16,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.commit
 import androidx.preference.PreferenceManager
+import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.parseus.codecinfo.*
@@ -49,6 +51,8 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     private val useImmersiveMode: Boolean
         get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("immersive_mode", true)
+    private val useDynamicTheme: Boolean
+        get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dynamic_theme", true)
 
     private val settingsContract = registerForActivityResult(SettingsContract()) { result ->
         shouldRecreateActivity = result
@@ -78,6 +82,14 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         }
 
         setTheme(R.style.Theme_CodecInfo)
+        DynamicColors.applyIfAvailable(this) { _, _ -> useDynamicTheme }
+        if (Build.VERSION.SDK_INT >= 31) {
+            window.statusBarColor = if (useDynamicTheme) {
+                ContextCompat.getColor(this, android.R.color.system_accent1_700)
+            } else {
+                getAttributeColor(com.google.android.material.R.attr.colorPrimaryVariant)
+            }
+        }
 
         super.onCreate(savedInstanceState)
 

@@ -10,8 +10,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.InfoType
@@ -90,7 +90,7 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
                     layoutManager = LinearLayoutManager(context)
                     adapter = itemAdapter
                     ViewCompat.setNestedScrollingEnabled(this, false)
-                    addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+                    addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
                 }
             } else if (!emptyListInformed) {
                 // Do not spam the user with multiple snackbars.

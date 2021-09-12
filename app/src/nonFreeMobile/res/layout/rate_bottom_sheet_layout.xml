@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/rate_popup_title"
-            style="@style/TextAppearance.MaterialComponents.Headline6" />
+            android:textAppearance="?attr/textAppearanceHeadlineSmall" />
 
         <TextView
             android:id="@+id/textRateBottomSheetMessage"
@@ -48,7 +48,7 @@
             android:layout_marginBottom="16dp"
             android:gravity="center"
             android:text="@string/rate_popup_message"
-            style="@style/TextAppearance.MaterialComponents.Subtitle1" />
+            android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/rate_popup_no"
-                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                style="@style/Widget.Material3.Button.TextButton"/>
 
             <Space
                 android:layout_width="0dp"
@@ -73,7 +73,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/rate_popup_later"
-                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+                style="@style/Widget.Material3.Button.TextButton"/>
 
             <Space
                 android:layout_width="0dp"

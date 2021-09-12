@@ -10,7 +10,6 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
 import android.view.View
 import android.view.Window
 import android.widget.TextView
@@ -22,11 +21,13 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.preference.*
 import com.dci.dev.appinfobadge.AppInfoBadge
+import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.SettingsMainBinding
+import com.parseus.codecinfo.utils.getAttributeColor
 import com.parseus.codecinfo.utils.getDefaultThemeOption
 import com.parseus.codecinfo.utils.isBatterySaverDisallowed
 
@@ -34,8 +35,19 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: SettingsMainBinding
 
+    private val useDynamicTheme: Boolean
+        get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dynamic_theme", true)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CodecInfo)
+        DynamicColors.applyIfAvailable(this) { _, _ -> useDynamicTheme }
+        if (Build.VERSION.SDK_INT >= 31) {
+            window.statusBarColor = if (useDynamicTheme) {
+                ContextCompat.getColor(this, android.R.color.system_accent1_700)
+            } else {
+                getAttributeColor(com.google.android.material.R.attr.colorPrimaryVariant)
+            }
+        }
         super.onCreate(savedInstanceState)
 
         if (Build.VERSION.SDK_INT >= 21) {
@@ -69,6 +81,7 @@ class SettingsActivity : AppCompatActivity() {
             putExtra(FILTER_TYPE_CHANGED, filterTypeChanged)
             putExtra(SORTING_CHANGED, sortingChanged)
             putExtra(IMMERSIVE_CHANGED, immersiveChanged)
+            putExtra(DYNAMIC_THEME_CHANGED, dynamicThemeChanged)
         })
         super.finish()
     }
@@ -86,6 +99,18 @@ class SettingsActivity : AppCompatActivity() {
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
+
+            findPreference<CheckBoxPreference>("dynamic_theme")?.apply {
+                if (Build.VERSION.SDK_INT >= 31) {
+                    setOnPreferenceChangeListener { _, _ ->
+                        activity?.recreate()
+                        dynamicThemeChanged = true
+                        true
+                    }
+                } else {
+                    isVisible = false
+                }
+            }
 
             findPreference<CheckBoxPreference>("immersive_mode")?.apply {
                 if (Build.VERSION.SDK_INT >= 19) {
@@ -193,7 +218,6 @@ class SettingsActivity : AppCompatActivity() {
 
             try {
                 val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
-                versionTextView.movementMethod = LinkMovementMethod()
                 versionTextView.text = getString(R.string.app_version,
                         requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0).versionName)
             } catch (e: Exception) {}
@@ -265,10 +289,12 @@ class SettingsActivity : AppCompatActivity() {
         var filterTypeChanged = false
         var sortingChanged = false
         var immersiveChanged = false
+        var dynamicThemeChanged = false
         const val ALIASES_CHANGED = "aliases_changed"
         const val FILTER_TYPE_CHANGED = "filter_type_changed"
         const val SORTING_CHANGED = "sorting_changed"
         const val IMMERSIVE_CHANGED = "immersive_changed"
+        const val DYNAMIC_THEME_CHANGED = "dynamic_theme_changed"
     }
 
 }

@@ -14,44 +14,44 @@
     tools:ignore="UnusedAttribute">
 
     <TextView
-        style="?attr/textAppearanceSubtitle1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:importantForAccessibility="no"
         android:text="@string/known_issue_desc_header"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
         android:textStyle="bold"
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"/>
 
     <TextView
-        style="?attr/textAppearanceBody2"
         android:id="@+id/known_issue_item_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:importantForAccessibility="no"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textIsSelectable="true"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         tools:text="@tools:sample/lorem" />
 
     <TextView
-        style="?attr/textAppearanceSubtitle1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:importantForAccessibility="no"
         android:text="@string/known_issue_sources_header"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
         android:textStyle="bold"
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"/>
 
     <TextView
-        style="?attr/textAppearanceBody2"
         android:id="@+id/known_issue_item_sources"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="false"
         android:importantForAccessibility="no"
         android:autoLink="web"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textIsSelectable="true"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         tools:text="@tools:sample/lorem" />

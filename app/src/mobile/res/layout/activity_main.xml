@@ -8,6 +8,7 @@
     tools:context=".ui.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        style="@style/Widget.CodecInfo.AppBarLayout.PrimarySurface"
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,7 +22,7 @@
             app:title="@string/app_name"
             app:navigationContentDescription="@string/close_details"
             app:layout_scrollFlags="scroll|enterAlways"
-            style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"/>
+            style="@style/Widget.CodecInfo.Toolbar.PrimarySurface"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

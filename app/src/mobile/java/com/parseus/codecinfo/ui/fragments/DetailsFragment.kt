@@ -12,8 +12,8 @@ import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.data.drm.DrmVendor
@@ -89,7 +89,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
                 binding.knownProblemsList.apply {
                     layoutManager = LinearLayoutManager(context)
                     ViewCompat.setNestedScrollingEnabled(this, false)
-                    addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+                    addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
                     itemAnimator = ExpandableItemAnimator()
                     isVisible = true
                     adapter = ExpandableItemAdapter(knownProblems)

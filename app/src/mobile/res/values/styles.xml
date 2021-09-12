@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Widget.CodecInfo.AppBarLayout.PrimarySurface" parent="Widget.MaterialComponents.AppBarLayout.PrimarySurface">
+        <item name="liftOnScroll">true</item>
+
+        <!-- On newer API levels, hide shadows while keeping elevation. -->
+        <item name="android:outlineAmbientShadowColor" tools:ignore="NewApi">@android:color/transparent</item>
+        <item name="android:outlineSpotShadowColor" tools:ignore="NewApi">@android:color/transparent</item>
+    </style>
+    
     <style name="Widget.CodecInfo.ItemLayout" parent="">
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:clickable">true</item>
@@ -12,5 +20,11 @@
         <item name="android:clickable">false</item>
         <item name="android:focusable">false</item>
         <item name="android:importantForAccessibility">no</item>
+    </style>
+
+    <style name="Widget.CodecInfo.Toolbar.PrimarySurface" parent="Widget.MaterialComponents.Toolbar.PrimarySurface">
+        <item name="titleTextAppearance">?attr/textAppearanceTitleLarge</item>
+        <item name="subtitleTextAppearance">?attr/textAppearanceTitleMedium</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
     </style>
 </resources>

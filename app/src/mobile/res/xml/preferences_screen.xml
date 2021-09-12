@@ -7,6 +7,11 @@
             app:useSimpleSummaryProvider="true"/>
 
         <androidx.preference.CheckBoxPreference
+            app:key="dynamic_theme"
+            app:title="Dynamic theme"
+            app:defaultValue="true" />
+
+        <androidx.preference.CheckBoxPreference
             app:key="immersive_mode"
             app:title="Immersive mode"
             app:defaultValue="true" />

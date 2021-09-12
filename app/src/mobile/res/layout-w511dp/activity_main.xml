@@ -14,6 +14,7 @@
         app:layout_constraintGuide_percent="@dimen/separator_guideline_percent" />
 
     <com.google.android.material.appbar.AppBarLayout
+        style="@style/Widget.CodecInfo.AppBarLayout.PrimarySurface"
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,7 +27,7 @@
             android:layout_height="?attr/actionBarSize"
             app:title="@string/app_name"
             app:layout_scrollFlags="scroll|enterAlways"
-            style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"/>
+            style="@style/Widget.CodecInfo.Toolbar.PrimarySurface"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -42,14 +43,12 @@
         app:layout_constraintEnd_toStartOf="@id/separatorGuideline"
         tools:layout="@layout/fragment_main"/>
 
-    <View
+    <com.google.android.material.divider.MaterialDivider
         android:id="@+id/separator"
         android:layout_width="1dp"
         android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
         android:layout_centerHorizontal="true"
-        android:alpha="0.12"
-        android:background="?attr/colorOnSurface"
         android:importantForAccessibility="no"
         app:layout_constraintTop_toBottomOf="@id/appBar"
         app:layout_constraintBottom_toBottomOf="parent"

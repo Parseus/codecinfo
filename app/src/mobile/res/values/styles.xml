@@ -7,6 +7,14 @@
         <item name="android:outlineAmbientShadowColor" tools:ignore="NewApi">@android:color/transparent</item>
         <item name="android:outlineSpotShadowColor" tools:ignore="NewApi">@android:color/transparent</item>
     </style>
+
+    <style name="Widget.Material3.BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="android:elevation" tools:ignore="NewApi">@dimen/m3_sys_elevation_level2</item>
+    </style>
+
+    <style name="Widget.Material3.BottomSheet.Modal">
+        <item name="android:elevation" tools:ignore="NewApi">@dimen/m3_sys_elevation_level3</item>
+    </style>
     
     <style name="Widget.CodecInfo.ItemLayout" parent="">
         <item name="android:background">?attr/selectableItemBackground</item>
@@ -27,4 +35,5 @@
         <item name="subtitleTextAppearance">?attr/textAppearanceTitleMedium</item>
         <item name="contentInsetStartWithNavigation">0dp</item>
     </style>
+
 </resources>

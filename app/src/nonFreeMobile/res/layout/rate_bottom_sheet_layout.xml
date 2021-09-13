@@ -13,10 +13,11 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/btnRateBottomSheetCancel"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_gravity="end"
         android:layout_margin="5dp"
+        android:background="?attr/selectableItemBackground"
         android:padding="5dp"
         android:contentDescription="@string/rate_popup_close_description"
         app:srcCompat="@drawable/ic_close" />
@@ -56,24 +57,24 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/btnRateBottomSheetNo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/rate_popup_no"
-                style="@style/Widget.Material3.Button.TextButton"/>
+                style="?attr/borderlessButtonStyle"/>
 
             <Space
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/btnRateBottomSheetLater"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/rate_popup_later"
-                style="@style/Widget.Material3.Button.TextButton"/>
+                style="?attr/borderlessButtonStyle"/>
 
             <Space
                 android:layout_width="0dp"
@@ -84,7 +85,8 @@
                 android:id="@+id/btnRateBottomSheetOk"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/rate_popup_ok" />
+                android:text="@string/rate_popup_ok"
+                style="@style/Widget.Material3.Button"/>
 
         </LinearLayout>
 

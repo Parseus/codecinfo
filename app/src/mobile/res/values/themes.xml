@@ -11,6 +11,9 @@
     </style>
 
     <style name="Base.Theme.CodecInfo" parent="Platform.Theme.CodecInfo">
+        <item name="borderlessButtonStyle">@style/Widget.Material3.Button.TextButton</item>
+        <item name="bottomSheetStyle">@style/Widget.Material3.BottomSheet.Modal</item>
+        <item name="materialButtonStyle">@style/Widget.Material3.Button</item>
         <item name="navigationRailStyle">@style/Widget.MaterialComponents.NavigationRailView.PrimarySurface</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="settingsIconColor">?android:attr/textColorSecondary</item>

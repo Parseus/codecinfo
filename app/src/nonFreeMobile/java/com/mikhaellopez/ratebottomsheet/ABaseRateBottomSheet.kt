@@ -1,10 +1,6 @@
 package com.mikhaellopez.ratebottomsheet
 
-import android.content.Context
-import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,11 +48,6 @@ abstract class ABaseRateBottomSheet : BottomSheetDialogFragment() {
             btnRateBottomSheetCancel.visibility =
                     if (RateBottomSheetManager.showCloseButtonIcon) View.VISIBLE else View.GONE
 
-            context?.also {
-                btnRateBottomSheetOk.backgroundTintList =
-                        ColorStateList.valueOf(getThemeAccentColor(it))
-            }
-
             btnRateBottomSheetCancel.setOnClickListener { dismiss() }
             btnRateBottomSheetNo.setOnClickListener { defaultBtnNoClickAction(it) }
             btnRateBottomSheetLater.setOnClickListener { defaultBtnLaterClickAction(it) }
@@ -71,17 +62,6 @@ abstract class ABaseRateBottomSheet : BottomSheetDialogFragment() {
     private fun defaultBtnLaterClickAction(view: View) {
         RateBottomSheetManager(view.context).setRemindInterval()
         dismiss()
-    }
-
-    private fun getThemeAccentColor(context: Context): Int {
-        val colorAttr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            android.R.attr.colorAccent
-        } else { // Get colorAccent defined for AppCompat
-            context.resources.getIdentifier("colorAccent", "attr", context.packageName)
-        }
-        val outValue = TypedValue()
-        context.theme.resolveAttribute(colorAttr, outValue, true)
-        return outValue.data
     }
 
 }

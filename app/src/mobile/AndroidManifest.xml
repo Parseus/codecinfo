@@ -41,9 +41,6 @@
             <meta-data
                 android:name="com.samsung.android.dex.transient_bar_delay"
                 android:value="2000" />
-            <!-- Hide the back button on Chromebooks. -->
-            <meta-data android:name="WindowManagerPreference:SuppressWindowControlNavigationButton"
-                android:value="true" />
         </activity>
 
         <uses-library

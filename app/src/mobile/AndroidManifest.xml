@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.parseus.codecinfo">
 
-    <uses-sdk tools:overrideLibrary="androidx.core.splashscreen, com.dci.dev.appinfobadge, com.afollestad.recyclical" />
+    <uses-sdk tools:overrideLibrary="androidx.core.splashscreen" />
 
     <application
         android:resizeableActivity="true"
@@ -71,6 +71,11 @@
         <meta-data
             android:name="com.lge.support.SPLIT_WINDOW"
             android:value="true" />
+
+        <meta-data android:name="android.webkit.WebView.MetricsOptOut"
+            android:value="true" />
+        <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
+            android:value="false" />
 
         <provider
             android:authorities="${applicationId}.fileprovider"

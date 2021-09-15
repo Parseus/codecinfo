@@ -1,20 +1,26 @@
 package com.parseus.codecinfo.utils
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.mikhaellopez.ratebottomsheet.InstallSource
+import com.marcoscg.licenser.Library
+import com.marcoscg.licenser.License
+import com.marcoscg.licenser.LicenserDialog
 import com.mikhaellopez.ratebottomsheet.RateBottomSheet
 import com.mikhaellopez.ratebottomsheet.RateBottomSheetManager
+import com.parseus.codecinfo.R
 import com.samsung.android.sdk.SsdkVendorCheck
 import com.samsung.android.sdk.gesture.Sgesture
 import com.samsung.android.sdk.gesture.SgestureHand
 
 private var gestureHand: SgestureHand? = null
+const val SHOW_RATE_APP = true
 
 fun initializeAppRating(activity: AppCompatActivity) {
     val rateManager = RateBottomSheetManager(activity)
@@ -72,4 +78,48 @@ fun initializeSamsungGesture(context: Context, pager: ViewPager2, tabLayout: Tab
 
 fun destroySamsungGestures() {
     gestureHand?.stop()
+}
+
+private fun getInstallSourceFromPackageManager(activity: Activity): InstallSource? {
+    activity.run {
+        val installSourcePackage = if (Build.VERSION.SDK_INT >= 30) {
+            packageManager.getInstallSourceInfo(packageName).installingPackageName
+        } else {
+            @Suppress("DEPRECATION")
+            packageManager.getInstallerPackageName(packageName)
+        }
+        return InstallSource.fromInstallSource(installSourcePackage)
+    }
+}
+
+fun launchStoreIntent(activity: Activity) {
+    activity.run {
+        val installSource = getInstallSourceFromPackageManager(this)
+        installSource?.let { source ->
+            val marketIntent = Intent(Intent.ACTION_VIEW, source.getMarketUri(packageName))
+            marketIntent.addFlags(externalAppIntentFlags)
+            try {
+                startActivity(marketIntent)
+            } catch (e: Exception) {
+                val webIntent = Intent(Intent.ACTION_VIEW, source.getWebUri(packageName))
+                startActivity(webIntent)
+            }
+        }
+    }
+}
+
+inline fun showLicensesDialog(activity: AppCompatActivity) {
+    LicenserDialog(activity)
+        .setTitle(R.string.about_licenses)
+        .setLibrary(Library("Android Jetpack", "https://developer.android.com/jetpack", License.APACHE2))
+        .setLibrary(Library("Kotlin", "https://github.com/JetBrains/kotlin", License.APACHE2))
+        .setLibrary(Library("Kotlin Coroutines", "https://github.com/Kotlin/kotlinx.coroutines", License.APACHE2))
+        .setLibrary(Library("LeakCanary", "https://github.com/square/leakcanary", License.APACHE2))
+        .setLibrary(Library("Material Components for Android", "https://github.com/material-components/material-components-android", License.APACHE2))
+        .setLibrary(Library("Moshi", "https://github.com/square/moshi", License.APACHE2))
+        .setLibrary(Library("Okio", "https://github.com/square/okio", License.APACHE2))
+        .setLibrary(Library("RateBottomSheet", "https://github.com/lopspower/RateBottomSheet", License.APACHE2))
+        .setLibrary(Library("Licenser", "https://github.com/marcoscgdev/Licenser", License.MIT))
+        .setPositiveButton(android.R.string.ok, null)
+        .show()
 }

@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:gravity="center_vertical">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/appIcon"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        app:srcCompat="@mipmap/ic_launcher" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:labelFor="@id/appIcon"
+                            android:text="@string/app_name"
+                            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/copyright"
+                            android:layout_gravity="center_vertical"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/Widget.CodecInfo.ItemLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp"
+                    android:background="@null">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        app:srcCompat="@drawable/ic_info" />
+
+                    <LinearLayout
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:orientation="vertical"
+                        android:descendantFocusability="blocksDescendants">
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="@string/about_version_header"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleSmall"/>
+
+                        <TextView
+                            android:id="@+id/appVersion"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            tools:text="0.0.0"
+                            tools:ignore="SelectableText" />
+
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/Widget.CodecInfo.ItemLayout"
+                    android:id="@+id/showChangelog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp"
+                    android:contentDescription="@string/about_changelog">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        app:srcCompat="@drawable/ic_changelog" />
+
+                    <TextView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:text="@string/about_changelog"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/Widget.CodecInfo.ItemLayout"
+                    android:id="@+id/showLicenses"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp"
+                    android:contentDescription="@string/about_licenses">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        app:srcCompat="@drawable/ic_licenses" />
+
+                    <TextView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:text="@string/about_licenses"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/Widget.CodecInfo.ItemLayout"
+                    android:id="@+id/goToGithub"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp"
+                    android:contentDescription="@string/about_github">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        app:srcCompat="@drawable/ic_github" />
+
+                    <TextView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:text="@string/about_github"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="24dp"
+                    android:paddingBottom="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:text="@string/about_support"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                    android:textColor="?attr/colorSecondary" />
+
+                <LinearLayout
+                    style="@style/Widget.CodecInfo.ItemLayout"
+                    android:id="@+id/rateApp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp"
+                    android:contentDescription="@string/about_rate_app">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        app:srcCompat="@drawable/ic_rate_app" />
+
+                    <TextView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:text="@string/about_rate_app"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/Widget.CodecInfo.ItemLayout"
+                    android:id="@+id/reportBugs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp"
+                    android:contentDescription="@string/about_report_bugs">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        app:srcCompat="@drawable/ic_report_bugs" />
+
+                    <TextView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:text="@string/about_report_bugs"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/Widget.CodecInfo.ItemLayout"
+                    android:id="@+id/sendFeedback"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="48dp"
+                    android:contentDescription="@string/about_send_feedback">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        app:srcCompat="@drawable/ic_email" />
+
+                    <TextView
+                        style="@style/Widget.CodecInfo.ItemLayout.ChildView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:text="@string/about_send_feedback"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+</ScrollView>

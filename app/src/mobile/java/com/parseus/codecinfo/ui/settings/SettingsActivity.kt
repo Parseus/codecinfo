@@ -2,34 +2,26 @@ package com.parseus.codecinfo.ui.settings
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Intent
-import android.content.res.Configuration.UI_MODE_NIGHT_MASK
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.View
+import android.view.MenuItem
 import android.view.Window
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.preference.*
-import com.dci.dev.appinfobadge.AppInfoBadge
 import com.google.android.material.color.DynamicColors
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.SettingsMainBinding
+import com.parseus.codecinfo.ui.fragments.AboutFragment
 import com.parseus.codecinfo.utils.getAttributeColor
 import com.parseus.codecinfo.utils.getDefaultThemeOption
 import com.parseus.codecinfo.utils.isBatterySaverDisallowed
+import com.parseus.codecinfo.utils.sendFeedbackEmail
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -73,6 +65,16 @@ class SettingsActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.commit { replace(R.id.content, SettingsFragment::class.java, null) }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+            supportActionBar!!.title = getString(R.string.action_settings)
+            supportFragmentManager.popBackStack()
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun finish() {
@@ -170,77 +172,25 @@ class SettingsActivity : AppCompatActivity() {
         override fun onPreferenceTreeClick(preference: Preference): Boolean {
             return when (preference.key) {
                 "feedback" -> {
-                    val feedbackEmail = getString(R.string.feedback_email)
-                    val intent = Intent(Intent.ACTION_SENDTO).apply {
-                        data = Uri.parse("mailto:")
-                        putExtra(Intent.EXTRA_EMAIL, arrayOf(feedbackEmail))
-                        putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject))
-                    }
-                    if (intent.resolveActivity(requireActivity().packageManager) != null) {
-                        startActivity(Intent.createChooser(intent, getString(R.string.choose_email)))
-                    } else {
-                        // Setting text in a clipboard is wrapped to handle a bug in Android 4.3:
-                        // https://commonsware.com/blog/2013/08/08/developer-psa-please-fix-your-clipboard-handling.html
-                        try {
-                            val clipboard = ContextCompat.getSystemService(requireContext(), ClipboardManager::class.java)
-                            clipboard?.setPrimaryClip(ClipData.newPlainText("email", feedbackEmail))
+                    sendFeedbackEmail()
+                    true
+                }
 
-                            Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                                    R.string.no_email_apps_clipboard, Snackbar.LENGTH_LONG).show()
-                        } catch (e: Exception) {
-                            Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                                    R.string.no_email_apps, Snackbar.LENGTH_LONG).show()
+                "help" -> {
+                    if (activity != null) {
+                        parentFragmentManager.commit {
+                            replace(R.id.content, AboutFragment())
+                            addToBackStack(null)
+                            (requireActivity() as AppCompatActivity).supportActionBar!!.apply {
+                                title = getString(R.string.about_app)
+                                setDisplayHomeAsUpEnabled(true)
+                            }
                         }
                     }
                     true
                 }
 
-                "help" -> {
-                    if (activity != null && Build.VERSION.SDK_INT >= 21) {
-                        showNewAppInfoDialog()
-                    } else {
-                        showOldAppInfoDialog()
-                    }
-                    true
-                }
-
                 else -> super.onPreferenceTreeClick(preference)
-            }
-        }
-
-        private fun showOldAppInfoDialog() {
-            val builder = MaterialAlertDialogBuilder(requireContext())
-            val dialogView = layoutInflater.inflate(R.layout.about_app_dialog, null)
-            builder.setView(dialogView)
-            val alertDialog = builder.create()
-
-            dialogView.findViewById<View>(R.id.ok_button).setOnClickListener { alertDialog.dismiss() }
-
-            try {
-                val versionTextView: TextView = dialogView.findViewById(R.id.version_text_view)
-                versionTextView.text = getString(R.string.app_version,
-                        requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0).versionName)
-            } catch (e: Exception) {}
-
-            alertDialog.show()
-        }
-
-        private fun showNewAppInfoDialog() {
-            activity?.let {
-                val isInDarkMode = (it.resources.configuration
-                        .uiMode and UI_MODE_NIGHT_MASK) == UI_MODE_NIGHT_YES
-                val appInfoFragment = AppInfoBadge
-                        .darkMode { isInDarkMode }
-                        .withRater { false }
-                        .withPermissions { false }
-                        .withEmail { getString(R.string.feedback_email) }
-                        .withSite { getString(R.string.source_code_link) }
-                        .show()
-                it.supportFragmentManager.commit {
-                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    add(android.R.id.content, appInfoFragment)
-                    addToBackStack(null)
-                }
             }
         }
 

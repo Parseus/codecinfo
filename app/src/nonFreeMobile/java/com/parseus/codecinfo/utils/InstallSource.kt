@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package com.mikhaellopez.ratebottomsheet
+package com.parseus.codecinfo.utils
 
 import android.net.Uri
 

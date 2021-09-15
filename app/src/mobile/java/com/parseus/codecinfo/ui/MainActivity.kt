@@ -16,9 +16,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.commit
 import androidx.preference.PreferenceManager
+import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.parseus.codecinfo.*
@@ -48,6 +51,8 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     private val useImmersiveMode: Boolean
         get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("immersive_mode", true)
+    private val useDynamicTheme: Boolean
+        get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dynamic_theme", true)
 
     private val settingsContract = registerForActivityResult(SettingsContract()) { result ->
         shouldRecreateActivity = result
@@ -72,9 +77,19 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                 reenterTransition = reenter
                 exitTransition = exit
             }
+
+            installSplashScreen()
         }
 
         setTheme(R.style.Theme_CodecInfo)
+        DynamicColors.applyIfAvailable(this) { _, _ -> useDynamicTheme }
+        if (Build.VERSION.SDK_INT >= 31) {
+            window.statusBarColor = if (useDynamicTheme) {
+                ContextCompat.getColor(this, android.R.color.system_accent1_700)
+            } else {
+                getAttributeColor(com.google.android.material.R.attr.colorPrimaryVariant)
+            }
+        }
 
         super.onCreate(savedInstanceState)
 
@@ -185,11 +200,17 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (hasFocus && useImmersiveMode) setImmersiveMode()
+        if (hasFocus) {
+            if (useImmersiveMode) {
+                enableImmersiveMode()
+            } else {
+                disableImmersiveMode()
+            }
+        }
     }
 
     @Suppress("DEPRECATION")
-    private fun setImmersiveMode() {
+    private fun enableImmersiveMode() {
         if (Build.VERSION.SDK_INT >= 30) {
             window.setDecorFitsSystemWindows(false)
             window.insetsController?.apply {
@@ -197,12 +218,45 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                 systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } else if (Build.VERSION.SDK_INT >= 19) {
-            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            val decorView = window.decorView
+            val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                     or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                     or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+            decorView.systemUiVisibility = flags
+            decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+                if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+                    decorView.systemUiVisibility = flags
+                }
+            }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun disableImmersiveMode() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            window.setDecorFitsSystemWindows(true)
+            window.insetsController?.apply {
+                show(WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars())
+                systemBarsBehavior =  if (Build.VERSION.SDK_INT >= 31) {
+                    WindowInsetsController.BEHAVIOR_DEFAULT
+                } else {
+                    WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_SWIPE
+                }
+            }
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            val decorView = window.decorView
+            val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+            decorView.systemUiVisibility = flags
+            decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+                if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+                    decorView.systemUiVisibility = flags
+                }
+            }
         }
     }
 
@@ -338,17 +392,20 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     private fun storeInfoIconForShare(): ClipData? {
         return try {
             val iconFile = File(filesDir, INFO_ICON_FILE_NAME)
-            val drawable = AppCompatResources.getDrawable(this, R.drawable.ic_info) as VectorDrawable
-            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            drawable.run {
-                setBounds(0, 0, canvas.width, canvas.height)
-                setTint(getAttributeColor(com.google.android.material.R.attr.colorPrimary))
-                draw(canvas)
-            }
 
-            iconFile.outputStream().use {
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+            if (!iconFile.exists()) {
+                val drawable = AppCompatResources.getDrawable(this, R.drawable.ic_info) as VectorDrawable
+                val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+                drawable.run {
+                    setBounds(0, 0, canvas.width, canvas.height)
+                    setTint(getAttributeColor(com.google.android.material.R.attr.colorPrimary))
+                    draw(canvas)
+                }
+
+                iconFile.outputStream().use {
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+                }
             }
 
             val imageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", iconFile)

@@ -8,6 +8,7 @@
     tools:context=".ui.settings.SettingsActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        style="@style/Widget.CodecInfo.AppBarLayout.PrimarySurface"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -17,7 +18,7 @@
             android:layout_height="?attr/actionBarSize"
             app:title="@string/action_settings"
             app:layout_scrollFlags="scroll|enterAlways"
-            style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"/>
+            style="@style/Widget.CodecInfo.Toolbar.PrimarySurface"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 

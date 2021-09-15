@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.FragmentManager
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.utils.InstallSource
 
 /**
  * Copyright (C) 2020 Mikhael LOPEZ

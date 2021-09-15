@@ -14,6 +14,17 @@
     <string name="no_email_apps">No apps can perform this action.</string>
     <string name="no_email_apps_clipboard">No apps can perform this action. Email address was copied to the clipboard.</string>
 
+    <string name="about_version_header">Version</string>
+    <string name="about_version_content_description">Version: %s</string>
+    <string name="about_licenses">Licenses</string>
+    <string name="about_license_notice_title">Notices for libraries:</string>
+    <string name="about_github">Visit the app\'s GitHub page</string>
+    <string name="about_changelog">What\'s new</string>
+    <string name="about_support">Support</string>
+    <string name="about_rate_app">Rate application</string>
+    <string name="about_report_bugs">Report bugs</string>
+    <string name="about_send_feedback">Send feedback</string>
+
     <string name="app_theme_light">Light</string>
     <string name="app_theme_dark">Dark</string>
     <string name="app_theme_battery_saver">Set by Battery Saver</string>

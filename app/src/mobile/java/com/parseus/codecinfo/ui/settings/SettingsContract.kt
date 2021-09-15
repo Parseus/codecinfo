@@ -18,6 +18,7 @@ class SettingsContract : ActivityResultContract<Unit?, Boolean>() {
                         || it.getBooleanExtra(SettingsActivity.SORTING_CHANGED, false)
                         || it.getBooleanExtra(SettingsActivity.IMMERSIVE_CHANGED, false)
                         || it.getBooleanExtra(SettingsActivity.ALIASES_CHANGED, false)
+                        || it.getBooleanExtra(SettingsActivity.DYNAMIC_THEME_CHANGED, false)
             } ?: false
 
         }

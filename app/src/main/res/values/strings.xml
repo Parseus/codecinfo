@@ -56,11 +56,13 @@
     <string name="secure_playback">Secure playback decryption</string>
     <string name="tunneled_playback">Tunneled playback</string>
     <string name="low_latency">Low latency decoding</string>
+    <string name="qp_bounds">Quantization parameter bounds</string>
 
     <string name="bitrate_modes">Bitrate modes</string>
     <string name="cbr" translatable="false">Constant bitrate (CBR)</string>
     <string name="cq" translatable="false">Constant quality (CQ)</string>
     <string name="vbr" translatable="false">Variable bitrate (VBR)</string>
+    <string name="cbr_fd">Constant bitrate (CBR) with frame drops</string>
 
     <string name="complexity_range">Encoding complexity range</string>
     <string name="quality_range">Encoding quality range</string>

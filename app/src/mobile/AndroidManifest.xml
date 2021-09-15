@@ -2,10 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.parseus.codecinfo">
 
+    <uses-sdk tools:overrideLibrary="androidx.core.splashscreen" />
+
     <application
         android:resizeableActivity="true"
         android:roundIcon="@mipmap/ic_launcher_round"
-        tools:ignore="UnusedAttribute">
+        android:theme="@style/Theme.CodecInfo.Starting"
+        tools:ignore="UnusedAttribute"
+        tools:replace="android:theme">
 
         <activity
             android:name=".ui.MainActivity"
@@ -37,9 +41,6 @@
             <meta-data
                 android:name="com.samsung.android.dex.transient_bar_delay"
                 android:value="2000" />
-            <!-- Hide the back button on Chromebooks. -->
-            <meta-data android:name="WindowManagerPreference:SuppressWindowControlNavigationButton"
-                android:value="true" />
         </activity>
 
         <uses-library
@@ -70,6 +71,11 @@
         <meta-data
             android:name="com.lge.support.SPLIT_WINDOW"
             android:value="true" />
+
+        <meta-data android:name="android.webkit.WebView.MetricsOptOut"
+            android:value="true" />
+        <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
+            android:value="false" />
 
         <provider
             android:authorities="${applicationId}.fileprovider"

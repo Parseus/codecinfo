@@ -15,9 +15,10 @@
         android:id="@+id/codec_property"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:alpha="@dimen/list_item_text_alpha"
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"
-        android:textAppearance="?attr/textAppearanceSubtitle1"
-        android:textColor="?attr/colorSecondaryVariant"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:textColor="?attr/colorSecondary"
         tools:text="Item property"/>
 
     <TextView
@@ -25,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
-        android:textAppearance="?attr/textAppearanceBody2"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textColor="?attr/colorOnSurface"
         tools:text="Item value"/>
 

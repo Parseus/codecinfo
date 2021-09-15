@@ -30,8 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="24dp"
         android:alpha="@dimen/list_item_text_alpha"
-        android:textColor="?attr/colorSecondaryVariant"
-        android:textAppearance="?attr/textAppearanceSubtitle1"
+        android:textColor="?attr/colorSecondary"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         app:autoSizeMinTextSize="8sp"
         app:autoSizeMaxTextSize="16sp"
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         android:alpha="@dimen/list_item_text_alpha"
-        android:textAppearance="?attr/textAppearanceCaption"
+        android:textAppearance="?attr/textAppearanceLabelMedium"
         android:textColor="?attr/colorOnSurface"
         android:text="@string/more_info"/>
 

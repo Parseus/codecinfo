@@ -2,12 +2,23 @@ package com.parseus.codecinfo.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.view.View
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialContainerTransform
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.ui.settings.DarkTheme
+
+val externalAppIntentFlags: Int
+    get() {
+        val flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+        return if (Build.VERSION.SDK_INT >= 21) {
+            flags or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+        } else {
+            flags or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+    }
 
 @SuppressLint("PrivateApi")
 fun getSystemProperty(property: String): String? {

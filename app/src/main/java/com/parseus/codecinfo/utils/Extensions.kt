@@ -1,7 +1,9 @@
 package com.parseus.codecinfo.utils
 
+import android.app.Activity
 import android.app.UiModeManager
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.Configuration
 import android.media.MediaCodecInfo
 import java.util.*
@@ -36,3 +38,6 @@ fun ByteArray.toHexString(): String {
 fun MediaCodecInfo.isAudioCodec(): Boolean {
     return supportedTypes.joinToString().contains("audio")
 }
+
+tailrec fun Context.getActivity(): Activity? = this as? Activity
+    ?: (this as? ContextWrapper)?.baseContext?.getActivity()

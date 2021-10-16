@@ -45,6 +45,8 @@ class AboutFragment : Fragment() {
             }
             reportBugs.setOnClickListener { goToIssuePage() }
             sendFeedback.setOnClickListener { sendFeedbackEmail() }
+
+            supportHeaderText.setTextColor(getSecondaryColor(requireContext()))
         }
     }
 

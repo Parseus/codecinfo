@@ -15,9 +15,7 @@ import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.databinding.DrmAdapterRowBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
-import com.parseus.codecinfo.utils.buildContainerTransform
-import com.parseus.codecinfo.utils.getActivity
-import com.parseus.codecinfo.utils.isInTwoPaneMode
+import com.parseus.codecinfo.utils.*
 
 class DrmAdapter(private val drmList: List<DrmSimpleInfo>) : RecyclerView.Adapter<DrmAdapter.DrmInfoViewHolder>() {
 
@@ -85,11 +83,14 @@ class DrmAdapter(private val drmList: List<DrmSimpleInfo>) : RecyclerView.Adapte
     class DrmInfoViewHolder(binding: DrmAdapterRowBinding) : RecyclerView.ViewHolder(binding.root) {
 
         private val layout = binding.simpleDrmRow
+        private val drmId = binding.drmId
         private val drmName = binding.drmName
         private val moreInfo = binding.moreInfo
 
         fun bindDrmInfo(drmSimpleInfo: DrmSimpleInfo, position: Int) {
+            drmId.setTextColor(getPrimaryColor(drmId.context))
             drmName.text = drmSimpleInfo.drmName
+            drmName.setTextColor(getSecondaryColor(drmName.context))
             if (itemView.context.isInTwoPaneMode()) {
                 moreInfo.visibility = View.GONE
             }

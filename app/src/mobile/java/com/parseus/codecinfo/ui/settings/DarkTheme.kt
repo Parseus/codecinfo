@@ -10,6 +10,8 @@ enum class DarkTheme(val value: Int) {
     SystemDefault(3);
 
     companion object {
+        fun fromValue(value: Int) = values().find { it.value == value }
+
         fun getAppCompatValue(enumValue: Int): Int {
             return when (enumValue) {
                 Light.value -> AppCompatDelegate.MODE_NIGHT_NO

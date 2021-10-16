@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.view.View
-import com.google.android.material.color.MaterialColors
 import com.google.android.material.transition.MaterialContainerTransform
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.ui.settings.DarkTheme
@@ -57,7 +56,7 @@ fun getDefaultThemeOption(context: Context) = when {
 }
 
 fun buildContainerTransform(view: View, entering: Boolean): MaterialContainerTransform {
-    val colorSurface = MaterialColors.getColor(view, com.google.android.material.R.attr.colorSurface)
+    val colorSurface = getSurfaceColor(view.context)
     return MaterialContainerTransform().also {
         it.setAllContainerColors(colorSurface)
         it.drawingViewId = if (entering) R.id.end_root else R.id.start_root

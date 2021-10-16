@@ -30,6 +30,9 @@
     <string name="app_theme_battery_saver">Set by Battery Saver</string>
     <string name="app_theme_system_default">System default</string>
 
+    <string name="dynamic_theme_wallpaper_color_picker">Wallpaper Color Picker</string>
+    <string name="dynamic_theme_color_picker_unavailable">Unavailable for the current wallpaper or your current settings.</string>
+
     <string name="more_info">Tap here to see more info…</string>
 
     <string name="details_fragment_tag" translatable="false">item_details</string>

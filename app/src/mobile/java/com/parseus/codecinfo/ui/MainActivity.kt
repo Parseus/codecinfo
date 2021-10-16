@@ -7,23 +7,25 @@ import android.content.ClipData
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.platform.MaterialSharedAxis
+import com.kieronquinn.monetcompat.app.MonetCompatActivity
+import com.kieronquinn.monetcompat.core.MonetCompat
 import com.parseus.codecinfo.*
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
@@ -38,12 +40,15 @@ import com.parseus.codecinfo.ui.settings.SettingsContract
 import com.parseus.codecinfo.utils.*
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import dev.kdrag0n.monet.theme.ColorScheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okio.buffer
 import okio.source
 import java.io.File
 import java.util.*
 
-class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
+class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -51,14 +56,14 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     private val useImmersiveMode: Boolean
         get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("immersive_mode", true)
-    private val useDynamicTheme: Boolean
-        get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dynamic_theme", true)
 
     private val settingsContract = registerForActivityResult(SettingsContract()) { result ->
         shouldRecreateActivity = result
     }
 
     val searchListeners = mutableListOf<SearchView.OnQueryTextListener>()
+
+    override val recreateMode = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         disableApiBlacklistOnPie()
@@ -79,29 +84,54 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             }
 
             installSplashScreen()
+
+            if (!isNativeMonetAvailable()) {
+                MonetCompat.enablePaletteCompat()
+                MonetCompat.useSystemColorsOnAndroid12 = isNativeMonetAvailable()
+                MonetCompat.wallpaperColorPicker = {
+                    val userPickedColor = getWallpaperColorFromPreferences()
+                    it?.firstOrNull { color -> color == userPickedColor } ?: it?.firstOrNull()
+                }
+            }
         }
 
         setTheme(R.style.Theme_CodecInfo)
-        DynamicColors.applyIfAvailable(this) { _, _ -> useDynamicTheme }
-        if (Build.VERSION.SDK_INT >= 31) {
-            window.statusBarColor = if (useDynamicTheme) {
-                ContextCompat.getColor(this, android.R.color.system_accent1_700)
-            } else {
-                getAttributeColor(com.google.android.material.R.attr.colorPrimaryVariant)
-            }
+        if (isNativeMonetAvailable()) {
+            DynamicColors.applyIfAvailable(this) { _, _ -> isDynamicThemingEnabled(this) }
         }
 
         super.onCreate(savedInstanceState)
 
+        if (Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()) {
+            lifecycleScope.launchWhenCreated {
+                monet.awaitMonetReady()
+                initializeUI(savedInstanceState)
+                window.updateStatusBarColor(this@MainActivity)
+            }
+        } else {
+            initializeUI(savedInstanceState)
+            window.updateStatusBarColor(this)
+        }
+    }
+
+    private suspend fun getWallpaperColorFromPreferences(): Int? = withContext(Dispatchers.IO) {
+        val color = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
+            .getInt("selected_color", Int.MAX_VALUE)
+        return@withContext  if (color == Int.MAX_VALUE) null else color
+    }
+
+    private fun initializeUI(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
 
         val defaultThemeMode = getDefaultThemeOption(this)
         val darkTheme = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString("dark_theme", defaultThemeMode.toString())!!.toInt()
+            .getString("dark_theme", defaultThemeMode.toString())!!.toInt()
         AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
 
         setSupportActionBar(binding.toolbar)
+        binding.toolbar.updateToolBarColor(this)
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
@@ -156,6 +186,13 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                 }
             }
         }
+    }
+
+    override fun onMonetColorsChanged(monet: MonetCompat, monetColors: ColorScheme, isInitialChange: Boolean) {
+        if (!isDynamicThemingEnabled(this) || isNativeMonetAvailable()) {
+            return
+        }
+        super.onMonetColorsChanged(monet, monetColors, isInitialChange)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -306,6 +343,8 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menu.clear()
         menuInflater.inflate(R.menu.app_bar_menu, menu)
+
+        menu.updateIconColors(this, (binding.toolbar.background as ColorDrawable).color)
 
         val searchManager = getSystemService(SEARCH_SERVICE) as SearchManager
         val searchItem = menu.findItem(R.id.menu_item_search)

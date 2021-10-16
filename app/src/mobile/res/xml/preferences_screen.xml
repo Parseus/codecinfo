@@ -9,7 +9,11 @@
         <androidx.preference.CheckBoxPreference
             app:key="dynamic_theme"
             app:title="Dynamic theme"
-            app:defaultValue="true" />
+            app:defaultValue="false" />
+
+        <Preference
+            app:key="show_wallpaper_colors"
+            app:title="Wallpaper color picker" />
 
         <androidx.preference.CheckBoxPreference
             app:key="immersive_mode"

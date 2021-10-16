@@ -2,13 +2,14 @@ package com.parseus.codecinfo.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.databinding.ItemDetailsAdapterRowBinding
 
-class DetailsAdapter : RecyclerView.Adapter<DetailsAdapter.DetailsViewHolder>() {
+open class DetailsAdapter : RecyclerView.Adapter<DetailsAdapter.DetailsViewHolder>() {
 
     private val sortedList = SortedList(DetailsProperty::class.java, object : SortedListAdapterCallback<DetailsProperty>(this) {
         override fun compare(o1: DetailsProperty, o2: DetailsProperty): Int {
@@ -73,12 +74,13 @@ class DetailsAdapter : RecyclerView.Adapter<DetailsAdapter.DetailsViewHolder>() 
 
     override fun getItemCount(): Int = sortedList.size()
 
-    class DetailsViewHolder(binding: ItemDetailsAdapterRowBinding) : RecyclerView.ViewHolder(binding.root) {
+    open class DetailsViewHolder(binding: ItemDetailsAdapterRowBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        private val codecName = binding.codecProperty
-        private val codecInfo = binding.codecValue
+        protected val codecName = binding.codecProperty
+        protected val codecInfo = binding.codecValue
 
-        fun bindDetails(name: String, info: String) {
+        @CallSuper
+        open fun bindDetails(name: String, info: String) {
             codecName.text = name
             codecInfo.text = info
         }

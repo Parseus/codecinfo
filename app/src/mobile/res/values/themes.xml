@@ -21,7 +21,7 @@
     <style name="Platform.Theme.CodecInfo" parent="Platform.V16.Theme.CodecInfo" />
     
     <style name="ThemeOverlay.CodecInfo.NavigationRailView" parent="">
-        <item name="colorOnSurface">@color/m3_ref_palette_neutral90</item>
-        <item name="colorOnSurfaceVariant">@color/m3_ref_palette_neutral_variant80</item>
+        <item name="colorOnSurface">@color/m3_ref_palette_neutral95</item>
+        <item name="colorOnSurfaceVariant">@color/m3_ref_palette_neutral_variant70</item>
     </style>
 </resources>

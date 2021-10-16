@@ -3,6 +3,7 @@ package com.parseus.codecinfo.ui.settings
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
@@ -10,35 +11,36 @@ import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.platform.MaterialSharedAxis
+import com.kieronquinn.monetcompat.app.MonetCompatActivity
+import com.kieronquinn.monetcompat.core.MonetCompat
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.SettingsMainBinding
+import com.parseus.codecinfo.databinding.WallpaperColorPickerLayoutBinding
 import com.parseus.codecinfo.ui.fragments.AboutFragment
-import com.parseus.codecinfo.utils.getAttributeColor
-import com.parseus.codecinfo.utils.getDefaultThemeOption
-import com.parseus.codecinfo.utils.isBatterySaverDisallowed
-import com.parseus.codecinfo.utils.sendFeedbackEmail
+import com.parseus.codecinfo.utils.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : MonetCompatActivity() {
 
     private lateinit var binding: SettingsMainBinding
 
-    private val useDynamicTheme: Boolean
-        get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dynamic_theme", true)
+    override val recreateMode = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CodecInfo)
-        DynamicColors.applyIfAvailable(this) { _, _ -> useDynamicTheme }
-        if (Build.VERSION.SDK_INT >= 31) {
-            window.statusBarColor = if (useDynamicTheme) {
-                ContextCompat.getColor(this, android.R.color.system_accent1_700)
-            } else {
-                getAttributeColor(com.google.android.material.R.attr.colorPrimaryVariant)
-            }
+
+        if (isNativeMonetAvailable()) {
+            DynamicColors.applyIfAvailable(this) { _, _ -> isDynamicThemingEnabled(this) }
         }
         super.onCreate(savedInstanceState)
 
@@ -59,12 +61,25 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
+        if (!isNativeMonetAvailable()) {
+            lifecycleScope.launchWhenCreated {
+                monet.awaitMonetReady()
+                initializeUI(savedInstanceState)
+            }
+        } else {
+            initializeUI(savedInstanceState)
+        }
+    }
+
+    private fun initializeUI(savedInstanceState: Bundle?) {
         binding = SettingsMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
         if (savedInstanceState == null) {
             supportFragmentManager.commit { replace(R.id.content, SettingsFragment::class.java, null) }
         }
+        window.updateStatusBarColor(this)
+        binding.toolbar.updateToolBarColor(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -103,15 +118,22 @@ class SettingsActivity : AppCompatActivity() {
             super.onCreate(savedInstanceState)
 
             findPreference<CheckBoxPreference>("dynamic_theme")?.apply {
-                if (Build.VERSION.SDK_INT >= 31) {
-                    setOnPreferenceChangeListener { _, _ ->
-                        activity?.recreate()
+                if (Build.VERSION.SDK_INT >= 21) {
+                    setOnPreferenceChangeListener { _, newValue ->
+                        findPreference<Preference>("show_wallaper_colors")?.isVisible =
+                            !isNativeMonetAvailable() && newValue as Boolean
                         dynamicThemeChanged = true
+                        activity?.recreate()
                         true
                     }
                 } else {
                     isVisible = false
                 }
+            }
+
+            findPreference<Preference>("show_wallpaper_colors")?.apply {
+                isVisible = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+                        && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
             }
 
             findPreference<CheckBoxPreference>("immersive_mode")?.apply {
@@ -168,9 +190,22 @@ class SettingsActivity : AppCompatActivity() {
             addPreferencesFromResource(R.xml.preferences_screen)
         }
 
-        @SuppressLint("InflateParams")
+        @SuppressLint("InflateParams", "NewApi", "ApplySharedPref")
         override fun onPreferenceTreeClick(preference: Preference): Boolean {
             return when (preference.key) {
+                "show_wallpaper_colors" -> {
+                    lifecycleScope.launchWhenResumed {
+                        val availableColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
+                        if (availableColors.isNotEmpty()) {
+                            showWallpaperColorPicker(availableColors)
+                        } else {
+                            Snackbar.make(requireActivity().findViewById(android.R.id.content),
+                                R.string.dynamic_theme_color_picker_unavailable, Snackbar.LENGTH_LONG).show()
+                        }
+                    }
+                    true
+                }
+
                 "feedback" -> {
                     sendFeedbackEmail()
                     true
@@ -192,6 +227,38 @@ class SettingsActivity : AppCompatActivity() {
 
                 else -> super.onPreferenceTreeClick(preference)
             }
+        }
+
+        @SuppressLint("NewApi")
+        private suspend fun showWallpaperColorPicker(availableColors: List<Int>) {
+            val alertDialog = MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dynamic_theme_wallpaper_color_picker)
+                .create()
+            val colorPickerView = WallpaperColorPickerLayoutBinding.inflate(layoutInflater).root
+            colorPickerView.apply {
+                backgroundTintList = ColorStateList.valueOf(
+                    MonetCompat.getInstance().getBackgroundColor(requireContext())
+                )
+                layoutManager =
+                    LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+
+                adapter = ColorPickerAdapter(
+                    requireContext(),
+                    MonetCompat.getInstance().getSelectedWallpaperColor(),
+                    availableColors
+                ) {
+                    lifecycleScope.launchWhenResumed {
+                        withContext(Dispatchers.IO) {
+                            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
+                                .putInt("selected_color", it).commit()
+                        }
+                        alertDialog.dismiss()
+                        MonetCompat.getInstance().updateMonetColors()
+                    }
+                }
+            }
+            alertDialog.setView(colorPickerView)
+            alertDialog.show()
         }
 
         private fun getCurrentThemeIcon(type: Int) = when (type) {

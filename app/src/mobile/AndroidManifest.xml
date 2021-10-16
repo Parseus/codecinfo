@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.parseus.codecinfo">
 
-    <uses-sdk tools:overrideLibrary="androidx.core.splashscreen" />
+    <uses-sdk tools:overrideLibrary="androidx.core.splashscreen, com.kieronquinn.monetcompat" />
 
     <application
         android:resizeableActivity="true"

@@ -84,12 +84,16 @@ class SettingsActivity : MonetCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-            supportActionBar!!.title = getString(R.string.action_settings)
-            supportFragmentManager.popBackStack()
+            goBackToMainFragment()
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun goBackToMainFragment() {
+        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+        supportActionBar!!.title = getString(R.string.action_settings)
+        supportFragmentManager.popBackStack()
     }
 
     override fun finish() {
@@ -104,11 +108,15 @@ class SettingsActivity : MonetCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
-            // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
-            finishAfterTransition()
-        } else {
-            super.onBackPressed()
+        when {
+            supportFragmentManager.findFragmentByTag("about_fragment") != null -> goBackToMainFragment()
+
+            Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0 -> {
+                // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
+                finishAfterTransition()
+            }
+
+            else -> super.onBackPressed()
         }
     }
 
@@ -214,7 +222,7 @@ class SettingsActivity : MonetCompatActivity() {
                 "help" -> {
                     if (activity != null) {
                         parentFragmentManager.commit {
-                            replace(R.id.content, AboutFragment())
+                            replace(R.id.content, AboutFragment(), "about_fragment")
                             addToBackStack(null)
                             (requireActivity() as AppCompatActivity).supportActionBar!!.apply {
                                 title = getString(R.string.about_app)

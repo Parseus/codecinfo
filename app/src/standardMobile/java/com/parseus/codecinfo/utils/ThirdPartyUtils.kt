@@ -5,6 +5,7 @@ package com.parseus.codecinfo.utils
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.tabs.TabLayout
 import com.marcoscg.licenser.Library
 import com.marcoscg.licenser.License
@@ -17,6 +18,10 @@ fun initializeAppRating(activity: AppCompatActivity) {}
 fun initializeSamsungGesture(context: Context, pager: ViewPager2, tabLayout: TabLayout) {}
 fun destroySamsungGestures() {}
 fun launchStoreIntent(activity: android.app.Activity) {}
+fun checkForUpdate(activity: android.app.Activity, progressBar: LinearProgressIndicator?) {}
+fun handleFlexibleUpdateOnActivityResult(activity: android.app.Activity, requestCode: Int, resultCode: Int) {}
+fun handleFlexibleUpdateOnResume(activity: android.app.Activity) {}
+fun handleImmediateUpdateOnResume(activity: android.app.Activity) {}
 
 inline fun showLicensesDialog(activity: AppCompatActivity) {
     LicenserDialog(activity)

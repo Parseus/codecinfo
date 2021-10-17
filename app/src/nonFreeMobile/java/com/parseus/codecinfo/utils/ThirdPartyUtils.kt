@@ -6,8 +6,19 @@ import android.content.Intent
 import android.os.Build
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.progressindicator.LinearProgressIndicator
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.InstallStateUpdatedListener
+import com.google.android.play.core.install.model.ActivityResult
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.marcoscg.licenser.Library
 import com.marcoscg.licenser.License
@@ -21,6 +32,13 @@ import com.samsung.android.sdk.gesture.SgestureHand
 
 private var gestureHand: SgestureHand? = null
 const val SHOW_RATE_APP = true
+
+private const val UPDATE_REQUEST_CODE = 0x1000
+private const val MAX_FLEXIBLE_UPDATE_PRIORITY = 3
+private const val MIN_IMMEDIATE_UPDATE_PRIORITY = 4
+
+private lateinit var appUpdateManager: AppUpdateManager
+private lateinit var updateListener: InstallStateUpdatedListener
 
 fun initializeAppRating(activity: AppCompatActivity) {
     val rateManager = RateBottomSheetManager(activity)
@@ -78,6 +96,78 @@ fun initializeSamsungGesture(context: Context, pager: ViewPager2, tabLayout: Tab
 
 fun destroySamsungGestures() {
     gestureHand?.stop()
+}
+
+fun checkForUpdate(activity: Activity, progressBar: LinearProgressIndicator?) {
+    appUpdateManager = AppUpdateManagerFactory.create(activity)
+    appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+        if (info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+            if (info.updatePriority() >= MIN_IMMEDIATE_UPDATE_PRIORITY
+                && info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
+                appUpdateManager.startUpdateFlow(info, activity,
+                    AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE))
+            } else if (info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+                && info.updatePriority() <= MAX_FLEXIBLE_UPDATE_PRIORITY) {
+                updateListener = InstallStateUpdatedListener { state ->
+                    when {
+                        state.installStatus() == InstallStatus.DOWNLOADING -> {
+                            progressBar!!.isVisible = true
+                            val bytesDownloaded = state.bytesDownloaded()
+                            val totalBytesToDownload = state.totalBytesToDownload()
+                            val currentProgress = (bytesDownloaded / totalBytesToDownload).toInt() * 100
+                            progressBar.setProgressCompat(currentProgress, true)
+                            progressBar.contentDescription = activity.getString(R.string.update_flexible_progress_description, currentProgress)
+                        }
+                        state.installStatus() in InstallStatus.FAILED..InstallStatus.CANCELED -> {
+                            progressBar!!.isVisible = false
+                        }
+                        state.installStatus() == InstallStatus.DOWNLOADED -> {
+                            showSnackbarForDownloadedUpdate(activity)
+                        }
+                    }
+                }
+                appUpdateManager.registerListener(updateListener)
+                appUpdateManager.startUpdateFlow(info, activity,
+                    AppUpdateOptions.defaultOptions(AppUpdateType.FLEXIBLE))
+            }
+        }
+    }
+}
+
+fun handleFlexibleUpdateOnActivityResult(activity: Activity, requestCode: Int, resultCode: Int) {
+    if (requestCode == UPDATE_REQUEST_CODE) {
+        if (resultCode == Activity.RESULT_CANCELED) {
+            appUpdateManager.unregisterListener(updateListener)
+        } else if (resultCode == ActivityResult.RESULT_IN_APP_UPDATE_FAILED) {
+            Snackbar.make(activity.findViewById(android.R.id.content),
+                R.string.update_failed, Snackbar.LENGTH_LONG).show()
+        }
+    }
+}
+
+fun handleFlexibleUpdateOnResume(activity: Activity) {
+    appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+        if (info.installStatus() == InstallStatus.DOWNLOADED) {
+            appUpdateManager.unregisterListener(updateListener)
+            showSnackbarForDownloadedUpdate(activity)
+        }
+    }
+}
+
+fun handleImmediateUpdateOnResume(activity: Activity) {
+    appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+        if (info.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+            appUpdateManager.startUpdateFlow(info, activity, AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE))
+        }
+    }
+}
+
+private fun showSnackbarForDownloadedUpdate(activity: Activity) {
+    Snackbar.make(activity.findViewById(android.R.id.content),
+        R.string.update_flexible_complete, Snackbar.LENGTH_INDEFINITE).apply {
+        setAction(R.string.update_flexible_restart) { appUpdateManager.completeUpdate() }
+        show()
+    }
 }
 
 private fun getInstallSourceFromPackageManager(activity: Activity): InstallSource? {

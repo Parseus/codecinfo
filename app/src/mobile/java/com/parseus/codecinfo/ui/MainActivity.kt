@@ -156,6 +156,8 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 KNOWN_PROBLEMS_DB = emptyList()
             }
         }
+
+        checkForUpdate(this, binding.updateProgressBar)
     }
 
     private fun recreateDetailFragmentIfNeedded() {

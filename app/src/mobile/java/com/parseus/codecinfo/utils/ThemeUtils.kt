@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
+import android.util.TypedValue
 import android.view.Menu
 import android.view.View
 import android.view.Window
@@ -20,10 +21,14 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.forEach
 import androidx.preference.PreferenceManager
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigationrail.NavigationRailView
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.kieronquinn.monetcompat.core.MonetCompat
 import com.kieronquinn.monetcompat.extensions.toArgb
 import com.parseus.codecinfo.R
+import kotlin.math.roundToInt
 
 fun isNativeMonetAvailable(): Boolean = Build.VERSION.SDK_INT >= 31
         && "Google" == Build.MANUFACTURER && Build.MODEL.startsWith("Pixel")
@@ -188,6 +193,8 @@ fun NavigationRailView.updateColors(context: Context) {
         )
         itemTextColor = itemTextColorStateList
     }
+
+    itemRippleColor = getRippleColor(context)
 }
 
 @Suppress("DEPRECATION")
@@ -215,6 +222,90 @@ fun Window.updateStatusBarColor(context: Context) {
     } else if (Build.VERSION.SDK_INT >= 21) {
         statusBarColor = context.getAttributeColor(com.google.android.material.R.attr.colorPrimaryVariant)
     }
+}
+
+private fun getRippleColor(context: Context): ColorStateList? {
+    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
+        val colorPrimary = getPrimaryColor(context)
+        val monet = MonetCompat.getInstance()
+        val colorOnSurface = if (context.isNightMode()) {
+            monet.getMonetColors().neutral1[100]!!.toArgb()
+        } else {
+            monet.getMonetColors().neutral1[900]!!.toArgb()
+        }
+        ColorStateList(
+            arrayOf(
+                // selected
+                intArrayOf(android.R.attr.state_pressed, android.R.attr.state_selected),
+                intArrayOf(android.R.attr.state_focused, android.R.attr.state_hovered, android.R.attr.state_selected),
+                intArrayOf(android.R.attr.state_focused, android.R.attr.state_selected),
+                intArrayOf(android.R.attr.state_hovered, android.R.attr.state_selected),
+                intArrayOf(android.R.attr.state_selected),
+
+                // unselected
+                intArrayOf(android.R.attr.state_pressed),
+                intArrayOf(android.R.attr.state_focused, android.R.attr.state_hovered),
+                intArrayOf(android.R.attr.state_focused),
+                intArrayOf(android.R.attr.state_hovered),
+                intArrayOf(0),
+            ),
+
+            intArrayOf(
+                adjustColorAlpha(colorPrimary, 0.08f),
+                adjustColorAlpha(colorPrimary, 0.16f),
+                adjustColorAlpha(colorPrimary, 0.12f),
+                adjustColorAlpha(colorPrimary, 0.04f),
+                adjustColorAlpha(colorPrimary, 0.00f),
+
+                adjustColorAlpha(colorOnSurface, 0.08f),
+                adjustColorAlpha(colorOnSurface, 0.16f),
+                adjustColorAlpha(colorOnSurface, 0.12f),
+                adjustColorAlpha(colorOnSurface, 0.04f),
+                adjustColorAlpha(colorOnSurface, 0.00f)
+            )
+        )
+    } else {
+        ContextCompat.getColorStateList(context, com.google.android.material.R.color.mtrl_navigation_bar_ripple_color)
+    }
+}
+
+fun MaterialAlertDialogBuilder.updateBackgroundColor(context: Context): MaterialAlertDialogBuilder {
+    val surfaceColor = if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
+        getSurfaceColor(context)
+    } else {
+        MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, javaClass.canonicalName)
+    }
+    val materialShapeDrawable = MaterialShapeDrawable(
+        context,
+        null,
+        com.google.android.material.R.attr.alertDialogStyle,
+        com.google.android.material.R.style.MaterialAlertDialog_MaterialComponents
+    )
+    materialShapeDrawable.initializeElevationOverlay(context)
+    materialShapeDrawable.fillColor = ColorStateList.valueOf(surfaceColor)
+
+    // dialogCornerRadius first appeared in Android Pie
+
+    // dialogCornerRadius first appeared in Android Pie
+    if (Build.VERSION.SDK_INT >= 28) {
+        val dialogCornerRadiusValue = TypedValue()
+        context.theme.resolveAttribute(android.R.attr.dialogCornerRadius, dialogCornerRadiusValue, true)
+        val dialogCornerRadius =
+            dialogCornerRadiusValue.getDimension(getContext().resources.displayMetrics)
+        if (dialogCornerRadiusValue.type == TypedValue.TYPE_DIMENSION && dialogCornerRadius >= 0) {
+            materialShapeDrawable.setCornerSize(dialogCornerRadius)
+        }
+    }
+
+    return setBackground(materialShapeDrawable)
+}
+
+private fun adjustColorAlpha(@ColorInt color: Int, factor: Float): Int {
+    val alpha = (Color.alpha(color) * factor).roundToInt()
+    val red = Color.red(color)
+    val green = Color.green(color)
+    val blue = Color.blue(color)
+    return Color.argb(alpha, red, green, blue)
 }
 
 private fun isColorLight(color: Int): Boolean =

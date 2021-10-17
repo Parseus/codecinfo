@@ -7,6 +7,7 @@ import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -22,6 +23,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.kieronquinn.monetcompat.app.MonetCompatActivity
 import com.kieronquinn.monetcompat.core.MonetCompat
+import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.SettingsMainBinding
 import com.parseus.codecinfo.databinding.WallpaperColorPickerLayoutBinding
@@ -191,6 +193,14 @@ class SettingsActivity : MonetCompatActivity() {
             sortingType!!.setOnPreferenceChangeListener { _, _ ->
                 sortingChanged = true
                 true
+            }
+        }
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+
+            if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
+                view.applyMonetRecursively()
             }
         }
 

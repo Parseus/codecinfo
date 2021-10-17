@@ -26,6 +26,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.kieronquinn.monetcompat.app.MonetCompatActivity
 import com.kieronquinn.monetcompat.core.MonetCompat
+import com.kieronquinn.monetcompat.extensions.applyMonet
 import com.parseus.codecinfo.*
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
@@ -322,14 +323,14 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                             getString(R.string.codec_drm_all_info))
                 }
 
-                MaterialAlertDialogBuilder(this).run {
-                    setTitle(R.string.choose_share)
-                    setSingleChoiceItems(codecShareOptions, -1) { dialog, option ->
+                val dialogBuilder = MaterialAlertDialogBuilder(this).setTitle(R.string.choose_share)
+                    .setSingleChoiceItems(codecShareOptions, -1) { dialog, option ->
                         launchShareIntent(option, detailsFragment)
                         dialog.dismiss()
                     }
-                    show()
-                }
+                val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
+                dialog.show()
+                dialog.applyMonet()
 
                 return true
             }

@@ -35,5 +35,6 @@ inline fun showLicensesDialog(activity: AppCompatActivity) {
         .setLibrary(Library("Okio", "https://github.com/square/okio", License.APACHE2))
         .setLibrary(Library("Licenser", "https://github.com/marcoscgdev/Licenser", License.MIT))
         .setPositiveButton(android.R.string.ok, null)
+        .setBackgroundColor(getSurfaceColor(activity))
         .show()
 }

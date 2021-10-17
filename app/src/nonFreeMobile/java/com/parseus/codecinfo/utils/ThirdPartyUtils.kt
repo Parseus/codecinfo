@@ -211,5 +211,6 @@ inline fun showLicensesDialog(activity: AppCompatActivity) {
         .setLibrary(Library("RateBottomSheet", "https://github.com/lopspower/RateBottomSheet", License.APACHE2))
         .setLibrary(Library("Licenser", "https://github.com/marcoscgdev/Licenser", License.MIT))
         .setPositiveButton(android.R.string.ok, null)
+        .setBackgroundColor(getSurfaceColor(activity))
         .show()
 }

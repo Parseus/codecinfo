@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.kieronquinn.monetcompat.extensions.applyMonet
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.AboutAppFragmentBinding
 import com.parseus.codecinfo.utils.*
@@ -52,11 +53,13 @@ class AboutFragment : Fragment() {
 
     private fun showChangelog() {
         context?.let {
-            MaterialAlertDialogBuilder(it)
+            val dialogBuilder = MaterialAlertDialogBuilder(it)
                 .setTitle(R.string.about_changelog)
                 .setView(R.layout.about_app_changelog)
-                .setPositiveButton(android.R.string.ok, null)
-                .show()
+            val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context)
+                .setPositiveButton(android.R.string.ok, null).create()
+            dialog.show()
+            dialog.applyMonet()
         }
     }
 

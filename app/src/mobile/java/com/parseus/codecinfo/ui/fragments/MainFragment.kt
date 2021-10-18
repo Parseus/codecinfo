@@ -52,6 +52,8 @@ class MainFragment : Fragment() {
             }.attach()
 
             initializeSamsungGesture(requireContext(), viewPager, tabs)
+
+            tabs.updateColors(requireContext())
         }
 
         binding.navigationRail?.let { navigationRail ->

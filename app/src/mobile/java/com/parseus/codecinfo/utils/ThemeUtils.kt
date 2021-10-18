@@ -12,6 +12,7 @@ import android.view.Window
 import android.view.WindowInsetsController
 import android.widget.ImageView
 import androidx.annotation.ColorInt
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -25,6 +26,7 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigationrail.NavigationRailView
 import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.tabs.TabLayout
 import com.kieronquinn.monetcompat.core.MonetCompat
 import com.kieronquinn.monetcompat.extensions.toArgb
 import com.parseus.codecinfo.R
@@ -68,6 +70,32 @@ fun getSurfaceColor(context: Context): Int {
         MonetCompat.getInstance().getBackgroundColor(context)
     } else {
         context.getAttributeColor(com.google.android.material.R.attr.colorSurface)
+    }
+}
+
+fun getColorOnSurface(context: Context): Int {
+    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
+        val monet = MonetCompat.getInstance()
+        if (context.isNightMode()) {
+            monet.getMonetColors().neutral1[100]!!.toArgb()
+        } else {
+            monet.getMonetColors().neutral1[900]!!.toArgb()
+        }
+    } else {
+        context.getAttributeColor(com.google.android.material.R.attr.colorSurface)
+    }
+}
+
+fun getColorOnSurfaceVariant(context: Context): Int {
+    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
+        val monet = MonetCompat.getInstance()
+        if (context.isNightMode()) {
+            monet.getMonetColors().neutral2[200]!!.toArgb()
+        } else {
+            monet.getMonetColors().neutral2[700]!!.toArgb()
+        }
+    } else {
+        context.getAttributeColor(com.google.android.material.R.attr.colorSurfaceVariant)
     }
 }
 
@@ -194,7 +222,32 @@ fun NavigationRailView.updateColors(context: Context) {
         itemTextColor = itemTextColorStateList
     }
 
-    itemRippleColor = getRippleColor(context)
+    itemRippleColor = getRippleColorForNavigationRail(context)
+}
+
+fun TabLayout.updateColors(context: Context) {
+    val textColors = if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
+        ColorStateList(
+            arrayOf(
+                intArrayOf(-android.R.attr.state_enabled),
+                intArrayOf(android.R.attr.state_selected),
+                intArrayOf(0)
+            ),
+            intArrayOf(
+                getColorOnSurface(context),
+                getPrimaryColor(context),
+                getColorOnSurfaceVariant(context)
+            )
+        )
+    } else {
+        AppCompatResources.getColorStateList(context, com.google.android.material.R.color.m3_tabs_icon_color)
+    }
+
+    setSelectedTabIndicatorColor(getPrimaryColor(context))
+    tabIconTint = textColors
+    tabTextColors = textColors
+    tabRippleColor = getRippleColorForTabLayout(context)
+    setBackgroundColor(getSurfaceColor(context))
 }
 
 @Suppress("DEPRECATION")
@@ -224,15 +277,10 @@ fun Window.updateStatusBarColor(context: Context) {
     }
 }
 
-private fun getRippleColor(context: Context): ColorStateList? {
+private fun getRippleColorForNavigationRail(context: Context): ColorStateList? {
     return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
         val colorPrimary = getPrimaryColor(context)
-        val monet = MonetCompat.getInstance()
-        val colorOnSurface = if (context.isNightMode()) {
-            monet.getMonetColors().neutral1[100]!!.toArgb()
-        } else {
-            monet.getMonetColors().neutral1[900]!!.toArgb()
-        }
+        val colorOnSurface = getColorOnSurface(context)
         ColorStateList(
             arrayOf(
                 // selected
@@ -265,7 +313,44 @@ private fun getRippleColor(context: Context): ColorStateList? {
             )
         )
     } else {
-        ContextCompat.getColorStateList(context, com.google.android.material.R.color.mtrl_navigation_bar_ripple_color)
+        AppCompatResources.getColorStateList(context, com.google.android.material.R.color.mtrl_navigation_bar_ripple_color)
+    }
+}
+
+private fun getRippleColorForTabLayout(context: Context): ColorStateList? {
+    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
+        val colorPrimary = getPrimaryColor(context)
+        val colorOnSurfaceVariant = getColorOnSurfaceVariant(context)
+
+        ColorStateList(
+            arrayOf(
+                // selected
+                intArrayOf(android.R.attr.state_pressed, android.R.attr.state_selected),
+                intArrayOf(android.R.attr.state_focused, android.R.attr.state_selected),
+                intArrayOf(android.R.attr.state_hovered, android.R.attr.state_selected),
+                intArrayOf(android.R.attr.state_selected),
+
+                // unselected
+                intArrayOf(android.R.attr.state_pressed),
+                intArrayOf(android.R.attr.state_focused),
+                intArrayOf(android.R.attr.state_hovered),
+                intArrayOf(0),
+            ),
+
+            intArrayOf(
+                adjustColorAlpha(colorPrimary, 0.12f),
+                adjustColorAlpha(colorPrimary, 0.12f),
+                adjustColorAlpha(colorPrimary, 0.08f),
+                adjustColorAlpha(colorPrimary, 0.16f),
+
+                adjustColorAlpha(colorOnSurfaceVariant, 0.12f),
+                adjustColorAlpha(colorOnSurfaceVariant, 0.12f),
+                adjustColorAlpha(colorOnSurfaceVariant, 0.08f),
+                adjustColorAlpha(colorOnSurfaceVariant, 0.16f)
+            )
+        )
+    } else {
+        AppCompatResources.getColorStateList(context, com.google.android.material.R.color.m3_tabs_ripple_color)
     }
 }
 

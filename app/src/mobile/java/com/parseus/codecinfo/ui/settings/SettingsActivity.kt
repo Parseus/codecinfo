@@ -23,6 +23,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.kieronquinn.monetcompat.app.MonetCompatActivity
 import com.kieronquinn.monetcompat.core.MonetCompat
+import com.kieronquinn.monetcompat.core.WallpaperTypes
+import com.kieronquinn.monetcompat.extensions.applyMonet
 import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.SettingsMainBinding
@@ -146,6 +148,18 @@ class SettingsActivity : MonetCompatActivity() {
                         && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
             }
 
+            findPreference<ListPreference>("dynamic_theme_wallpaper_source")?.apply {
+                isVisible = Build.VERSION.SDK_INT >= 27 && !isNativeMonetAvailable()
+                        && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                value = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                    .getString("dynamic_theme_wallpaper_source", WallpaperTypes.WALLPAPER_SYSTEM.toString())
+                setOnPreferenceChangeListener { _, newValue ->
+                    MonetCompat.wallpaperSource = (newValue as String).toInt()
+                    MonetCompat.getInstance().updateMonetColors()
+                    true
+                }
+            }
+
             findPreference<CheckBoxPreference>("immersive_mode")?.apply {
                 if (Build.VERSION.SDK_INT >= 19) {
                     setOnPreferenceChangeListener { _, _ ->
@@ -249,9 +263,9 @@ class SettingsActivity : MonetCompatActivity() {
 
         @SuppressLint("NewApi")
         private suspend fun showWallpaperColorPicker(availableColors: List<Int>) {
-            val alertDialog = MaterialAlertDialogBuilder(requireContext())
+            val dialogBuilder =  MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.dynamic_theme_wallpaper_color_picker)
-                .create()
+            val alertDialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
             val colorPickerView = WallpaperColorPickerLayoutBinding.inflate(layoutInflater).root
             colorPickerView.apply {
                 backgroundTintList = ColorStateList.valueOf(
@@ -277,6 +291,7 @@ class SettingsActivity : MonetCompatActivity() {
             }
             alertDialog.setView(colorPickerView)
             alertDialog.show()
+            alertDialog.applyMonet()
         }
 
         private fun getCurrentThemeIcon(type: Int) = when (type) {

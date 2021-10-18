@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="settings_wallaper_source_titles">
+        <item>Home screen</item>
+        <item>Lock screen</item>
+    </string-array>
+
+    <string-array name="settings_wallaper_source_values">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+</resources>

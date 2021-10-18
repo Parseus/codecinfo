@@ -11,6 +11,14 @@
             app:title="Dynamic theme"
             app:defaultValue="false" />
 
+        <androidx.preference.ListPreference
+            app:entries="@array/settings_wallaper_source_titles"
+            app:entryValues="@array/settings_wallaper_source_values"
+            app:defaultValue="1"
+            app:key="dynamic_theme_wallpaper_source"
+            app:title="Wallpaper source"
+            app:useSimpleSummaryProvider="true" />
+
         <Preference
             app:key="show_wallpaper_colors"
             app:title="Wallpaper color picker" />

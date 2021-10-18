@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.databinding.RateBottomSheetLayoutBinding
+import com.parseus.codecinfo.utils.isDynamicThemingEnabled
+import com.parseus.codecinfo.utils.isNativeMonetAvailable
 
 /**
  * Copyright (C) 2020 Mikhael LOPEZ
@@ -43,6 +46,10 @@ abstract class ABaseRateBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
+            view.applyMonetRecursively()
+        }
 
         binding.apply {
             btnRateBottomSheetCancel.visibility =

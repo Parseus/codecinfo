@@ -5,6 +5,7 @@
     <uses-sdk tools:overrideLibrary="androidx.core.splashscreen, com.kieronquinn.monetcompat" />
 
     <application
+        android:name=".ui.CodecInfoApp"
         android:resizeableActivity="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.CodecInfo.Starting"

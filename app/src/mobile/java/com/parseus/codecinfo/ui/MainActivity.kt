@@ -43,8 +43,6 @@ import com.parseus.codecinfo.utils.*
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import dev.kdrag0n.monet.theme.ColorScheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import okio.buffer
 import okio.source
 import java.io.File
@@ -86,15 +84,6 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
             }
 
             installSplashScreen()
-
-            if (!isNativeMonetAvailable()) {
-                MonetCompat.enablePaletteCompat()
-                MonetCompat.useSystemColorsOnAndroid12 = isNativeMonetAvailable()
-                MonetCompat.wallpaperColorPicker = {
-                    val userPickedColor = getWallpaperColorFromPreferences()
-                    it?.firstOrNull { color -> color == userPickedColor } ?: it?.firstOrNull()
-                }
-            }
         }
 
         setTheme(R.style.Theme_CodecInfo)
@@ -114,12 +103,6 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
             initializeUI(savedInstanceState)
             window.updateStatusBarColor(this)
         }
-    }
-
-    private suspend fun getWallpaperColorFromPreferences(): Int? = withContext(Dispatchers.IO) {
-        val color = PreferenceManager.getDefaultSharedPreferences(this@MainActivity)
-            .getInt("selected_color", Int.MAX_VALUE)
-        return@withContext  if (color == Int.MAX_VALUE) null else color
     }
 
     private fun initializeUI(savedInstanceState: Bundle?) {

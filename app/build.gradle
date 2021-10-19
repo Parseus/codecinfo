@@ -17,18 +17,18 @@ android {
     buildTypes {
         debug {
             versionNameSuffix "-dev"
-            if (!gradle.startParameter.taskNames.toString().contains('StandardTv')) {
-                multiDexEnabled true
-                manifestPlaceholders = [appName:"androidx.multidex.MultiDexApplication"]
-            } else {
-                manifestPlaceholders = [appName:"android.app.Application"]
-            }
+//            if (!gradle.startParameter.taskNames.toString().contains('StandardTv')) {
+//                multiDexEnabled true
+//                manifestPlaceholders = [appName:"androidx.multidex.MultiDexApplication"]
+//            } else {
+//                manifestPlaceholders = [appName:"android.app.Application"]
+//            }
         }
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            manifestPlaceholders = [appName:"android.app.Application"]
+//            manifestPlaceholders = [appName:"android.app.Application"]
         }
     }
 
@@ -107,8 +107,8 @@ dependencies {
     implementation "com.squareup.okio:okio:2.10.0"
 
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanary_version"
-    standardMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
-    nonFreeMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
+//    standardMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
+//    nonFreeMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
 
     tvImplementation 'androidx.leanback:leanback:1.2.0-alpha01'
     tvImplementation 'androidx.leanback:leanback-preference:1.2.0-alpha01'

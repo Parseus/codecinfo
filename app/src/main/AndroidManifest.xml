@@ -22,7 +22,6 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name="${appName}"
         android:supportsRtl="true"
         android:theme="@style/Theme.CodecInfo"
         tools:ignore="MissingClass,RtlEnabled,UnusedAttribute">

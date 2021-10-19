@@ -23,6 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.kieronquinn.monetcompat.app.MonetCompatActivity
 import com.kieronquinn.monetcompat.core.MonetCompat
@@ -347,7 +348,12 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         menu.clear()
         menuInflater.inflate(R.menu.app_bar_menu, menu)
 
-        menu.updateIconColors(this, (binding.toolbar.background as ColorDrawable).color)
+        if (binding.toolbar.background is ColorDrawable) {
+            menu.updateIconColors(this, (binding.toolbar.background as ColorDrawable).color)
+        } else if (binding.toolbar.background is MaterialShapeDrawable) {
+            val fillColor = (binding.toolbar.background as MaterialShapeDrawable).fillColor?.defaultColor ?: getPrimaryColor(this)
+            menu.updateIconColors(this, fillColor)
+        }
 
         val searchManager = getSystemService(SEARCH_SERVICE) as SearchManager
         val searchItem = menu.findItem(R.id.menu_item_search)

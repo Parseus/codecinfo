@@ -16,6 +16,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.commit
@@ -200,7 +201,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         super.onResume()
 
         if (shouldRecreateActivity) {
-            recreate()
+            ActivityCompat.recreate(this)
             return
         }
     }
@@ -218,6 +219,9 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroy() {
+        clearSavedLists()
+        searchListeners.clear()
+
         super.onDestroy()
         destroySamsungGestures()
     }

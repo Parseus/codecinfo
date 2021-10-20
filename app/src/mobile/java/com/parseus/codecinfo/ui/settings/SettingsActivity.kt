@@ -12,6 +12,7 @@ import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
@@ -135,7 +136,7 @@ class SettingsActivity : MonetCompatActivity() {
                         findPreference<Preference>("show_wallaper_colors")?.isVisible =
                             !isNativeMonetAvailable() && newValue as Boolean
                         dynamicThemeChanged = true
-                        activity?.recreate()
+                        activity?.let { ActivityCompat.recreate(it) }
                         true
                     }
                 } else {

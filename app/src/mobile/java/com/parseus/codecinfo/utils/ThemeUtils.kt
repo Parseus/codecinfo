@@ -286,27 +286,37 @@ fun TabLayout.updateColors(context: Context) {
 @Suppress("DEPRECATION")
 @SuppressLint("NewApi")
 fun Window.updateStatusBarColor(context: Context) {
-    if (isDynamicThemingEnabled(context)) {
-        val color = if (isNativeMonetAvailable()) {
-            ContextCompat.getColor(context, android.R.color.system_accent1_700)
-        } else {
+    if (Build.VERSION.SDK_INT >= 21) {
+        val isDynamicTheming = isDynamicThemingEnabled(context)
+        val color = if (isDynamicTheming && !isNativeMonetAvailable()) {
             val monet = MonetCompat.getInstance()
-            monet.getMonetColors().accent1[700]!!.toArgb()
+            if (context.isNightMode()) {
+                monet.getBackgroundColor(context)
+            } else {
+                monet.getMonetColors().accent1[700]!!.toArgb()
+            }
+        } else {
+            if (context.isNightMode()) {
+                context.getAttributeColor(com.google.android.material.R.attr.colorSurface)
+            } else {
+                context.getAttributeColor(com.google.android.material.R.attr.colorPrimaryVariant)
+            }
         }
+
         statusBarColor = color
 
-        val lightStatusBar = isColorLight(color)
-        if (Build.VERSION.SDK_INT >= 31) {
-            insetsController?.setSystemBarsAppearance(if (lightStatusBar)
-                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS else 0,
-                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-        } else if (Build.VERSION.SDK_INT >= 23) {
-            val statusBarFlag = if (lightStatusBar) View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else 0
-            decorView.systemUiVisibility =
-                (decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()) or statusBarFlag
+        if (isDynamicTheming) {
+            val lightStatusBar = isColorLight(color)
+            if (Build.VERSION.SDK_INT >= 31) {
+                insetsController?.setSystemBarsAppearance(if (lightStatusBar)
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS else 0,
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+            } else if (Build.VERSION.SDK_INT >= 23) {
+                val statusBarFlag = if (lightStatusBar) View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else 0
+                decorView.systemUiVisibility =
+                    (decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()) or statusBarFlag
+            }
         }
-    } else if (Build.VERSION.SDK_INT >= 21) {
-        statusBarColor = context.getAttributeColor(com.google.android.material.R.attr.colorPrimaryVariant)
     }
 }
 
@@ -330,7 +340,7 @@ private fun getRippleColorForMaterialButton(context: Context): ColorStateList? {
             )
         )
     } else {
-        AppCompatResources.getColorStateList(context, com.google.android.material.R.color.mtrl_navigation_bar_ripple_color)
+        AppCompatResources.getColorStateList(context, com.google.android.material.R.color.m3_text_button_ripple_color_selector)
     }
 }
 

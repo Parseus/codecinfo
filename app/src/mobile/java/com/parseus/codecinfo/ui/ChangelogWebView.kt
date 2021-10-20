@@ -10,6 +10,7 @@ import android.webkit.*
 import androidx.annotation.RequiresApi
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
+import com.parseus.codecinfo.utils.getSurfaceColor
 
 @Suppress("DEPRECATION")
 class ChangelogWebView : WebView {
@@ -19,6 +20,8 @@ class ChangelogWebView : WebView {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int): super(context, attrs, defStyleAttr)
 
     init {
+        setBackgroundColor(getSurfaceColor(context))
+
         settings.apply {
             allowContentAccess = false
             allowFileAccess = false

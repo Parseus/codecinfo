@@ -60,6 +60,7 @@ class AboutFragment : Fragment() {
                 .setPositiveButton(android.R.string.ok, null).create()
             dialog.show()
             dialog.applyMonet()
+            dialog.updateButtonColors(dialogBuilder.context)
         }
     }
 

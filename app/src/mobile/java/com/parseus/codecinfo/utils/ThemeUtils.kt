@@ -2,6 +2,7 @@ package com.parseus.codecinfo.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
@@ -10,8 +11,10 @@ import android.view.Menu
 import android.view.View
 import android.view.Window
 import android.view.WindowInsetsController
+import android.widget.CompoundButton
 import android.widget.ImageView
 import androidx.annotation.ColorInt
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -22,6 +25,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.forEach
 import androidx.preference.PreferenceManager
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigationrail.NavigationRailView
@@ -82,7 +86,7 @@ fun getColorOnSurface(context: Context): Int {
             monet.getMonetColors().neutral1[900]!!.toArgb()
         }
     } else {
-        context.getAttributeColor(com.google.android.material.R.attr.colorSurface)
+        context.getAttributeColor(com.google.android.material.R.attr.colorOnSurface)
     }
 }
 
@@ -96,6 +100,31 @@ fun getColorOnSurfaceVariant(context: Context): Int {
         }
     } else {
         context.getAttributeColor(com.google.android.material.R.attr.colorSurfaceVariant)
+    }
+}
+
+fun AlertDialog.updateButtonColors(context: Context) {
+    (getButton(DialogInterface.BUTTON_POSITIVE) as? MaterialButton)?.updateColors(context)
+    (getButton(DialogInterface.BUTTON_NEUTRAL) as? MaterialButton)?.updateColors(context)
+    (getButton(DialogInterface.BUTTON_NEGATIVE) as? MaterialButton)?.updateColors(context)
+}
+
+fun CompoundButton.updateColors(context: Context) {
+    if (Build.VERSION.SDK_INT >= 21) {
+        val colorOnSurface = getColorOnSurface(context)
+        val csl = ColorStateList(
+            arrayOf(
+                intArrayOf(-android.R.attr.state_enabled),
+                intArrayOf(android.R.attr.state_checked),
+                intArrayOf(-android.R.attr.state_checked)
+            ),
+            intArrayOf(
+                adjustColorAlpha(colorOnSurface, 0.38f),
+                getPrimaryColor(context),
+                colorOnSurface
+            )
+        )
+        buttonTintList = csl
     }
 }
 
@@ -136,6 +165,10 @@ fun Menu.updateIconColors(context: Context, @ColorInt toolbarColor: Int) {
             }
         }
     }
+}
+
+private fun MaterialButton.updateColors(context: Context) {
+    rippleColor = getRippleColorForMaterialButton(context)
 }
 
 fun MaterialToolbar.updateToolBarColor(context: Context) {
@@ -274,6 +307,30 @@ fun Window.updateStatusBarColor(context: Context) {
         }
     } else if (Build.VERSION.SDK_INT >= 21) {
         statusBarColor = context.getAttributeColor(com.google.android.material.R.attr.colorPrimaryVariant)
+    }
+}
+
+private fun getRippleColorForMaterialButton(context: Context): ColorStateList? {
+    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
+        val colorPrimary = getPrimaryColor(context)
+        val colorOnSurface = getColorOnSurface(context)
+        ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_pressed),
+                intArrayOf(android.R.attr.state_focused),
+                intArrayOf(android.R.attr.state_hovered),
+                intArrayOf(0),
+            ),
+
+            intArrayOf(
+                adjustColorAlpha(colorPrimary, 0.12f),
+                adjustColorAlpha(colorOnSurface, 0.12f),
+                adjustColorAlpha(colorOnSurface, 0.08f),
+                colorOnSurface
+            )
+        )
+    } else {
+        AppCompatResources.getColorStateList(context, com.google.android.material.R.color.mtrl_navigation_bar_ripple_color)
     }
 }
 

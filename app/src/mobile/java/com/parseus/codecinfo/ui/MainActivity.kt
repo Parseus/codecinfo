@@ -321,6 +321,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
                 dialog.show()
                 dialog.applyMonet()
+                dialog.updateButtonColors(dialogBuilder.context)
 
                 return true
             }

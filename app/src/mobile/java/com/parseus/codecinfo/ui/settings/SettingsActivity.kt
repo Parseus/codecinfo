@@ -18,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.platform.MaterialSharedAxis
@@ -44,9 +43,6 @@ class SettingsActivity : MonetCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CodecInfo)
 
-        if (isNativeMonetAvailable()) {
-            DynamicColors.applyIfAvailable(this) { _, _ -> isDynamicThemingEnabled(this) }
-        }
         super.onCreate(savedInstanceState)
 
         if (Build.VERSION.SDK_INT >= 21) {

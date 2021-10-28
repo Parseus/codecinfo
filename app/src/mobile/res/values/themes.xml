@@ -15,9 +15,11 @@
         <item name="navigationRailStyle">@style/Widget.CodecInfo.NavigationRailView</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="settingsIconColor">?android:attr/textColorSecondary</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Platform.V16.Theme.CodecInfo" parent="Theme.Material3.DayNight.NoActionBar" />
+    <style name="Platform.V16.Theme.CodecInfo" parent="Theme.Material3.DynamicColors.DayNight" />
     <style name="Platform.Theme.CodecInfo" parent="Platform.V16.Theme.CodecInfo" />
     
     <style name="ThemeOverlay.CodecInfo.NavigationRailView" parent="">

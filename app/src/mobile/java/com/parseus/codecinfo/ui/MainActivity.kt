@@ -88,9 +88,6 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         }
 
         setTheme(R.style.Theme_CodecInfo)
-        if (isNativeMonetAvailable()) {
-            DynamicColors.applyIfAvailable(this) { _, _ -> isDynamicThemingEnabled(this) }
-        }
 
         super.onCreate(savedInstanceState)
 

@@ -24,6 +24,14 @@
             app:layout_scrollFlags="scroll|enterAlways"
             style="@style/Widget.CodecInfo.Toolbar.PrimarySurface"/>
 
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/updateProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.fragment.app.FragmentContainerView

@@ -40,7 +40,7 @@ class ExpandableItemAnimator : DefaultItemAnimator() {
             ObjectAnimator.ofFloat(newHolder.expandIcon, View.ROTATION,
                 preInfo.arrowRotation, postInfo.arrowRotation).also {
                     it.addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
+                        override fun onAnimationEnd(animation: Animator) {
                             newHolder.expandIcon.rotation = postInfo.arrowRotation
                             dispatchAnimationFinished(newHolder)
                         }

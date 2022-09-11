@@ -859,11 +859,7 @@ private fun getFormattedProfileLevelString(context: Context, profile: String?, p
         else -> "${profile ?: unknownString} ($profileInt)"
     }
 
-    val levelNameString = if (level != null) {
-        if (level.isNotEmpty()) level else ""
-    } else {
-        unknownString
-    }
+    val levelNameString = level?.ifEmpty { "" } ?: unknownString
 
     return if (levelNameString.isNotEmpty()) {
         val levelString = when (option) {

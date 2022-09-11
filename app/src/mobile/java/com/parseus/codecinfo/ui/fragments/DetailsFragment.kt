@@ -80,7 +80,12 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             codecId = it.getString("codecId")
             codecName = it.getString("codecName")
             drmName = it.getString("drmName")
-            drmUuid = it.getSerializable("drmUuid") as UUID?
+            drmUuid = if (Build.VERSION.SDK_INT >= 33) {
+                it.getSerializable("drmUuid", UUID::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                it.getSerializable("drmUuid") as UUID?
+            }
         }
 
         if (Build.VERSION.SDK_INT >= 21) {

@@ -3,6 +3,7 @@ package com.parseus.codecinfo.ui
 import android.app.Application
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.color.DynamicColorsOptions
 import com.kieronquinn.monetcompat.core.MonetCompat
 import com.kieronquinn.monetcompat.core.WallpaperTypes
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
@@ -25,7 +26,8 @@ class CodecInfoApp : Application() {
                 it?.firstOrNull { color -> color == userPickedColor } ?: it?.firstOrNull()
             }
         } else {
-            DynamicColors.applyToActivitiesIfAvailable(this) { _, _ -> isDynamicThemingEnabled(this) }
+            DynamicColors.applyToActivitiesIfAvailable(this,
+                DynamicColorsOptions.Builder().setPrecondition { _, _ -> isDynamicThemingEnabled(this) }.build())
         }
     }
 

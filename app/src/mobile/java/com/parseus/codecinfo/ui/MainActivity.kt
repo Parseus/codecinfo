@@ -12,6 +12,7 @@ import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.activity.addCallback
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
@@ -22,14 +23,13 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.kieronquinn.monetcompat.app.MonetCompatActivity
 import com.kieronquinn.monetcompat.core.MonetCompat
 import com.kieronquinn.monetcompat.extensions.applyMonet
-import com.parseus.codecinfo.*
+import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
 import com.parseus.codecinfo.data.codecinfo.videoCodecList
@@ -100,6 +100,15 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         } else {
             initializeUI(savedInstanceState)
             window.updateStatusBarColor(this)
+        }
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
+                // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
+                finishAfterTransition()
+            } else if (!isInTwoPaneMode()) {
+                supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+            }
         }
     }
 
@@ -444,19 +453,6 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
             val imageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", iconFile)
             ClipData.newUri(contentResolver, null, imageUri)
         } catch (e: Exception) { null }
-    }
-
-    override fun onBackPressed() {
-        if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
-            // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
-            finishAfterTransition()
-        } else {
-            super.onBackPressed()
-
-            if (!isInTwoPaneMode()) {
-                supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-            }
-        }
     }
 
     companion object {

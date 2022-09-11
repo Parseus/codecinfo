@@ -1,5 +1,6 @@
 package com.parseus.codecinfo.ui.fragments
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +20,6 @@ import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
-import com.parseus.codecinfo.utils.isTv
 import java.util.*
 
 class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -29,11 +29,11 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private lateinit var propertyList: List<DetailsProperty>
 
-    var codecId: String? = null
-    var codecName: String? = null
+    private var codecId: String? = null
+    private var codecName: String? = null
 
-    var drmName: String? = null
-    var drmUuid: UUID? = null
+    private var drmName: String? = null
+    private var drmUuid: UUID? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ItemDetailsFragmentLayoutBinding.inflate(inflater, container, false)
@@ -52,7 +52,12 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
             codecId = it.getStringExtra("codecId")
             codecName = it.getStringExtra("codecName")
             drmName = it.getStringExtra("drmName")
-            drmUuid = it.getSerializableExtra("drmUuid") as UUID?
+            drmUuid = if (Build.VERSION.SDK_INT >= 33) {
+                it.getSerializableExtra("drmUuid", UUID::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                it.getSerializableExtra("drmUuid") as UUID?
+            }
         }
 
         if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {

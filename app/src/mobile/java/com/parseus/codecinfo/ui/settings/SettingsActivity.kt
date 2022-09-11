@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import android.view.Window
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
@@ -70,6 +71,15 @@ class SettingsActivity : MonetCompatActivity() {
         } else {
             initializeUI(savedInstanceState)
         }
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (supportFragmentManager.findFragmentByTag("about_fragment") != null) {
+                goBackToMainFragment()
+            } else if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
+                // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
+                finishAfterTransition()
+            }
+        }
     }
 
     private fun initializeUI(savedInstanceState: Bundle?) {
@@ -106,19 +116,6 @@ class SettingsActivity : MonetCompatActivity() {
             putExtra(DYNAMIC_THEME_CHANGED, dynamicThemeChanged)
         })
         super.finish()
-    }
-
-    override fun onBackPressed() {
-        when {
-            supportFragmentManager.findFragmentByTag("about_fragment") != null -> goBackToMainFragment()
-
-            Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0 -> {
-                // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
-                finishAfterTransition()
-            }
-
-            else -> super.onBackPressed()
-        }
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {

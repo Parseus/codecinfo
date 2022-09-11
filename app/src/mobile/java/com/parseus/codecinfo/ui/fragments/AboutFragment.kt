@@ -1,7 +1,9 @@
 package com.parseus.codecinfo.ui.fragments
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,8 +33,13 @@ class AboutFragment : Fragment() {
         with (binding) {
             showChangelog.setOnClickListener { showChangelog() }
             try {
-                appVersion.text = getString(R.string.app_version,
-                    requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0).versionName)
+                val packageInfo = if (Build.VERSION.SDK_INT >= 33) {
+                    requireActivity().packageManager.getPackageInfo(requireActivity().packageName, PackageManager.PackageInfoFlags.of(0L))
+                } else {
+                    @Suppress("DEPRECATION")
+                    requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0)
+                }
+                appVersion.text = getString(R.string.app_version, packageInfo.versionName)
             } catch (e: Exception) {
                 appVersion.isVisible = false
             }

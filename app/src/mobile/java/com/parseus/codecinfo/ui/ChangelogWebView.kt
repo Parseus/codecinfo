@@ -12,7 +12,7 @@ import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
 import com.parseus.codecinfo.utils.getSurfaceColor
 
-@Suppress("DEPRECATION")
+@Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
 class ChangelogWebView : WebView {
 
     constructor(context: Context): super(context)
@@ -28,13 +28,14 @@ class ChangelogWebView : WebView {
             allowFileAccessFromFileURLs = false
             allowUniversalAccessFromFileURLs = false
             cacheMode = WebSettings.LOAD_NO_CACHE
-            setAppCacheEnabled(false)
             saveFormData = false
-            if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-                val isDarkTheme =
-                    (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-                WebSettingsCompat.setForceDark(this,
-                    if (isDarkTheme) WebSettingsCompat.FORCE_DARK_ON else WebSettingsCompat.FORCE_DARK_OFF)
+
+            val isDarkTheme =
+                (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+            if (Build.VERSION.SDK_INT >= 33) {
+                if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+                    WebSettingsCompat.setAlgorithmicDarkeningAllowed(this, isDarkTheme)
+                }
             }
         }
         if (Build.VERSION.SDK_INT >= 26) {

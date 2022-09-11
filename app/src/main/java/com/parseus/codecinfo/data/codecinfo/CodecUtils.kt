@@ -266,6 +266,10 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             if (SDK_INT >= 31) {
                 propertyList.addFeature(context, capabilities, FEATURE_QpBounds, R.string.qp_bounds)
             }
+            if (SDK_INT >= 33) {
+                propertyList.addFeature(context, capabilities, FEATURE_EncodingStatistics, R.string.encoding_statistics)
+                propertyList.addFeature(context, capabilities, FEATURE_HdrEditing, R.string.hdr_editing)
+            }
         }
     }
 

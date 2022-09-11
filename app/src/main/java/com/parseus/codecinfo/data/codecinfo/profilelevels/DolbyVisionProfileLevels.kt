@@ -34,6 +34,9 @@ enum class DolbyVisionLevels(val value: Int) {
     DolbyVisionLevelUhd30(0x40),
     DolbyVisionLevelUhd48(0x80),
     DolbyVisionLevelUhd60(0x100),
+    DolbyVisionLevelUhd120(0x200),
+    DolbyVisionLevel8k30(0x400),
+    DolbyVisionLevel8k60(0x800),
     DolbyVisionLevelMax(0x7FFFFFFF);
 
     companion object {

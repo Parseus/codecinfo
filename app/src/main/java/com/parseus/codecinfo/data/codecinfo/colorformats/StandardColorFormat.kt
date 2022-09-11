@@ -61,7 +61,7 @@ enum class StandardColorFormat(val value: Int) {
     COLOR_FormatYVU422SemiPlanar(0x33),
     COLOR_FormatYVU422PackedSemiPlanar(0x34),
     COLOR_Format8bitBGR233(0x35),
-    COLOR_Format12bitBGR444(0x36),
+    COLOR_FormatYUVP010(0x36),
     COLOR_Format16bitBGRA4444(0x37),
     COLOR_Format16bitBGRA5551(0x38),
     COLOR_Format18bitBGRA5661(0x39),
@@ -79,6 +79,8 @@ enum class StandardColorFormat(val value: Int) {
     COLOR_FormatYUV422Flexible(0x7F422888),
     COLOR_FormatYUV444Flexible(0x7F444888),
     COLOR_FormatYUV444Y410(0x7F444AAA),
+    COLOR_Format32bitABGR2101010(0x7F00AAA2),
+    COLOR_Format64bitABGRFloat(0x7F000F16),
 
     COLOR_QCOM_FormatYUV420SemiPlanar (0x7FA30C00),
     COLOR_TI_FormatYUV420PackedSemiPlanar(0x7F000100),

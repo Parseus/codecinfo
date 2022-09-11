@@ -57,6 +57,8 @@
     <string name="tunneled_playback">Tunneled playback</string>
     <string name="low_latency">Low latency decoding</string>
     <string name="qp_bounds">Quantization parameter bounds</string>
+    <string name="encoding_statistics">Exporting encoding statistics</string>
+    <string name="hdr_editing">HDR editing</string>
 
     <string name="bitrate_modes">Bitrate modes</string>
     <string name="cbr" translatable="false">Constant bitrate (CBR)</string>

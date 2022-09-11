@@ -106,8 +106,13 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
             if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
                 // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
                 finishAfterTransition()
-            } else if (!isInTwoPaneMode()) {
-                supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+            } else {
+                if (!isInTwoPaneMode()) {
+                    supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+                }
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+                isEnabled = true
             }
         }
     }

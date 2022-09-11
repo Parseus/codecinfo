@@ -78,6 +78,10 @@ class SettingsActivity : MonetCompatActivity() {
             } else if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
                 // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
                 finishAfterTransition()
+            } else {
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+                isEnabled = true
             }
         }
     }
@@ -86,6 +90,7 @@ class SettingsActivity : MonetCompatActivity() {
         binding = SettingsMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(!isChromebook(this))
         if (savedInstanceState == null) {
             supportFragmentManager.commit { replace(R.id.content, SettingsFragment::class.java, null) }
         }
@@ -95,14 +100,15 @@ class SettingsActivity : MonetCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            goBackToMainFragment()
+            onBackPressedDispatcher.onBackPressed()
+            return true
         }
 
         return super.onOptionsItemSelected(item)
     }
 
     private fun goBackToMainFragment() {
-        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(!isChromebook(this))
         supportActionBar!!.title = getString(R.string.action_settings)
         supportFragmentManager.popBackStack()
     }

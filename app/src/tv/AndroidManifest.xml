@@ -1,6 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.parseus.codecinfo"
     tools:ignore="ImpliedTouchscreenHardware,UnsupportedChromeOsHardware">
 
     <uses-feature android:name="android.software.leanback" android:required="true" />

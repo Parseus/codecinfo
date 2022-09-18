@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace 'com.parseus.codecinfo'
     compileSdkVersion 33
     defaultConfig {
         applicationId "com.parseus.codecinfo"
@@ -12,7 +13,7 @@ android {
         targetSdkVersion 33
         versionCode 22
         versionName "2.4.0"
-        resConfigs "en"
+        resConfigs 'en'
 
         vectorDrawables.useSupportLibrary = true
     }
@@ -69,13 +70,15 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-
     packagingOptions {
-        exclude 'kotlin/**'
-        exclude '**/*.kotlin_metadata'
-        exclude 'META-INF/*.kotlin_module'
-        exclude 'META-INF/*.version'
+        jniLibs {
+            excludes += ['kotlin/**']
+        }
+        resources {
+            excludes += ['kotlin/**', '**/*.kotlin_metadata', 'META-INF/*.kotlin_module', 'META-INF/*.version']
+        }
     }
+
 
     variantFilter { variant ->
         def names = variant.flavors*.name

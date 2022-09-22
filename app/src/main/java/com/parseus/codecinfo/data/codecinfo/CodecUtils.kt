@@ -932,6 +932,11 @@ private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {
         return codecInfo.isSoftwareOnly
     }
 
+    // Hardware audio decoders aren't really a thing, particularly on older devices.
+    if (codecInfo.isAudioCodec()) {
+        return true
+    }
+
     val codecName = codecInfo.name.lowercase(Locale.ENGLISH)
 
     // Broadcom codecs which specifically mention HW acceleration in their names

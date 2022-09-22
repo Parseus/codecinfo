@@ -19,9 +19,8 @@ fun initializeSamsungGesture(context: Context, pager: ViewPager2, tabLayout: Tab
 fun destroySamsungGestures() {}
 fun launchStoreIntent(activity: android.app.Activity) {}
 fun checkForUpdate(activity: android.app.Activity, progressBar: LinearProgressIndicator?) {}
-fun handleFlexibleUpdateOnActivityResult(activity: android.app.Activity, requestCode: Int, resultCode: Int) {}
-fun handleFlexibleUpdateOnResume(activity: android.app.Activity) {}
-fun handleImmediateUpdateOnResume(activity: android.app.Activity) {}
+fun handleAppUpdateOnActivityResult(activity: android.app.Activity, requestCode: Int, resultCode: Int) {}
+fun handleAppUpdateOnResume(activity: android.app.Activity) {}
 
 inline fun showLicensesDialog(activity: AppCompatActivity) {
     LicenserDialog(activity)

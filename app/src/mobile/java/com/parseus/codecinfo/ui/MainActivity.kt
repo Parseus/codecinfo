@@ -29,6 +29,7 @@ import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.kieronquinn.monetcompat.app.MonetCompatActivity
 import com.kieronquinn.monetcompat.core.MonetCompat
 import com.kieronquinn.monetcompat.extensions.applyMonet
+import com.parseus.codecinfo.BuildConfig
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
@@ -132,8 +133,6 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
-        initializeAppRating(this)
-
         if (savedInstanceState != null) {
             recreateDetailFragmentIfNeedded()
         }
@@ -153,7 +152,17 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
             }
         }
 
-        checkForUpdate(this, binding.updateProgressBar)
+        if (!BuildConfig.DEBUG) {
+            initializeAppRating(this)
+            checkForUpdate(this, binding.updateProgressBar)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (!BuildConfig.DEBUG) {
+            handleAppUpdateOnActivityResult(this, requestCode, resultCode)
+        }
     }
 
     private fun recreateDetailFragmentIfNeedded() {
@@ -214,6 +223,10 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         if (shouldRecreateActivity) {
             ActivityCompat.recreate(this)
             return
+        }
+
+        if (!BuildConfig.DEBUG) {
+            handleAppUpdateOnResume(this)
         }
     }
 

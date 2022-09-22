@@ -40,6 +40,11 @@ private const val MIN_IMMEDIATE_UPDATE_PRIORITY = 4
 private lateinit var appUpdateManager: AppUpdateManager
 private lateinit var updateListener: InstallStateUpdatedListener
 
+enum class UpdateType {
+    Flexible, Immediate, Unknown
+}
+private var appUpdateType = UpdateType.Unknown
+
 fun initializeAppRating(activity: AppCompatActivity) {
     val rateManager = RateBottomSheetManager(activity)
     rateManager.monitor()
@@ -99,15 +104,19 @@ fun destroySamsungGestures() {
 }
 
 fun checkForUpdate(activity: Activity, progressBar: LinearProgressIndicator?) {
+    if (Build.VERSION.SDK_INT < 21 || getInstallSourceFromPackageManager(activity) != InstallSource.PlayStore) return
+
     appUpdateManager = AppUpdateManagerFactory.create(activity)
     appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
         if (info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
             if (info.updatePriority() >= MIN_IMMEDIATE_UPDATE_PRIORITY
                 && info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
-                appUpdateManager.startUpdateFlow(info, activity,
-                    AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE))
+                appUpdateType = UpdateType.Immediate
+                appUpdateManager.startUpdateFlowForResult(info, activity,
+                    AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE), UPDATE_REQUEST_CODE)
             } else if (info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
                 && info.updatePriority() <= MAX_FLEXIBLE_UPDATE_PRIORITY) {
+                appUpdateType = UpdateType.Flexible
                 updateListener = InstallStateUpdatedListener { state ->
                     when {
                         state.installStatus() == InstallStatus.DOWNLOADING -> {
@@ -127,14 +136,14 @@ fun checkForUpdate(activity: Activity, progressBar: LinearProgressIndicator?) {
                     }
                 }
                 appUpdateManager.registerListener(updateListener)
-                appUpdateManager.startUpdateFlow(info, activity,
-                    AppUpdateOptions.defaultOptions(AppUpdateType.FLEXIBLE))
+                appUpdateManager.startUpdateFlowForResult(info, activity,
+                    AppUpdateOptions.defaultOptions(AppUpdateType.FLEXIBLE), UPDATE_REQUEST_CODE)
             }
         }
     }
 }
 
-fun handleFlexibleUpdateOnActivityResult(activity: Activity, requestCode: Int, resultCode: Int) {
+fun handleAppUpdateOnActivityResult(activity: Activity, requestCode: Int, resultCode: Int) {
     if (requestCode == UPDATE_REQUEST_CODE) {
         if (resultCode == Activity.RESULT_CANCELED) {
             appUpdateManager.unregisterListener(updateListener)
@@ -145,7 +154,15 @@ fun handleFlexibleUpdateOnActivityResult(activity: Activity, requestCode: Int, r
     }
 }
 
-fun handleFlexibleUpdateOnResume(activity: Activity) {
+fun handleAppUpdateOnResume(activity: Activity) {
+    if (appUpdateType == UpdateType.Flexible) {
+        handleFlexibleUpdateOnResume(activity)
+    } else if (appUpdateType == UpdateType.Immediate) {
+        handleImmediateUpdateOnResume(activity)
+    }
+}
+
+private fun handleFlexibleUpdateOnResume(activity: Activity) {
     appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
         if (info.installStatus() == InstallStatus.DOWNLOADED) {
             appUpdateManager.unregisterListener(updateListener)
@@ -154,7 +171,7 @@ fun handleFlexibleUpdateOnResume(activity: Activity) {
     }
 }
 
-fun handleImmediateUpdateOnResume(activity: Activity) {
+private fun handleImmediateUpdateOnResume(activity: Activity) {
     appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
         if (info.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
             appUpdateManager.startUpdateFlow(info, activity, AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE))

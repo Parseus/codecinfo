@@ -15,7 +15,6 @@ import android.widget.CompoundButton
 import android.widget.ImageView
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -26,6 +25,7 @@ import androidx.core.view.forEach
 import androidx.preference.PreferenceManager
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigationrail.NavigationRailView
@@ -36,70 +36,174 @@ import com.kieronquinn.monetcompat.extensions.toArgb
 import com.parseus.codecinfo.R
 import kotlin.math.roundToInt
 
-fun isNativeMonetAvailable(): Boolean = Build.VERSION.SDK_INT >= 31
-        && "Google" == Build.MANUFACTURER && Build.MODEL.startsWith("Pixel")
+private const val TAG = "ThemeUtils"
+
+fun isNativeMonetAvailable(): Boolean = DynamicColors.isDynamicColorAvailable()
 
 fun isDynamicThemingEnabled(context: Context): Boolean {
     return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("dynamic_theme", false)
 }
 
 fun getPrimaryColor(context: Context): Int {
-    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
-        val monet = MonetCompat.getInstance()
-        if (context.isNightMode()) {
-            monet.getMonetColors().accent1[200]!!.toArgb()
+    return if (isDynamicThemingEnabled(context)) {
+        if (isNativeMonetAvailable()) {
+            if (context.isNightMode()) {
+                context.getColor(android.R.color.system_accent1_200)
+            } else {
+                context.getColor(android.R.color.system_accent1_600)
+            }
         } else {
-            monet.getMonetColors().accent1[600]!!.toArgb()
+            val monet = MonetCompat.getInstance()
+            if (context.isNightMode()) {
+                monet.getMonetColors().accent1[200]!!.toArgb()
+            } else {
+                monet.getMonetColors().accent1[600]!!.toArgb()
+            }
         }
     } else {
-        context.getAttributeColor(com.google.android.material.R.attr.colorPrimary)
+        MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, TAG)
+    }
+}
+
+fun getOnPrimaryColor(context: Context): Int {
+    return if (isDynamicThemingEnabled(context)) {
+        if (isNativeMonetAvailable()) {
+            if (context.isNightMode()) {
+                context.getColor(android.R.color.system_accent1_800)
+            } else {
+                context.getColor(android.R.color.system_accent1_0)
+            }
+        } else {
+            val monet = MonetCompat.getInstance()
+            if (context.isNightMode()) {
+                monet.getMonetColors().accent1[800]!!.toArgb()
+            } else {
+                monet.getMonetColors().accent1[0]!!.toArgb()
+            }
+        }
+    } else {
+        MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnPrimary, TAG)
     }
 }
 
 fun getSecondaryColor(context: Context): Int {
-    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
-        val monet = MonetCompat.getInstance()
-        if (context.isNightMode()) {
-            monet.getMonetColors().accent3[200]!!.toArgb()
+    return if (isDynamicThemingEnabled(context)) {
+        if (isNativeMonetAvailable()) {
+            if (context.isNightMode()) {
+                context.getColor(android.R.color.system_accent2_200)
+            } else {
+                context.getColor(android.R.color.system_accent2_600)
+            }
         } else {
-            monet.getMonetColors().accent3[600]!!.toArgb()
+            val monet = MonetCompat.getInstance()
+            if (context.isNightMode()) {
+                monet.getMonetColors().accent2[200]!!.toArgb()
+            } else {
+                monet.getMonetColors().accent2[600]!!.toArgb()
+            }
         }
     } else {
-        context.getAttributeColor(com.google.android.material.R.attr.colorSecondary)
+        MaterialColors.getColor(context, com.google.android.material.R.attr.colorSecondary, TAG)
+    }
+}
+
+fun getSecondaryContainerColor(context: Context): Int {
+    return if (isDynamicThemingEnabled(context)) {
+        if (isNativeMonetAvailable()) {
+            if (context.isNightMode()) {
+                context.getColor(android.R.color.system_accent2_700)
+            } else {
+                context.getColor(android.R.color.system_accent2_100)
+            }
+        } else {
+            val monet = MonetCompat.getInstance()
+            if (context.isNightMode()) {
+                monet.getMonetColors().accent2[700]!!.toArgb()
+            } else {
+                monet.getMonetColors().accent2[100]!!.toArgb()
+            }
+        }
+    } else {
+        MaterialColors.getColor(context, com.google.android.material.R.attr.colorSecondaryContainer, TAG)
+    }
+}
+
+fun getOnSecondaryContainerColor(context: Context): Int {
+    return if (isDynamicThemingEnabled(context)) {
+        if (isNativeMonetAvailable()) {
+            if (context.isNightMode()) {
+                context.getColor(android.R.color.system_accent2_100)
+            } else {
+                context.getColor(android.R.color.system_accent2_900)
+            }
+        } else {
+            val monet = MonetCompat.getInstance()
+            if (context.isNightMode()) {
+                monet.getMonetColors().accent2[100]!!.toArgb()
+            } else {
+                monet.getMonetColors().accent2[900]!!.toArgb()
+            }
+        }
+    } else {
+        MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnSecondaryContainer, TAG)
     }
 }
 
 fun getSurfaceColor(context: Context): Int {
-    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
-        MonetCompat.getInstance().getBackgroundColor(context)
+    return if (isDynamicThemingEnabled(context)) {
+        if (isNativeMonetAvailable()) {
+            if (context.isNightMode()) {
+                context.getColor(android.R.color.system_neutral1_900)
+            } else {
+                context.getColor(android.R.color.system_neutral1_10)
+            }
+        } else {
+            MonetCompat.getInstance().getBackgroundColor(context)
+        }
     } else {
-        context.getAttributeColor(com.google.android.material.R.attr.colorSurface)
+        MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, TAG)
     }
 }
 
 fun getColorOnSurface(context: Context): Int {
-    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
-        val monet = MonetCompat.getInstance()
-        if (context.isNightMode()) {
-            monet.getMonetColors().neutral1[100]!!.toArgb()
+    return if (isDynamicThemingEnabled(context)) {
+        if (isNativeMonetAvailable()) {
+            if (context.isNightMode()) {
+                context.getColor(android.R.color.system_neutral1_100)
+            } else {
+                context.getColor(android.R.color.system_neutral1_900)
+            }
         } else {
-            monet.getMonetColors().neutral1[900]!!.toArgb()
+            val monet = MonetCompat.getInstance()
+            if (context.isNightMode()) {
+                monet.getMonetColors().neutral1[100]!!.toArgb()
+            } else {
+                monet.getMonetColors().neutral1[900]!!.toArgb()
+            }
         }
     } else {
-        context.getAttributeColor(com.google.android.material.R.attr.colorOnSurface)
+        MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnSurface, TAG)
     }
 }
 
 fun getColorOnSurfaceVariant(context: Context): Int {
-    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
-        val monet = MonetCompat.getInstance()
-        if (context.isNightMode()) {
-            monet.getMonetColors().neutral2[200]!!.toArgb()
+    return if (isDynamicThemingEnabled(context)) {
+        if (isNativeMonetAvailable()) {
+            if (context.isNightMode()) {
+                context.getColor(android.R.color.system_neutral2_200)
+            } else {
+                context.getColor(android.R.color.system_neutral2_700)
+            }
         } else {
-            monet.getMonetColors().neutral2[700]!!.toArgb()
+            val monet = MonetCompat.getInstance()
+            if (context.isNightMode()) {
+                monet.getMonetColors().neutral2[200]!!.toArgb()
+            } else {
+                monet.getMonetColors().neutral2[700]!!.toArgb()
+            }
         }
     } else {
-        context.getAttributeColor(com.google.android.material.R.attr.colorSurfaceVariant)
+        MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnSurfaceVariant, TAG)
     }
 }
 
@@ -129,41 +233,32 @@ fun CompoundButton.updateColors(context: Context) {
 }
 
 fun Menu.updateIconColors(context: Context, @ColorInt toolbarColor: Int) {
-    if (isDynamicThemingEnabled(context)) {
-        if (!isNativeMonetAvailable()) {
+    val contentColor = if (isDynamicThemingEnabled(context)) {
+        if (isNativeMonetAvailable()) {
+            if (isColorLight(toolbarColor)) {
+                context.getColor(android.R.color.system_accent2_900)
+            } else {
+                context.getColor(android.R.color.system_accent2_100)
+            }
+        } else {
             val monet = MonetCompat.getInstance()
-            val contentColor = if (isColorLight(toolbarColor)) {
+            if (isColorLight(toolbarColor)) {
                 monet.getMonetColors().accent2[900]!!.toArgb()
             } else {
                 monet.getMonetColors().accent2[10]!!.toArgb()
             }
-
-            val searchView = findItem(R.id.menu_item_search).actionView as SearchView
-            val searchIcon = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_button)
-            searchIcon.setColorFilter(contentColor)
-
-            forEach {
-                it.icon?.run { mutate().colorFilter = BlendModeColorFilterCompat
-                    .createBlendModeColorFilterCompat(contentColor, BlendModeCompat.SRC_ATOP) }
-            }
         }
     } else {
-        val contentColor = context.getAttributeColor(com.google.android.material.R.attr.colorControlNormal)
-        val settingsColor = ContextCompat.getColor(context, R.color.white)
+        ContextCompat.getColor(context, com.google.android.material.R.color.m3_dark_default_color_primary_text)
+    }
 
-        val searchView = findItem(R.id.menu_item_search).actionView as SearchView
-        val searchIcon = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_button)
-        searchIcon.setColorFilter(contentColor)
+    val searchView = findItem(R.id.menu_item_search).actionView as SearchView
+    val searchIcon = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_button)
+    searchIcon.setColorFilter(contentColor)
 
-        forEach {
-            if (it.itemId == R.id.menu_item_settings) {
-                it.icon?.run { mutate().colorFilter = BlendModeColorFilterCompat
-                    .createBlendModeColorFilterCompat(settingsColor, BlendModeCompat.SRC_ATOP) }
-            } else {
-                it.icon?.run { mutate().colorFilter = BlendModeColorFilterCompat
-                    .createBlendModeColorFilterCompat(contentColor, BlendModeCompat.SRC_ATOP) }
-            }
-        }
+    forEach {
+        it.icon?.run { mutate().colorFilter = BlendModeColorFilterCompat
+            .createBlendModeColorFilterCompat(contentColor, BlendModeCompat.SRC_ATOP) }
     }
 }
 
@@ -173,14 +268,15 @@ private fun MaterialButton.updateColors(context: Context) {
 
 fun MaterialToolbar.updateToolBarColor(context: Context) {
     if (isDynamicThemingEnabled(context)) {
+        val backgroundColor = if (context.isNightMode()) {
+            getSurfaceColor(context)
+        } else {
+            getPrimaryColor(context)
+        }
+        setBackgroundColor(backgroundColor)
+
         if (!isNativeMonetAvailable()) {
             val monet = MonetCompat.getInstance()
-            val backgroundColor = if (context.isNightMode()) {
-                monet.getBackgroundColor(context, true)
-            } else {
-                getPrimaryColor(context)
-            }
-            setBackgroundColor(backgroundColor)
             val contentColor = if (isColorLight(backgroundColor)) {
                 monet.getMonetColors().accent3[900]!!.toArgb()
             } else {
@@ -188,78 +284,65 @@ fun MaterialToolbar.updateToolBarColor(context: Context) {
             }
             setTitleTextColor(contentColor)
             setNavigationIconTint(contentColor)
+        } else {
+            val contentColor = if (isColorLight(backgroundColor)) {
+                getColorOnSurface(context)
+            } else {
+                context.getColor(android.R.color.system_accent1_0)
+            }
+            setTitleTextColor(contentColor)
+            setNavigationIconTint(contentColor)
+            setTitleTextColor(context.getColor(com.google.android.material.R.color.m3_dark_default_color_primary_text))
         }
     } else {
         if (context.isNightMode()) {
-            setBackgroundColor(context.getAttributeColor(com.google.android.material.R.attr.colorSurface))
+            setBackgroundColor(MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, TAG))
         } else {
-            setBackgroundColor(context.getAttributeColor(com.google.android.material.R.attr.colorPrimary))
+            setBackgroundColor(MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, TAG))
         }
-        setTitleTextColor(ContextCompat.getColor(context,
-            com.google.android.material.R.color.m3_dark_default_color_primary_text))
+        setTitleTextColor(ContextCompat.getColor(context, com.google.android.material.R.color.m3_dark_default_color_primary_text))
     }
 }
 
 fun NavigationRailView.updateColors(context: Context) {
-    if (isDynamicThemingEnabled(context)) {
-        if (!isNativeMonetAvailable()) {
-            val monet = MonetCompat.getInstance()
-            val backgroundColor = if (context.isNightMode()) {
-                monet.getBackgroundColor(context, true)
-            } else {
-                getPrimaryColor(context)
-            }
-            DrawableCompat.setTintList(background.mutate(), ColorStateList.valueOf(backgroundColor))
+    val backgroundColor: Int
+    val activeTextColor: Int
+    val inactiveColor: Int
 
-            val indicatorColor = if (context.isNightMode()) {
-                monet.getMonetColors().accent3[700]!!.toArgb()
-            } else {
-                monet.getMonetColors().accent3[100]!!.toArgb()
-            }
-
-            itemActiveIndicatorColor = ColorStateList.valueOf(indicatorColor)
-
-            val activeColor = if (!isColorLight(backgroundColor)) {
-                monet.getMonetColors().neutral2[200]!!.toArgb()
-            } else {
-                monet.getMonetColors().neutral2[700]!!.toArgb()
-            }
-            val inactiveColor = if (!isColorLight(backgroundColor)) {
-                monet.getMonetColors().neutral1[100]!!.toArgb()
-            } else {
-                monet.getMonetColors().neutral1[900]!!.toArgb()
-            }
-
-            val itemTextColorStateList = ColorStateList(
-                arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked)),
-                intArrayOf(inactiveColor, activeColor)
-            )
-            itemTextColor = itemTextColorStateList
-        }
+    if (context.isNightMode()) {
+        backgroundColor = getSurfaceColor(context)
+        activeTextColor = getColorOnSurface(context)
+        inactiveColor = getColorOnSurfaceVariant(context)
     } else {
-        val backgroundColor = if (context.isNightMode()) {
-            context.getAttributeColor(com.google.android.material.R.attr.colorSurface)
-        } else {
-            context.getAttributeColor(com.google.android.material.R.attr.colorPrimary)
-        }
-        DrawableCompat.setTintList(background.mutate(), ColorStateList.valueOf(backgroundColor))
-        val indicatorColor = context.getAttributeColor(com.google.android.material.R.attr.colorSecondaryContainer)
-        itemActiveIndicatorColor = ColorStateList.valueOf(indicatorColor)
-
-        val activeColor = ContextCompat.getColor(context, com.google.android.material.R.color.m3_ref_palette_neutral95)
-        val inactiveColor = ContextCompat.getColor(context, com.google.android.material.R.color.m3_ref_palette_neutral70)
-        val itemTextColorStateList = ColorStateList(
-            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked)),
-            intArrayOf(activeColor, inactiveColor)
-        )
-        itemTextColor = itemTextColorStateList
+        backgroundColor = getPrimaryColor(context)
+        val onPrimaryColor = getOnPrimaryColor(context)
+        activeTextColor = onPrimaryColor
+        inactiveColor = onPrimaryColor
     }
+
+    val indicatorColor = getSecondaryContainerColor(context)
+    val activeIconColor = getOnSecondaryContainerColor(context)
+
+    DrawableCompat.setTintList(background.mutate(), ColorStateList.valueOf(backgroundColor))
+    itemActiveIndicatorColor = ColorStateList.valueOf(indicatorColor)
+
+    val itemTextColorStateList = ColorStateList(
+        arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked)),
+        intArrayOf(activeTextColor, inactiveColor)
+    )
+    itemTextColor = itemTextColorStateList
+
+    val itemIconColorStateList = ColorStateList(
+        arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf(-android.R.attr.state_checked)),
+        intArrayOf(activeIconColor, inactiveColor)
+    )
+    itemIconTintList = itemIconColorStateList
 
     itemRippleColor = getRippleColorForNavigationRail(context)
 }
 
 fun TabLayout.updateColors(context: Context) {
-    val textColors = if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
+    val textColors = if (isDynamicThemingEnabled(context)) {
         ColorStateList(
             arrayOf(
                 intArrayOf(-android.R.attr.state_enabled),
@@ -273,7 +356,7 @@ fun TabLayout.updateColors(context: Context) {
             )
         )
     } else {
-        AppCompatResources.getColorStateList(context, com.google.android.material.R.color.m3_tabs_icon_color)
+        ContextCompat.getColorStateList(context, com.google.android.material.R.color.m3_tabs_icon_color)
     }
 
     setSelectedTabIndicatorColor(getPrimaryColor(context))
@@ -288,18 +371,17 @@ fun TabLayout.updateColors(context: Context) {
 fun Window.updateStatusBarColor(context: Context) {
     if (Build.VERSION.SDK_INT >= 21) {
         val isDynamicTheming = isDynamicThemingEnabled(context)
-        val color = if (isDynamicTheming && !isNativeMonetAvailable()) {
-            val monet = MonetCompat.getInstance()
+        val color = if (isDynamicTheming) {
             if (context.isNightMode()) {
-                monet.getBackgroundColor(context)
+                getSurfaceColor(context)
             } else {
-                monet.getMonetColors().accent1[700]!!.toArgb()
+                getPrimaryColor(context)
             }
         } else {
             if (context.isNightMode()) {
-                context.getAttributeColor(com.google.android.material.R.attr.colorSurface)
+                MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, javaClass.canonicalName)
             } else {
-                context.getAttributeColor(com.google.android.material.R.attr.colorPrimaryVariant)
+                MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, javaClass.canonicalName)
             }
         }
 
@@ -321,7 +403,7 @@ fun Window.updateStatusBarColor(context: Context) {
 }
 
 private fun getRippleColorForMaterialButton(context: Context): ColorStateList? {
-    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
+    return if (isDynamicThemingEnabled(context)) {
         val colorPrimary = getPrimaryColor(context)
         val colorOnSurface = getColorOnSurface(context)
         ColorStateList(
@@ -340,12 +422,12 @@ private fun getRippleColorForMaterialButton(context: Context): ColorStateList? {
             )
         )
     } else {
-        AppCompatResources.getColorStateList(context, com.google.android.material.R.color.m3_text_button_ripple_color_selector)
+        ContextCompat.getColorStateList(context, com.google.android.material.R.color.m3_text_button_ripple_color_selector)
     }
 }
 
 private fun getRippleColorForNavigationRail(context: Context): ColorStateList? {
-    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
+    return if (isDynamicThemingEnabled(context)) {
         val colorPrimary = getPrimaryColor(context)
         val colorOnSurface = getColorOnSurface(context)
         ColorStateList(
@@ -380,12 +462,12 @@ private fun getRippleColorForNavigationRail(context: Context): ColorStateList? {
             )
         )
     } else {
-        AppCompatResources.getColorStateList(context, com.google.android.material.R.color.mtrl_navigation_bar_ripple_color)
+        ContextCompat.getColorStateList(context, com.google.android.material.R.color.mtrl_navigation_bar_ripple_color)
     }
 }
 
 private fun getRippleColorForTabLayout(context: Context): ColorStateList? {
-    return if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
+    return if (isDynamicThemingEnabled(context)) {
         val colorPrimary = getPrimaryColor(context)
         val colorOnSurfaceVariant = getColorOnSurfaceVariant(context)
 
@@ -417,16 +499,11 @@ private fun getRippleColorForTabLayout(context: Context): ColorStateList? {
             )
         )
     } else {
-        AppCompatResources.getColorStateList(context, com.google.android.material.R.color.m3_tabs_ripple_color)
+        ContextCompat.getColorStateList(context, com.google.android.material.R.color.m3_tabs_ripple_color)
     }
 }
 
 fun MaterialAlertDialogBuilder.updateBackgroundColor(context: Context): MaterialAlertDialogBuilder {
-    val surfaceColor = if (isDynamicThemingEnabled(context) && !isNativeMonetAvailable()) {
-        getSurfaceColor(context)
-    } else {
-        MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, javaClass.canonicalName)
-    }
     val materialShapeDrawable = MaterialShapeDrawable(
         context,
         null,
@@ -434,9 +511,7 @@ fun MaterialAlertDialogBuilder.updateBackgroundColor(context: Context): Material
         com.google.android.material.R.style.MaterialAlertDialog_MaterialComponents
     )
     materialShapeDrawable.initializeElevationOverlay(context)
-    materialShapeDrawable.fillColor = ColorStateList.valueOf(surfaceColor)
-
-    // dialogCornerRadius first appeared in Android Pie
+    materialShapeDrawable.fillColor = ColorStateList.valueOf(getSurfaceColor(context))
 
     // dialogCornerRadius first appeared in Android Pie
     if (Build.VERSION.SDK_INT >= 28) {

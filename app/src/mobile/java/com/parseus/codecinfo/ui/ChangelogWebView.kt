@@ -1,16 +1,12 @@
 package com.parseus.codecinfo.ui
 
 import android.content.Context
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.webkit.*
 import androidx.annotation.RequiresApi
-import androidx.webkit.WebSettingsCompat
-import androidx.webkit.WebViewFeature
-import com.parseus.codecinfo.utils.getSurfaceColor
 
 @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
 class ChangelogWebView : WebView {
@@ -20,8 +16,6 @@ class ChangelogWebView : WebView {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int): super(context, attrs, defStyleAttr)
 
     init {
-        setBackgroundColor(getSurfaceColor(context))
-
         settings.apply {
             allowContentAccess = false
             allowFileAccess = false
@@ -29,14 +23,6 @@ class ChangelogWebView : WebView {
             allowUniversalAccessFromFileURLs = false
             cacheMode = WebSettings.LOAD_NO_CACHE
             saveFormData = false
-
-            val isDarkTheme =
-                (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-            if (Build.VERSION.SDK_INT >= 33) {
-                if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
-                    WebSettingsCompat.setAlgorithmicDarkeningAllowed(this, isDarkTheme)
-                }
-            }
         }
         if (Build.VERSION.SDK_INT >= 26) {
             importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO

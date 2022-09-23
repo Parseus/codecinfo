@@ -413,6 +413,7 @@
     "urls": [
       "https://github.com/google/ExoPlayer/issues/398",
       "https://github.com/google/ExoPlayer/issues/4519",
+      "https://github.com/google/ExoPlayer/issues/5045",
       "https://github.com/google/ExoPlayer/pull/5216"
     ]
   },
@@ -466,6 +467,180 @@
     ],
     "urls": [
       "https://github.com/google/ExoPlayer/issues/5782"
+    ]
+  },
+  {
+    "id": 19,
+    "codec_name": "OMX.MTK.AUDIO.DECODER.MP3",
+    "description": "This decoder is known to set the number of audio channels in the output format to 2 for the given input format, whilst only actually outputting a single channel.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 18
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/801"
+    ]
+  },
+  {
+    "id": 20,
+    "codec_name": "OMX.rk.video_decoder.avc",
+    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 25
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2399"
+    ]
+  },
+  {
+    "id": 21,
+    "codec_name": "OMX.allwinner.video.decoder.avc",
+    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 17
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2399"
+    ]
+  },
+  {
+    "id": 22,
+    "codec_name": "OMX.broadcom.video_decoder.tunnel",
+    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 29
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2399"
+    ]
+  },
+  {
+    "id": 23,
+    "codec_name": "OMX.broadcom.video_decoder.tunnel.secure",
+    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 29
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2399"
+    ]
+  },
+  {
+    "id": 24,
+    "codec_name": "OMX.google.vorbis.decoder",
+    "description": "This decoder is known to behave incorrectly if flushed after receiving an input buffer with BUFFER_FLAG_END_OF_STREAM set.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 23
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2422"
+    ]
+  },
+  {
+    "id": 25,
+    "codec_name": "OMX.amlogic.avc.decoder.awesome",
+    "description": "This decoder is known to behave incorrectly if flushed after receiving an input buffer with BUFFER_FLAG_END_OF_STREAM set.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 19
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "hb2000"
+      },
+      {
+        "op": "equals",
+        "value": "stvm8"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2422"
+    ]
+  },
+  {
+    "id": 26,
+    "codec_name": "OMX.amlogic.avc.decoder.awesome.secure",
+    "description": "This decoder is known to behave incorrectly if flushed after receiving an input buffer with BUFFER_FLAG_END_OF_STREAM set.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 19
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "hb2000"
+      },
+      {
+        "op": "equals",
+        "value": "stvm8"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2422"
+    ]
+  },
+  {
+    "id": 27,
+    "codec_name": "c2.android.aac.decoder",
+    "description": "This decoder is known to behave incorrectly if flushed prior to having output a MediaFormat.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 29
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2383"
+    ]
+  },
+  {
+    "id": 28,
+    "codec_name": "OMX.MTK.VIDEO.DECODER.AVC",
+    "description": "This decoder is known to fail if NAL units are queued before the codec specific data.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 21
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2364"
+    ]
+  },
+  {
+    "id": 29,
+    "codec_name": "OMX.google.aac.decoder",
+    "description": "This decoder may throw an exception after recieving an end-of-stream buffer.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 21
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2459"
     ]
   }
 ]

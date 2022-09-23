@@ -122,7 +122,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
             val oldCodecInfos = Array(MediaCodecList.getCodecCount())
                 { i -> MediaCodecList.getCodecInfoAt(i) }.filter { it.name.endsWith("secure") }
             mediaCodecInfos += oldCodecInfos
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
     }
 
     if (SDK_INT in 22..25 && Build.DEVICE == "R9"
@@ -133,7 +133,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
             val rawMediaCodec = MediaCodec.createByCodecName(GOOGLE_RAW_DECODER)
             //noinspection NewApi
             mediaCodecInfos += rawMediaCodec.codecInfo
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
     }
 
     val showAliases = prefs.getBoolean("show_aliases", false)
@@ -157,6 +157,11 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
             } catch (e: Exception) {
                 // Some devices (e.g. Kindle Fire HD) can report a codec in the supported list
                 // but don't really implement it (or it's buggy). In this case just skip this.
+                return@forEachIndexed
+            }
+
+            if (codecId.startsWith("wfd")) {
+                // This type of video codecs can't be properly queried.
                 return@forEachIndexed
             }
 

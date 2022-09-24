@@ -227,6 +227,7 @@ inline fun showLicensesDialog(activity: AppCompatActivity) {
         .setLibrary(Library("Okio", "https://github.com/square/okio", License.APACHE2))
         .setLibrary(Library("RateBottomSheet", "https://github.com/lopspower/RateBottomSheet", License.APACHE2))
         .setLibrary(Library("Licenser", "https://github.com/marcoscgdev/Licenser", License.MIT))
+        .setLibrary(Library("MonetCompat", "https://github.com/KieronQuinn/MonetCompat", License.MIT))
         .setPositiveButton(android.R.string.ok, null)
         .setBackgroundColor(getSurfaceColor(activity))
         .show()

@@ -43,6 +43,12 @@ class SettingsActivity : MonetCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CodecInfo)
+        if (Build.VERSION.SDK_INT >= 17) {
+            val startingFromAlias = intent?.component?.className?.startsWith("alias.SettingsActivity") == true
+            if (startingFromAlias) {
+                delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            }
+        }
 
         super.onCreate(savedInstanceState)
 

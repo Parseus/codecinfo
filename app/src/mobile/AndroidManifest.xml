@@ -36,6 +36,7 @@
             <!-- Support tinting the launcher icon by One UI 4.1 and newer. -->
             <meta-data android:name="com.sec.android.app.launcher.icon_theme" android:value="themeColor" />
         </activity>
+
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/action_settings"
@@ -44,6 +45,28 @@
                 android:name="com.samsung.android.dex.transient_bar_delay"
                 android:value="2000" />
         </activity>
+        <activity-alias
+            android:name="alias.SettingsActivity"
+            android:enabled="false"
+            android:targetActivity=".ui.settings.SettingsActivity"
+            android:label="@string/action_settings"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="alias.SettingsActivitySamsung"
+            android:enabled="false"
+            android:targetActivity=".ui.settings.SettingsActivity"
+            android:label="@string/action_settings"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.sec.android.intent.action.SEC_APPLICATION_SETTINGS" />
+                <category android:name="com.sec.android.intent.category.SEC_APPLICATION_SETTINGS" />
+            </intent-filter>
+        </activity-alias>
 
         <uses-library
             android:name="com.sec.android.app.multiwindow"

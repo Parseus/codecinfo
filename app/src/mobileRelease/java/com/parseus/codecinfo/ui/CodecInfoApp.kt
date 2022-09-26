@@ -1,6 +1,9 @@
 package com.parseus.codecinfo.ui
 
 import android.app.Application
+import android.content.ComponentName
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
@@ -35,6 +38,21 @@ class CodecInfoApp : Application() {
         val color = PreferenceManager.getDefaultSharedPreferences(this@CodecInfoApp)
             .getInt("selected_color", Int.MAX_VALUE)
         return@withContext  if (color == Int.MAX_VALUE) null else color
+    }
+
+    private fun enableSettingsIntentFilter() {
+        val pm = packageManager
+        val standardComponentName = ComponentName(packageName, "alias.SettingsActivity")
+        val samsungComponentName = ComponentName(packageName, "alias.SettingsActivitySamsung")
+
+        // This is done to avoid duplicate settings entries on Samsung devices.
+        if (Build.MANUFACTURER != "samsung") {
+            pm.setComponentEnabledSetting(samsungComponentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+            pm.setComponentEnabledSetting(standardComponentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+        } else {
+            pm.setComponentEnabledSetting(samsungComponentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+            pm.setComponentEnabledSetting(standardComponentName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+        }
     }
 
 }

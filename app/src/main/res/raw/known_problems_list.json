@@ -642,5 +642,23 @@
     "urls": [
       "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2459"
     ]
+  },
+  {
+    "id": 30,
+    "codec_name": "c2.qti.video.decoder.hevc",
+    "description": "HEVC codec on Pixel and Pixel XL declares support for 10-bit videos despite not actually supporting them.",
+    "devices": [
+      {
+        "op": "equals",
+        "value": "marlin"
+      },
+      {
+        "op": "equals",
+        "value": "sailfish"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/3537"
+    ]
   }
 ]

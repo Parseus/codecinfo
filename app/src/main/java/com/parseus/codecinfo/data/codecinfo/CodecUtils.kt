@@ -519,7 +519,7 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
             if (mediaFormat.containsKey("max-channel-count")) {
                 return mediaFormat.getString("max-channel-count")!!.toInt()
             }
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
     }
 
     if (codecId.endsWith("flac") || codecId.endsWith("alac")) {
@@ -781,6 +781,9 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
                 level = H263Levels.from(it.level)
             }
             codecId.contains("hevc") || codecId.contains("heic") || codecId.contains("heif") -> {
+                if (needsHevc10BitProfileExcluded(codecId, it.profile)) {
+                    return@forEach
+                }
                 profile = HEVCProfiles.from(it.profile)
                 level = HEVCLevels.from(it.level)
             }
@@ -997,4 +1000,10 @@ private fun areCapabilitiesUnknown(videoCapabilities: MediaCodecInfo.VideoCapabi
     return videoCapabilities.supportedFrameRates.upper == DEFAULT_MAX_FRAME_RATE
             && videoCapabilities.supportedWidths.upper == DEFAULT_MAX_SIZE
             && videoCapabilities.supportedHeights.upper == DEFAULT_MAX_SIZE
+}
+
+private fun needsHevc10BitProfileExcluded(codecId: String, profile: Int): Boolean {
+    // See https://github.com/google/ExoPlayer/issues/3537 for more info.
+    return "video/hevc" == codecId && HEVCProfiles.HEVCProfileMain10.value == profile
+            && ("sailfish" == Build.DEVICE || "marlin" == Build.DEVICE)
 }

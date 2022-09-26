@@ -33,6 +33,8 @@
             <!-- Hide the back button on Chromebooks. -->
             <meta-data android:name="WindowManagerPreference:SuppressWindowControlNavigationButton"
                 android:value="true" />
+            <!-- Support tinting the launcher icon by One UI 4.1 and newer. -->
+            <meta-data android:name="com.sec.android.app.launcher.icon_theme" android:value="themeColor" />
         </activity>
         <activity
             android:name=".ui.settings.SettingsActivity"

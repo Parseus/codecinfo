@@ -105,6 +105,7 @@ android {
 
 configurations {
     nonFreeMobileImplementation {}
+    standardMobileImplementation {}
     nonFreeMobileDebugImplementation {}
     standardMobileDebugImplementation {}
 }
@@ -127,6 +128,8 @@ dependencies {
 
     tvImplementation 'androidx.leanback:leanback:1.2.0-alpha02'
     tvImplementation 'androidx.leanback:leanback-preference:1.2.0-alpha02'
+
+    standardMobileImplementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
 
     mobileImplementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     mobileImplementation 'androidx.core:core-splashscreen:1.0.0'

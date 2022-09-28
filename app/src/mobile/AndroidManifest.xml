@@ -3,6 +3,13 @@
 
     <uses-sdk tools:overrideLibrary="androidx.core.splashscreen, com.kieronquinn.monetcompat" />
 
+    <!--
+        MonetCompat declares this, because WallpaperManager.getDrawable() (used to feed the Palette
+        on Android <= 8.0) allegedly requires this, even though it seems to work without it, anyway.
+        Since getWallpaperColors() (used on >= 8.1) never needs this, don't declare it on newer APIs.
+    -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="26" />
+
     <application
         android:name=".ui.CodecInfoApp"
         android:resizeableActivity="true"

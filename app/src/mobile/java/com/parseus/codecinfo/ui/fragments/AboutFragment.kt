@@ -2,6 +2,7 @@ package com.parseus.codecinfo.ui.fragments
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.AdaptiveIconDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -9,6 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -55,6 +59,13 @@ class AboutFragment : Fragment() {
             sendFeedback.setOnClickListener { sendFeedbackEmail() }
 
             supportHeaderText.setTextColor(getSecondaryColor(requireContext()))
+
+            val icon = AppCompatResources.getDrawable(requireContext(), R.mipmap.ic_launcher)
+            if (Build.VERSION.SDK_INT >= 26 && icon is AdaptiveIconDrawable && isDynamicThemingEnabled(requireContext())) {
+                icon.background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                    getPrimaryColor(requireContext()), BlendModeCompat.SRC_ATOP)
+            }
+            appIcon.setImageDrawable(icon)
         }
     }
 

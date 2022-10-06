@@ -475,7 +475,7 @@ private fun getAudioCapabilities(context: Context, codecId: String, codecName: S
             if (sampleRates[0].lower == sampleRates[0].upper) {
                 "${sampleRates[0].upper.toKiloHertz()} kHz"
             } else {
-                "${sampleRates[0].lower.toKiloHertz()}, ${sampleRates[0].upper.toKiloHertz()} kHz"
+                "${sampleRates[0].lower.toKiloHertz()} kHz \u2014 ${sampleRates[0].upper.toKiloHertz()} kHz"
             }
         }
     }

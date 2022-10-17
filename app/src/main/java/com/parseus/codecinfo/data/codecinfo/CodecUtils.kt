@@ -21,6 +21,7 @@ import com.parseus.codecinfo.data.codecinfo.profilelevels.VP9Levels.*
 import com.parseus.codecinfo.utils.*
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.min
 
 // Source:
 // https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android10-release/media/java/android/media/MediaCodecInfo.java#1052
@@ -37,6 +38,9 @@ private const val DIVX6_720P_MAX_FRAME_RATE = 60
 private const val DIVX6_1080P_MAX_FRAME_RATE = 30
 private val DIVX4_MAX_RESOLUTION = intArrayOf(720, 576)
 private val DIVX6_MAX_RESOLUTION = intArrayOf(1920, 1080)
+
+// TODO: Find a good official source of the spec.
+private const val AC3_MAX_SAMPLE_RATE = 48000
 
 private const val GOOGLE_RAW_DECODER = "OMX.google.raw.decoder"
 private const val MEDIATEK_RAW_DECODER = "OMX.MTK.AUDIO.DECODER.RAW"
@@ -472,10 +476,19 @@ private fun getAudioCapabilities(context: Context, codecId: String, codecName: S
         }
 
         else -> {
-            if (sampleRates[0].lower == sampleRates[0].upper) {
-                "${sampleRates[0].upper.toKiloHertz()} kHz"
+            var lower = sampleRates[0].lower
+            var upper = sampleRates[0].upper
+
+            // Some AC3 codecs, especially on older devices, provide maximum sample rate
+            // bigger than it's actually allowed by the spec.
+            if (codecId.endsWith("ac3")) {
+                lower = min(lower, AC3_MAX_SAMPLE_RATE)
+                upper = min(upper, AC3_MAX_SAMPLE_RATE)
+            }
+            if (lower == upper) {
+                "${upper.toKiloHertz()} kHz"
             } else {
-                "${sampleRates[0].lower.toKiloHertz()} kHz \u2014 ${sampleRates[0].upper.toKiloHertz()} kHz"
+                "${lower.toKiloHertz()} kHz \u2014 ${upper.toKiloHertz()} kHz"
             }
         }
     }

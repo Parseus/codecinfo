@@ -1,17 +1,15 @@
-package com.parseus.codecinfo.ui.settings
+package com.parseus.codecinfo.ui
 
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.addCallback
 import androidx.fragment.app.FragmentActivity
+import com.parseus.codecinfo.R
 
-class TvSettingsActivity : FragmentActivity() {
+class TvDeviceIssuesActivity : FragmentActivity(R.layout.activity_tv_device_issues) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction().replace(android.R.id.content, TvSettingsFragment()).commit()
-        }
 
         onBackPressedDispatcher.addCallback(this) {
             if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {

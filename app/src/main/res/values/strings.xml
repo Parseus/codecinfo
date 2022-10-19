@@ -10,6 +10,7 @@
     <string name="copyright" translatable="false">\u00A9 2018-2022 KN-Soft</string>
     <string name="source_code_link" translatable="false">https://github.com/Parseus/codecinfo</string>
 
+    <string name="action_warning">Show device warnings</string>
     <string name="action_search">Search</string>
     <string name="search_hint">Search codec/DRM info</string>
     <string name="search_settings_description">Codec/DRM info</string>

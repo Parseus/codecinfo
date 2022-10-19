@@ -35,9 +35,13 @@ import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
 import com.parseus.codecinfo.data.codecinfo.videoCodecList
 import com.parseus.codecinfo.data.drm.drmList
+import com.parseus.codecinfo.data.knownproblems.DATABASES_INITIALIZED
+import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.databinding.ActivityMainBinding
+import com.parseus.codecinfo.databinding.DeviceIssuesLayoutBinding
+import com.parseus.codecinfo.ui.adapters.DeviceIssuesAdapter
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.ui.settings.DarkTheme
 import com.parseus.codecinfo.ui.settings.SettingsContract
@@ -139,10 +143,11 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
         handleIntent(intent)
 
-        if (KNOWN_PROBLEMS_DB.isEmpty()) {
+        if (!DATABASES_INITIALIZED) {
             val moshi = Moshi.Builder().build()
             val type = Types.newParameterizedType(List::class.java, KnownProblem::class.java)
             val adapter = moshi.adapter<List<KnownProblem>>(type)
+
             try {
                 resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
                     KNOWN_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
@@ -150,6 +155,16 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
             } catch (e: Exception) {
                 KNOWN_PROBLEMS_DB = emptyList()
             }
+
+            try {
+                resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
+                    DEVICE_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
+                }
+            } catch (e: Exception) {
+                DEVICE_PROBLEMS_DB = emptyList()
+            }
+
+            DATABASES_INITIALIZED = true
         }
 
         if (!BuildConfig.DEBUG) {
@@ -322,6 +337,16 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 supportFragmentManager.popBackStack()
             }
 
+            R.id.menu_item_warning -> {
+                val dialogViewBinding = DeviceIssuesLayoutBinding.inflate(layoutInflater)
+                dialogViewBinding.root.adapter = DeviceIssuesAdapter(DEVICE_PROBLEMS_DB)
+                val dialogBuilder = MaterialAlertDialogBuilder(this).setView(dialogViewBinding.root)
+                val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
+                dialog.show()
+                dialog.applyMonet()
+                dialog.updateButtonColors(dialogBuilder.context)
+            }
+
             R.id.menu_item_share -> {
                 val detailsFragment = supportFragmentManager.findFragmentByTag(
                         getString(R.string.details_fragment_tag)) as? DetailsFragment
@@ -374,6 +399,13 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
            setSearchableInfo(searchManager.getSearchableInfo(componentName))
            setOnQueryTextListener(this@MainActivity)
        }
+
+        val knownProblems = DEVICE_PROBLEMS_DB.filter {
+            it.isAffected(this, null)
+        }
+        if (knownProblems.isNotEmpty()) {
+            menu.findItem(R.id.menu_item_warning).isVisible = true
+        }
 
         return super.onCreateOptionsMenu(menu)
     }

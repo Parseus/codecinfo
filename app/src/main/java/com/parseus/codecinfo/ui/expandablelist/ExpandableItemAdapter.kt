@@ -2,16 +2,20 @@ package com.parseus.codecinfo.ui.expandablelist
 
 import android.text.Spannable
 import android.text.SpannableStringBuilder
+import android.text.util.Linkify.WEB_URLS
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.text.util.LinkifyCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.databinding.ExpandableItemContentBinding
 import com.parseus.codecinfo.databinding.ExpandableItemHeaderBinding
+import com.parseus.codecinfo.ui.ImprovedBulletSpan
+import me.saket.bettermovementmethod.BetterLinkMovementMethod
 import kotlin.properties.Delegates
 
 class ExpandableItemAdapter(private val knownProblemsList: List<KnownProblem>)
@@ -82,7 +86,11 @@ class ExpandableItemAdapter(private val knownProblemsList: List<KnownProblem>)
                         setSpan(ImprovedBulletSpan(), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                     }
                 }
-                binding.knownIssueItemSources.setText(spannableBuilder, TextView.BufferType.SPANNABLE)
+                binding.knownIssueItemSources.run {
+                    setText(spannableBuilder, TextView.BufferType.SPANNABLE)
+                    LinkifyCompat.addLinks(this, WEB_URLS)
+                    movementMethod = BetterLinkMovementMethod.getInstance()
+                }
             }
         }
 

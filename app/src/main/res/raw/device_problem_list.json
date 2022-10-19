@@ -1,0 +1,737 @@
+[
+  {
+    "id": 1,
+    "description": "OEM-provided codecs for MiTV and MiBox devices are known to implement MediaCodec#setOutputSurface(Surface) incorrectly.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 28
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "aquaman"
+      },
+      {
+        "op": "equals",
+        "value": "dangal"
+      },
+      {
+        "op": "equals",
+        "value": "dangalUHD"
+      },
+      {
+        "op": "equals",
+        "value": "dangalFHD"
+      },
+      {
+        "op": "equals",
+        "value": "magnolia"
+      },
+      {
+        "op": "equals",
+        "value": "machuca"
+      },
+      {
+        "op": "equals",
+        "value": "once"
+      },
+      {
+        "op": "equals",
+        "value": "oneday"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/5169",
+      "https://github.com/google/ExoPlayer/issues/6899",
+      "https://github.com/google/ExoPlayer/issues/8014",
+      "https://github.com/google/ExoPlayer/issues/8329",
+      "https://github.com/google/ExoPlayer/issues/9710"
+    ]
+  },
+  {
+    "id": 2,
+    "description": "OEM-provided codecs for Huawei P20 are known to implement MediaCodec#setOutputSurface(Surface) incorrectly.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 27
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "HWEML"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/4468#issuecomment-459291645"
+    ]
+  },
+  {
+    "id": 3,
+    "description": "OEM-provided codecs for some FireTV devices are known to implement MediaCodec#setOutputSurface(Surface) incorrectly.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "models": [
+      {
+        "op": "equals",
+        "value": "AFTA"
+      },
+      {
+        "op": "equals",
+        "value": "AFTN"
+      },
+      {
+        "op": "equals",
+        "value": "AFTR"
+      },
+      {
+        "op": "equals",
+        "value": "AFTEU011"
+      },
+      {
+        "op": "equals",
+        "value": "AFTEU014"
+      },
+      {
+        "op": "equals",
+        "value": "AFTEUFF014"
+      },
+      {
+        "op": "equals",
+        "value": "AFTJMST12"
+      },
+      {
+        "op": "equals",
+        "value": "AFTKMST12"
+      },
+      {
+        "op": "equals",
+        "value": "AFTSO001"
+      }
+    ],
+    "urls": [
+      "https://github.com/amzn/exoplayer-amazon-port/commit/b77015591c0873d1d02796a45ecd2ed8ee8eca10"
+    ]
+  },
+  {
+    "id": 4,
+    "description": "OEM-provided codecs for many devices (including this one) with Android 8.0 or older are known to implement MediaCodec#setOutputSurface(Surface) incorrectly.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 26
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "1601"
+      },
+      {
+        "op": "equals",
+        "value": "1713"
+      },
+      {
+        "op": "equals",
+        "value": "1714"
+      },
+      {
+        "op": "equals",
+        "value": "601LV"
+      },
+      {
+        "op": "equals",
+        "value": "602LV"
+      },
+      {
+        "op": "equals",
+        "value": "A10-70F"
+      },
+      {
+        "op": "equals",
+        "value": "A10-70L"
+      },
+      {
+        "op": "equals",
+        "value": "A1601"
+      },
+      {
+        "op": "equals",
+        "value": "A2016a40"
+      },
+      {
+        "op": "equals",
+        "value": "A7000-a"
+      },
+      {
+        "op": "equals",
+        "value": "A7000plus"
+      },
+      {
+        "op": "equals",
+        "value": "A7010a48"
+      },
+      {
+        "op": "equals",
+        "value": "A7020a48"
+      },
+      {
+        "op": "equals",
+        "value": "AquaPowerM"
+      },
+      {
+        "op": "equals",
+        "value": "ASUS_X00AD_2"
+      },
+      {
+        "op": "equals",
+        "value": "Aura_Note_2"
+      },
+      {
+        "op": "equals",
+        "value": "b5"
+      },
+      {
+        "op": "equals",
+        "value": "BLACK-1X"
+      },
+      {
+        "op": "equals",
+        "value": "BRAVIA_ATV2"
+      },
+      {
+        "op": "equals",
+        "value": "BRAVIA_ATV3_4K"
+      },
+      {
+        "op": "equals",
+        "value": "C1"
+      },
+      {
+        "op": "equals",
+        "value": "ComioS1"
+      },
+      {
+        "op": "equals",
+        "value": "CP8676_I02"
+      },
+      {
+        "op": "equals",
+        "value": "CPH1609"
+      },
+      {
+        "op": "equals",
+        "value": "CPH1715"
+      },
+      {
+        "op": "equals",
+        "value": "CPY83_I00"
+      },
+      {
+        "op": "equals",
+        "value": "cv1"
+      },
+      {
+        "op": "equals",
+        "value": "cv3"
+      },
+      {
+        "op": "equals",
+        "value": "deb"
+      },
+      {
+        "op": "equals",
+        "value": "DM-01K"
+      },
+      {
+        "op": "equals",
+        "value": "E5643"
+      },
+      {
+        "op": "equals",
+        "value": "ELUGA_A3_Pro"
+      },
+      {
+        "op": "equals",
+        "value": "ELUGA_Note"
+      },
+      {
+        "op": "equals",
+        "value": "ELUGA_Prim"
+      },
+      {
+        "op": "equals",
+        "value": "ELUGA_Ray_X"
+      },
+      {
+        "op": "equals",
+        "value": "EverStar_S"
+      },
+      {
+        "op": "equals",
+        "value": "F01H"
+      },
+      {
+        "op": "equals",
+        "value": "F01J"
+      },
+      {
+        "op": "equals",
+        "value": "F02H"
+      },
+      {
+        "op": "equals",
+        "value": "F03H"
+      },
+      {
+        "op": "equals",
+        "value": "F04H"
+      },
+      {
+        "op": "equals",
+        "value": "F04J"
+      },
+      {
+        "op": "equals",
+        "value": "F3111"
+      },
+      {
+        "op": "equals",
+        "value": "F3113"
+      },
+      {
+        "op": "equals",
+        "value": "F3116"
+      },
+      {
+        "op": "equals",
+        "value": "F3211"
+      },
+      {
+        "op": "equals",
+        "value": "F3213"
+      },
+      {
+        "op": "equals",
+        "value": "F3215"
+      },
+      {
+        "op": "equals",
+        "value": "F3311"
+      },
+      {
+        "op": "equals",
+        "value": "flo"
+      },
+      {
+        "op": "equals",
+        "value": "fugu"
+      },
+      {
+        "op": "equals",
+        "value": "GiONEE_CBL7513"
+      },
+      {
+        "op": "equals",
+        "value": "GiONEE_GBL7319"
+      },
+      {
+        "op": "equals",
+        "value": "GIONEE_GBL7360"
+      },
+      {
+        "op": "equals",
+        "value": "GIONEE_SWW1609"
+      },
+      {
+        "op": "equals",
+        "value": "GIONEE_SWW1627"
+      },
+      {
+        "op": "equals",
+        "value": "GIONEE_SWW1631"
+      },
+      {
+        "op": "equals",
+        "value": "GIONEE_WBL5708"
+      },
+      {
+        "op": "equals",
+        "value": "GIONEE_WBL7365"
+      },
+      {
+        "op": "equals",
+        "value": "GIONEE_WBL7519"
+      },
+      {
+        "op": "equals",
+        "value": "griffin"
+      },
+      {
+        "op": "equals",
+        "value": "htc_e56ml_dtul"
+      },
+      {
+        "op": "equals",
+        "value": "hwALE-H"
+      },
+      {
+        "op": "equals",
+        "value": "HWBLN-H"
+      },
+      {
+        "op": "equals",
+        "value": "HWCAM-H"
+      },
+      {
+        "op": "equals",
+        "value": "HWVNS-H"
+      },
+      {
+        "op": "equals",
+        "value": "HWWAS-H"
+      },
+      {
+        "op": "equals",
+        "value": "i9031"
+      },
+      {
+        "op": "equals",
+        "value": "iball8735_9806"
+      },
+      {
+        "op": "equals",
+        "value": "Infinix-X572"
+      },
+      {
+        "op": "equals",
+        "value": "iris60"
+      },
+      {
+        "op": "equals",
+        "value": "itel_S41"
+      },
+      {
+        "op": "equals",
+        "value": "j2xlteins"
+      },
+      {
+        "op": "equals",
+        "value": "JGZ"
+      },
+      {
+        "op": "equals",
+        "value": "K50a40"
+      },
+      {
+        "op": "equals",
+        "value": "kate"
+      },
+      {
+        "op": "equals",
+        "value": "l5460"
+      },
+      {
+        "op": "equals",
+        "value": "le_x6"
+      },
+      {
+        "op": "equals",
+        "value": "LS-5017"
+      },
+      {
+        "op": "equals",
+        "value": "M04"
+      },
+      {
+        "op": "equals",
+        "value": "M5c"
+      },
+      {
+        "op": "equals",
+        "value": "manning"
+      },
+      {
+        "op": "equals",
+        "value": "marino_f"
+      },
+      {
+        "op": "equals",
+        "value": "MEIZU_M5"
+      },
+      {
+        "op": "equals",
+        "value": "mh"
+      },
+      {
+        "op": "equals",
+        "value": "mido"
+      },
+      {
+        "op": "equals",
+        "value": "MX6"
+      },
+      {
+        "op": "equals",
+        "value": "namath"
+      },
+      {
+        "op": "equals",
+        "value": "nicklaus_f"
+      },
+      {
+        "op": "equals",
+        "value": "NX541J"
+      },
+      {
+        "op": "equals",
+        "value": "NX573J"
+      },
+      {
+        "op": "equals",
+        "value": "OnePlus5T"
+      },
+      {
+        "op": "equals",
+        "value": "p212"
+      },
+      {
+        "op": "equals",
+        "value": "P681"
+      },
+      {
+        "op": "equals",
+        "value": "P85"
+      },
+      {
+        "op": "equals",
+        "value": "pacificrim"
+      },
+      {
+        "op": "equals",
+        "value": "panell_d"
+      },
+      {
+        "op": "equals",
+        "value": "panell_dl"
+      },
+      {
+        "op": "equals",
+        "value": "panell_ds"
+      },
+      {
+        "op": "equals",
+        "value": "panell_dt"
+      },
+      {
+        "op": "equals",
+        "value": "PB2-670M"
+      },
+      {
+        "op": "equals",
+        "value": "PGN528"
+      },
+      {
+        "op": "equals",
+        "value": "PGN610"
+      },
+      {
+        "op": "equals",
+        "value": "PGN611"
+      },
+      {
+        "op": "equals",
+        "value": "Phantom6"
+      },
+      {
+        "op": "equals",
+        "value": "Pixi4-7_3G"
+      },
+      {
+        "op": "equals",
+        "value": "Pixi5-10_4G"
+      },
+      {
+        "op": "equals",
+        "value": "PLE"
+      },
+      {
+        "op": "equals",
+        "value": "PRO7S"
+      },
+      {
+        "op": "equals",
+        "value": "Q350"
+      },
+      {
+        "op": "equals",
+        "value": "Q4260"
+      },
+      {
+        "op": "equals",
+        "value": "Q427"
+      },
+      {
+        "op": "equals",
+        "value": "Q4310"
+      },
+      {
+        "op": "equals",
+        "value": "Q5"
+      },
+      {
+        "op": "equals",
+        "value": "QM16XE_U"
+      },
+      {
+        "op": "equals",
+        "value": "QX1"
+      },
+      {
+        "op": "equals",
+        "value": "RAIJIN"
+      },
+      {
+        "op": "equals",
+        "value": "santoni"
+      },
+      {
+        "op": "equals",
+        "value": "Slate_Pro"
+      },
+      {
+        "op": "equals",
+        "value": "SVP-DTV15"
+      },
+      {
+        "op": "equals",
+        "value": "s905x018"
+      },
+      {
+        "op": "equals",
+        "value": "taido_row"
+      },
+      {
+        "op": "equals",
+        "value": "TB3-730F"
+      },
+      {
+        "op": "equals",
+        "value": "TB3-730X"
+      },
+      {
+        "op": "equals",
+        "value": "TB3-850F"
+      },
+      {
+        "op": "equals",
+        "value": "TB3-850M"
+      },
+      {
+        "op": "equals",
+        "value": "tcl_eu"
+      },
+      {
+        "op": "equals",
+        "value": "V1"
+      },
+      {
+        "op": "equals",
+        "value": "V23GB"
+      },
+      {
+        "op": "equals",
+        "value": "V5"
+      },
+      {
+        "op": "equals",
+        "value": "vernee_M5"
+      },
+      {
+        "op": "equals",
+        "value": "watson"
+      },
+      {
+        "op": "equals",
+        "value": "whyred"
+      },
+      {
+        "op": "equals",
+        "value": "woods_f"
+      },
+      {
+        "op": "equals",
+        "value": "woods_fn"
+      },
+      {
+        "op": "equals",
+        "value": "X3_HK"
+      },
+      {
+        "op": "equals",
+        "value": "XE2X"
+      },
+      {
+        "op": "equals",
+        "value": "XT1663"
+      },
+      {
+        "op": "equals",
+        "value": "Z12_PRO"
+      },
+      {
+        "op": "equals",
+        "value": "Z80"
+      }
+    ],
+    "models": [
+      {
+        "op": "equals",
+        "value": "JSN-L21"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/3236",
+      "https://github.com/google/ExoPlayer/issues/3355",
+      "https://github.com/google/ExoPlayer/issues/3439",
+      "https://github.com/google/ExoPlayer/issues/3724",
+      "https://github.com/google/ExoPlayer/issues/3835",
+      "https://github.com/google/ExoPlayer/issues/4006",
+      "https://github.com/google/ExoPlayer/issues/4084",
+      "https://github.com/google/ExoPlayer/issues/4104",
+      "https://github.com/google/ExoPlayer/issues/4134",
+      "https://github.com/google/ExoPlayer/issues/4315",
+      "https://github.com/google/ExoPlayer/issues/4419",
+      "https://github.com/google/ExoPlayer/issues/4460",
+      "https://github.com/google/ExoPlayer/issues/4468",
+      "https://github.com/google/ExoPlayer/issues/5312",
+      "https://github.com/google/ExoPlayer/issues/6503",
+      "https://github.com/google/ExoPlayer/issues/8014",
+      "https://github.com/google/ExoPlayer/pull/8030"
+    ]
+  },
+  {
+    "id": 5,
+    "description": "Nvidia devices apply additional post-processing which may cause issues with some media player libraries.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "manufacturers": [
+      {
+        "op": "equals",
+        "value": "NVIDIA"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/commit/9a5096ee6459411267d61277244306cb86e97634"
+    ]
+  }
+]

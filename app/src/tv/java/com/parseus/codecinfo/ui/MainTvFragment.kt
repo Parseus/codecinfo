@@ -11,6 +11,8 @@ import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
+import com.parseus.codecinfo.data.knownproblems.DATABASES_INITIALIZED
+import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.ui.settings.TvSettingsActivity
@@ -66,19 +68,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
 
         adapter.add(ListRow(drmPresenterHeader, drmPresentAdapter))
 
-        val otherPresenterHeader = HeaderItem(4, getString(R.string.category_other))
-        val otherPresenterAdapter = ArrayObjectAdapter(OtherActionsPresenter())
-
-        otherPresenterAdapter.add(OtherActionDescriptor(ACTION_SETTINGS_ID, R.drawable.ic_settings, R.string.action_settings))
-        otherPresenterAdapter.add(OtherActionDescriptor(ACTION_ABOUT_ID, R.drawable.ic_info, R.string.about_app))
-
-        adapter.add(ListRow(otherPresenterHeader, otherPresenterAdapter))
-
-        onItemViewClickedListener = this
-
-        setOnSearchClickedListener { startActivity(Intent(requireActivity(), TvSearchActivity::class.java)) }
-
-        if (KNOWN_PROBLEMS_DB.isEmpty()) {
+        if (!DATABASES_INITIALIZED) {
             val moshi = Moshi.Builder().build()
             val type = Types.newParameterizedType(List::class.java, KnownProblem::class.java)
             val adapter = moshi.adapter<List<KnownProblem>>(type)
@@ -89,7 +79,35 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
             } catch (e: Exception) {
                 KNOWN_PROBLEMS_DB = emptyList()
             }
+
+            try {
+                resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
+                    DEVICE_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
+                }
+            } catch (e: Exception) {
+                DEVICE_PROBLEMS_DB = emptyList()
+            }
+
+            DATABASES_INITIALIZED = true
         }
+
+        val otherPresenterHeader = HeaderItem(4, getString(R.string.category_other))
+        val otherPresenterAdapter = ArrayObjectAdapter(OtherActionsPresenter())
+
+        val knownProblems = DEVICE_PROBLEMS_DB.filter {
+            it.isAffected(requireContext(), null)
+        }
+        if (knownProblems.isNotEmpty()) {
+            otherPresenterAdapter.add(OtherActionDescriptor(ACTION_DEVICE_ISSUES_ID, R.drawable.ic_warning, R.string.known_issue_warning))
+        }
+        otherPresenterAdapter.add(OtherActionDescriptor(ACTION_SETTINGS_ID, R.drawable.ic_settings, R.string.action_settings))
+        otherPresenterAdapter.add(OtherActionDescriptor(ACTION_ABOUT_ID, R.drawable.ic_info, R.string.about_app))
+
+        adapter.add(ListRow(otherPresenterHeader, otherPresenterAdapter))
+
+        onItemViewClickedListener = this
+
+        setOnSearchClickedListener { startActivity(Intent(requireActivity(), TvSearchActivity::class.java)) }
     }
 
     override fun onItemClicked(itemViewHolder: Presenter.ViewHolder?, item: Any?,
@@ -107,10 +125,10 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
             }
             startActivity(intent)
         } else if (item is OtherActionDescriptor) {
-            if (item.actionId == ACTION_SETTINGS_ID) {
-                startActivity(Intent(requireActivity(), TvSettingsActivity::class.java))
-            } else if (item.actionId == ACTION_ABOUT_ID) {
-                startActivity(Intent(requireActivity(), TvAboutActivity::class.java))
+            when (item.actionId) {
+                ACTION_SETTINGS_ID -> startActivity(Intent(requireActivity(), TvSettingsActivity::class.java))
+                ACTION_ABOUT_ID -> startActivity(Intent(requireActivity(), TvAboutActivity::class.java))
+                ACTION_DEVICE_ISSUES_ID -> startActivity(Intent(requireActivity(), TvDeviceIssuesActivity::class.java))
             }
         }
     }
@@ -118,6 +136,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
     companion object {
         private const val ACTION_SETTINGS_ID = 1000
         private const val ACTION_ABOUT_ID = 1001
+        private const val ACTION_DEVICE_ISSUES_ID = 1002
     }
 
 }

@@ -660,5 +660,171 @@
     "urls": [
       "https://github.com/google/ExoPlayer/issues/3537"
     ]
+  },
+  {
+    "id": 31,
+    "codec_name": "OMX.Exynos.AVC.Decoder.secure",
+    "description": "This decoder is known to turn off or reboot the device after while trying to play an adaptive stream.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 25
+      }
+    ],
+    "models": [
+      {
+        "op": "startsWith",
+        "value": "SM-T585"
+      },
+      {
+        "op": "startsWith",
+        "value": "SM-A510"
+      },
+      {
+        "op": "startsWith",
+        "value": "SM-A520"
+      },
+      {
+        "op": "startsWith",
+        "value": "SM-J700"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/3257"
+    ]
+  },
+  {
+    "id": 32,
+    "codec_name": "OMX.Nvidia.h264.decode",
+    "description": "This decoder is known to turn off or reboot the device after while trying to play an adaptive stream.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 24
+      }
+    ],
+    "models": [
+      {
+        "op": "equals",
+        "value": "flounder"
+      },
+      {
+        "op": "equals",
+        "value": "flounder_lte"
+      },
+      {
+        "op": "equals",
+        "value": "grouper"
+      },
+      {
+        "op": "equals",
+        "value": "tilapia"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/commit/e4b08117fc6b16a5037140edb4fc0921496109c1",
+      "https://github.com/google/ExoPlayer/issues/3257"
+    ]
+  },
+  {
+    "id": 33,
+    "codec_name": "OMX.Nvidia.h264.decode.secure",
+    "description": "This decoder is known to turn off or reboot the device after while trying to play an adaptive stream.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 24
+      }
+    ],
+    "models": [
+      {
+        "op": "equals",
+        "value": "flounder"
+      },
+      {
+        "op": "equals",
+        "value": "flounder_lte"
+      },
+      {
+        "op": "equals",
+        "value": "grouper"
+      },
+      {
+        "op": "equals",
+        "value": "tilapia"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/commit/e4b08117fc6b16a5037140edb4fc0921496109c1",
+      "https://github.com/google/ExoPlayer/issues/3257"
+    ]
+  },
+  {
+    "id": 34,
+    "codec_name": "OMX.SEC.avc.dec",
+    "description": "This decoder is known to throw an exception while trying to flush the codec output.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 18
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/951"
+    ]
+  },
+  {
+    "id": 35,
+    "codec_name": "OMX.SEC.avc.dec.secure",
+    "description": "This decoder is known to throw an exception while trying to flush the codec output.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 18
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/951"
+    ]
+  },
+  {
+    "id": 36,
+    "codec_name": "OMX.Exynos.avc.dec",
+    "description": "This decoder is known to throw an exception while trying to flush the codec output.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 19
+      }
+    ],
+    "models": [
+      {
+        "op": "startsWith",
+        "value": "SM-G800"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/603"
+    ]
+  },
+  {
+    "id": 37,
+    "codec_name": "OMX.Exynos.avc.dec.secure",
+    "description": "This decoder is known to throw an exception while trying to flush the codec output.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 19
+      }
+    ],
+    "models": [
+      {
+        "op": "startsWith",
+        "value": "SM-G800"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/603"
+    ]
   }
 ]

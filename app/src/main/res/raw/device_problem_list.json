@@ -733,5 +733,28 @@
     "urls": [
       "https://github.com/androidx/media/commit/9a5096ee6459411267d61277244306cb86e97634"
     ]
+  },
+  {
+    "id": 6,
+    "description": "This device's audio decoders are known to not support setting the codec operating rate.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 23
+      }
+    ],
+    "models": [
+      {
+        "op": "equals",
+        "value": "AXON 7 mini"
+      },
+      {
+        "op": "equals",
+        "value": "ZTE B2017G"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/5821"
+    ]
   }
 ]

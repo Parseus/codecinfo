@@ -2,7 +2,11 @@ package com.parseus.codecinfo.ui.fragments
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.drawable.AdaptiveIconDrawable
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -60,10 +64,19 @@ class AboutFragment : Fragment() {
 
             supportHeaderText.setTextColor(getSecondaryColor(requireContext()))
 
-            val icon = AppCompatResources.getDrawable(requireContext(), R.mipmap.ic_launcher)
+            var icon = AppCompatResources.getDrawable(requireContext(), R.mipmap.ic_launcher)
             if (Build.VERSION.SDK_INT >= 26 && icon is AdaptiveIconDrawable && isDynamicThemingEnabled(requireContext())) {
                 icon.background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
                     getPrimaryColor(requireContext()), BlendModeCompat.SRC_ATOP)
+            } else if (icon is BitmapDrawable) {
+                try {
+                    val foregroundIcon = BitmapDrawable(resources, getAppVectorForegroundIcon())
+                    val backgroundIcon = AppCompatResources.getDrawable(requireContext(),
+                        R.drawable.legacy_about_app_icon_background)!!
+                    backgroundIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                        getPrimaryColor(requireContext()), BlendModeCompat.SRC_ATOP)
+                    icon = LayerDrawable((arrayOf(backgroundIcon, foregroundIcon)))
+                } catch (_: Throwable) {}
             }
             appIcon.setImageDrawable(icon)
         }
@@ -98,6 +111,16 @@ class AboutFragment : Fragment() {
             issuePageIntent.addFlags(externalAppIntentFlags)
             startActivity(issuePageIntent)
         }
+    }
+
+    private fun getAppVectorForegroundIcon(): Bitmap {
+        val foregroundIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_launcher_foreground)!!
+        val iconSize = resources.getDimensionPixelSize(R.dimen.about_dialog_app_icon_size)
+        val bitmap = Bitmap.createBitmap(iconSize, iconSize, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        foregroundIcon.setBounds(0, 0, iconSize, iconSize)
+        foregroundIcon.draw(canvas)
+        return bitmap
     }
 
     override fun onDestroyView() {

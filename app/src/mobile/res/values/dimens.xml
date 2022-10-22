@@ -7,4 +7,6 @@
 
     <dimen name="icon_size">24dp</dimen>
 
+    <dimen name="about_dialog_app_icon_size">40dp</dimen>
+
 </resources>

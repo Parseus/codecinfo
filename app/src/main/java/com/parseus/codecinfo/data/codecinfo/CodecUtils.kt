@@ -2,6 +2,7 @@ package com.parseus.codecinfo.data.codecinfo
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.media.CamcorderProfile
 import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaCodecInfo.CodecCapabilities.*
@@ -663,6 +664,18 @@ private fun getMaxResolution(codecId: String, videoCapabilities: MediaCodecInfo.
     val maxWidth = videoCapabilities.supportedWidths.upper
     val maxHeight = videoCapabilities.supportedHeights.upper
     val defaultResolution = intArrayOf(maxWidth, maxHeight)
+
+    // Some devices (e.g. Samsung, Huawei, and Pixel 6) under-report their encoding
+    // capabilities. The supported height reported for H265@3840x2160 is 2144,
+    // and H264@1920x1080 is 1072.
+    // Cross reference with CamcorderProfile to ensure a resolution is supported.
+    if (maxHeight == 1072 && CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P)) {
+        defaultResolution[0] = 1920
+        defaultResolution[1] = 1080
+    } else if (maxHeight == 2144 && CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_2160P)) {
+        defaultResolution[0] = 3840
+        defaultResolution[1] = 2160
+    }
 
     return if (!areCapabilitiesUnknown(videoCapabilities)) {
         defaultResolution

@@ -5,14 +5,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EdgeEffect
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
+import com.kieronquinn.monetcompat.app.MonetFragment
+import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
@@ -24,12 +27,16 @@ import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.CodecAdapter
 import com.parseus.codecinfo.ui.adapters.DrmAdapter
 import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
+import com.parseus.codecinfo.utils.getPrimaryColor
+import com.parseus.codecinfo.utils.getSecondaryColor
+import com.parseus.codecinfo.utils.isDynamicThemingEnabled
+import com.parseus.codecinfo.utils.isNativeMonetAvailable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 internal var emptyListInformed = false
 
-class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
+class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
 
     private var _binding: TabContentLayoutBinding? = null
     private val binding get() = _binding!!
@@ -39,6 +46,8 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
     var searchListenerDestroyedListener: SearchListenerDestroyedListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        super.onCreateView(inflater, container, savedInstanceState)
+
         _binding = TabContentLayoutBinding.inflate(inflater, container, false)
         setHasOptionsMenu(true)
         return binding.root
@@ -61,6 +70,10 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
     @SuppressLint("NewApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
+            view.applyMonetRecursively()
+        }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             binding.loadingProgress.isVisible = true
@@ -91,6 +104,14 @@ class ItemFragment : Fragment(), SearchView.OnQueryTextListener {
                     adapter = itemAdapter
                     ViewCompat.setNestedScrollingEnabled(this, false)
                     addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
+                    edgeEffectFactory = object : RecyclerView.EdgeEffectFactory() {
+                        override fun createEdgeEffect(
+                            view: RecyclerView,
+                            direction: Int
+                        ): EdgeEffect {
+                            return EdgeEffect(view.context).apply { color = getSecondaryColor(view.context) }
+                        }
+                    }
                 }
             } else if (!emptyListInformed) {
                 // Do not spam the user with multiple snackbars.

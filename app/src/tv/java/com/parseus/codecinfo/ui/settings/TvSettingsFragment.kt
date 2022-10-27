@@ -15,7 +15,7 @@ class TvSettingsFragment : LeanbackSettingsFragmentCompat() {
 
     override fun onPreferenceStartFragment(caller: PreferenceFragmentCompat, pref: Preference): Boolean {
         val args = pref.extras
-        val f = childFragmentManager.fragmentFactory.instantiate(requireActivity().classLoader, pref.fragment)
+        val f = childFragmentManager.fragmentFactory.instantiate(requireActivity().classLoader, pref.fragment!!)
         f.arguments = args
         f.setTargetFragment(caller, 0)
 

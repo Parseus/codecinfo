@@ -17,9 +17,7 @@ import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.CodecAdapterRowBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
-import com.parseus.codecinfo.utils.buildContainerTransform
-import com.parseus.codecinfo.utils.getActivity
-import com.parseus.codecinfo.utils.isInTwoPaneMode
+import com.parseus.codecinfo.utils.*
 
 class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
 
@@ -108,7 +106,10 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
 
         fun bindCodecInfo(codecInfo: CodecSimpleInfo, position: Int) {
             codecId.text = codecInfo.codecId
+            codecId.setTextColor(getPrimaryColor(codecId.context))
             codecName.text = codecInfo.codecName
+            codecName.setTextColor(getSecondaryColor(codecName.context))
+
             codecType.text = itemView.resources.getString(
                     if (codecInfo.isEncoder) R.string.encoder else R.string.decoder)
             if (itemView.context.isInTwoPaneMode()) {

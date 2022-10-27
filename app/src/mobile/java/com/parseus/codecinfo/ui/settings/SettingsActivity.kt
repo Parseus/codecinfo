@@ -3,43 +3,53 @@ package com.parseus.codecinfo.ui.settings
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import android.view.Window
+import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.*
-import com.google.android.material.color.DynamicColors
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.platform.MaterialSharedAxis
+import com.kieronquinn.monetcompat.app.MonetCompatActivity
+import com.kieronquinn.monetcompat.core.MonetCompat
+import com.kieronquinn.monetcompat.core.WallpaperTypes
+import com.kieronquinn.monetcompat.extensions.applyMonet
+import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.SettingsMainBinding
+import com.parseus.codecinfo.databinding.WallpaperColorPickerLayoutBinding
 import com.parseus.codecinfo.ui.fragments.AboutFragment
-import com.parseus.codecinfo.utils.getAttributeColor
-import com.parseus.codecinfo.utils.getDefaultThemeOption
-import com.parseus.codecinfo.utils.isBatterySaverDisallowed
-import com.parseus.codecinfo.utils.sendFeedbackEmail
+import com.parseus.codecinfo.utils.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : MonetCompatActivity() {
 
     private lateinit var binding: SettingsMainBinding
 
-    private val useDynamicTheme: Boolean
-        get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dynamic_theme", true)
+    override val recreateMode = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CodecInfo)
-        DynamicColors.applyIfAvailable(this) { _, _ -> useDynamicTheme }
-        if (Build.VERSION.SDK_INT >= 31) {
-            window.statusBarColor = if (useDynamicTheme) {
-                ContextCompat.getColor(this, android.R.color.system_accent1_700)
-            } else {
-                getAttributeColor(com.google.android.material.R.attr.colorPrimaryVariant)
+        if (Build.VERSION.SDK_INT >= 17) {
+            val startingFromAlias = intent?.component?.className?.startsWith("alias.SettingsActivity") == true
+            if (startingFromAlias) {
+                delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             }
         }
+
         super.onCreate(savedInstanceState)
 
         if (Build.VERSION.SDK_INT >= 21) {
@@ -59,22 +69,54 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
+        if (!isNativeMonetAvailable()) {
+            lifecycleScope.launchWhenCreated {
+                monet.awaitMonetReady()
+                initializeUI(savedInstanceState)
+            }
+        } else {
+            initializeUI(savedInstanceState)
+        }
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (supportFragmentManager.findFragmentByTag("about_fragment") != null) {
+                goBackToMainFragment()
+            } else if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
+                // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
+                finishAfterTransition()
+            } else {
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+                isEnabled = true
+            }
+        }
+    }
+
+    private fun initializeUI(savedInstanceState: Bundle?) {
         binding = SettingsMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(!isChromebook(this))
         if (savedInstanceState == null) {
             supportFragmentManager.commit { replace(R.id.content, SettingsFragment::class.java, null) }
         }
+        window.updateStatusBarColor(this)
+        binding.toolbar.updateToolBarColor(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-            supportActionBar!!.title = getString(R.string.action_settings)
-            supportFragmentManager.popBackStack()
+            onBackPressedDispatcher.onBackPressed()
+            return true
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun goBackToMainFragment() {
+        supportActionBar!!.setDisplayHomeAsUpEnabled(!isChromebook(this))
+        supportActionBar!!.title = getString(R.string.action_settings)
+        supportFragmentManager.popBackStack()
     }
 
     override fun finish() {
@@ -88,29 +130,39 @@ class SettingsActivity : AppCompatActivity() {
         super.finish()
     }
 
-    override fun onBackPressed() {
-        if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
-            // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
-            finishAfterTransition()
-        } else {
-            super.onBackPressed()
-        }
-    }
-
     class SettingsFragment : PreferenceFragmentCompat() {
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
 
             findPreference<CheckBoxPreference>("dynamic_theme")?.apply {
-                if (Build.VERSION.SDK_INT >= 31) {
-                    setOnPreferenceChangeListener { _, _ ->
-                        activity?.recreate()
+                if (Build.VERSION.SDK_INT >= 21) {
+                    setOnPreferenceChangeListener { _, newValue ->
+                        findPreference<Preference>("show_wallaper_colors")?.isVisible =
+                            !isNativeMonetAvailable() && newValue as Boolean
                         dynamicThemeChanged = true
+                        activity?.let { ActivityCompat.recreate(it) }
                         true
                     }
                 } else {
                     isVisible = false
+                }
+            }
+
+            findPreference<Preference>("show_wallpaper_colors")?.apply {
+                isVisible = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+                        && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+            }
+
+            findPreference<ListPreference>("dynamic_theme_wallpaper_source")?.apply {
+                isVisible = Build.VERSION.SDK_INT >= 27 && !isNativeMonetAvailable()
+                        && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                value = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                    .getString("dynamic_theme_wallpaper_source", WallpaperTypes.WALLPAPER_SYSTEM.toString())
+                setOnPreferenceChangeListener { _, newValue ->
+                    MonetCompat.wallpaperSource = (newValue as String).toInt()
+                    MonetCompat.getInstance().updateMonetColors()
+                    true
                 }
             }
 
@@ -164,13 +216,34 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+
+            if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
+                view.applyMonetRecursively()
+            }
+        }
+
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             addPreferencesFromResource(R.xml.preferences_screen)
         }
 
-        @SuppressLint("InflateParams")
+        @SuppressLint("InflateParams", "NewApi", "ApplySharedPref")
         override fun onPreferenceTreeClick(preference: Preference): Boolean {
             return when (preference.key) {
+                "show_wallpaper_colors" -> {
+                    lifecycleScope.launchWhenResumed {
+                        val availableColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
+                        if (availableColors.isNotEmpty()) {
+                            showWallpaperColorPicker(availableColors)
+                        } else {
+                            Snackbar.make(requireActivity().findViewById(android.R.id.content),
+                                R.string.dynamic_theme_color_picker_unavailable, Snackbar.LENGTH_LONG).show()
+                        }
+                    }
+                    true
+                }
+
                 "feedback" -> {
                     sendFeedbackEmail()
                     true
@@ -179,7 +252,7 @@ class SettingsActivity : AppCompatActivity() {
                 "help" -> {
                     if (activity != null) {
                         parentFragmentManager.commit {
-                            replace(R.id.content, AboutFragment())
+                            replace(R.id.content, AboutFragment(), "about_fragment")
                             addToBackStack(null)
                             (requireActivity() as AppCompatActivity).supportActionBar!!.apply {
                                 title = getString(R.string.about_app)
@@ -192,6 +265,39 @@ class SettingsActivity : AppCompatActivity() {
 
                 else -> super.onPreferenceTreeClick(preference)
             }
+        }
+
+        @SuppressLint("NewApi")
+        private suspend fun showWallpaperColorPicker(availableColors: List<Int>) {
+            val dialogBuilder =  MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.dynamic_theme_wallpaper_color_picker)
+            val alertDialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
+            val colorPickerView = WallpaperColorPickerLayoutBinding.inflate(layoutInflater).root
+            colorPickerView.apply {
+                backgroundTintList = ColorStateList.valueOf(
+                    MonetCompat.getInstance().getBackgroundColor(requireContext())
+                )
+                layoutManager =
+                    LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+
+                adapter = ColorPickerAdapter(
+                    requireContext(),
+                    MonetCompat.getInstance().getSelectedWallpaperColor(),
+                    availableColors
+                ) {
+                    lifecycleScope.launchWhenResumed {
+                        withContext(Dispatchers.IO) {
+                            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
+                                .putInt("selected_color", it).commit()
+                        }
+                        alertDialog.dismiss()
+                        MonetCompat.getInstance().updateMonetColors()
+                    }
+                }
+            }
+            alertDialog.setView(colorPickerView)
+            alertDialog.show()
+            alertDialog.applyMonet()
         }
 
         private fun getCurrentThemeIcon(type: Int) = when (type) {

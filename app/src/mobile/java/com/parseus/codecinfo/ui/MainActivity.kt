@@ -7,43 +7,54 @@ import android.content.ClipData
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.activity.addCallback
 import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.transition.platform.MaterialSharedAxis
-import com.parseus.codecinfo.*
+import com.kieronquinn.monetcompat.app.MonetCompatActivity
+import com.kieronquinn.monetcompat.core.MonetCompat
+import com.kieronquinn.monetcompat.extensions.applyMonet
+import com.parseus.codecinfo.BuildConfig
+import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
 import com.parseus.codecinfo.data.codecinfo.videoCodecList
 import com.parseus.codecinfo.data.drm.drmList
+import com.parseus.codecinfo.data.knownproblems.DATABASES_INITIALIZED
+import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.databinding.ActivityMainBinding
+import com.parseus.codecinfo.databinding.DeviceIssuesLayoutBinding
+import com.parseus.codecinfo.ui.adapters.DeviceIssuesAdapter
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.ui.settings.DarkTheme
 import com.parseus.codecinfo.ui.settings.SettingsContract
 import com.parseus.codecinfo.utils.*
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import dev.kdrag0n.monet.theme.ColorScheme
 import okio.buffer
 import okio.source
 import java.io.File
 import java.util.*
 
-class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
+class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -51,14 +62,14 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     private val useImmersiveMode: Boolean
         get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("immersive_mode", true)
-    private val useDynamicTheme: Boolean
-        get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("dynamic_theme", true)
 
     private val settingsContract = registerForActivityResult(SettingsContract()) { result ->
         shouldRecreateActivity = result
     }
 
     val searchListeners = mutableListOf<SearchView.OnQueryTextListener>()
+
+    override val recreateMode = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         disableApiBlacklistOnPie()
@@ -82,30 +93,49 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         }
 
         setTheme(R.style.Theme_CodecInfo)
-        DynamicColors.applyIfAvailable(this) { _, _ -> useDynamicTheme }
-        if (Build.VERSION.SDK_INT >= 31) {
-            window.statusBarColor = if (useDynamicTheme) {
-                ContextCompat.getColor(this, android.R.color.system_accent1_700)
-            } else {
-                getAttributeColor(com.google.android.material.R.attr.colorPrimaryVariant)
-            }
-        }
 
         super.onCreate(savedInstanceState)
 
+        if (Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()) {
+            lifecycleScope.launchWhenCreated {
+                monet.awaitMonetReady()
+                initializeUI(savedInstanceState)
+                window.updateStatusBarColor(this@MainActivity)
+            }
+        } else {
+            initializeUI(savedInstanceState)
+            window.updateStatusBarColor(this)
+        }
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
+                // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
+                finishAfterTransition()
+            } else {
+                if (!isInTwoPaneMode()) {
+                    supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+                }
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+                isEnabled = true
+            }
+        }
+    }
+
+    private fun initializeUI(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
 
         val defaultThemeMode = getDefaultThemeOption(this)
         val darkTheme = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString("dark_theme", defaultThemeMode.toString())!!.toInt()
+            .getString("dark_theme", defaultThemeMode.toString())!!.toInt()
         AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
 
         setSupportActionBar(binding.toolbar)
+        binding.toolbar.updateToolBarColor(this)
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
-
-        initializeAppRating(this)
 
         if (savedInstanceState != null) {
             recreateDetailFragmentIfNeedded()
@@ -113,10 +143,11 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
         handleIntent(intent)
 
-        if (KNOWN_PROBLEMS_DB.isEmpty()) {
+        if (!DATABASES_INITIALIZED) {
             val moshi = Moshi.Builder().build()
             val type = Types.newParameterizedType(List::class.java, KnownProblem::class.java)
             val adapter = moshi.adapter<List<KnownProblem>>(type)
+
             try {
                 resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
                     KNOWN_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
@@ -124,6 +155,28 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             } catch (e: Exception) {
                 KNOWN_PROBLEMS_DB = emptyList()
             }
+
+            try {
+                resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
+                    DEVICE_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
+                }
+            } catch (e: Exception) {
+                DEVICE_PROBLEMS_DB = emptyList()
+            }
+
+            DATABASES_INITIALIZED = true
+        }
+
+        if (!BuildConfig.DEBUG) {
+            initializeAppRating(this)
+            checkForUpdate(this, binding.updateProgressBar)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (!BuildConfig.DEBUG) {
+            handleAppUpdateOnActivityResult(this, requestCode, resultCode)
         }
     }
 
@@ -158,6 +211,13 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         }
     }
 
+    override fun onMonetColorsChanged(monet: MonetCompat, monetColors: ColorScheme, isInitialChange: Boolean) {
+        if (!isDynamicThemingEnabled(this) || isNativeMonetAvailable()) {
+            return
+        }
+        super.onMonetColorsChanged(monet, monetColors, isInitialChange)
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -176,8 +236,12 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         super.onResume()
 
         if (shouldRecreateActivity) {
-            recreate()
+            ActivityCompat.recreate(this)
             return
+        }
+
+        if (!BuildConfig.DEBUG) {
+            handleAppUpdateOnResume(this)
         }
     }
 
@@ -194,6 +258,9 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroy() {
+        clearSavedLists()
+        searchListeners.clear()
+
         super.onDestroy()
         destroySamsungGestures()
     }
@@ -270,6 +337,16 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                 supportFragmentManager.popBackStack()
             }
 
+            R.id.menu_item_warning -> {
+                val dialogViewBinding = DeviceIssuesLayoutBinding.inflate(layoutInflater)
+                dialogViewBinding.root.adapter = DeviceIssuesAdapter(DEVICE_PROBLEMS_DB)
+                val dialogBuilder = MaterialAlertDialogBuilder(this).setView(dialogViewBinding.root)
+                val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
+                dialog.show()
+                dialog.applyMonet()
+                dialog.updateButtonColors(dialogBuilder.context)
+            }
+
             R.id.menu_item_share -> {
                 val detailsFragment = supportFragmentManager.findFragmentByTag(
                         getString(R.string.details_fragment_tag)) as? DetailsFragment
@@ -285,14 +362,15 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
                             getString(R.string.codec_drm_all_info))
                 }
 
-                MaterialAlertDialogBuilder(this).run {
-                    setTitle(R.string.choose_share)
-                    setSingleChoiceItems(codecShareOptions, -1) { dialog, option ->
+                val dialogBuilder = MaterialAlertDialogBuilder(this).setTitle(R.string.choose_share)
+                    .setSingleChoiceItems(codecShareOptions, -1) { dialog, option ->
                         launchShareIntent(option, detailsFragment)
                         dialog.dismiss()
                     }
-                    show()
-                }
+                val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
+                dialog.show()
+                dialog.applyMonet()
+                dialog.updateButtonColors(dialogBuilder.context)
 
                 return true
             }
@@ -307,6 +385,13 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
         menu.clear()
         menuInflater.inflate(R.menu.app_bar_menu, menu)
 
+        if (binding.toolbar.background is ColorDrawable) {
+            menu.updateIconColors(this, (binding.toolbar.background as ColorDrawable).color)
+        } else if (binding.toolbar.background is MaterialShapeDrawable) {
+            val fillColor = (binding.toolbar.background as MaterialShapeDrawable).fillColor?.defaultColor ?: getPrimaryColor(this)
+            menu.updateIconColors(this, fillColor)
+        }
+
         val searchManager = getSystemService(SEARCH_SERVICE) as SearchManager
         val searchItem = menu.findItem(R.id.menu_item_search)
        (searchItem.actionView as SearchView).apply {
@@ -314,6 +399,13 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
            setSearchableInfo(searchManager.getSearchableInfo(componentName))
            setOnQueryTextListener(this@MainActivity)
        }
+
+        val knownProblems = DEVICE_PROBLEMS_DB.filter {
+            it.isAffected(this, null)
+        }
+        if (knownProblems.isNotEmpty()) {
+            menu.findItem(R.id.menu_item_warning).isVisible = true
+        }
 
         return super.onCreateOptionsMenu(menu)
     }
@@ -411,19 +503,6 @@ class MainActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
             val imageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", iconFile)
             ClipData.newUri(contentResolver, null, imageUri)
         } catch (e: Exception) { null }
-    }
-
-    override fun onBackPressed() {
-        if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
-            // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
-            finishAfterTransition()
-        } else {
-            super.onBackPressed()
-
-            if (!isInTwoPaneMode()) {
-                supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-            }
-        }
     }
 
     companion object {

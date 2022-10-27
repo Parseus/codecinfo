@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.parseus.codecinfo.ui.expandablelist
+package com.parseus.codecinfo.ui
 
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -29,9 +29,9 @@ import androidx.core.graphics.withSave
  * with removed internal code and converted to Kotlin.
  */
 class ImprovedBulletSpan(
-        val bulletRadius: Int = STANDARD_BULLET_RADIUS,
-        val gapWidth: Int = STANDARD_GAP_WIDTH,
-        val color: Int = STANDARD_COLOR
+    val bulletRadius: Int = STANDARD_BULLET_RADIUS,
+    val gapWidth: Int = STANDARD_GAP_WIDTH,
+    val color: Int = STANDARD_COLOR
 ) : LeadingMarginSpan {
 
     companion object {

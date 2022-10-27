@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import androidx.annotation.RequiresApi
 import com.google.android.material.textview.MaterialTextView
 import com.parseus.codecinfo.R
-import com.parseus.codecinfo.utils.getAttributeColor
+import com.parseus.codecinfo.utils.getSurfaceColor
 
 @RequiresApi(21)
 class ItemDetailsHeaderView : MaterialTextView {
@@ -20,10 +20,9 @@ class ItemDetailsHeaderView : MaterialTextView {
     constructor(context: Context): super(context)
     constructor(context: Context, attrs: AttributeSet?): super(context, attrs)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int): super(context, attrs, defStyleAttr)
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int): super(context, attrs, defStyleAttr, defStyleRes)
 
     init {
-        setBackgroundColor(context.getAttributeColor(com.google.android.material.R.attr.colorSurface))
+        setBackgroundColor(getSurfaceColor(context))
         stateListAnimator = AnimatorInflater.loadStateListAnimator(context, R.animator.item_details_header_state_list_animator)
     }
 

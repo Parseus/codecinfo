@@ -10,10 +10,11 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.divider.MaterialDividerItemDecoration
+import com.kieronquinn.monetcompat.app.MonetFragment
+import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.data.drm.DrmVendor
@@ -22,16 +23,16 @@ import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
 import com.parseus.codecinfo.ui.ItemDetailsHeaderView
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
+import com.parseus.codecinfo.ui.adapters.MobileDetailsAdapter
 import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
-import com.parseus.codecinfo.utils.getAttributeColor
-import com.parseus.codecinfo.utils.isInTwoPaneMode
+import com.parseus.codecinfo.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
+class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
 
     private var _binding: ItemDetailsFragmentLayoutBinding? = null
     internal val binding get() = _binding!!
@@ -47,7 +48,10 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     var drmUuid: UUID? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        super.onCreateView(inflater, container, savedInstanceState)
+
         _binding = ItemDetailsFragmentLayoutBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
@@ -62,9 +66,13 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
+            view.applyMonetRecursively()
+        }
+
         if (!requireContext().isInTwoPaneMode()) {
             // Apply background color only on mobile to reduce overdraw on bigger devices
-            binding.endRoot.setBackgroundColor(requireContext().getAttributeColor(com.google.android.material.R.attr.colorSurface))
+            binding.endRoot.setBackgroundColor(getSurfaceColor(requireContext()))
         }
 
         val bundle = savedInstanceState ?: arguments
@@ -72,7 +80,12 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
             codecId = it.getString("codecId")
             codecName = it.getString("codecName")
             drmName = it.getString("drmName")
-            drmUuid = it.getSerializable("drmUuid") as UUID?
+            drmUuid = if (Build.VERSION.SDK_INT >= 33) {
+                it.getSerializable("drmUuid", UUID::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                it.getSerializable("drmUuid") as UUID?
+            }
         }
 
         if (Build.VERSION.SDK_INT >= 21) {
@@ -116,11 +129,12 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
         }
     }
 
+    @Suppress("USELESS_CAST")
     private fun showFullDetails() {
-        @Suppress("USELESS_CAST")
         (binding.fullCodecInfoName as TextView).text = codecName ?: drmName
+        (binding.fullCodecInfoName as TextView).setTextColor(getPrimaryColor(requireContext()))
 
-        val detailsAdapter = DetailsAdapter()
+        val detailsAdapter = MobileDetailsAdapter()
         detailsAdapter.add(propertyList)
         binding.fullCodecInfoContent.apply {
             layoutManager = LinearLayoutManager(context)

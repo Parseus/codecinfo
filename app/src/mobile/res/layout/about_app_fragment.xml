@@ -32,11 +32,10 @@
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/appIcon"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="@dimen/about_dialog_app_icon_size"
+                        android:layout_height="@dimen/about_dialog_app_icon_size"
                         android:layout_marginLeft="16dp"
-                        android:layout_marginRight="16dp"
-                        app:srcCompat="@mipmap/ic_launcher" />
+                        android:layout_marginRight="16dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -226,6 +225,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/supportHeaderText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingTop="24dp"

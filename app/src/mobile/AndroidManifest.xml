@@ -1,10 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.parseus.codecinfo">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-sdk tools:overrideLibrary="androidx.core.splashscreen" />
+    <uses-sdk tools:overrideLibrary="androidx.core.splashscreen, com.kieronquinn.monetcompat" />
+
+    <!--
+        MonetCompat declares this, because WallpaperManager.getDrawable() (used to feed the Palette
+        on Android <= 8.0) allegedly requires this, even though it seems to work without it, anyway.
+        Since getWallpaperColors() (used on >= 8.1) never needs this, don't declare it on newer APIs.
+    -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="26" />
 
     <application
+        android:name=".ui.CodecInfoApp"
         android:resizeableActivity="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.CodecInfo.Starting"
@@ -33,7 +40,10 @@
             <!-- Hide the back button on Chromebooks. -->
             <meta-data android:name="WindowManagerPreference:SuppressWindowControlNavigationButton"
                 android:value="true" />
+            <!-- Support tinting the launcher icon by One UI 4.1 and newer. -->
+            <meta-data android:name="com.sec.android.app.launcher.icon_theme" android:value="themeColor" />
         </activity>
+
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/action_settings"
@@ -42,6 +52,28 @@
                 android:name="com.samsung.android.dex.transient_bar_delay"
                 android:value="2000" />
         </activity>
+        <activity-alias
+            android:name="alias.SettingsActivity"
+            android:enabled="false"
+            android:targetActivity=".ui.settings.SettingsActivity"
+            android:label="@string/action_settings"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="alias.SettingsActivitySamsung"
+            android:enabled="false"
+            android:targetActivity=".ui.settings.SettingsActivity"
+            android:label="@string/action_settings"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.sec.android.intent.action.SEC_APPLICATION_SETTINGS" />
+                <category android:name="com.sec.android.intent.category.SEC_APPLICATION_SETTINGS" />
+            </intent-filter>
+        </activity-alias>
 
         <uses-library
             android:name="com.sec.android.app.multiwindow"

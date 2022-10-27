@@ -14,6 +14,7 @@ import com.parseus.codecinfo.databinding.FragmentMainBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.PagerAdapter
 import com.parseus.codecinfo.utils.initializeSamsungGesture
+import com.parseus.codecinfo.utils.updateColors
 
 @Suppress("unused")
 class MainFragment : Fragment() {
@@ -51,9 +52,13 @@ class MainFragment : Fragment() {
             }.attach()
 
             initializeSamsungGesture(requireContext(), viewPager, tabs)
+
+            tabs.updateColors(requireContext())
         }
 
         binding.navigationRail?.let { navigationRail ->
+            navigationRail.updateColors(requireContext())
+
             addFragmentToViewHierarchy()
 
             navigationRail.setOnItemSelectedListener { item ->

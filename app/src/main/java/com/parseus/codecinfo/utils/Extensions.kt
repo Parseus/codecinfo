@@ -4,13 +4,38 @@ import android.app.Activity
 import android.app.UiModeManager
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.media.MediaCodecInfo
+import android.os.BatteryManager
+import android.os.Build
+import androidx.core.content.getSystemService
 import java.util.*
 
+private const val AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv"
+
+@Suppress("DEPRECATION")
 fun Context.isTv(): Boolean {
-    val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? UiModeManager
-    return uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+    // https://developer.android.com/training/tv/start/hardware.html#runtime-check
+    var isTv = getSystemService<UiModeManager>()!!.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
+            || packageManager.hasSystemFeature(AMAZON_FEATURE_FIRE_TV)
+            || packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
+
+    // https://stackoverflow.com/a/58932366
+    if (Build.VERSION.SDK_INT >= 24) {
+        val isBatteryAbsent = getSystemService<BatteryManager>()!!
+            .getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) == 0
+        isTv = isTv or (isBatteryAbsent
+                && !packageManager.hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN)
+                && packageManager.hasSystemFeature(PackageManager.FEATURE_USB_HOST)
+                && packageManager.hasSystemFeature(PackageManager.FEATURE_ETHERNET))
+    }
+
+    if (Build.VERSION.SDK_INT >= 21) {
+        isTv = isTv or packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
+    }
+
+    return isTv
 }
 
 fun Int.toKiloHertz(): Float {

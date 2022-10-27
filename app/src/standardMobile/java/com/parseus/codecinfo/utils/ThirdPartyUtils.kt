@@ -5,6 +5,7 @@ package com.parseus.codecinfo.utils
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.tabs.TabLayout
 import com.marcoscg.licenser.Library
 import com.marcoscg.licenser.License
@@ -17,11 +18,16 @@ fun initializeAppRating(activity: AppCompatActivity) {}
 fun initializeSamsungGesture(context: Context, pager: ViewPager2, tabLayout: TabLayout) {}
 fun destroySamsungGestures() {}
 fun launchStoreIntent(activity: android.app.Activity) {}
+fun checkForUpdate(activity: android.app.Activity, progressBar: LinearProgressIndicator?) {}
+fun handleAppUpdateOnActivityResult(activity: android.app.Activity, requestCode: Int, resultCode: Int) {}
+fun handleAppUpdateOnResume(activity: android.app.Activity) {}
 
 inline fun showLicensesDialog(activity: AppCompatActivity) {
     LicenserDialog(activity)
         .setTitle(R.string.about_licenses)
+        .setLibrary(Library("AndroidHiddenApiBypass", "https://github.com/LSPosed/AndroidHiddenApiBypass", License.APACHE2))
         .setLibrary(Library("Android Jetpack", "https://developer.android.com/jetpack", License.APACHE2))
+        .setLibrary(Library("BetterLinkMovementMethod", "https://github.com/saket/Better-Link-Movement-Method", License.APACHE2))
         .setLibrary(Library("Kotlin", "https://github.com/JetBrains/kotlin", License.APACHE2))
         .setLibrary(Library("Kotlin Coroutines", "https://github.com/Kotlin/kotlinx.coroutines", License.APACHE2))
         .setLibrary(Library("LeakCanary", "https://github.com/square/leakcanary", License.APACHE2))
@@ -29,6 +35,8 @@ inline fun showLicensesDialog(activity: AppCompatActivity) {
         .setLibrary(Library("Moshi", "https://github.com/square/moshi", License.APACHE2))
         .setLibrary(Library("Okio", "https://github.com/square/okio", License.APACHE2))
         .setLibrary(Library("Licenser", "https://github.com/marcoscgdev/Licenser", License.MIT))
+        .setLibrary(Library("MonetCompat", "https://github.com/KieronQuinn/MonetCompat", License.MIT))
         .setPositiveButton(android.R.string.ok, null)
+        .setBackgroundColor(getSurfaceColor(activity))
         .show()
 }

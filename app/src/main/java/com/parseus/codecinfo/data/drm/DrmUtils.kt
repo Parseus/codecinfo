@@ -1,5 +1,3 @@
-@file:RequiresApi(18)
-
 package com.parseus.codecinfo.data.drm
 
 import android.content.Context
@@ -12,10 +10,9 @@ import com.parseus.codecinfo.utils.toHexString
 
 val drmList: MutableList<DrmSimpleInfo> = arrayListOf()
 
+@RequiresApi(18)
 fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
-    return if (drmList.isNotEmpty()) {
-        drmList
-    } else {
+    return drmList.ifEmpty {
         val list = mutableListOf<DrmSimpleInfo>()
         DrmVendor.values().forEach {
             try {
@@ -27,12 +24,14 @@ fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
                         list.add(drmInfo)
                     }
                 }
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+            }
         }
         list
     }
 }
 
+@RequiresApi(18)
 fun getDetailedDrmInfo(context: Context, drmVendor: DrmVendor): List<DetailsProperty> {
     val drmPropertyList = mutableListOf<DetailsProperty>()
     val mediaDrm = MediaDrm(drmVendor.uuid)
@@ -115,6 +114,7 @@ private fun addReadableHdcpLevel(context: Context, hdcpLevel: Int, key: String,
     }
 }
 
+@RequiresApi(18)
 private fun DrmVendor.getIfSupported(context: Context) = try {
     val mediaDrm = MediaDrm(uuid)
     val drmName = if (properNameResId == -1) {
@@ -129,6 +129,7 @@ private fun DrmVendor.getIfSupported(context: Context) = try {
     null
 }
 
+@RequiresApi(18)
 private fun MutableList<DetailsProperty>.addStringProperties(context: Context,
                                                             mediaDrm: MediaDrm,
                                                             vendorProperties: Map<Int, String>?) {
@@ -142,6 +143,7 @@ private fun MutableList<DetailsProperty>.addStringProperties(context: Context,
     }
 }
 
+@RequiresApi(18)
 private fun MutableList<DetailsProperty>.addByteArrayProperties(context: Context,
                                                             mediaDrm: MediaDrm,
                                                             vendorProperties: Map<Int, String>?) {
@@ -155,6 +157,7 @@ private fun MutableList<DetailsProperty>.addByteArrayProperties(context: Context
     }
 }
 
+@RequiresApi(18)
 private fun MediaDrm.closeDrmInstance() {
     if (Build.VERSION.SDK_INT >= 28) {
         close()

@@ -7,11 +7,13 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 var KNOWN_PROBLEMS_DB: List<KnownProblem> = emptyList()
+var DEVICE_PROBLEMS_DB: List<KnownProblem> = emptyList()
+var DATABASES_INITIALIZED = false
 
 @JsonClass(generateAdapter = true)
 data class KnownProblem(
         val id: Long,
-        @Json(name = "codec_name") val codecName: String,
+        @Json(name = "codec_name") val codecName: String? = null,
         val description: String,
         val versions: List<Version>? = null,
         val devices: List<Device>? = null,
@@ -20,7 +22,7 @@ data class KnownProblem(
         val urls: List<String>
 ) {
 
-    fun isAffected(context: Context, codec: String): Boolean {
+    fun isAffected(context: Context, codec: String? = null): Boolean {
         // First case: codec name equality.
         if (!codec.equals(codecName, true)) {
             return false

@@ -1,17 +1,29 @@
 <androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="Display">
+    <com.parseus.codecinfo.ui.settings.MonetPreferenceCategory app:title="Display">
         <androidx.preference.ListPreference
             app:key="dark_theme"
             app:title="App theme"
             app:useSimpleSummaryProvider="true"/>
 
-        <androidx.preference.CheckBoxPreference
+        <com.parseus.codecinfo.ui.settings.MonetCheckboxPreference
             app:key="dynamic_theme"
             app:title="Dynamic theme"
-            app:defaultValue="true" />
+            app:defaultValue="false" />
 
-        <androidx.preference.CheckBoxPreference
+        <androidx.preference.ListPreference
+            app:entries="@array/settings_wallaper_source_titles"
+            app:entryValues="@array/settings_wallaper_source_values"
+            app:defaultValue="1"
+            app:key="dynamic_theme_wallpaper_source"
+            app:title="Wallpaper source"
+            app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            app:key="show_wallpaper_colors"
+            app:title="Wallpaper color picker" />
+
+        <com.parseus.codecinfo.ui.settings.MonetCheckboxPreference
             app:key="immersive_mode"
             app:title="Immersive mode"
             app:defaultValue="true" />
@@ -39,9 +51,9 @@
             app:key="known_resolutions"
             app:title="Show supported resolutions"
             app:useSimpleSummaryProvider="true"/>
-    </PreferenceCategory>
+    </com.parseus.codecinfo.ui.settings.MonetPreferenceCategory>
 
-    <PreferenceCategory app:title="Sorting &amp; Filtering">
+    <com.parseus.codecinfo.ui.settings.MonetPreferenceCategory app:title="Sorting &amp; Filtering">
 
         <androidx.preference.ListPreference
             app:entries="@array/settings_filter_type_titles"
@@ -61,14 +73,14 @@
             app:title="Sort codecs"
             app:useSimpleSummaryProvider="true"/>
 
-        <androidx.preference.CheckBoxPreference
+        <com.parseus.codecinfo.ui.settings.MonetCheckboxPreference
             app:key="show_aliases"
             app:title="Show aliases for another underlying codecs"
             app:defaultValue="false" />
 
-    </PreferenceCategory>
+    </com.parseus.codecinfo.ui.settings.MonetPreferenceCategory>
 
-    <PreferenceCategory app:title="Help &amp; Feedback">
+    <com.parseus.codecinfo.ui.settings.MonetPreferenceCategory app:title="Help &amp; Feedback">
 
         <Preference
             app:icon="@drawable/ic_email"
@@ -81,6 +93,6 @@
             app:key="help"
             app:title="About Codec Info…"/>
 
-    </PreferenceCategory>
+    </com.parseus.codecinfo.ui.settings.MonetPreferenceCategory>
 
 </androidx.preference.PreferenceScreen>

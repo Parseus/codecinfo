@@ -1,16 +1,19 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.devtools.ksp' version '1.7.20-1.0.6'
+}
 
 android {
-    compileSdkVersion 31
+    namespace 'com.parseus.codecinfo'
+    compileSdkVersion 33
     defaultConfig {
         applicationId "com.parseus.codecinfo"
         minSdkVersion 16
-        targetSdkVersion 31
-        versionCode 21
-        versionName "2.3.0"
-        resConfigs "en"
+        targetSdkVersion 33
+        versionCode 22
+        versionName "2.4.0"
+        resConfigs 'en'
 
         vectorDrawables.useSupportLibrary = true
     }
@@ -19,16 +22,12 @@ android {
             versionNameSuffix "-dev"
             if (!gradle.startParameter.taskNames.toString().contains('StandardTv')) {
                 multiDexEnabled true
-                manifestPlaceholders = [appName:"androidx.multidex.MultiDexApplication"]
-            } else {
-                manifestPlaceholders = [appName:"android.app.Application"]
             }
         }
         release {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            manifestPlaceholders = [appName:"android.app.Application"]
         }
     }
 
@@ -71,13 +70,15 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-
     packagingOptions {
-        exclude 'kotlin/**'
-        exclude '**/*.kotlin_metadata'
-        exclude 'META-INF/*.kotlin_module'
-        exclude 'META-INF/*.version'
+        jniLibs {
+            excludes += ['kotlin/**']
+        }
+        resources {
+            excludes += ['kotlin/**', '**/*.kotlin_metadata', 'META-INF/*.kotlin_module', 'META-INF/*.version']
+        }
     }
+
 
     variantFilter { variant ->
         def names = variant.flavors*.name
@@ -85,43 +86,62 @@ android {
             setIgnore(true)
         }
     }
+
+    sourceSets {
+        nonFreeMobileDebug {
+            java.srcDirs += 'src/mobileDebug/java'
+        }
+        standardMobileDebug {
+            java.srcDirs += 'src/mobileDebug/java'
+        }
+        nonFreeMobileRelease {
+            java.srcDirs += 'src/mobileRelease/java'
+        }
+        standardMobileRelease {
+            java.srcDirs += 'src/mobileRelease/java'
+        }
+    }
 }
 
 configurations {
     nonFreeMobileImplementation {}
+    standardMobileImplementation {}
     nonFreeMobileDebugImplementation {}
     standardMobileDebugImplementation {}
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation "androidx.core:core-ktx:1.6.0"
-    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0-alpha01'
+    implementation "androidx.core:core-ktx:1.9.0"
+    implementation 'androidx.preference:preference-ktx:1.2.0'
 
     implementation "com.squareup.leakcanary:plumber-android:$leakCanary_version"
     implementation "com.squareup.moshi:moshi:$moshi_version"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
-    implementation "com.squareup.okio:okio:2.10.0"
+    ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
+    implementation "com.squareup.okio:okio:3.2.0"
+
+    implementation 'me.saket:better-link-movement-method:2.2.0'
 
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanary_version"
     standardMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
     nonFreeMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
 
-    tvImplementation 'androidx.leanback:leanback:1.2.0-alpha01'
-    tvImplementation 'androidx.leanback:leanback-preference:1.2.0-alpha01'
+    tvImplementation 'androidx.leanback:leanback:1.2.0-alpha02'
+    tvImplementation 'androidx.leanback:leanback-preference:1.2.0-alpha02'
 
-    mobileImplementation 'androidx.constraintlayout:constraintlayout:2.1.0'
-    mobileImplementation 'androidx.core:core-splashscreen:1.0.0-alpha01'
-    mobileImplementation 'androidx.webkit:webkit:1.4.0'
+    standardMobileImplementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
+
+    mobileImplementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    mobileImplementation 'androidx.core:core-splashscreen:1.0.0'
+    mobileImplementation 'androidx.palette:palette-ktx:1.0.0'
+    mobileImplementation 'androidx.webkit:webkit:1.5.0'
+    mobileImplementation 'com.github.KieronQuinn:MonetCompat:0.4.1'
     mobileImplementation 'com.github.marcoscgdev:Licenser:2.0.0'
-    mobileImplementation 'com.google.android.material:material:1.5.0-alpha03'
+    mobileImplementation 'com.google.android.material:material:1.8.0-alpha02'
 
     nonFreeMobileImplementation fileTree(include: ['*.jar'], dir: 'libs')
-    nonFreeMobileImplementation 'com.google.android.play:core:1.10.1'
-    nonFreeMobileImplementation ('com.google.android.play:core-ktx:1.8.1') {
-        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
-    }
+    nonFreeMobileImplementation 'com.google.android.play:app-update-ktx:2.0.0'
+    nonFreeMobileImplementation 'com.google.android.play:review-ktx:2.0.0'
 }

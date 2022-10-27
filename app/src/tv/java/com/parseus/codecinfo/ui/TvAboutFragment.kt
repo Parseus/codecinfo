@@ -1,5 +1,7 @@
 package com.parseus.codecinfo.ui
 
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import androidx.leanback.app.GuidedStepSupportFragment
@@ -11,10 +13,15 @@ class TvAboutFragment : GuidedStepSupportFragment() {
 
     override fun onCreateGuidance(savedInstanceState: Bundle?): GuidanceStylist.Guidance {
         val title = getString(R.string.about_app)
+        val packageInfo = if (Build.VERSION.SDK_INT >= 33) {
+            requireActivity().packageManager.getPackageInfo(requireActivity().packageName, PackageManager.PackageInfoFlags.of(0L))
+        } else {
+            @Suppress("DEPRECATION")
+            requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0)
+        }
 
         val sb = StringBuilder()
-        sb.append(getString(R.string.app_version,
-                requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0).versionName)).append('\n')
+        sb.append(getString(R.string.app_version, packageInfo.versionName)).append('\n')
         sb.append(getString(R.string.copyright)).append('\n')
         sb.append(getString(R.string.source_code_link))
         val description = sb.toString()

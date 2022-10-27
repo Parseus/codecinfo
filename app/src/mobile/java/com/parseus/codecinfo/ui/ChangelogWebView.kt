@@ -1,7 +1,7 @@
 package com.parseus.codecinfo.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.util.AttributeSet
@@ -10,8 +10,10 @@ import android.webkit.*
 import androidx.annotation.RequiresApi
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
+import com.parseus.codecinfo.utils.isNightMode
 
-@Suppress("DEPRECATION")
+@SuppressLint("NewApi")
+@Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
 class ChangelogWebView : WebView {
 
     constructor(context: Context): super(context)
@@ -25,13 +27,16 @@ class ChangelogWebView : WebView {
             allowFileAccessFromFileURLs = false
             allowUniversalAccessFromFileURLs = false
             cacheMode = WebSettings.LOAD_NO_CACHE
-            setAppCacheEnabled(false)
             saveFormData = false
-            if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-                val isDarkTheme =
-                    (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-                WebSettingsCompat.setForceDark(this,
-                    if (isDarkTheme) WebSettingsCompat.FORCE_DARK_ON else WebSettingsCompat.FORCE_DARK_OFF)
+
+            val isNightMode = context.isNightMode()
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+                //TODO: Remove the SuppressLint annotation after
+                // https://issuetracker.google.com/issues/243570060#comment9 is done.
+                WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, isNightMode)
+            } else if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+                WebSettingsCompat.setForceDark(settings,
+                    if (isNightMode) WebSettingsCompat.FORCE_DARK_ON else WebSettingsCompat.FORCE_DARK_OFF)
             }
         }
         if (Build.VERSION.SDK_INT >= 26) {

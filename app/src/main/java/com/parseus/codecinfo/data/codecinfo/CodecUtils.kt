@@ -2,6 +2,7 @@ package com.parseus.codecinfo.data.codecinfo
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.media.CamcorderProfile
 import android.media.MediaCodec
 import android.media.MediaCodecInfo
 import android.media.MediaCodecInfo.CodecCapabilities.*
@@ -21,6 +22,7 @@ import com.parseus.codecinfo.data.codecinfo.profilelevels.VP9Levels.*
 import com.parseus.codecinfo.utils.*
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.min
 
 // Source:
 // https://android.googlesource.com/platform/frameworks/base/+/refs/heads/android10-release/media/java/android/media/MediaCodecInfo.java#1052
@@ -37,6 +39,9 @@ private const val DIVX6_720P_MAX_FRAME_RATE = 60
 private const val DIVX6_1080P_MAX_FRAME_RATE = 30
 private val DIVX4_MAX_RESOLUTION = intArrayOf(720, 576)
 private val DIVX6_MAX_RESOLUTION = intArrayOf(1920, 1080)
+
+// TODO: Find a good official source of the spec.
+private const val AC3_MAX_SAMPLE_RATE = 48000
 
 private const val GOOGLE_RAW_DECODER = "OMX.google.raw.decoder"
 private const val MEDIATEK_RAW_DECODER = "OMX.MTK.AUDIO.DECODER.RAW"
@@ -122,7 +127,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
             val oldCodecInfos = Array(MediaCodecList.getCodecCount())
                 { i -> MediaCodecList.getCodecInfoAt(i) }.filter { it.name.endsWith("secure") }
             mediaCodecInfos += oldCodecInfos
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
     }
 
     if (SDK_INT in 22..25 && Build.DEVICE == "R9"
@@ -133,7 +138,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
             val rawMediaCodec = MediaCodec.createByCodecName(GOOGLE_RAW_DECODER)
             //noinspection NewApi
             mediaCodecInfos += rawMediaCodec.codecInfo
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
     }
 
     val showAliases = prefs.getBoolean("show_aliases", false)
@@ -157,6 +162,11 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
             } catch (e: Exception) {
                 // Some devices (e.g. Kindle Fire HD) can report a codec in the supported list
                 // but don't really implement it (or it's buggy). In this case just skip this.
+                return@forEachIndexed
+            }
+
+            if (codecId.startsWith("wfd")) {
+                // This type of video codecs can't be properly queried.
                 return@forEachIndexed
             }
 
@@ -265,6 +275,10 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             }
             if (SDK_INT >= 31) {
                 propertyList.addFeature(context, capabilities, FEATURE_QpBounds, R.string.qp_bounds)
+            }
+            if (SDK_INT >= 33) {
+                propertyList.addFeature(context, capabilities, FEATURE_EncodingStatistics, R.string.encoding_statistics)
+                propertyList.addFeature(context, capabilities, FEATURE_HdrEditing, R.string.hdr_editing)
             }
         }
     }
@@ -463,10 +477,19 @@ private fun getAudioCapabilities(context: Context, codecId: String, codecName: S
         }
 
         else -> {
-            if (sampleRates[0].lower == sampleRates[0].upper) {
-                "${sampleRates[0].upper.toKiloHertz()} kHz"
+            var lower = sampleRates[0].lower
+            var upper = sampleRates[0].upper
+
+            // Some AC3 codecs, especially on older devices, provide maximum sample rate
+            // bigger than it's actually allowed by the spec.
+            if (codecId.endsWith("ac3")) {
+                lower = min(lower, AC3_MAX_SAMPLE_RATE)
+                upper = min(upper, AC3_MAX_SAMPLE_RATE)
+            }
+            if (lower == upper) {
+                "${upper.toKiloHertz()} kHz"
             } else {
-                "${sampleRates[0].lower.toKiloHertz()}, ${sampleRates[0].upper.toKiloHertz()} kHz"
+                "${lower.toKiloHertz()} kHz \u2014 ${upper.toKiloHertz()} kHz"
             }
         }
     }
@@ -510,7 +533,7 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
             if (mediaFormat.containsKey("max-channel-count")) {
                 return mediaFormat.getString("max-channel-count")!!.toInt()
             }
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
     }
 
     if (codecId.endsWith("flac") || codecId.endsWith("alac")) {
@@ -642,6 +665,18 @@ private fun getMaxResolution(codecId: String, videoCapabilities: MediaCodecInfo.
     val maxHeight = videoCapabilities.supportedHeights.upper
     val defaultResolution = intArrayOf(maxWidth, maxHeight)
 
+    // Some devices (e.g. Samsung, Huawei, and Pixel 6) under-report their encoding
+    // capabilities. The supported height reported for H265@3840x2160 is 2144,
+    // and H264@1920x1080 is 1072.
+    // Cross reference with CamcorderProfile to ensure a resolution is supported.
+    if (maxHeight == 1072 && CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P)) {
+        defaultResolution[0] = 1920
+        defaultResolution[1] = 1080
+    } else if (maxHeight == 2144 && CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_2160P)) {
+        defaultResolution[0] = 3840
+        defaultResolution[1] = 2160
+    }
+
     return if (!areCapabilitiesUnknown(videoCapabilities)) {
         defaultResolution
     } else when {
@@ -772,6 +807,9 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
                 level = H263Levels.from(it.level)
             }
             codecId.contains("hevc") || codecId.contains("heic") || codecId.contains("heif") -> {
+                if (needsHevc10BitProfileExcluded(codecId, it.profile)) {
+                    return@forEach
+                }
                 profile = HEVCProfiles.from(it.profile)
                 level = HEVCLevels.from(it.level)
             }
@@ -859,11 +897,7 @@ private fun getFormattedProfileLevelString(context: Context, profile: String?, p
         else -> "${profile ?: unknownString} ($profileInt)"
     }
 
-    val levelNameString = if (level != null) {
-        if (level.isNotEmpty()) level else ""
-    } else {
-        unknownString
-    }
+    val levelNameString = level?.ifEmpty { "" } ?: unknownString
 
     return if (levelNameString.isNotEmpty()) {
         val levelString = when (option) {
@@ -932,6 +966,11 @@ private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {
         return codecInfo.isSoftwareOnly
     }
 
+    // Hardware audio decoders aren't really a thing, particularly on older devices.
+    if (codecInfo.isAudioCodec()) {
+        return true
+    }
+
     val codecName = codecInfo.name.lowercase(Locale.ENGLISH)
 
     // Broadcom codecs which specifically mention HW acceleration in their names
@@ -987,4 +1026,10 @@ private fun areCapabilitiesUnknown(videoCapabilities: MediaCodecInfo.VideoCapabi
     return videoCapabilities.supportedFrameRates.upper == DEFAULT_MAX_FRAME_RATE
             && videoCapabilities.supportedWidths.upper == DEFAULT_MAX_SIZE
             && videoCapabilities.supportedHeights.upper == DEFAULT_MAX_SIZE
+}
+
+private fun needsHevc10BitProfileExcluded(codecId: String, profile: Int): Boolean {
+    // See https://github.com/google/ExoPlayer/issues/3537 for more info.
+    return "video/hevc" == codecId && HEVCProfiles.HEVCProfileMain10.value == profile
+            && ("sailfish" == Build.DEVICE || "marlin" == Build.DEVICE)
 }

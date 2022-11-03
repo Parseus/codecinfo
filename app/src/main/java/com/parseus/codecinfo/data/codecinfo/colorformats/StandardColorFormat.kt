@@ -82,7 +82,11 @@ enum class StandardColorFormat(val value: Int) {
     COLOR_Format32bitABGR2101010(0x7F00AAA2),
     COLOR_Format64bitABGRFloat(0x7F000F16),
 
+    // https://android.googlesource.com/platform/frameworks/native/+/refs/heads/master/headers/media_plugin/media/openmax/OMX_IVCommon.h
     COLOR_QCOM_FormatYUV420SemiPlanar (0x7FA30C00),
+    COLOR_QCOM_FormatYUV420PackedSemiPlanar64x32Tile2m8ka(0x7FA30C03),
+    COLOR_QCOM_FormatYUV420PackedSemiPlanar32m(0x7FA30C04),
+    COLOR_SEC_FormatNV12Tiled(0x7FC00002),
     COLOR_TI_FormatYUV420PackedSemiPlanar(0x7F000100),
 
     // Other

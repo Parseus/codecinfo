@@ -44,7 +44,7 @@ fun getAllInfoString(context: Context): String {
         builder.append("\n\n${context.getString(R.string.drm_list)}:\n")
         getSimpleDrmInfoList(context).forEach { infoItem ->
             builder.append("\n$infoItem\n")
-            getDetailedDrmInfo(context, DrmVendor.getFromUuid(infoItem.drmUuid)).forEach { builder.append("$it\n") }
+            getDetailedDrmInfo(context, infoItem.drmUuid, DrmVendor.getFromUuid(infoItem.drmUuid)).forEach { builder.append("$it\n") }
         }
     }
 
@@ -65,7 +65,7 @@ fun getSelectedDrmInfoString(context: Context, drmName: String, drmUuid: UUID): 
     val builder = StringBuilder()
     builder.append("${context.getString(R.string.drm_details)}: $drmName\n\n")
 
-    getDetailedDrmInfo(context, DrmVendor.getFromUuid(drmUuid)).forEach { builder.append("$it\n") }
+    getDetailedDrmInfo(context, drmUuid, DrmVendor.getFromUuid(drmUuid)).forEach { builder.append("$it\n") }
 
     return builder.toString()
 }

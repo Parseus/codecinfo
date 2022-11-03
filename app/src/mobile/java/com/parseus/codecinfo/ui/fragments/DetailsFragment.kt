@@ -119,7 +119,7 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
                         getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
                     drmName != null && drmUuid != null ->
                         //noinspection NewApi
-                        getDetailedDrmInfo(requireContext(), DrmVendor.getFromUuid(drmUuid!!))
+                        getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
                     else -> emptyList()
                 }
             }

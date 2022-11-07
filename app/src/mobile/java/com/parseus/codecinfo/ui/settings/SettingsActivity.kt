@@ -138,8 +138,15 @@ class SettingsActivity : MonetCompatActivity() {
             findPreference<CheckBoxPreference>("dynamic_theme")?.apply {
                 if (Build.VERSION.SDK_INT >= 21) {
                     setOnPreferenceChangeListener { _, newValue ->
-                        findPreference<Preference>("show_wallaper_colors")?.isVisible =
-                            !isNativeMonetAvailable() && newValue as Boolean
+                        if (!isNativeMonetAvailable()) {
+                            lifecycleScope.launchWhenResumed {
+                                val wallpaperColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
+                                findPreference<Preference>("show_wallaper_colors")?.isVisible =
+                                    newValue as Boolean && wallpaperColors.size > 1
+                                            && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                            }
+                        }
+
                         dynamicThemeChanged = true
                         activity?.let { ActivityCompat.recreate(it) }
                         true
@@ -149,20 +156,25 @@ class SettingsActivity : MonetCompatActivity() {
                 }
             }
 
-            findPreference<Preference>("show_wallpaper_colors")?.apply {
-                isVisible = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
-                        && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
-            }
+            if (!isNativeMonetAvailable()) {
+                lifecycleScope.launchWhenCreated {
+                    findPreference<Preference>("show_wallpaper_colors")?.apply {
+                        val wallpaperColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
+                        isVisible = Build.VERSION.SDK_INT >= 21 && wallpaperColors.size > 1
+                                && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                    }
+                }
 
-            findPreference<ListPreference>("dynamic_theme_wallpaper_source")?.apply {
-                isVisible = Build.VERSION.SDK_INT >= 27 && !isNativeMonetAvailable()
-                        && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
-                value = PreferenceManager.getDefaultSharedPreferences(requireContext())
-                    .getString("dynamic_theme_wallpaper_source", WallpaperTypes.WALLPAPER_SYSTEM.toString())
-                setOnPreferenceChangeListener { _, newValue ->
-                    MonetCompat.wallpaperSource = (newValue as String).toInt()
-                    MonetCompat.getInstance().updateMonetColors()
-                    true
+                findPreference<ListPreference>("dynamic_theme_wallpaper_source")?.apply {
+                    isVisible = Build.VERSION.SDK_INT >= 27
+                            && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                    value = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                        .getString("dynamic_theme_wallpaper_source", WallpaperTypes.WALLPAPER_SYSTEM.toString())
+                    setOnPreferenceChangeListener { _, newValue ->
+                        MonetCompat.wallpaperSource = (newValue as String).toInt()
+                        MonetCompat.getInstance().updateMonetColors()
+                        true
+                    }
                 }
             }
 

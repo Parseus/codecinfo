@@ -600,5 +600,5 @@ private fun adjustColorAlpha(@ColorInt color: Int, factor: Float): Int {
     return Color.argb(alpha, red, green, blue)
 }
 
-private fun isColorLight(color: Int): Boolean =
+fun isColorLight(color: Int): Boolean =
     color != Color.TRANSPARENT && ColorUtils.calculateLuminance(color) > 0.5

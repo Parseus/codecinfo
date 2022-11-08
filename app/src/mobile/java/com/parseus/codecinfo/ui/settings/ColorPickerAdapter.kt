@@ -2,6 +2,7 @@ package com.parseus.codecinfo.ui.settings
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
@@ -9,6 +10,7 @@ import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.parseus.codecinfo.databinding.WallpaperColorsAdapterItemBinding
+import com.parseus.codecinfo.utils.isColorLight
 
 @RequiresApi(21)
 class ColorPickerAdapter(context: Context,
@@ -37,6 +39,8 @@ class ColorPickerAdapter(context: Context,
             }
             itemColorPickerBackground.backgroundTintList = ColorStateList.valueOf(color)
             itemColorPickerCheck.isVisible = color == selectedColor
+            val tintColor = if (isColorLight(color)) Color.BLACK else Color.WHITE
+            itemColorPickerCheck.imageTintList = ColorStateList.valueOf(tintColor)
             itemColorPickerBackground.setOnClickListener {
                 onColorPicked.invoke(color)
             }

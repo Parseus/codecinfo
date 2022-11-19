@@ -27,7 +27,6 @@ import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.CodecAdapter
 import com.parseus.codecinfo.ui.adapters.DrmAdapter
 import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
-import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
 import com.parseus.codecinfo.utils.isNativeMonetAvailable

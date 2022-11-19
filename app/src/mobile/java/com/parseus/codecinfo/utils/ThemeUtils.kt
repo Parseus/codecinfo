@@ -48,7 +48,7 @@ private const val TAG = "ThemeUtils"
 fun isNativeMonetAvailable(): Boolean = DynamicColors.isDynamicColorAvailable()
 
 fun isDynamicThemingEnabled(context: Context): Boolean {
-    return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("dynamic_theme", false)
+    return Build.VERSION.SDK_INT >= 21 && PreferenceManager.getDefaultSharedPreferences(context).getBoolean("dynamic_theme", false)
 }
 
 fun getPrimaryColor(context: Context): Int {

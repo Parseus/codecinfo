@@ -343,7 +343,9 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 val dialogBuilder = MaterialAlertDialogBuilder(this).setView(dialogViewBinding.root)
                 val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
                 dialog.show()
-                dialog.applyMonet()
+                if (isDynamicThemingEnabled(this) && !isNativeMonetAvailable()) {
+                    dialog.applyMonet()
+                }
                 dialog.updateButtonColors(dialogBuilder.context)
             }
 
@@ -369,7 +371,9 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                     }
                 val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
                 dialog.show()
-                dialog.applyMonet()
+                if (isDynamicThemingEnabled(this) && !isNativeMonetAvailable()) {
+                    dialog.applyMonet()
+                }
                 dialog.updateButtonColors(dialogBuilder.context)
 
                 return true

@@ -69,7 +69,7 @@ class SettingsActivity : MonetCompatActivity() {
             }
         }
 
-        if (!isNativeMonetAvailable()) {
+        if (Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()) {
             lifecycleScope.launchWhenCreated {
                 monet.awaitMonetReady()
                 initializeUI(savedInstanceState)

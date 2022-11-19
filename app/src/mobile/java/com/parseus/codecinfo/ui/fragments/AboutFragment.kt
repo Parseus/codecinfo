@@ -90,7 +90,7 @@ class AboutFragment : Fragment() {
             val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context)
                 .setPositiveButton(android.R.string.ok, null).create()
             dialog.show()
-            if (!isNativeMonetAvailable()) {
+            if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
                 dialog.applyMonet()
             }
             dialog.updateButtonColors(dialogBuilder.context)

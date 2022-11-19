@@ -19,7 +19,10 @@ class CodecInfoApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        if (!isNativeMonetAvailable()) {
+        if (DynamicColors.isDynamicColorAvailable()) {
+            DynamicColors.applyToActivitiesIfAvailable(this,
+                DynamicColorsOptions.Builder().setPrecondition { _, _ -> isDynamicThemingEnabled(this) }.build())
+        } else if (Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()) {
             MonetCompat.enablePaletteCompat()
             MonetCompat.useSystemColorsOnAndroid12 = isNativeMonetAvailable()
             MonetCompat.wallpaperSource = PreferenceManager.getDefaultSharedPreferences(this)
@@ -28,9 +31,6 @@ class CodecInfoApp : Application() {
                 val userPickedColor = getWallpaperColorFromPreferences()
                 it?.firstOrNull { color -> color == userPickedColor } ?: it?.firstOrNull()
             }
-        } else {
-            DynamicColors.applyToActivitiesIfAvailable(this,
-                DynamicColorsOptions.Builder().setPrecondition { _, _ -> isDynamicThemingEnabled(this) }.build())
         }
     }
 

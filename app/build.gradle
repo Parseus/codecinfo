@@ -143,7 +143,7 @@ dependencies {
 
     nonFreeMobileImplementation fileTree(include: ['*.jar'], dir: 'libs')
     nonFreeMobileImplementation 'com.google.android.play:app-update:2.0.1'
-    nonFreeMobileImplementation 'com.google.android.play:app-update-ktx:2.0.0'
+    nonFreeMobileImplementation 'com.google.android.play:app-update-ktx:2.0.1'
     nonFreeMobileImplementation 'com.google.android.play:review:2.0.1'
-    nonFreeMobileImplementation 'com.google.android.play:review-ktx:2.0.0'
+    nonFreeMobileImplementation 'com.google.android.play:review-ktx:2.0.1'
 }

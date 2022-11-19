@@ -31,12 +31,7 @@ class ChangelogWebView : WebView {
 
             val isNightMode = context.isNightMode()
             if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
-                //TODO: Remove the SuppressLint annotation after
-                // https://issuetracker.google.com/issues/243570060#comment9 is done.
                 WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, isNightMode)
-            } else if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-                WebSettingsCompat.setForceDark(settings,
-                    if (isNightMode) WebSettingsCompat.FORCE_DARK_ON else WebSettingsCompat.FORCE_DARK_OFF)
             }
         }
         if (Build.VERSION.SDK_INT >= 26) {

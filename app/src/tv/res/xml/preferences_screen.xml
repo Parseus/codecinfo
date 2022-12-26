@@ -25,6 +25,11 @@
             app:key="known_resolutions"
             app:title="Show supported resolutions"
             app:useSimpleSummaryProvider="true"/>
+
+        <androidx.preference.CheckBoxPreference
+            app:key="show_hw_icon"
+            app:title="Show an indicator on hardware-accelerated codecs"
+            app:defaultValue="true" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Sorting &amp; Filtering">

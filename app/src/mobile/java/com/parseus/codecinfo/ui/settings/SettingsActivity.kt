@@ -126,6 +126,7 @@ class SettingsActivity : MonetCompatActivity() {
             putExtra(SORTING_CHANGED, sortingChanged)
             putExtra(IMMERSIVE_CHANGED, immersiveChanged)
             putExtra(DYNAMIC_THEME_CHANGED, dynamicThemeChanged)
+            putExtra(HW_ICON_CHANGED, hwIconChanged)
         })
         super.finish()
     }
@@ -224,6 +225,12 @@ class SettingsActivity : MonetCompatActivity() {
             val sortingType = findPreference<ListPreference>("sort_type")
             sortingType!!.setOnPreferenceChangeListener { _, _ ->
                 sortingChanged = true
+                true
+            }
+
+            val showHwIcon = findPreference<CheckBoxPreference>("show_hw_icon")
+            showHwIcon!!.setOnPreferenceChangeListener { _, _ ->
+                hwIconChanged = true
                 true
             }
         }
@@ -358,11 +365,13 @@ class SettingsActivity : MonetCompatActivity() {
         var sortingChanged = false
         var immersiveChanged = false
         var dynamicThemeChanged = false
+        var hwIconChanged = false
         const val ALIASES_CHANGED = "aliases_changed"
         const val FILTER_TYPE_CHANGED = "filter_type_changed"
         const val SORTING_CHANGED = "sorting_changed"
         const val IMMERSIVE_CHANGED = "immersive_changed"
         const val DYNAMIC_THEME_CHANGED = "dynamic_theme_changed"
+        const val HW_ICON_CHANGED = "hw_icon_changed"
     }
 
 }

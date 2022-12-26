@@ -174,7 +174,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
 
             if (isAudio == isAudioCodec) {
                 val codecSimpleInfo = CodecSimpleInfo((codecIndex * 100 + index).toLong(), codecId, mediaCodecInfo.name,
-                        isAudioCodec, mediaCodecInfo.isEncoder)
+                        isAudioCodec, mediaCodecInfo.isEncoder, isHardwareAccelerated(mediaCodecInfo))
                 if (codecSimpleInfoList.find {
                     it.codecId == codecSimpleInfo.codecId
                             && it.codecName == codecSimpleInfo.codecName

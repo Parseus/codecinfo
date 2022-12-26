@@ -3,6 +3,7 @@ package com.parseus.codecinfo.ui
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.leanback.app.GuidedStepSupportFragment
 import androidx.leanback.widget.GuidanceStylist
@@ -26,7 +27,7 @@ class TvAboutFragment : GuidedStepSupportFragment() {
         sb.append(getString(R.string.source_code_link))
         val description = sb.toString()
 
-        val icon = ContextCompat.getDrawable(requireContext(), R.mipmap.ic_launcher)
+        val icon = AppCompatResources.getDrawable(requireContext(), R.mipmap.ic_launcher)
         return GuidanceStylist.Guidance(title, description, null, icon)
     }
 

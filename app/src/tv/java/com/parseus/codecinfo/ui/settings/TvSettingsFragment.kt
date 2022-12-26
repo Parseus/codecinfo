@@ -2,39 +2,41 @@ package com.parseus.codecinfo.ui.settings
 
 import android.os.Build
 import android.os.Bundle
+import androidx.annotation.XmlRes
+import androidx.core.os.bundleOf
 import androidx.leanback.preference.LeanbackPreferenceFragmentCompat
 import androidx.leanback.preference.LeanbackSettingsFragmentCompat
 import androidx.preference.*
 import com.parseus.codecinfo.R
 
-class TvSettingsFragment : LeanbackSettingsFragmentCompat() {
+class TvSettingsFragment : LeanbackSettingsFragmentCompat(), DialogPreference.TargetFragment {
+
+    private lateinit var preferenceFragment: PreferenceFragmentCompat
 
     override fun onPreferenceStartInitialScreen() {
-        startPreferenceFragment(TvPreferenceFragment())
+        preferenceFragment = buildPreferenceFragment(R.xml.preferences_screen, null)
+        startPreferenceFragment(preferenceFragment)
     }
 
     override fun onPreferenceStartFragment(caller: PreferenceFragmentCompat, pref: Preference): Boolean {
-        val args = pref.extras
-        val f = childFragmentManager.fragmentFactory.instantiate(requireActivity().classLoader, pref.fragment!!)
-        f.arguments = args
-        f.setTargetFragment(caller, 0)
-
-        if (f is PreferenceFragmentCompat || f is PreferenceDialogFragmentCompat) {
-            startPreferenceFragment(f)
-        } else {
-            startImmersiveFragment(f)
-        }
-
-        return true
+        return false
     }
 
     override fun onPreferenceStartScreen(caller: PreferenceFragmentCompat, pref: PreferenceScreen): Boolean {
-        val fragment = TvPreferenceFragment()
-        val args = Bundle(1)
-        args.putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, pref.key)
-        fragment.arguments = args
+        val fragment = buildPreferenceFragment(R.xml.preferences_screen, pref.key)
         startPreferenceFragment(fragment)
         return true
+    }
+
+    override fun <T : Preference?> findPreference(key: CharSequence): T? = preferenceFragment.findPreference(key)
+
+    private fun buildPreferenceFragment(@XmlRes preferenceResId: Int, root: String?): PreferenceFragmentCompat {
+        return TvPreferenceFragment().apply {
+            arguments = bundleOf(
+                PREFERENCE_RESOURCE_ID to preferenceResId,
+                PreferenceFragmentCompat.ARG_PREFERENCE_ROOT to root
+            )
+        }
     }
 
     class TvPreferenceFragment : LeanbackPreferenceFragmentCompat() {
@@ -50,9 +52,19 @@ class TvSettingsFragment : LeanbackSettingsFragmentCompat() {
         }
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.preferences_screen, rootKey)
+            val prefResId = requireArguments().getInt(PREFERENCE_RESOURCE_ID)
+
+            if (rootKey == null) {
+                addPreferencesFromResource(prefResId)
+            } else {
+                setPreferencesFromResource(prefResId, rootKey)
+            }
         }
 
+    }
+
+    companion object {
+        private const val PREFERENCE_RESOURCE_ID = "preferenceResource"
     }
 
 }

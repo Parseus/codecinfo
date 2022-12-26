@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
@@ -103,6 +104,7 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
         private val codecName = binding.codecFullName
         private val codecType = binding.codecType
         private val moreInfo = binding.moreInfo
+        private val hwIcon = binding.hwIcon
 
         fun bindCodecInfo(codecInfo: CodecSimpleInfo, position: Int) {
             codecId.text = codecInfo.codecId
@@ -115,6 +117,9 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
             if (itemView.context.isInTwoPaneMode()) {
                 moreInfo.visibility = View.GONE
             }
+
+            hwIcon.isVisible = codecInfo.isHardwareAccelereated
+                    && PreferenceManager.getDefaultSharedPreferences(layout.context).getBoolean("show_hw_icon", true)
 
             if (KNOWN_PROBLEMS_DB.isNotEmpty()) {
                 val knownProblems = KNOWN_PROBLEMS_DB.filter {

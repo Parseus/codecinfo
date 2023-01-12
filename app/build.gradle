@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.7.20-1.0.8'
+    id 'com.google.devtools.ksp' version '1.8.0-1.0.8'
 }
 
 android {
@@ -114,13 +114,13 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 
     implementation 'androidx.appcompat:appcompat:1.7.0-alpha01'
-    implementation "androidx.core:core-ktx:1.9.0"
+    implementation "androidx.core:core-ktx:1.10.0-alpha01"
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     implementation "com.squareup.leakcanary:plumber-android:$leakCanary_version"
     implementation "com.squareup.moshi:moshi:$moshi_version"
     ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
-    implementation "com.squareup.okio:okio:3.2.0"
+    implementation "com.squareup.okio:okio:3.3.0"
 
     implementation 'me.saket:better-link-movement-method:2.2.0'
 
@@ -136,7 +136,7 @@ dependencies {
     mobileImplementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     mobileImplementation 'androidx.core:core-splashscreen:1.0.0'
     mobileImplementation 'androidx.palette:palette-ktx:1.0.0'
-    mobileImplementation 'androidx.webkit:webkit:1.6.0-beta01'
+    mobileImplementation 'androidx.webkit:webkit:1.6.0-rc01'
     mobileImplementation 'com.github.KieronQuinn:MonetCompat:0.4.1'
     mobileImplementation 'com.github.marcoscgdev:Licenser:2.0.0'
     mobileImplementation 'com.google.android.material:material:1.8.0-rc01'

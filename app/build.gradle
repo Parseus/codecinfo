@@ -114,7 +114,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 
     implementation 'androidx.appcompat:appcompat:1.7.0-alpha01'
-    implementation "androidx.core:core-ktx:1.10.0-alpha01"
+    implementation "androidx.core:core-ktx:1.10.0-alpha02"
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     implementation "com.squareup.leakcanary:plumber-android:$leakCanary_version"
@@ -136,10 +136,10 @@ dependencies {
     mobileImplementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     mobileImplementation 'androidx.core:core-splashscreen:1.0.0'
     mobileImplementation 'androidx.palette:palette-ktx:1.0.0'
-    mobileImplementation 'androidx.webkit:webkit:1.6.0-rc01'
+    mobileImplementation 'androidx.webkit:webkit:1.7.0-alpha01'
     mobileImplementation 'com.github.KieronQuinn:MonetCompat:0.4.1'
     mobileImplementation 'com.github.marcoscgdev:Licenser:2.0.0'
-    mobileImplementation 'com.google.android.material:material:1.8.0-rc01'
+    mobileImplementation 'com.google.android.material:material:1.9.0-alpha01'
 
     nonFreeMobileImplementation fileTree(include: ['*.jar'], dir: 'libs')
     nonFreeMobileImplementation 'com.google.android.play:app-update:2.0.1'

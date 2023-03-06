@@ -15,7 +15,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,6 +35,7 @@ import com.parseus.codecinfo.databinding.WallpaperColorPickerLayoutBinding
 import com.parseus.codecinfo.ui.fragments.AboutFragment
 import com.parseus.codecinfo.utils.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SettingsActivity : MonetCompatActivity() {
@@ -70,9 +73,11 @@ class SettingsActivity : MonetCompatActivity() {
         }
 
         if (Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()) {
-            lifecycleScope.launchWhenCreated {
-                monet.awaitMonetReady()
-                initializeUI(savedInstanceState)
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.CREATED) {
+                    monet.awaitMonetReady()
+                    initializeUI(savedInstanceState)
+                }
             }
         } else {
             initializeUI(savedInstanceState)
@@ -140,11 +145,13 @@ class SettingsActivity : MonetCompatActivity() {
                 if (Build.VERSION.SDK_INT >= 21) {
                     setOnPreferenceChangeListener { _, newValue ->
                         if (!isNativeMonetAvailable()) {
-                            lifecycleScope.launchWhenResumed {
-                                val wallpaperColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
-                                findPreference<Preference>("show_wallaper_colors")?.isVisible =
-                                    newValue as Boolean && wallpaperColors.size > 1
-                                            && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                                    val wallpaperColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
+                                    findPreference<Preference>("show_wallaper_colors")?.isVisible =
+                                        newValue as Boolean && wallpaperColors.size > 1
+                                                && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                                }
                             }
                         }
 
@@ -158,11 +165,13 @@ class SettingsActivity : MonetCompatActivity() {
             }
 
             if (!isNativeMonetAvailable()) {
-                lifecycleScope.launchWhenCreated {
-                    findPreference<Preference>("show_wallpaper_colors")?.apply {
-                        val wallpaperColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
-                        isVisible = Build.VERSION.SDK_INT >= 21 && wallpaperColors.size > 1
-                                && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                        findPreference<Preference>("show_wallpaper_colors")?.apply {
+                            val wallpaperColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
+                            isVisible = Build.VERSION.SDK_INT >= 21 && wallpaperColors.size > 1
+                                    && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                        }
                     }
                 }
 
@@ -251,13 +260,15 @@ class SettingsActivity : MonetCompatActivity() {
         override fun onPreferenceTreeClick(preference: Preference): Boolean {
             return when (preference.key) {
                 "show_wallpaper_colors" -> {
-                    lifecycleScope.launchWhenResumed {
-                        val availableColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
-                        if (availableColors.isNotEmpty()) {
-                            showWallpaperColorPicker(availableColors)
-                        } else {
-                            Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                                R.string.dynamic_theme_color_picker_unavailable, Snackbar.LENGTH_LONG).show()
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                            val availableColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
+                            if (availableColors.isNotEmpty()) {
+                                showWallpaperColorPicker(availableColors)
+                            } else {
+                                Snackbar.make(requireActivity().findViewById(android.R.id.content),
+                                    R.string.dynamic_theme_color_picker_unavailable, Snackbar.LENGTH_LONG).show()
+                            }
                         }
                     }
                     true
@@ -304,13 +315,15 @@ class SettingsActivity : MonetCompatActivity() {
                     MonetCompat.getInstance().getSelectedWallpaperColor(),
                     availableColors
                 ) {
-                    lifecycleScope.launchWhenResumed {
-                        withContext(Dispatchers.IO) {
-                            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
-                                .putInt("selected_color", it).commit()
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                            withContext(Dispatchers.IO) {
+                                PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
+                                    .putInt("selected_color", it).commit()
+                            }
+                            alertDialog.dismiss()
+                            MonetCompat.getInstance().updateMonetColors()
                         }
-                        alertDialog.dismiss()
-                        MonetCompat.getInstance().updateMonetColors()
                     }
                 }
             }

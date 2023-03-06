@@ -134,7 +134,7 @@ dependencies {
     standardMobileImplementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
 
     mobileImplementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    mobileImplementation 'androidx.core:core-splashscreen:1.1.0-alpha01'
+    mobileImplementation 'androidx.core:core-splashscreen:1.0.0'
     mobileImplementation 'androidx.palette:palette-ktx:1.0.0'
     mobileImplementation 'androidx.webkit:webkit:1.7.0-alpha02'
     mobileImplementation 'com.github.KieronQuinn:MonetCompat:0.4.1'

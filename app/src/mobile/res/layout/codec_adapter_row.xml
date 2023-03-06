@@ -77,7 +77,7 @@
         android:id="@+id/hw_icon"
         android:layout_width="@dimen/icon_size"
         android:layout_height="@dimen/icon_size"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/hw_indicator_top_margin"
         android:contentDescription="@string/hardware_acceleration"
         android:scaleType="centerInside"
         app:srcCompat="@drawable/ic_hardware"

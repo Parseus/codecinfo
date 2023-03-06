@@ -4,6 +4,7 @@
     <dimen name="list_baseline_primary">0dp</dimen>
     <dimen name="list_content_bottom_padding">0dp</dimen>
     <dimen name="dialog_button_margin_size">8dp</dimen>
+    <dimen name="hw_indicator_top_margin">16dp</dimen>
 
     <dimen name="icon_size">24dp</dimen>
 

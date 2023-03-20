@@ -6,9 +6,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
-import android.view.MenuItem
-import android.view.View
-import android.view.Window
+import android.view.*
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -141,8 +139,8 @@ class SettingsActivity : MonetCompatActivity() {
 
     class SettingsFragment : PreferenceFragmentCompat() {
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+            val view = super.onCreateView(inflater, container, savedInstanceState)
 
             findPreference<CheckBoxPreference>("dynamic_theme")?.apply {
                 if (Build.VERSION.SDK_INT >= 21) {
@@ -245,6 +243,8 @@ class SettingsActivity : MonetCompatActivity() {
                 hwIconChanged = true
                 true
             }
+
+            return view
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

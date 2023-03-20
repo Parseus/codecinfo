@@ -72,7 +72,10 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
     val searchListeners = mutableListOf<SearchView.OnQueryTextListener>()
 
-    override val recreateMode = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+    override val recreateMode: Boolean
+        get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+    override val updateOnCreate: Boolean
+        get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         disableApiBlacklistOnPie()

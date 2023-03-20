@@ -42,7 +42,10 @@ class SettingsActivity : MonetCompatActivity() {
 
     private lateinit var binding: SettingsMainBinding
 
-    override val recreateMode = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+    override val recreateMode: Boolean
+        get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+    override val updateOnCreate: Boolean
+        get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CodecInfo)

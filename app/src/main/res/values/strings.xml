@@ -48,6 +48,7 @@
     <string name="color_profiles">Color profiles</string>
 
     <string name="feature_support_format">%1$s (required: %2$s)</string>
+    <string name="feature_low_latency_vendor_supported"><![CDATA[true (enabled by setting the <b>%s</b> key to <b>1</b> in decoder\'s <i>MediaFormat</i>)]]></string>
     <string name="adaptive_playback">Adaptive playback</string>
     <string name="dynamic_timestamp">Dynamic timestamp</string>
     <string name="intra_refresh">Intra refresh</string>

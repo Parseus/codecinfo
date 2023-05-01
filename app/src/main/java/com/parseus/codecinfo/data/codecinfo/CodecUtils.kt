@@ -13,6 +13,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.util.Range
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
+import androidx.core.text.HtmlCompat
 import androidx.preference.PreferenceManager
 import com.parseus.codecinfo.*
 import com.parseus.codecinfo.data.DetailsProperty
@@ -81,6 +82,16 @@ private val framerateClasses = arrayOf(
         "1080p",
         "4K",
         "8K"
+)
+
+private val knownVendorLowLatencyOptions = listOf(
+    // https://cs.android.com/android/platform/superproject/+/master:hardware/qcom/sdm845/media/mm-video-v4l2/vidc/vdec/src/omx_vdec_extensions.hpp
+    "vendor.qti-ext-dec-low-latency.enable",
+    // https://developer.huawei.com/consumer/cn/forum/topic/0202325564295980115
+    "vendor.hisi-ext-low-latency-video-dec.video-scene-for-low-latency-req",
+    "vendor.rtc-ext-dec-low-latency.enable",
+    // https://github.com/codewalkerster/android_vendor_amlogic_common_prebuilt_libstagefrighthw/commit/41fefc4e035c476d58491324a5fe7666bfc2989e
+    "vendor.low-latency.enable"
 )
 
 private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()
@@ -238,7 +249,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             isSoftwareOnly(mediaCodecInfo).toString()))
 
     if (!isEncoder && SDK_INT >= 30) {
-        propertyList.addFeature(context, capabilities, FEATURE_LowLatency, R.string.low_latency)
+        addLowLatencyFeatureIfSupported(context, codecName, capabilities, propertyList)
     }
 
     propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.codec_provider),
@@ -328,6 +339,32 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
     }
 
     return propertyList
+}
+
+@RequiresApi(30)
+private fun addLowLatencyFeatureIfSupported(context: Context,
+                                            codecName: String,
+                                            capabilities: MediaCodecInfo.CodecCapabilities,
+                                            propertyList: MutableList<DetailsProperty>) {
+    if (capabilities.isFeatureSupported(FEATURE_LowLatency)) {
+        propertyList.addFeature(context, capabilities, FEATURE_LowLatency, R.string.low_latency)
+    } else if (SDK_INT >= 31) {
+        var codec: MediaCodec? = null
+        try {
+            codec = MediaCodec.createByCodecName(codecName)
+            val vendorLowLatencyKey = codec.supportedVendorParameters.find { it in knownVendorLowLatencyOptions }
+            val featureString = if (vendorLowLatencyKey != null) {
+                HtmlCompat.fromHtml(context.getString(R.string.feature_low_latency_vendor_supported, vendorLowLatencyKey),
+                    HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+            } else {
+                false.toString()
+            }
+            propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.low_latency), featureString))
+        } catch (_: Exception) {}
+        finally {
+            codec?.release()
+        }
+    }
 }
 
 @RequiresApi(21)

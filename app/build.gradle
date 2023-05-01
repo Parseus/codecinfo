@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.8.10-1.0.9'
+    id 'com.google.devtools.ksp' version '1.8.21-1.0.11'
 }
 
 android {
@@ -67,8 +67,8 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        jvmToolchain(11)
     }
     packagingOptions {
         jniLibs {
@@ -76,7 +76,7 @@ android {
         }
         resources {
             excludes += ['kotlin/**', '**/*.kotlin_metadata', 'META-INF/*.kotlin_module',
-                         'META-INF/*.version', 'META-INF/versions/9/previous-compilation-data.bin']
+                         'META-INF/*.version']
         }
     }
 
@@ -112,10 +112,10 @@ configurations {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0-Beta'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.0-RC'
 
     implementation 'androidx.appcompat:appcompat:1.7.0-alpha02'
-    implementation "androidx.core:core-ktx:1.10.0-rc01"
+    implementation "androidx.core:core-ktx:1.11.0-alpha03"
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     implementation "com.squareup.leakcanary:plumber-android:$leakCanary_version"
@@ -135,12 +135,12 @@ dependencies {
     standardMobileImplementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
 
     mobileImplementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    mobileImplementation 'androidx.core:core-splashscreen:1.0.0'
+    mobileImplementation 'androidx.core:core-splashscreen:1.0.1'
     mobileImplementation 'androidx.palette:palette-ktx:1.0.0'
-    mobileImplementation 'androidx.webkit:webkit:1.7.0-alpha03'
+    mobileImplementation 'androidx.webkit:webkit:1.7.0-beta01'
     mobileImplementation 'com.github.KieronQuinn:MonetCompat:0.4.1'
     mobileImplementation 'com.github.marcoscgdev:Licenser:2.0.0'
-    mobileImplementation 'com.google.android.material:material:1.9.0-beta01'
+    mobileImplementation 'com.google.android.material:material:1.9.0-rc01'
 
     nonFreeMobileImplementation fileTree(include: ['*.jar'], dir: 'libs')
     nonFreeMobileImplementation 'com.google.android.play:app-update:2.0.1'

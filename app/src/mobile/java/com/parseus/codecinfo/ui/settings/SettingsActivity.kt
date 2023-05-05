@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -307,9 +308,9 @@ class SettingsActivity : MonetCompatActivity() {
             val alertDialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
             val colorPickerView = WallpaperColorPickerLayoutBinding.inflate(layoutInflater).root
             colorPickerView.apply {
-                backgroundTintList = ColorStateList.valueOf(
+                ViewCompat.setBackgroundTintList(this, ColorStateList.valueOf(
                     MonetCompat.getInstance().getBackgroundColor(requireContext())
-                )
+                ))
                 layoutManager =
                     LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
 

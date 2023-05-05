@@ -23,8 +23,10 @@ class CodecInfoApp : Application() {
             DynamicColors.applyToActivitiesIfAvailable(this,
                 DynamicColorsOptions.Builder().setPrecondition { _, _ -> isDynamicThemingEnabled(this) }.build())
         } else if (Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()) {
-            MonetCompat.enablePaletteCompat()
-            MonetCompat.useSystemColorsOnAndroid12 = isNativeMonetAvailable()
+            if (Build.VERSION.SDK_INT <= 26) {
+                MonetCompat.enablePaletteCompat()
+            }
+            MonetCompat.useSystemColorsOnAndroid12 = false
             MonetCompat.wallpaperSource = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString("dynamic_theme_wallpaper_source", WallpaperTypes.WALLPAPER_SYSTEM.toString())!!.toInt()
             MonetCompat.wallpaperColorPicker = {

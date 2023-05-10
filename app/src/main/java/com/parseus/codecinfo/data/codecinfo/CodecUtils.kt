@@ -602,6 +602,7 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
     // The maximum channel count looks incorrect. Adjust it to an assumed default.
     return when (codecId) {
         "audio/ac3" -> 6
+        "audio/ac4" -> 24
         // Source: http://www.voiceage.com/AMR-WBplus.html
         "audio/amr-wb-plus" -> 2
         "audio/dts" -> 8

@@ -815,6 +815,10 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
             codecId.contains("mp4a-latm") -> {
                 profile = AACProfiles.from(it.profile)
             }
+            codecId.contains("ac4") -> {
+                profile = AC4Profiles.from(it.profile)
+                level = AC4Levels.from(it.level)
+            }
             codecId.contains("av01") -> {
                 profile = AV1Profiles.from(it.profile)
                 level = AV1Levels.from(it.level)
@@ -837,6 +841,12 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
             codecId.contains("dolby-vision") -> {
                 profile = DolbyVisionProfiles.from(it.profile)
                 level = DolbyVisionLevels.from(it.level)
+            }
+            codecId.contains("vnd.dts.hd") -> {
+                profile = DTSHDProfiles.from(it.profile)
+            }
+            codecId.contains("vnd.dts.uhd") -> {
+                profile = DTSUHDProfiles.from(it.profile)
             }
             (codecId.contains("3gpp") && !codecName.contains("mpeg4", true))
                     || codecId.contains("sorenson") || codecId.contains("flv") -> {

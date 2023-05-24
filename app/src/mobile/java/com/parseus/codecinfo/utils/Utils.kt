@@ -47,6 +47,7 @@ fun isBatterySaverDisallowed(context: Context): Boolean {
             || isMiUi
             || isEmUi
             || isChromebook(context)
+            || context.isTv()
 }
 
 fun getDefaultThemeOption(context: Context) = when {

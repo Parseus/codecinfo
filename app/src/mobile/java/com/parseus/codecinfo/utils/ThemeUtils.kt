@@ -35,6 +35,7 @@ import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigationrail.NavigationRailView
+import com.google.android.material.progressindicator.BaseProgressIndicator
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.tabs.TabLayout
 import com.kieronquinn.monetcompat.core.MonetCompat
@@ -218,6 +219,10 @@ fun AlertDialog.updateButtonColors(context: Context) {
     (getButton(DialogInterface.BUTTON_POSITIVE) as? MaterialButton)?.updateColors(context)
     (getButton(DialogInterface.BUTTON_NEUTRAL) as? MaterialButton)?.updateColors(context)
     (getButton(DialogInterface.BUTTON_NEGATIVE) as? MaterialButton)?.updateColors(context)
+}
+
+fun BaseProgressIndicator<*>.updateColors(context: Context) {
+    setIndicatorColor(getPrimaryColor(context))
 }
 
 fun CompoundButton.updateColors(context: Context) {

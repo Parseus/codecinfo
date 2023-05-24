@@ -73,6 +73,8 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             view.applyMonetRecursively()
         }
 
+        binding.loadingProgress.updateColors(requireContext())
+
         if (!requireContext().isInTwoPaneMode()) {
             // Apply background color only on mobile to reduce overdraw on bigger devices
             binding.endRoot.setBackgroundColor(getSurfaceColor(requireContext()))

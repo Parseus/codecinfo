@@ -30,6 +30,7 @@ import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
 import com.parseus.codecinfo.utils.getSecondaryColor
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
 import com.parseus.codecinfo.utils.isNativeMonetAvailable
+import com.parseus.codecinfo.utils.updateColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -73,6 +74,8 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
         if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
             view.applyMonetRecursively()
         }
+
+        binding.loadingProgress.updateColors(requireContext())
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

@@ -143,6 +143,8 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         setSupportActionBar(binding.toolbar)
         binding.toolbar.updateToolBarColor(this)
 
+        binding.updateProgressBar?.updateColors(this)
+
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         if (savedInstanceState != null) {

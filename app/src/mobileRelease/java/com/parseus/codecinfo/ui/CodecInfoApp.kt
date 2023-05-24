@@ -19,10 +19,10 @@ class CodecInfoApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        if (DynamicColors.isDynamicColorAvailable()) {
+        if (isNativeMonetAvailable()) {
             DynamicColors.applyToActivitiesIfAvailable(this,
                 DynamicColorsOptions.Builder().setPrecondition { _, _ -> isDynamicThemingEnabled(this) }.build())
-        } else if (Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()) {
+        } else if (Build.VERSION.SDK_INT >= 21) {
             if (Build.VERSION.SDK_INT <= 26) {
                 MonetCompat.enablePaletteCompat()
             }
@@ -34,6 +34,8 @@ class CodecInfoApp : Application() {
                 it?.firstOrNull { color -> color == userPickedColor } ?: it?.firstOrNull()
             }
         }
+
+        enableSettingsIntentFilter()
     }
 
     private suspend fun getWallpaperColorFromPreferences(): Int? = withContext(Dispatchers.IO) {

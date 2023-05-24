@@ -123,8 +123,6 @@ dependencies {
     ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
     implementation "com.squareup.okio:okio:3.3.0"
 
-    implementation 'me.saket:better-link-movement-method:2.2.0'
-
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanary_version"
     standardMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
     nonFreeMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'

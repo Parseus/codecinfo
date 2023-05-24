@@ -27,7 +27,6 @@ inline fun showLicensesDialog(activity: AppCompatActivity) {
         .setTitle(R.string.about_licenses)
         .setLibrary(Library("AndroidHiddenApiBypass", "https://github.com/LSPosed/AndroidHiddenApiBypass", License.APACHE2))
         .setLibrary(Library("Android Jetpack", "https://developer.android.com/jetpack", License.APACHE2))
-        .setLibrary(Library("BetterLinkMovementMethod", "https://github.com/saket/Better-Link-Movement-Method", License.APACHE2))
         .setLibrary(Library("Kotlin", "https://github.com/JetBrains/kotlin", License.APACHE2))
         .setLibrary(Library("Kotlin Coroutines", "https://github.com/Kotlin/kotlinx.coroutines", License.APACHE2))
         .setLibrary(Library("LeakCanary", "https://github.com/square/leakcanary", License.APACHE2))

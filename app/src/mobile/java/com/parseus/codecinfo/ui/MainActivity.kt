@@ -77,6 +77,10 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     override val updateOnCreate: Boolean
         get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
 
+    init {
+        createInAppUpdateResultLauncher(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         disableApiBlacklistOnPie()
 
@@ -180,13 +184,6 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         if (!BuildConfig.DEBUG) {
             initializeAppRating(this)
             checkForUpdate(this, binding.updateProgressBar)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (!BuildConfig.DEBUG) {
-            handleAppUpdateOnActivityResult(this, requestCode, resultCode)
         }
     }
 

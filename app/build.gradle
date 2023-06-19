@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.8.21-1.0.11'
+    id 'com.google.devtools.ksp' version '1.8.22-1.0.11'
 }
 
 android {
@@ -138,7 +138,7 @@ dependencies {
     mobileImplementation 'androidx.webkit:webkit:1.7.0'
     mobileImplementation 'com.github.KieronQuinn:MonetCompat:0.4.1'
     mobileImplementation 'com.github.marcoscgdev:Licenser:2.0.0'
-    mobileImplementation 'com.google.android.material:material:1.9.0'
+    mobileImplementation 'com.google.android.material:material:1.10.0-alpha04'
 
     nonFreeMobileImplementation fileTree(include: ['*.jar'], dir: 'libs')
     nonFreeMobileImplementation 'com.google.android.play:app-update:2.1.0'

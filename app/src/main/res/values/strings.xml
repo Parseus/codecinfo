@@ -61,6 +61,7 @@
     <string name="qp_bounds">Quantization parameter bounds</string>
     <string name="encoding_statistics">Exporting encoding statistics</string>
     <string name="hdr_editing">HDR editing</string>
+    <string name="vendor_parameters">Supported vendor parameters</string>
 
     <string name="bitrate_modes">Bitrate modes</string>
     <string name="cbr" translatable="false">Constant bitrate (CBR)</string>

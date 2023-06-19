@@ -22,7 +22,6 @@ import com.parseus.codecinfo.data.codecinfo.profilelevels.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.VP9Levels.*
 import com.parseus.codecinfo.utils.*
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.min
 
 // Source:
@@ -326,6 +325,19 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
         val defaultMediaFormat = capabilities.defaultFormat
         handleComplexityRange(encoderCapabilities, defaultMediaFormat, context, propertyList)
         handleQualityRange(encoderCapabilities, defaultMediaFormat, propertyList, context)
+    }
+
+    if (SDK_INT >= 31) {
+        try {
+            val codec = MediaCodec.createByCodecName(codecName)
+            val vendorParams = codec.supportedVendorParameters
+            if (vendorParams.isNotEmpty()) {
+                propertyList.add(
+                    DetailsProperty(propertyList.size.toLong(),
+                    context.getString(R.string.vendor_parameters), vendorParams.joinToString("\n")))
+            }
+            codec.release()
+        } catch (_: Throwable) {}
     }
 
     val profileString = if (codecId.contains("mp4a-latm") || codecId.contains("wma")) {

@@ -21,7 +21,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.MaterialShapeDrawable
@@ -49,6 +51,7 @@ import com.parseus.codecinfo.utils.*
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import dev.kdrag0n.monet.theme.ColorScheme
+import kotlinx.coroutines.launch
 import okio.buffer
 import okio.source
 import java.io.File
@@ -69,7 +72,14 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
     val searchListeners = mutableListOf<SearchView.OnQueryTextListener>()
 
-    override val recreateMode = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+    override val recreateMode: Boolean
+        get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+    override val updateOnCreate: Boolean
+        get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+
+    init {
+        createInAppUpdateResultLauncher(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         disableApiBlacklistOnPie()
@@ -97,10 +107,12 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         super.onCreate(savedInstanceState)
 
         if (Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()) {
-            lifecycleScope.launchWhenCreated {
-                monet.awaitMonetReady()
-                initializeUI(savedInstanceState)
-                window.updateStatusBarColor(this@MainActivity)
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.CREATED) {
+                    monet.awaitMonetReady()
+                    initializeUI(savedInstanceState)
+                    window.updateStatusBarColor(this@MainActivity)
+                }
             }
         } else {
             initializeUI(savedInstanceState)
@@ -134,6 +146,8 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
         setSupportActionBar(binding.toolbar)
         binding.toolbar.updateToolBarColor(this)
+
+        binding.updateProgressBar?.updateColors(this)
 
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
@@ -170,13 +184,6 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         if (!BuildConfig.DEBUG) {
             initializeAppRating(this)
             checkForUpdate(this, binding.updateProgressBar)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (!BuildConfig.DEBUG) {
-            handleAppUpdateOnActivityResult(this, requestCode, resultCode)
         }
     }
 
@@ -343,7 +350,9 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 val dialogBuilder = MaterialAlertDialogBuilder(this).setView(dialogViewBinding.root)
                 val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
                 dialog.show()
-                dialog.applyMonet()
+                if (isDynamicThemingEnabled(this) && !isNativeMonetAvailable()) {
+                    dialog.applyMonet()
+                }
                 dialog.updateButtonColors(dialogBuilder.context)
             }
 
@@ -369,7 +378,9 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                     }
                 val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
                 dialog.show()
-                dialog.applyMonet()
+                if (isDynamicThemingEnabled(this) && !isNativeMonetAvailable()) {
+                    dialog.applyMonet()
+                }
                 dialog.updateButtonColors(dialogBuilder.context)
 
                 return true

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
@@ -42,7 +43,7 @@ class OtherActionsPresenter : Presenter() {
             infoVisibility = ImageCardView.CARD_REGION_VISIBLE_ALWAYS
 
             setMainImageDimensions(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
-            mainImage = ContextCompat.getDrawable(context, descriptor.drawableId)
+            mainImage = AppCompatResources.getDrawable(context, descriptor.drawableId)
             setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
         }
     }

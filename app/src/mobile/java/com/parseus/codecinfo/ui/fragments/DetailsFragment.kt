@@ -10,7 +10,9 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.kieronquinn.monetcompat.app.MonetFragment
@@ -29,6 +31,7 @@ import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
 import com.parseus.codecinfo.utils.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
@@ -70,6 +73,8 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             view.applyMonetRecursively()
         }
 
+        binding.loadingProgress.updateColors(requireContext())
+
         if (!requireContext().isInTwoPaneMode()) {
             // Apply background color only on mobile to reduce overdraw on bigger devices
             binding.endRoot.setBackgroundColor(getSurfaceColor(requireContext()))
@@ -110,22 +115,24 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            binding.loadingProgress.isVisible = true
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                binding.loadingProgress.isVisible = true
 
-            propertyList = withContext(Dispatchers.IO) {
-                when {
-                    codecId != null && codecName != null ->
-                        getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
-                    drmName != null && drmUuid != null ->
-                        //noinspection NewApi
-                        getDetailedDrmInfo(requireContext(), DrmVendor.getFromUuid(drmUuid!!))
-                    else -> emptyList()
+                propertyList = withContext(Dispatchers.IO) {
+                    when {
+                        codecId != null && codecName != null ->
+                            getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+                        drmName != null && drmUuid != null ->
+                            //noinspection NewApi
+                            getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
+                        else -> emptyList()
+                    }
                 }
-            }
 
-            binding.loadingProgress.isVisible = false
-            showFullDetails()
+                binding.loadingProgress.isVisible = false
+                showFullDetails()
+            }
         }
     }
 

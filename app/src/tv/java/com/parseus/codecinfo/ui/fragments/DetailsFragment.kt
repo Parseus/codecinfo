@@ -80,7 +80,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
             codecId != null && codecName != null ->
                 getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
             drmName != null && drmUuid != null ->
-                getDetailedDrmInfo(requireContext(), DrmVendor.getFromUuid(drmUuid!!))
+                getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
             else -> emptyList()
         }
         getFullDetails()

@@ -6,16 +6,17 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
-import android.view.MenuItem
-import android.view.View
-import android.view.Window
+import android.view.*
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.commit
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -33,13 +34,17 @@ import com.parseus.codecinfo.databinding.WallpaperColorPickerLayoutBinding
 import com.parseus.codecinfo.ui.fragments.AboutFragment
 import com.parseus.codecinfo.utils.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SettingsActivity : MonetCompatActivity() {
 
     private lateinit var binding: SettingsMainBinding
 
-    override val recreateMode = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+    override val recreateMode: Boolean
+        get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+    override val updateOnCreate: Boolean
+        get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CodecInfo)
@@ -69,10 +74,12 @@ class SettingsActivity : MonetCompatActivity() {
             }
         }
 
-        if (!isNativeMonetAvailable()) {
-            lifecycleScope.launchWhenCreated {
-                monet.awaitMonetReady()
-                initializeUI(savedInstanceState)
+        if (Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()) {
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.CREATED) {
+                    monet.awaitMonetReady()
+                    initializeUI(savedInstanceState)
+                }
             }
         } else {
             initializeUI(savedInstanceState)
@@ -126,20 +133,30 @@ class SettingsActivity : MonetCompatActivity() {
             putExtra(SORTING_CHANGED, sortingChanged)
             putExtra(IMMERSIVE_CHANGED, immersiveChanged)
             putExtra(DYNAMIC_THEME_CHANGED, dynamicThemeChanged)
+            putExtra(HW_ICON_CHANGED, hwIconChanged)
         })
         super.finish()
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+            val view = super.onCreateView(inflater, container, savedInstanceState)
 
             findPreference<CheckBoxPreference>("dynamic_theme")?.apply {
                 if (Build.VERSION.SDK_INT >= 21) {
                     setOnPreferenceChangeListener { _, newValue ->
-                        findPreference<Preference>("show_wallaper_colors")?.isVisible =
-                            !isNativeMonetAvailable() && newValue as Boolean
+                        if (!isNativeMonetAvailable()) {
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                                    val wallpaperColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
+                                    findPreference<Preference>("show_wallaper_colors")?.isVisible =
+                                        newValue as Boolean && wallpaperColors.size > 1
+                                                && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                                }
+                            }
+                        }
+
                         dynamicThemeChanged = true
                         activity?.let { ActivityCompat.recreate(it) }
                         true
@@ -149,20 +166,27 @@ class SettingsActivity : MonetCompatActivity() {
                 }
             }
 
-            findPreference<Preference>("show_wallpaper_colors")?.apply {
-                isVisible = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
-                        && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
-            }
+            if (!isNativeMonetAvailable()) {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                        findPreference<Preference>("show_wallpaper_colors")?.apply {
+                            val wallpaperColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
+                            isVisible = Build.VERSION.SDK_INT >= 21 && wallpaperColors.size > 1
+                                    && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                        }
+                    }
+                }
 
-            findPreference<ListPreference>("dynamic_theme_wallpaper_source")?.apply {
-                isVisible = Build.VERSION.SDK_INT >= 27 && !isNativeMonetAvailable()
-                        && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
-                value = PreferenceManager.getDefaultSharedPreferences(requireContext())
-                    .getString("dynamic_theme_wallpaper_source", WallpaperTypes.WALLPAPER_SYSTEM.toString())
-                setOnPreferenceChangeListener { _, newValue ->
-                    MonetCompat.wallpaperSource = (newValue as String).toInt()
-                    MonetCompat.getInstance().updateMonetColors()
-                    true
+                findPreference<ListPreference>("dynamic_theme_wallpaper_source")?.apply {
+                    isVisible = Build.VERSION.SDK_INT >= 27
+                            && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                    value = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                        .getString("dynamic_theme_wallpaper_source", WallpaperTypes.WALLPAPER_SYSTEM.toString())
+                    setOnPreferenceChangeListener { _, newValue ->
+                        MonetCompat.wallpaperSource = (newValue as String).toInt()
+                        MonetCompat.getInstance().updateMonetColors()
+                        true
+                    }
                 }
             }
 
@@ -214,6 +238,14 @@ class SettingsActivity : MonetCompatActivity() {
                 sortingChanged = true
                 true
             }
+
+            val showHwIcon = findPreference<CheckBoxPreference>("show_hw_icon")
+            showHwIcon!!.setOnPreferenceChangeListener { _, _ ->
+                hwIconChanged = true
+                true
+            }
+
+            return view
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -232,13 +264,15 @@ class SettingsActivity : MonetCompatActivity() {
         override fun onPreferenceTreeClick(preference: Preference): Boolean {
             return when (preference.key) {
                 "show_wallpaper_colors" -> {
-                    lifecycleScope.launchWhenResumed {
-                        val availableColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
-                        if (availableColors.isNotEmpty()) {
-                            showWallpaperColorPicker(availableColors)
-                        } else {
-                            Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                                R.string.dynamic_theme_color_picker_unavailable, Snackbar.LENGTH_LONG).show()
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                            val availableColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
+                            if (availableColors.isNotEmpty()) {
+                                showWallpaperColorPicker(availableColors)
+                            } else {
+                                Snackbar.make(requireActivity().findViewById(android.R.id.content),
+                                    R.string.dynamic_theme_color_picker_unavailable, Snackbar.LENGTH_LONG).show()
+                            }
                         }
                     }
                     true
@@ -274,9 +308,9 @@ class SettingsActivity : MonetCompatActivity() {
             val alertDialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
             val colorPickerView = WallpaperColorPickerLayoutBinding.inflate(layoutInflater).root
             colorPickerView.apply {
-                backgroundTintList = ColorStateList.valueOf(
+                ViewCompat.setBackgroundTintList(this, ColorStateList.valueOf(
                     MonetCompat.getInstance().getBackgroundColor(requireContext())
-                )
+                ))
                 layoutManager =
                     LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
 
@@ -285,13 +319,15 @@ class SettingsActivity : MonetCompatActivity() {
                     MonetCompat.getInstance().getSelectedWallpaperColor(),
                     availableColors
                 ) {
-                    lifecycleScope.launchWhenResumed {
-                        withContext(Dispatchers.IO) {
-                            PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
-                                .putInt("selected_color", it).commit()
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                            withContext(Dispatchers.IO) {
+                                PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
+                                    .putInt("selected_color", it).commit()
+                            }
+                            alertDialog.dismiss()
+                            MonetCompat.getInstance().updateMonetColors()
                         }
-                        alertDialog.dismiss()
-                        MonetCompat.getInstance().updateMonetColors()
                     }
                 }
             }
@@ -346,11 +382,13 @@ class SettingsActivity : MonetCompatActivity() {
         var sortingChanged = false
         var immersiveChanged = false
         var dynamicThemeChanged = false
+        var hwIconChanged = false
         const val ALIASES_CHANGED = "aliases_changed"
         const val FILTER_TYPE_CHANGED = "filter_type_changed"
         const val SORTING_CHANGED = "sorting_changed"
         const val IMMERSIVE_CHANGED = "immersive_changed"
         const val DYNAMIC_THEME_CHANGED = "dynamic_theme_changed"
+        const val HW_ICON_CHANGED = "hw_icon_changed"
     }
 
 }

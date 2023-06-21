@@ -1,3 +1,5 @@
+@file:RequiresApi(18)
+
 package com.parseus.codecinfo.data.drm
 
 import android.content.Context
@@ -7,43 +9,52 @@ import androidx.annotation.RequiresApi
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.utils.toHexString
+import java.util.*
 
 val drmList: MutableList<DrmSimpleInfo> = arrayListOf()
 
-@RequiresApi(18)
 fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
     return drmList.ifEmpty {
         val list = mutableListOf<DrmSimpleInfo>()
-        DrmVendor.values().forEach {
-            try {
-                // This can crash in native code if something goes wrong while querying it.
-                val schemeSupported = MediaDrm.isCryptoSchemeSupported(it.uuid)
-                if (schemeSupported) {
-                    val drmInfo = it.getIfSupported(context)
-                    if (drmInfo != null) {
-                        list.add(drmInfo)
-                    }
+        if (Build.VERSION.SDK_INT >= 30) {
+            val supported = MediaDrm.getSupportedCryptoSchemes()
+            for (uuid in supported) {
+                val vendor = DrmVendor.values().find { it.uuid == uuid }
+                if (vendor != null) {
+                    list.add(vendor.getSimpleInfo(context))
+                } else {
+                    val drmName = getDrmDescriptionFromUuid(uuid, context)
+                    list.add(DrmSimpleInfo(list.size.toLong(), drmName, uuid))
                 }
-            } catch (e: Exception) {
+            }
+        } else {
+            DrmVendor.values().forEach {
+                try {
+                    // This can crash in native code if something goes wrong while querying it.
+                    val schemeSupported = MediaDrm.isCryptoSchemeSupported(it.uuid)
+                    if (schemeSupported) {
+                        list.add(it.getSimpleInfo(context))
+                    }
+                } catch (_: Throwable) {}
             }
         }
-        list
+        list.sortedBy { it.drmName }
     }
 }
 
-@RequiresApi(18)
-fun getDetailedDrmInfo(context: Context, drmVendor: DrmVendor): List<DetailsProperty> {
+fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): List<DetailsProperty> {
     val drmPropertyList = mutableListOf<DetailsProperty>()
-    val mediaDrm = MediaDrm(drmVendor.uuid)
+    val mediaDrm = MediaDrm(uuid)
 
-    drmPropertyList.add(DetailsProperty(drmPropertyList.size.toLong(),
-            context.getString(R.string.drm_property_uuid), drmVendor.uuid.toString()))
+    drmPropertyList.add(DetailsProperty(0L, context.getString(R.string.drm_property_uuid), uuid.toString()))
 
     drmPropertyList.addStringProperties(context, mediaDrm, DrmVendor.STANDARD_STRING_PROPERTIES)
     drmPropertyList.addByteArrayProperties(context, mediaDrm, DrmVendor.STANDARD_BYTE_ARRAY_PROPERTIES)
 
-    drmPropertyList.addStringProperties(context, mediaDrm, drmVendor.getVendorStringProperties())
-    drmPropertyList.addByteArrayProperties(context, mediaDrm, drmVendor.getVendorByteArrayProperties())
+    if (drmVendor != null) {
+        drmPropertyList.addStringProperties(context, mediaDrm, drmVendor.getVendorStringProperties())
+        drmPropertyList.addByteArrayProperties(context, mediaDrm, drmVendor.getVendorByteArrayProperties())
+    }
 
     // These can crash in native code if something goes wrong while querying it.
     if (Build.VERSION.SDK_INT >= 28) {
@@ -114,22 +125,25 @@ private fun addReadableHdcpLevel(context: Context, hdcpLevel: Int, key: String,
     }
 }
 
-@RequiresApi(18)
-private fun DrmVendor.getIfSupported(context: Context) = try {
-    val mediaDrm = MediaDrm(uuid)
+private fun DrmVendor.getSimpleInfo(context: Context): DrmSimpleInfo {
     val drmName = if (properNameResId == -1) {
-        mediaDrm.getPropertyString(MediaDrm.PROPERTY_DESCRIPTION)
+        getDrmDescriptionFromUuid(uuid, context)
     } else {
         context.getString(properNameResId)
     }
-    DrmSimpleInfo(ordinal.toLong(), drmName, uuid).also {
-        mediaDrm.closeDrmInstance()
-    }
-} catch (e: Exception) {
-    null
+    return DrmSimpleInfo(ordinal.toLong(), drmName, uuid)
 }
 
-@RequiresApi(18)
+private fun getDrmDescriptionFromUuid(uuid: UUID, context: Context) = try {
+    val mediaDrm = MediaDrm(uuid)
+    val drmName = mediaDrm.getPropertyString(MediaDrm.PROPERTY_DESCRIPTION)
+    mediaDrm.closeDrmInstance()
+
+    drmName
+} catch (t: Throwable) {
+    context.getString(R.string.unknown)
+}
+
 private fun MutableList<DetailsProperty>.addStringProperties(context: Context,
                                                             mediaDrm: MediaDrm,
                                                             vendorProperties: Map<Int, String>?) {
@@ -139,11 +153,10 @@ private fun MutableList<DetailsProperty>.addStringProperties(context: Context,
             if (propertyValue.isNotEmpty()) {
                 add(DetailsProperty(size.toLong(), context.getString(key), propertyValue))
             }
-        } catch (e: Exception) {}
+        } catch (_: Throwable) {}
     }
 }
 
-@RequiresApi(18)
 private fun MutableList<DetailsProperty>.addByteArrayProperties(context: Context,
                                                             mediaDrm: MediaDrm,
                                                             vendorProperties: Map<Int, String>?) {
@@ -153,11 +166,10 @@ private fun MutableList<DetailsProperty>.addByteArrayProperties(context: Context
             if (propertyValue.isNotEmpty()) {
                 add(DetailsProperty(size.toLong(), context.getString(key), propertyValue))
             }
-        } catch (e: Exception) {}
+        } catch (_: Throwable) {}
     }
 }
 
-@RequiresApi(18)
 private fun MediaDrm.closeDrmInstance() {
     if (Build.VERSION.SDK_INT >= 28) {
         close()

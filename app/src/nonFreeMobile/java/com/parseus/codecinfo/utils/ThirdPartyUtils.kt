@@ -5,6 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Looper
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.viewpager2.widget.ViewPager2
@@ -33,17 +36,23 @@ import com.samsung.android.sdk.gesture.SgestureHand
 private var gestureHand: SgestureHand? = null
 const val SHOW_RATE_APP = true
 
-private const val UPDATE_REQUEST_CODE = 0x1000
 private const val MAX_FLEXIBLE_UPDATE_PRIORITY = 3
 private const val MIN_IMMEDIATE_UPDATE_PRIORITY = 4
 
 private lateinit var appUpdateManager: AppUpdateManager
 private lateinit var updateListener: InstallStateUpdatedListener
+private lateinit var inAppUpdateResultLauncher: ActivityResultLauncher<IntentSenderRequest>
 
 enum class UpdateType {
     Flexible, Immediate, Unknown
 }
 private var appUpdateType = UpdateType.Unknown
+
+fun createInAppUpdateResultLauncher(activity: AppCompatActivity) {
+    inAppUpdateResultLauncher = activity.registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
+        handleAppUpdateOnActivityResult(activity, it.resultCode)
+    }
+}
 
 fun initializeAppRating(activity: AppCompatActivity) {
     val rateManager = RateBottomSheetManager(activity)
@@ -95,7 +104,7 @@ fun initializeSamsungGesture(context: Context, pager: ViewPager2, tabLayout: Tab
                     }
                 }
             }
-        } catch (e: Exception) {}
+        } catch (_: Exception) {}
     }
 }
 
@@ -112,8 +121,8 @@ fun checkForUpdate(activity: Activity, progressBar: LinearProgressIndicator?) {
             if (info.updatePriority() >= MIN_IMMEDIATE_UPDATE_PRIORITY
                 && info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
                 appUpdateType = UpdateType.Immediate
-                appUpdateManager.startUpdateFlowForResult(info, activity,
-                    AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE), UPDATE_REQUEST_CODE)
+                appUpdateManager.startUpdateFlowForResult(info, inAppUpdateResultLauncher,
+                    AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE))
             } else if (info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
                 && info.updatePriority() <= MAX_FLEXIBLE_UPDATE_PRIORITY) {
                 appUpdateType = UpdateType.Flexible
@@ -136,21 +145,19 @@ fun checkForUpdate(activity: Activity, progressBar: LinearProgressIndicator?) {
                     }
                 }
                 appUpdateManager.registerListener(updateListener)
-                appUpdateManager.startUpdateFlowForResult(info, activity,
-                    AppUpdateOptions.defaultOptions(AppUpdateType.FLEXIBLE), UPDATE_REQUEST_CODE)
+                appUpdateManager.startUpdateFlowForResult(info, inAppUpdateResultLauncher,
+                    AppUpdateOptions.defaultOptions(AppUpdateType.FLEXIBLE))
             }
         }
     }
 }
 
-fun handleAppUpdateOnActivityResult(activity: Activity, requestCode: Int, resultCode: Int) {
-    if (requestCode == UPDATE_REQUEST_CODE) {
-        if (resultCode == Activity.RESULT_CANCELED) {
-            appUpdateManager.unregisterListener(updateListener)
-        } else if (resultCode == ActivityResult.RESULT_IN_APP_UPDATE_FAILED) {
-            Snackbar.make(activity.findViewById(android.R.id.content),
-                R.string.update_failed, Snackbar.LENGTH_LONG).show()
-        }
+fun handleAppUpdateOnActivityResult(activity: Activity, resultCode: Int) {
+    if (resultCode == Activity.RESULT_CANCELED) {
+        appUpdateManager.unregisterListener(updateListener)
+    } else if (resultCode == ActivityResult.RESULT_IN_APP_UPDATE_FAILED) {
+        Snackbar.make(activity.findViewById(android.R.id.content),
+            R.string.update_failed, Snackbar.LENGTH_LONG).show()
     }
 }
 
@@ -215,11 +222,10 @@ fun launchStoreIntent(activity: Activity) {
     }
 }
 
-inline fun showLicensesDialog(activity: AppCompatActivity) {
+fun showLicensesDialog(activity: AppCompatActivity) {
     LicenserDialog(activity)
         .setTitle(R.string.about_licenses)
         .setLibrary(Library("Android Jetpack", "https://developer.android.com/jetpack", License.APACHE2))
-        .setLibrary(Library("BetterLinkMovementMethod", "https://github.com/saket/Better-Link-Movement-Method", License.APACHE2))
         .setLibrary(Library("Kotlin", "https://github.com/JetBrains/kotlin", License.APACHE2))
         .setLibrary(Library("Kotlin Coroutines", "https://github.com/Kotlin/kotlinx.coroutines", License.APACHE2))
         .setLibrary(Library("LeakCanary", "https://github.com/square/leakcanary", License.APACHE2))

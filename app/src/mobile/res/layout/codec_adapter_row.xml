@@ -74,13 +74,24 @@
         app:layout_constraintVertical_bias="0.0"/>
 
     <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/hw_icon"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
+        android:layout_marginTop="@dimen/hw_indicator_top_margin"
+        android:contentDescription="@string/hardware_acceleration"
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/ic_hardware"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/codec_type" />
+
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/known_problem_icon"
         android:layout_width="@dimen/icon_size"
         android:layout_height="@dimen/icon_size"
         android:visibility="gone"
         app:srcCompat="@drawable/mtrl_ic_error"
         app:tint="?attr/colorError"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/hw_icon"
         app:layout_constraintTop_toBottomOf="@id/codec_type"
         tools:visibility="visible" />
 

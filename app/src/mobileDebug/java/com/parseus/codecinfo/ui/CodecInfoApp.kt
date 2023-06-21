@@ -19,18 +19,20 @@ class CodecInfoApp : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
 
-        if (!isNativeMonetAvailable()) {
-            MonetCompat.enablePaletteCompat()
-            MonetCompat.useSystemColorsOnAndroid12 = isNativeMonetAvailable()
+        if (isNativeMonetAvailable()) {
+            DynamicColors.applyToActivitiesIfAvailable(this,
+                DynamicColorsOptions.Builder().setPrecondition { _, _ -> isDynamicThemingEnabled(this) }.build())
+        } else if (Build.VERSION.SDK_INT >= 21) {
+            if (Build.VERSION.SDK_INT <= 26) {
+                MonetCompat.enablePaletteCompat()
+            }
+            MonetCompat.useSystemColorsOnAndroid12 = false
             MonetCompat.wallpaperSource = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString("dynamic_theme_wallpaper_source", WallpaperTypes.WALLPAPER_SYSTEM.toString())!!.toInt()
             MonetCompat.wallpaperColorPicker = {
                 val userPickedColor = getWallpaperColorFromPreferences()
                 it?.firstOrNull { color -> color == userPickedColor } ?: it?.firstOrNull()
             }
-        } else {
-            DynamicColors.applyToActivitiesIfAvailable(this,
-                DynamicColorsOptions.Builder().setPrecondition { _, _ -> isDynamicThemingEnabled(this) }.build())
         }
 
         enableSettingsIntentFilter()

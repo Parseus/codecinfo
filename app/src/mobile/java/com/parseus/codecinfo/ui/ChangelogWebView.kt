@@ -31,12 +31,7 @@ class ChangelogWebView : WebView {
 
             val isNightMode = context.isNightMode()
             if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
-                //TODO: Remove the SuppressLint annotation after
-                // https://issuetracker.google.com/issues/243570060#comment9 is done.
                 WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, isNightMode)
-            } else if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-                WebSettingsCompat.setForceDark(settings,
-                    if (isNightMode) WebSettingsCompat.FORCE_DARK_ON else WebSettingsCompat.FORCE_DARK_OFF)
             }
         }
         if (Build.VERSION.SDK_INT >= 26) {
@@ -61,7 +56,7 @@ class ChangelogWebView : WebView {
                         if (Build.VERSION.SDK_INT >= 21) {
                             it.responseHeaders = mapOf(
                                 "Content-Security-Policy" to CONTENT_SECURITY_POLICY,
-                                "Feature-Policy" to FEATURE_POLICY,
+                                "Permissions-Policy" to PERMISSIONS_POLICY,
                                 "X-Content-Type-Options" to "nosniff"
                             )
                         }
@@ -100,24 +95,36 @@ class ChangelogWebView : WebView {
             "style-src 'self'; " +
             "frame-ancestors 'none'; " +
             "base-uri 'none'"
-        private const val FEATURE_POLICY =
-            "accelerometer 'none'; " +
-            "ambient-light-sensor 'none'; " +
-            "autoplay 'none'; " +
-            "camera 'none'; " +
-            "encrypted-media 'none'; " +
-            "fullscreen 'none'; " +
-            "geolocation 'none'; " +
-            "gyroscope 'none'; " +
-            "magnetometer 'none'; " +
-            "microphone 'none'; " +
-            "midi 'none'; " +
-            "payment 'none'; " +
-            "picture-in-picture 'none'; " +
-            "speaker 'none'; " +
-            "sync-xhr 'none'; " +
-            "usb 'none'; " +
-            "vr 'none'"
+        private const val PERMISSIONS_POLICY =
+            "accelerometer=(), " +
+            "ambient-light-sensor=(), " +
+            "autoplay=(), " +
+            "battery=(), " +
+            "camera=(), " +
+            "clipboard-read=(), " +
+            "clipboard-write=(), " +
+            "display-capture=(), " +
+            "document-domain=(), " +
+            "encrypted-media=(), " +
+            "fullscreen=(), " +
+            "gamepad=(), " +
+            "geolocation=(), " +
+            "gyroscope=(), " +
+            "hid=(), " +
+            "idle-detection=(), " +
+            "interest-cohort=(), " +
+            "magnetometer=(), " +
+            "microphone=(), " +
+            "midi=(), " +
+            "payment=(), " +
+            "picture-in-picture=(), " +
+            "publickey-credentials-get=(), " +
+            "screen-wake-lock=(), " +
+            "serial=(), " +
+            "speaker-selection=(), " +
+            "sync-xhr=(), " +
+            "usb=(), " +
+            "xr-spatial-tracking=()"
     }
 
 }

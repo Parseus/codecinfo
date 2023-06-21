@@ -13,6 +13,7 @@ import androidx.core.content.getSystemService
 import java.util.*
 
 private const val AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv"
+private const val GOOGLE_ANDROID_TV_INSTALLED = "com.google.android.tv.installed"
 
 @Suppress("DEPRECATION")
 fun Context.isTv(): Boolean {
@@ -20,6 +21,7 @@ fun Context.isTv(): Boolean {
     var isTv = getSystemService<UiModeManager>()!!.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
             || packageManager.hasSystemFeature(AMAZON_FEATURE_FIRE_TV)
             || packageManager.hasSystemFeature(PackageManager.FEATURE_TELEVISION)
+            || packageManager.hasSystemFeature(GOOGLE_ANDROID_TV_INSTALLED)
 
     // https://stackoverflow.com/a/58932366
     if (Build.VERSION.SDK_INT >= 24) {

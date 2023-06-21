@@ -1,18 +1,18 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.7.20-1.0.6'
+    id 'com.google.devtools.ksp' version '1.8.22-1.0.11'
 }
 
 android {
     namespace 'com.parseus.codecinfo'
-    compileSdkVersion 33
+    compileSdkVersion 34
     defaultConfig {
         applicationId "com.parseus.codecinfo"
         minSdkVersion 16
-        targetSdkVersion 33
-        versionCode 22
-        versionName "2.4.0"
+        targetSdkVersion 34
+        versionCode 23
+        versionName "2.5.0"
         resConfigs 'en'
 
         vectorDrawables.useSupportLibrary = true
@@ -67,15 +67,16 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        jvmToolchain(11)
     }
     packagingOptions {
         jniLibs {
             excludes += ['kotlin/**']
         }
         resources {
-            excludes += ['kotlin/**', '**/*.kotlin_metadata', 'META-INF/*.kotlin_module', 'META-INF/*.version']
+            excludes += ['kotlin/**', '**/*.kotlin_metadata', 'META-INF/*.kotlin_module',
+                         'META-INF/*.version']
         }
     }
 
@@ -111,18 +112,16 @@ configurations {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1'
 
-    implementation 'androidx.appcompat:appcompat:1.7.0-alpha01'
-    implementation "androidx.core:core-ktx:1.9.0"
+    implementation 'androidx.appcompat:appcompat:1.7.0-alpha02'
+    implementation "androidx.core:core-ktx:1.12.0-alpha05"
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
     implementation "com.squareup.leakcanary:plumber-android:$leakCanary_version"
     implementation "com.squareup.moshi:moshi:$moshi_version"
     ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
-    implementation "com.squareup.okio:okio:3.2.0"
-
-    implementation 'me.saket:better-link-movement-method:2.2.0'
+    implementation "com.squareup.okio:okio:3.3.0"
 
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanary_version"
     standardMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
@@ -134,14 +133,16 @@ dependencies {
     standardMobileImplementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
 
     mobileImplementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    mobileImplementation 'androidx.core:core-splashscreen:1.0.0'
+    mobileImplementation 'androidx.core:core-splashscreen:1.0.1'
     mobileImplementation 'androidx.palette:palette-ktx:1.0.0'
-    mobileImplementation 'androidx.webkit:webkit:1.5.0'
+    mobileImplementation 'androidx.webkit:webkit:1.7.0'
     mobileImplementation 'com.github.KieronQuinn:MonetCompat:0.4.1'
     mobileImplementation 'com.github.marcoscgdev:Licenser:2.0.0'
-    mobileImplementation 'com.google.android.material:material:1.8.0-alpha02'
+    mobileImplementation 'com.google.android.material:material:1.10.0-alpha04'
 
     nonFreeMobileImplementation fileTree(include: ['*.jar'], dir: 'libs')
-    nonFreeMobileImplementation 'com.google.android.play:app-update-ktx:2.0.0'
-    nonFreeMobileImplementation 'com.google.android.play:review-ktx:2.0.0'
+    nonFreeMobileImplementation 'com.google.android.play:app-update:2.1.0'
+    nonFreeMobileImplementation 'com.google.android.play:app-update-ktx:2.1.0'
+    nonFreeMobileImplementation 'com.google.android.play:review:2.0.1'
+    nonFreeMobileImplementation 'com.google.android.play:review-ktx:2.0.1'
 }

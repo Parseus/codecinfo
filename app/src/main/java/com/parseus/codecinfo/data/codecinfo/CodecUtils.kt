@@ -13,6 +13,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.util.Range
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
+import androidx.core.text.HtmlCompat
 import androidx.preference.PreferenceManager
 import com.parseus.codecinfo.*
 import com.parseus.codecinfo.data.DetailsProperty
@@ -21,7 +22,6 @@ import com.parseus.codecinfo.data.codecinfo.profilelevels.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.VP9Levels.*
 import com.parseus.codecinfo.utils.*
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.min
 
 // Source:
@@ -81,6 +81,16 @@ private val framerateClasses = arrayOf(
         "1080p",
         "4K",
         "8K"
+)
+
+private val knownVendorLowLatencyOptions = listOf(
+    // https://cs.android.com/android/platform/superproject/+/master:hardware/qcom/sdm845/media/mm-video-v4l2/vidc/vdec/src/omx_vdec_extensions.hpp
+    "vendor.qti-ext-dec-low-latency.enable",
+    // https://developer.huawei.com/consumer/cn/forum/topic/0202325564295980115
+    "vendor.hisi-ext-low-latency-video-dec.video-scene-for-low-latency-req",
+    "vendor.rtc-ext-dec-low-latency.enable",
+    // https://github.com/codewalkerster/android_vendor_amlogic_common_prebuilt_libstagefrighthw/commit/41fefc4e035c476d58491324a5fe7666bfc2989e
+    "vendor.low-latency.enable"
 )
 
 private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()
@@ -174,7 +184,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
 
             if (isAudio == isAudioCodec) {
                 val codecSimpleInfo = CodecSimpleInfo((codecIndex * 100 + index).toLong(), codecId, mediaCodecInfo.name,
-                        isAudioCodec, mediaCodecInfo.isEncoder)
+                        isAudioCodec, mediaCodecInfo.isEncoder, isHardwareAccelerated(mediaCodecInfo))
                 if (codecSimpleInfoList.find {
                     it.codecId == codecSimpleInfo.codecId
                             && it.codecName == codecSimpleInfo.codecName
@@ -238,7 +248,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             isSoftwareOnly(mediaCodecInfo).toString()))
 
     if (!isEncoder && SDK_INT >= 30) {
-        propertyList.addFeature(context, capabilities, FEATURE_LowLatency, R.string.low_latency)
+        addLowLatencyFeatureIfSupported(context, codecName, capabilities, propertyList)
     }
 
     propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.codec_provider),
@@ -317,6 +327,19 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
         handleQualityRange(encoderCapabilities, defaultMediaFormat, propertyList, context)
     }
 
+    if (SDK_INT >= 31) {
+        try {
+            val codec = MediaCodec.createByCodecName(codecName)
+            val vendorParams = codec.supportedVendorParameters
+            if (vendorParams.isNotEmpty()) {
+                propertyList.add(
+                    DetailsProperty(propertyList.size.toLong(),
+                    context.getString(R.string.vendor_parameters), vendorParams.joinToString("\n")))
+            }
+            codec.release()
+        } catch (_: Throwable) {}
+    }
+
     val profileString = if (codecId.contains("mp4a-latm") || codecId.contains("wma")) {
         context.getString(R.string.profiles)
     } else {
@@ -328,6 +351,32 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
     }
 
     return propertyList
+}
+
+@RequiresApi(30)
+private fun addLowLatencyFeatureIfSupported(context: Context,
+                                            codecName: String,
+                                            capabilities: MediaCodecInfo.CodecCapabilities,
+                                            propertyList: MutableList<DetailsProperty>) {
+    if (capabilities.isFeatureSupported(FEATURE_LowLatency)) {
+        propertyList.addFeature(context, capabilities, FEATURE_LowLatency, R.string.low_latency)
+    } else if (SDK_INT >= 31) {
+        var codec: MediaCodec? = null
+        try {
+            codec = MediaCodec.createByCodecName(codecName)
+            val vendorLowLatencyKey = codec.supportedVendorParameters.find { it in knownVendorLowLatencyOptions }
+            val featureString = if (vendorLowLatencyKey != null) {
+                HtmlCompat.fromHtml(context.getString(R.string.feature_low_latency_vendor_supported, vendorLowLatencyKey),
+                    HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+            } else {
+                false.toString()
+            }
+            propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.low_latency), featureString))
+        } catch (_: Exception) {}
+        finally {
+            codec?.release()
+        }
+    }
 }
 
 @RequiresApi(21)
@@ -565,6 +614,7 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
     // The maximum channel count looks incorrect. Adjust it to an assumed default.
     return when (codecId) {
         "audio/ac3" -> 6
+        "audio/ac4" -> 24
         // Source: http://www.voiceage.com/AMR-WBplus.html
         "audio/amr-wb-plus" -> 2
         "audio/dts" -> 8
@@ -778,6 +828,10 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
             codecId.contains("mp4a-latm") -> {
                 profile = AACProfiles.from(it.profile)
             }
+            codecId.contains("ac4") -> {
+                profile = AC4Profiles.from(it.profile)
+                level = AC4Levels.from(it.level)
+            }
             codecId.contains("av01") -> {
                 profile = AV1Profiles.from(it.profile)
                 level = AV1Levels.from(it.level)
@@ -800,6 +854,12 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
             codecId.contains("dolby-vision") -> {
                 profile = DolbyVisionProfiles.from(it.profile)
                 level = DolbyVisionLevels.from(it.level)
+            }
+            codecId.contains("vnd.dts.hd") -> {
+                profile = DTSHDProfiles.from(it.profile)
+            }
+            codecId.contains("vnd.dts.uhd") -> {
+                profile = DTSUHDProfiles.from(it.profile)
             }
             (codecId.contains("3gpp") && !codecName.contains("mpeg4", true))
                     || codecId.contains("sorenson") || codecId.contains("flv") -> {

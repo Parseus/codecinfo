@@ -17,11 +17,13 @@
             app:defaultValue="1"
             app:key="dynamic_theme_wallpaper_source"
             app:title="Wallpaper source"
-            app:useSimpleSummaryProvider="true" />
+            app:useSimpleSummaryProvider="true"
+            app:isPreferenceVisible="false"/>
 
         <Preference
             app:key="show_wallpaper_colors"
-            app:title="Wallpaper color picker" />
+            app:title="Wallpaper color picker"
+            app:isPreferenceVisible="false"/>
 
         <com.parseus.codecinfo.ui.settings.MonetCheckboxPreference
             app:key="immersive_mode"
@@ -51,6 +53,12 @@
             app:key="known_resolutions"
             app:title="Show supported resolutions"
             app:useSimpleSummaryProvider="true"/>
+
+        <com.parseus.codecinfo.ui.settings.MonetCheckboxPreference
+            app:key="show_hw_icon"
+            app:title="Show an indicator on hardware-accelerated codecs"
+            app:defaultValue="true" />
+
     </com.parseus.codecinfo.ui.settings.MonetPreferenceCategory>
 
     <com.parseus.codecinfo.ui.settings.MonetPreferenceCategory app:title="Sorting &amp; Filtering">

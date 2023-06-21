@@ -39,8 +39,12 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
             infoVisibility = ImageCardView.CARD_REGION_VISIBLE_ALWAYS
 
             setMainImageDimensions(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
-            mainImage = ContextCompat.getDrawable(context, drawable)
+            mainImage = AppCompatResources.getDrawable(context, drawable)
             setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
+
+            if (info.isHardwareAccelereated) {
+                badgeImage = AppCompatResources.getDrawable(context, R.drawable.ic_hardware)
+            }
 
             if (KNOWN_PROBLEMS_DB.isNotEmpty()) {
                 val knownProblems = KNOWN_PROBLEMS_DB.filter {

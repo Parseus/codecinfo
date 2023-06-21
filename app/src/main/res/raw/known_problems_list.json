@@ -494,7 +494,7 @@
       }
     ],
     "urls": [
-      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2399"
+      "https://github.com/androidx/media/blob/8c5e1974f28c105a6b9a6bcba5a716c22e29f4b2/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2448"
     ]
   },
   {
@@ -508,7 +508,7 @@
       }
     ],
     "urls": [
-      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2399"
+      "https://github.com/androidx/media/blob/8c5e1974f28c105a6b9a6bcba5a716c22e29f4b2/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2448"
     ]
   },
   {
@@ -522,7 +522,7 @@
       }
     ],
     "urls": [
-      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2399"
+      "https://github.com/androidx/media/blob/8c5e1974f28c105a6b9a6bcba5a716c22e29f4b2/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2448"
     ]
   },
   {
@@ -536,7 +536,7 @@
       }
     ],
     "urls": [
-      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2399"
+      "https://github.com/androidx/media/blob/8c5e1974f28c105a6b9a6bcba5a716c22e29f4b2/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2448"
     ]
   },
   {
@@ -825,6 +825,62 @@
     ],
     "urls": [
       "https://github.com/google/ExoPlayer/issues/603"
+    ]
+  },
+  {
+    "id": 38,
+    "codec_name": "OMX.bcm.vdec.avc.tunnel",
+    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 29
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/8c5e1974f28c105a6b9a6bcba5a716c22e29f4b2/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2448"
+    ]
+  },
+  {
+    "id": 39,
+    "codec_name": "OMX.bcm.vdec.avc.tunnel.secure",
+    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 29
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/8c5e1974f28c105a6b9a6bcba5a716c22e29f4b2/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2448"
+    ]
+  },
+  {
+    "id": 40,
+    "codec_name": "OMX.bcm.vdec.hevc.tunnel",
+    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 29
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/8c5e1974f28c105a6b9a6bcba5a716c22e29f4b2/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2448"
+    ]
+  },
+  {
+    "id": 41,
+    "codec_name": "OMX.bcm.vdec.hevc.tunnel.secure",
+    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "versions": [
+      {
+        "op": "<=",
+        "value": 29
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/8c5e1974f28c105a6b9a6bcba5a716c22e29f4b2/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2448"
     ]
   }
 ]

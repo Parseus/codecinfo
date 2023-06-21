@@ -35,6 +35,7 @@ import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigationrail.NavigationRailView
+import com.google.android.material.progressindicator.BaseProgressIndicator
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.tabs.TabLayout
 import com.kieronquinn.monetcompat.core.MonetCompat
@@ -48,7 +49,7 @@ private const val TAG = "ThemeUtils"
 fun isNativeMonetAvailable(): Boolean = DynamicColors.isDynamicColorAvailable()
 
 fun isDynamicThemingEnabled(context: Context): Boolean {
-    return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("dynamic_theme", false)
+    return Build.VERSION.SDK_INT >= 21 && PreferenceManager.getDefaultSharedPreferences(context).getBoolean("dynamic_theme", false)
 }
 
 fun getPrimaryColor(context: Context): Int {
@@ -218,6 +219,10 @@ fun AlertDialog.updateButtonColors(context: Context) {
     (getButton(DialogInterface.BUTTON_POSITIVE) as? MaterialButton)?.updateColors(context)
     (getButton(DialogInterface.BUTTON_NEUTRAL) as? MaterialButton)?.updateColors(context)
     (getButton(DialogInterface.BUTTON_NEGATIVE) as? MaterialButton)?.updateColors(context)
+}
+
+fun BaseProgressIndicator<*>.updateColors(context: Context) {
+    setIndicatorColor(getPrimaryColor(context))
 }
 
 fun CompoundButton.updateColors(context: Context) {
@@ -600,5 +605,5 @@ private fun adjustColorAlpha(@ColorInt color: Int, factor: Float): Int {
     return Color.argb(alpha, red, green, blue)
 }
 
-private fun isColorLight(color: Int): Boolean =
+fun isColorLight(color: Int): Boolean =
     color != Color.TRANSPARENT && ColorUtils.calculateLuminance(color) > 0.5

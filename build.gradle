@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        leakCanary_version = '2.11'
+        leakCanary_version = '2.12'
         moshi_version = '1.15.0'
     }
 }

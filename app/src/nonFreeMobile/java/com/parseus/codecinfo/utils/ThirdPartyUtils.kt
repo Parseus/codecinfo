@@ -131,7 +131,8 @@ fun checkForUpdate(activity: Activity, progressBar: LinearProgressIndicator?) {
                         state.installStatus() == InstallStatus.DOWNLOADING -> {
                             progressBar!!.isVisible = true
                             val bytesDownloaded = state.bytesDownloaded()
-                            val totalBytesToDownload = state.totalBytesToDownload()
+                            var totalBytesToDownload = state.totalBytesToDownload()
+                            if (totalBytesToDownload == 0L) totalBytesToDownload = bytesDownloaded
                             val currentProgress = (bytesDownloaded / totalBytesToDownload).toInt() * 100
                             progressBar.setProgressCompat(currentProgress, true)
                             progressBar.contentDescription = activity.getString(R.string.update_flexible_progress_description, currentProgress)

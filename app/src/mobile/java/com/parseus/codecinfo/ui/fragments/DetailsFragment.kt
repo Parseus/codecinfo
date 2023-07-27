@@ -93,11 +93,9 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            binding.itemDetailsContent.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener {
-                    _, _, scrollY, _, _ -> (binding.fullCodecInfoName as ItemDetailsHeaderView).isHeaderLifted = scrollY > 0
-            })
-        }
+        binding.itemDetailsContent.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener {
+                _, _, scrollY, _, _ -> binding.fullCodecInfoName.isHeaderLifted = scrollY > 0
+        })
 
         if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
             val knownProblems = KNOWN_PROBLEMS_DB.filter {
@@ -136,10 +134,9 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
         }
     }
 
-    @Suppress("USELESS_CAST")
     private fun showFullDetails() {
-        (binding.fullCodecInfoName as TextView).text = codecName ?: drmName
-        (binding.fullCodecInfoName as TextView).setTextColor(getPrimaryColor(requireContext()))
+        binding.fullCodecInfoName.text = codecName ?: drmName
+        binding.fullCodecInfoName.setTextColor(getPrimaryColor(requireContext()))
 
         val detailsAdapter = MobileDetailsAdapter()
         detailsAdapter.add(propertyList)

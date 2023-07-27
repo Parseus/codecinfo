@@ -13,4 +13,10 @@
         android:icon="@drawable/ic_video"
         android:title="@string/category_video" />
 
+    <item
+        android:id="@+id/drm"
+        android:enabled="true"
+        android:icon="@drawable/ic_lock"
+        android:title="@string/category_drm" />
+
 </menu>

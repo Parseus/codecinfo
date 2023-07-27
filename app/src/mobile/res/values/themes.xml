@@ -1,5 +1,11 @@
 <resources>
-    <style name="Theme.CodecInfo.Starting" parent="Theme.CodecInfo" />
+    <style name="Theme.CodecInfo.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/purple_600</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/purple_600</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+
+        <item name="postSplashScreenTheme">@style/Theme.CodecInfo</item>
+    </style>
 
     <style name="Theme.CodecInfo" parent="Base.Theme.CodecInfo">
         <item name="colorPrimary">@color/purple_600</item>
@@ -18,8 +24,10 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Platform.V16.Theme.CodecInfo" parent="Theme.Material3.DynamicColors.DayNight" />
-    <style name="Platform.Theme.CodecInfo" parent="Platform.V16.Theme.CodecInfo" />
+    <style name="Platform.V21.Theme.CodecInfo" parent="Theme.Material3.DynamicColors.DayNight">
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+    </style>
+    <style name="Platform.Theme.CodecInfo" parent="Platform.V21.Theme.CodecInfo" />
     
     <style name="ThemeOverlay.CodecInfo.NavigationRailView" parent="">
         <item name="colorOnSurface">@color/m3_ref_palette_neutral95</item>

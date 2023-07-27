@@ -14,74 +14,6 @@
   },
   {
     "id": 2,
-    "codec_name": "OMX.SEC.vp8.dec",
-    "description": "This VP8 decoder on Samsung Galaxy S3/S4/S4 Mini/Tab 3/Note 2 is unable to play WebM videos correctly.",
-    "versions": [
-      {
-        "op": "<=",
-        "value": 19
-      }
-    ],
-    "devices": [
-      {
-        "op": "startsWith",
-        "value": "d2"
-      },
-      {
-        "op": "startsWith",
-        "value": "serrano"
-      },
-      {
-        "op": "startsWith",
-        "value": "jflte"
-      },
-      {
-        "op": "startsWith",
-        "value": "santos"
-      },
-      {
-        "op": "startsWith",
-        "value": "t0"
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/548"
-    ]
-  },
-  {
-    "id": 3,
-    "codec_name": "OMX.qcom.audio.decoder.aac",
-    "description": "Large audio timestamps are not propagated correctly when using this codec on Android 4.1.",
-    "versions": [
-      {
-        "op": "=",
-        "value": 16
-      }
-    ],
-    "devices": [
-      {
-        "op": "equals",
-        "value": "C1504"
-      },
-      {
-        "op": "equals",
-        "value": "C1505"
-      },
-      {
-        "op": "equals",
-        "value": "C1604"
-      },
-      {
-        "op": "equals",
-        "value": "C1605"
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/blob/c40d1c6620afa33134dc15195fe97ac800c95437/library/core/src/main/java/com/google/android/exoplayer2/mediacodec/MediaCodecUtil.java#L472"
-    ]
-  },
-  {
-    "id": 4,
     "codec_name": "OMX.SEC.aac.dec",
     "description": "This codec is unable to play 7.1 audio encoded with AAC on some Samsung devices with Android <7.0.",
     "versions": [
@@ -125,7 +57,7 @@
     ]
   },
   {
-    "id": 5,
+    "id": 3,
     "codec_name": "OMX.Exynos.AAC.Decoder",
     "description": "This codec is unable to play 7.1 audio encoded with AAC on Android <7.0.",
     "versions": [
@@ -169,113 +101,7 @@
     ]
   },
   {
-    "id": 6,
-    "codec_name": "OMX.MTK.AUDIO.DECODER.AAC",
-    "description": "This codec is unable to play some SmoothStreaming content on Gionee Elife E3 and its rebranded variants.",
-    "versions": [
-      {
-        "op": "<",
-        "value": 18
-      }
-    ],
-    "devices": [
-      {
-        "op": "equals",
-        "value": "a70"
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/1528"
-    ]
-  },
-  {
-    "id": 7,
-    "codec_name": "OMX.MTK.AUDIO.DECODER.AAC",
-    "description": "This codec is unable to play some AAC content on Xiaomi Redmi.",
-    "versions": [
-      {
-        "op": "<",
-        "value": 18
-      }
-    ],
-    "devices": [
-      {
-        "op": "startsWith",
-        "value": "HM",
-        "manufacturer": "xiaomi"
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/3171"
-    ]
-  },
-  {
-    "id": 8,
-    "codec_name": "OMX.qcom.audio.decoder.mp3",
-    "description": "Creating and/or querying this codec results in failure on some devices with Android 4.1.",
-    "versions": [
-      {
-        "op": "=",
-        "value": 16
-      }
-    ],
-    "devices": [
-      {
-        "op": "startsWith",
-        "value": "gee"
-      },
-      {
-        "op": "equals",
-        "value": "dlxu"
-      },
-      {
-        "op": "equals",
-        "value": "protou"
-      },
-      {
-        "op": "equals",
-        "value": "ville"
-      },
-      {
-        "op": "equals",
-        "value": "villeplus"
-      },
-      {
-        "op": "equals",
-        "value": "villec2"
-      },
-      {
-        "op": "equals",
-        "value": "C6602"
-      },
-      {
-        "op": "equals",
-        "value": "C6603"
-      },
-      {
-        "op": "equals",
-        "value": "C6606"
-      },
-      {
-        "op": "equals",
-        "value": "C6616"
-      },
-      {
-        "op": "equals",
-        "value": "L36h"
-      },
-      {
-        "op": "equals",
-        "value": "SO-02E"
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/377",
-      "https://github.com/google/ExoPlayer/issues/1714"
-    ]
-  },
-  {
-    "id": 9,
+    "id": 4,
     "codec_name": "OMX.SEC.aac.dec",
     "description": "This decoder is known to output six audio channels when provided with input with fewer than six channels on Samsung Galaxy S6/S7.",
     "versions": [
@@ -303,7 +129,7 @@
     ]
   },
   {
-    "id": 10,
+    "id": 5,
     "codec_name": "OMX.google.raw.decoder",
     "description": "OMX.google.raw.decoder doesn't resize its output buffers correctly prior on Android <7.0, except on Android TV running 6.0. This will cause a native crash when attempting to fill an input buffer that is bigger than the output one.",
     "versions": [
@@ -323,7 +149,7 @@
     ]
   },
   {
-    "id": 11,
+    "id": 6,
     "codec_name": "OMX.MTK.VIDEO.DECODER.HEVC",
     "description": "HEVC codec on LG Q7 inaccurately reports capabilities for playing vertical videos.",
     "devices": [
@@ -337,21 +163,7 @@
     ]
   },
   {
-    "id": 12,
-    "codec_name": "OMX.MARVELL.VIDEO.HW.CODA7542DECODER",
-    "description": "This decoder is known to fail when an attempt is made to reconfigure it with a new format's configuration data.",
-    "models": [
-      {
-        "op": "startsWith",
-        "value": "SM-T230"
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/blob/abccbcf24795730b68efd489727b2df034dc960c/library/core/src/main/java/com/google/android/exoplayer2/mediacodec/MediaCodecInfo.java#L764"
-    ]
-  },
-  {
-    "id": 13,
+    "id": 7,
     "codec_name": "OMX.Exynos.AVC.Decoder",
     "description": "This decoder is known to fail on Odroid-XU3 and Nexus 10 when adapting, despite advertising itself as an adaptive decoder.",
     "versions": [
@@ -376,7 +188,7 @@
     ]
   },
   {
-    "id": 14,
+    "id": 8,
     "codec_name": "OMX.Exynos.AVC.Decoder.secure",
     "description": "This decoder is known to fail on Odroid-XU3 and Nexus 10 when adapting, despite advertising itself as an adaptive decoder.",
     "versions": [
@@ -401,56 +213,7 @@
     ]
   },
   {
-    "id": 15,
-    "codec_name": "OMX.SEC.mp3.dec",
-    "description": "This decoder is known to cause issues on Samsung devices with Android <5.0, ranging from playing audio twice to not playing audio at all.",
-    "versions": [
-      {
-        "op": "<",
-        "value": 21
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/398",
-      "https://github.com/google/ExoPlayer/issues/4519",
-      "https://github.com/google/ExoPlayer/issues/5045",
-      "https://github.com/google/ExoPlayer/pull/5216"
-    ]
-  },
-  {
-    "id": 16,
-    "codec_name": "OMX.SEC.MP3.Decoder",
-    "description": "This decoder is known to cause issues on Samsung devices with Android <5.0, ranging from playing audio twice to not playing audio at all.",
-    "versions": [
-      {
-        "op": "<",
-        "value": 21
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/398",
-      "https://github.com/google/ExoPlayer/issues/4519",
-      "https://github.com/google/ExoPlayer/pull/5216"
-    ]
-  },
-  {
-    "id": 17,
-    "codec_name": "OMX.brcm.audio.mp3.decoder",
-    "description": "This decoder is known to cause issues on Samsung devices with Android <5.0, ranging from playing audio twice to not playing audio at all.",
-    "versions": [
-      {
-        "op": "<",
-        "value": 21
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/398",
-      "https://github.com/google/ExoPlayer/issues/4519",
-      "https://github.com/google/ExoPlayer/pull/5216"
-    ]
-  },
-  {
-    "id": 18,
+    "id": 9,
     "codec_name": "OMX.google.raw.decoder",
     "description": "This device does not list a generic raw audio decoder, yet it can be instantiated by name.",
     "versions": [
@@ -470,21 +233,7 @@
     ]
   },
   {
-    "id": 19,
-    "codec_name": "OMX.MTK.AUDIO.DECODER.MP3",
-    "description": "This decoder is known to set the number of audio channels in the output format to 2 for the given input format, whilst only actually outputting a single channel.",
-    "versions": [
-      {
-        "op": "<=",
-        "value": 18
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/801"
-    ]
-  },
-  {
-    "id": 20,
+    "id": 10,
     "codec_name": "OMX.rk.video_decoder.avc",
     "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
     "versions": [
@@ -498,21 +247,7 @@
     ]
   },
   {
-    "id": 21,
-    "codec_name": "OMX.allwinner.video.decoder.avc",
-    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
-    "versions": [
-      {
-        "op": "<=",
-        "value": 17
-      }
-    ],
-    "urls": [
-      "https://github.com/androidx/media/blob/8c5e1974f28c105a6b9a6bcba5a716c22e29f4b2/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2448"
-    ]
-  },
-  {
-    "id": 22,
+    "id": 11,
     "codec_name": "OMX.broadcom.video_decoder.tunnel",
     "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
     "versions": [
@@ -526,7 +261,7 @@
     ]
   },
   {
-    "id": 23,
+    "id": 12,
     "codec_name": "OMX.broadcom.video_decoder.tunnel.secure",
     "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
     "versions": [
@@ -540,7 +275,7 @@
     ]
   },
   {
-    "id": 24,
+    "id": 13,
     "codec_name": "OMX.google.vorbis.decoder",
     "description": "This decoder is known to behave incorrectly if flushed after receiving an input buffer with BUFFER_FLAG_END_OF_STREAM set.",
     "versions": [
@@ -554,55 +289,7 @@
     ]
   },
   {
-    "id": 25,
-    "codec_name": "OMX.amlogic.avc.decoder.awesome",
-    "description": "This decoder is known to behave incorrectly if flushed after receiving an input buffer with BUFFER_FLAG_END_OF_STREAM set.",
-    "versions": [
-      {
-        "op": "<=",
-        "value": 19
-      }
-    ],
-    "devices": [
-      {
-        "op": "equals",
-        "value": "hb2000"
-      },
-      {
-        "op": "equals",
-        "value": "stvm8"
-      }
-    ],
-    "urls": [
-      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2422"
-    ]
-  },
-  {
-    "id": 26,
-    "codec_name": "OMX.amlogic.avc.decoder.awesome.secure",
-    "description": "This decoder is known to behave incorrectly if flushed after receiving an input buffer with BUFFER_FLAG_END_OF_STREAM set.",
-    "versions": [
-      {
-        "op": "<=",
-        "value": 19
-      }
-    ],
-    "devices": [
-      {
-        "op": "equals",
-        "value": "hb2000"
-      },
-      {
-        "op": "equals",
-        "value": "stvm8"
-      }
-    ],
-    "urls": [
-      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2422"
-    ]
-  },
-  {
-    "id": 27,
+    "id": 14,
     "codec_name": "c2.android.aac.decoder",
     "description": "This decoder is known to behave incorrectly if flushed prior to having output a MediaFormat.",
     "versions": [
@@ -616,21 +303,7 @@
     ]
   },
   {
-    "id": 28,
-    "codec_name": "OMX.MTK.VIDEO.DECODER.AVC",
-    "description": "This decoder is known to fail if NAL units are queued before the codec specific data.",
-    "versions": [
-      {
-        "op": "<",
-        "value": 21
-      }
-    ],
-    "urls": [
-      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2364"
-    ]
-  },
-  {
-    "id": 29,
+    "id": 15,
     "codec_name": "OMX.google.aac.decoder",
     "description": "This decoder may throw an exception after recieving an end-of-stream buffer.",
     "versions": [
@@ -644,7 +317,7 @@
     ]
   },
   {
-    "id": 30,
+    "id": 16,
     "codec_name": "c2.qti.video.decoder.hevc",
     "description": "HEVC codec on Pixel and Pixel XL declares support for 10-bit videos despite not actually supporting them.",
     "devices": [
@@ -662,7 +335,7 @@
     ]
   },
   {
-    "id": 31,
+    "id": 17,
     "codec_name": "OMX.Exynos.AVC.Decoder.secure",
     "description": "This decoder is known to turn off or reboot the device after while trying to play an adaptive stream.",
     "versions": [
@@ -694,7 +367,7 @@
     ]
   },
   {
-    "id": 32,
+    "id": 18,
     "codec_name": "OMX.Nvidia.h264.decode",
     "description": "This decoder is known to turn off or reboot the device after while trying to play an adaptive stream.",
     "versions": [
@@ -727,7 +400,7 @@
     ]
   },
   {
-    "id": 33,
+    "id": 19,
     "codec_name": "OMX.Nvidia.h264.decode.secure",
     "description": "This decoder is known to turn off or reboot the device after while trying to play an adaptive stream.",
     "versions": [
@@ -760,75 +433,7 @@
     ]
   },
   {
-    "id": 34,
-    "codec_name": "OMX.SEC.avc.dec",
-    "description": "This decoder is known to throw an exception while trying to flush the codec output.",
-    "versions": [
-      {
-        "op": "=",
-        "value": 18
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/951"
-    ]
-  },
-  {
-    "id": 35,
-    "codec_name": "OMX.SEC.avc.dec.secure",
-    "description": "This decoder is known to throw an exception while trying to flush the codec output.",
-    "versions": [
-      {
-        "op": "=",
-        "value": 18
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/951"
-    ]
-  },
-  {
-    "id": 36,
-    "codec_name": "OMX.Exynos.avc.dec",
-    "description": "This decoder is known to throw an exception while trying to flush the codec output.",
-    "versions": [
-      {
-        "op": "=",
-        "value": 19
-      }
-    ],
-    "models": [
-      {
-        "op": "startsWith",
-        "value": "SM-G800"
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/603"
-    ]
-  },
-  {
-    "id": 37,
-    "codec_name": "OMX.Exynos.avc.dec.secure",
-    "description": "This decoder is known to throw an exception while trying to flush the codec output.",
-    "versions": [
-      {
-        "op": "=",
-        "value": 19
-      }
-    ],
-    "models": [
-      {
-        "op": "startsWith",
-        "value": "SM-G800"
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/603"
-    ]
-  },
-  {
-    "id": 38,
+    "id": 20,
     "codec_name": "OMX.bcm.vdec.avc.tunnel",
     "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
     "versions": [
@@ -842,7 +447,7 @@
     ]
   },
   {
-    "id": 39,
+    "id": 21,
     "codec_name": "OMX.bcm.vdec.avc.tunnel.secure",
     "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
     "versions": [
@@ -856,7 +461,7 @@
     ]
   },
   {
-    "id": 40,
+    "id": 22,
     "codec_name": "OMX.bcm.vdec.hevc.tunnel",
     "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
     "versions": [
@@ -870,7 +475,7 @@
     ]
   },
   {
-    "id": 41,
+    "id": 23,
     "codec_name": "OMX.bcm.vdec.hevc.tunnel.secure",
     "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
     "versions": [

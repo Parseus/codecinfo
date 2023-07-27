@@ -1,6 +1,5 @@
 package com.parseus.codecinfo.data
 
-import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.parseus.codecinfo.R
@@ -20,7 +19,7 @@ enum class InfoType(val tabPosition: Int,
             else -> DRM
         }
 
-        val INFO_TYPE_COUNT: Int get() = if (Build.VERSION.SDK_INT >= 18) 3 else 2
+        val INFO_TYPE_COUNT: Int get() = 3
 
         var currentInfoType: InfoType = Audio
     }

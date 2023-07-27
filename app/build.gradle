@@ -9,13 +9,11 @@ android {
     compileSdk 34
     defaultConfig {
         applicationId "com.parseus.codecinfo"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 34
         versionCode 24
         versionName "2.6.0"
         resConfigs 'en'
-
-        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         debug {
@@ -57,7 +55,6 @@ android {
 
         tv {
             dimension "platform"
-            minSdkVersion 21
             versionCode 20000 + android.defaultConfig.versionCode
         }
     }
@@ -80,26 +77,10 @@ android {
         }
     }
 
-
     variantFilter { variant ->
         def names = variant.flavors*.name
         if (names.contains("nonFree") && names.contains("tv")) {
             setIgnore(true)
-        }
-    }
-
-    sourceSets {
-        nonFreeMobileDebug {
-            java.srcDirs += 'src/mobileDebug/java'
-        }
-        standardMobileDebug {
-            java.srcDirs += 'src/mobileDebug/java'
-        }
-        nonFreeMobileRelease {
-            java.srcDirs += 'src/mobileRelease/java'
-        }
-        standardMobileRelease {
-            java.srcDirs += 'src/mobileRelease/java'
         }
     }
 }
@@ -107,8 +88,6 @@ android {
 configurations {
     nonFreeMobileImplementation {}
     standardMobileImplementation {}
-    nonFreeMobileDebugImplementation {}
-    standardMobileDebugImplementation {}
 }
 
 dependencies {
@@ -126,8 +105,6 @@ dependencies {
     implementation "com.squareup.okio:okio:3.4.0"
 
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanary_version"
-    standardMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
-    nonFreeMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
 
     tvImplementation 'androidx.leanback:leanback:1.2.0-alpha02'
     tvImplementation 'androidx.leanback:leanback-preference:1.2.0-alpha02'

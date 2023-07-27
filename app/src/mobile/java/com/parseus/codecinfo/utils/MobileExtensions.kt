@@ -50,23 +50,10 @@ fun Fragment.sendFeedbackEmail() {
     if (intent.resolveActivity(requireActivity().packageManager) != null) {
         startActivity(Intent.createChooser(intent, getString(R.string.choose_email)))
     } else {
-        // Setting text in a clipboard is wrapped to handle a bug in Android 4.3:
-        // https://commonsware.com/blog/2013/08/08/developer-psa-please-fix-your-clipboard-handling.html
-        try {
-            val clipboard = ContextCompat.getSystemService(requireContext(), ClipboardManager::class.java)
-            clipboard?.setPrimaryClip(ClipData.newPlainText("email", feedbackEmail))
+        val clipboard = ContextCompat.getSystemService(requireContext(), ClipboardManager::class.java)
+        clipboard?.setPrimaryClip(ClipData.newPlainText("email", feedbackEmail))
 
-            Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                R.string.no_email_apps_clipboard, Snackbar.LENGTH_LONG).show()
-        } catch (e: Exception) {
-            if (Build.VERSION.SDK_INT != 18) {
-                Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                    R.string.no_email_apps, Snackbar.LENGTH_LONG).show()
-            } else {
-                MaterialAlertDialogBuilder(requireContext()).setMessage(R.string.no_email_apps_bug)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show()
-            }
-        }
+        Snackbar.make(requireActivity().findViewById(android.R.id.content),
+            R.string.no_email_apps_clipboard, Snackbar.LENGTH_LONG).show()
     }
 }

@@ -1,11 +1,9 @@
 package com.parseus.codecinfo.data.drm
 
 import android.media.MediaDrm
-import androidx.annotation.RequiresApi
 import com.parseus.codecinfo.R
-import java.util.*
+import java.util.UUID
 
-@RequiresApi(18)
 enum class DrmVendor(val uuid: UUID,
                      val properNameResId: Int = -1) {
 

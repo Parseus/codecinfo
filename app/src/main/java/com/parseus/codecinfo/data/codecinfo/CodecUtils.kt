@@ -109,26 +109,17 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
     val prefs = PreferenceManager.getDefaultSharedPreferences(context)
 
     if (mediaCodecInfos.isEmpty()) {
-        mediaCodecInfos = if (SDK_INT >= 21) {
-            try {
-                MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
-            } catch (e: Exception) {
-                // Some devices (like Xiaomi Redmi Note 4) seem to
-                // throw an exception when trying to list codecs.
-                // Return an empty list to inform the user abput it.
-                return mutableListOf()
-            }
-        } else {
-            try {
-                @Suppress("DEPRECATION")
-                Array(MediaCodecList.getCodecCount()) { i -> MediaCodecList.getCodecInfoAt(i) }
-            } catch (e: Exception) {
-                return mutableListOf()
-            }
+        mediaCodecInfos = try {
+            MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
+        } catch (e: Exception) {
+            // Some devices (like Xiaomi Redmi Note 4) seem to
+            // throw an exception when trying to list codecs.
+            // Return an empty list to inform the user abput it.
+            return mutableListOf()
         }
     }
 
-    if (SDK_INT in 21..23 && mediaCodecInfos.find { it.name.endsWith("secure") } == null) {
+    if (SDK_INT <= 23 && mediaCodecInfos.find { it.name.endsWith("secure") } == null) {
         // Some devices don't list secure decoders on API 21 with a newer way of querying codecs,
         // but potentially could also happen on API levels 22 and 23.
         // In that case try the old way.
@@ -261,24 +252,18 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
     }
 
     if (isAudio) {
-        if (SDK_INT >= 21) {
-            getAudioCapabilities(context, codecId, codecName, capabilities, propertyList)
-        }
+        getAudioCapabilities(context, codecId, codecName, capabilities, propertyList)
     } else {
         getVideoCapabilities(context, codecId, codecName, capabilities, propertyList)
 
         if (!isEncoder) {
-            if (SDK_INT >= 19) {
-                propertyList.addFeature(context, capabilities, FEATURE_AdaptivePlayback, R.string.adaptive_playback)
-            }
+            propertyList.addFeature(context, capabilities, FEATURE_AdaptivePlayback, R.string.adaptive_playback)
 
             if (SDK_INT >= 26) {
                 propertyList.addFeature(context, capabilities, FEATURE_PartialFrame, R.string.partial_frames)
             }
 
-            if (SDK_INT >= 21) {
-                propertyList.addFeature(context, capabilities, FEATURE_SecurePlayback, R.string.secure_playback)
-            }
+            propertyList.addFeature(context, capabilities, FEATURE_SecurePlayback, R.string.secure_playback)
         } else {
             if (SDK_INT >= 24) {
                 propertyList.addFeature(context, capabilities, FEATURE_IntraRefresh, R.string.intra_refresh)
@@ -298,7 +283,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
         propertyList.addFeature(context, capabilities, FEATURE_MultipleFrames, R.string.multiple_access_units)
     }
 
-    if (!isEncoder && SDK_INT >= 21) {
+    if (!isEncoder) {
         propertyList.addFeature(context, capabilities, FEATURE_TunneledPlayback, R.string.tunneled_playback)
 
         if (SDK_INT >= 29) {
@@ -306,7 +291,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
         }
     }
 
-    if (isEncoder && SDK_INT >= 21) {
+    if (isEncoder) {
         val encoderCapabilities = capabilities.encoderCapabilities
         var bitrateModesString =
                 "${context.getString(R.string.cbr)}: " +
@@ -379,7 +364,6 @@ private fun addLowLatencyFeatureIfSupported(context: Context,
     }
 }
 
-@RequiresApi(21)
 private fun handleQualityRange(encoderCapabilities: MediaCodecInfo.EncoderCapabilities,
                                defaultMediaFormat: MediaFormat,
                                propertyList: MutableList<DetailsProperty>,
@@ -417,7 +401,6 @@ private fun handleQualityRange(encoderCapabilities: MediaCodecInfo.EncoderCapabi
     }
 }
 
-@RequiresApi(21)
 private fun handleComplexityRange(encoderCapabilities: MediaCodecInfo.EncoderCapabilities,
                                   defaultMediaFormat: MediaFormat,
                                   context: Context,
@@ -439,7 +422,6 @@ private fun handleComplexityRange(encoderCapabilities: MediaCodecInfo.EncoderCap
     }
 }
 
-@RequiresApi(21)
 private fun getAudioCapabilities(context: Context, codecId: String, codecName: String,
                                  capabilities: MediaCodecInfo.CodecCapabilities,
                                  propertyList: MutableList<DetailsProperty>) {
@@ -629,32 +611,30 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
 private fun getVideoCapabilities(context: Context, codecId: String, codecName: String,
                                  capabilities: MediaCodecInfo.CodecCapabilities,
                                  propertyList: MutableList<DetailsProperty>) {
-    if (SDK_INT >= 21) {
-        val videoCapabilities = capabilities.videoCapabilities
+    val videoCapabilities = capabilities.videoCapabilities
 
-        val maxResolution = getMaxResolution(codecId, videoCapabilities)
+    val maxResolution = getMaxResolution(codecId, videoCapabilities)
+    propertyList.add(DetailsProperty(propertyList.size.toLong(),
+            context.getString(R.string.max_resolution), "${maxResolution[0]}x${maxResolution[1]}"))
+
+    val bitrateRange = videoCapabilities.bitrateRange
+    propertyList.add(DetailsProperty(propertyList.size.toLong(),
+            context.getString(R.string.max_bitrate),
+            bitrateRange.upper.toBytesPerSecond()))
+
+    val framerates = getSupportedFrameRates(codecId, videoCapabilities)
+    val framerateString = if (framerates.lower == framerates.upper) {
+        "${framerates.upper} ${context.getString(R.string.frames_per_second)}"
+    } else {
+        "${framerates.lower} \u2014 ${framerates.upper} ${context.getString(R.string.frames_per_second)}"
+    }
+    propertyList.add(DetailsProperty(propertyList.size.toLong(),
+            context.getString(R.string.frame_rate), framerateString))
+
+    val frameRatePerResolutions = getFrameRatePerResolutions(context, codecId, videoCapabilities)
+    if (frameRatePerResolutions.isNotEmpty()) {
         propertyList.add(DetailsProperty(propertyList.size.toLong(),
-                context.getString(R.string.max_resolution), "${maxResolution[0]}x${maxResolution[1]}"))
-
-        val bitrateRange = videoCapabilities.bitrateRange
-        propertyList.add(DetailsProperty(propertyList.size.toLong(),
-                context.getString(R.string.max_bitrate),
-                bitrateRange.upper.toBytesPerSecond()))
-
-        val framerates = getSupportedFrameRates(codecId, videoCapabilities)
-        val framerateString = if (framerates.lower == framerates.upper) {
-            "${framerates.upper} ${context.getString(R.string.frames_per_second)}"
-        } else {
-            "${framerates.lower} \u2014 ${framerates.upper} ${context.getString(R.string.frames_per_second)}"
-        }
-        propertyList.add(DetailsProperty(propertyList.size.toLong(),
-                context.getString(R.string.frame_rate), framerateString))
-
-        val frameRatePerResolutions = getFrameRatePerResolutions(context, codecId, videoCapabilities)
-        if (frameRatePerResolutions.isNotEmpty()) {
-            propertyList.add(DetailsProperty(propertyList.size.toLong(),
-                    context.getString(R.string.max_frame_rate_per_resolution), frameRatePerResolutions))
-        }
+                context.getString(R.string.max_frame_rate_per_resolution), frameRatePerResolutions))
     }
 
     addColorFormats(capabilities, codecName, context, propertyList)
@@ -709,7 +689,6 @@ private fun getFormattedColorProfileString(context: Context, colorFormat: String
     }
 }
 
-@RequiresApi(21)
 private fun getMaxResolution(codecId: String, videoCapabilities: MediaCodecInfo.VideoCapabilities): IntArray {
     val maxWidth = videoCapabilities.supportedWidths.upper
     val maxHeight = videoCapabilities.supportedHeights.upper
@@ -738,7 +717,6 @@ private fun getMaxResolution(codecId: String, videoCapabilities: MediaCodecInfo.
     }
 }
 
-@RequiresApi(21)
 private fun getSupportedFrameRates(codecId: String, videoCapabilities: MediaCodecInfo.VideoCapabilities): Range<Int> {
     val defaultFrameRates = videoCapabilities.supportedFrameRates
 
@@ -751,7 +729,6 @@ private fun getSupportedFrameRates(codecId: String, videoCapabilities: MediaCode
     }
 }
 
-@RequiresApi(21)
 private fun getSupportedFrameRatesFor(codecId: String, videoCapabilities: MediaCodecInfo.VideoCapabilities,
                                       width: Int, height: Int): Range<Double> {
     return if (!areCapabilitiesUnknown(videoCapabilities)) {
@@ -769,7 +746,6 @@ private fun getSupportedFrameRatesFor(codecId: String, videoCapabilities: MediaC
     }
 }
 
-@RequiresApi(21)
 private fun getFrameRatePerResolutions(context: Context, codecId: String,
                                        videoCapabilities: MediaCodecInfo.VideoCapabilities): String {
     val capabilities = StringBuilder()
@@ -809,7 +785,7 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
     // On Android <=6.0, some devices do not advertise VP9 profile level support.
     // In this case, estimate the level from MediaCodecInfo.VideoCapabilities instead.
     if (SDK_INT <= 23 && codecId.endsWith("vp9") && profileLevels.isEmpty()) {
-        val vp9Level = getMaxVP9ProfileLevel(if (SDK_INT >= 21) capabilities else null)
+        val vp9Level = getMaxVP9ProfileLevel(capabilities)
         // Assume all platforms before N only support VP9 profile 0.
         profile = VP9Profiles.VP9Profile0.name
         level = VP9Levels.from(vp9Level)!!
@@ -972,18 +948,17 @@ private fun getFormattedProfileLevelString(context: Context, profile: String?, p
     }
 }
 
-@RequiresApi(19)
 private fun MutableList<DetailsProperty>.addFeature(context: Context,
                                                       capabilities: MediaCodecInfo.CodecCapabilities,
                                                       capability: String,
                                                       @StringRes featureResId: Int) {
     val featureSupported = capabilities.isFeatureSupported(capability)
-    val featureValue = if (SDK_INT >= 21 && featureSupported) {
+    val featureValue = if (featureSupported) {
         context.getString(R.string.feature_support_format,
-                featureSupported.toString(),
+                true.toString(),
                 capabilities.isFeatureRequired(capability).toString())
     } else {
-        featureSupported.toString()
+        false.toString()
     }
     add(DetailsProperty(size.toLong(), context.getString(featureResId), featureValue))
 }
@@ -991,10 +966,8 @@ private fun MutableList<DetailsProperty>.addFeature(context: Context,
 /**
  * Needed on M and older to get correct information about VP9 support.
  */
-private fun getMaxVP9ProfileLevel(capabilities: MediaCodecInfo.CodecCapabilities?): Int {
-    val maxBitrate = if (SDK_INT >= 21 && capabilities?.videoCapabilities != null) {
-        capabilities.videoCapabilities.bitrateRange.upper
-    } else 0
+private fun getMaxVP9ProfileLevel(capabilities: MediaCodecInfo.CodecCapabilities): Int {
+    val maxBitrate = capabilities.videoCapabilities.bitrateRange.upper
 
     // https://www.webmproject.org/vp9/levels
     return when {
@@ -1081,7 +1054,6 @@ private fun isHardwareAccelerated(codecInfo: MediaCodecInfo): Boolean {
     }
 }
 
-@RequiresApi(21)
 private fun areCapabilitiesUnknown(videoCapabilities: MediaCodecInfo.VideoCapabilities): Boolean {
     return videoCapabilities.supportedFrameRates.upper == DEFAULT_MAX_FRAME_RATE
             && videoCapabilities.supportedWidths.upper == DEFAULT_MAX_SIZE

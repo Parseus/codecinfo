@@ -33,9 +33,7 @@ fun Context.isTv(): Boolean {
                 && packageManager.hasSystemFeature(PackageManager.FEATURE_ETHERNET))
     }
 
-    if (Build.VERSION.SDK_INT >= 21) {
-        isTv = isTv or packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
-    }
+    isTv = isTv or packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
 
     return isTv
 }

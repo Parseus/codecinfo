@@ -49,7 +49,7 @@ private const val TAG = "ThemeUtils"
 fun isNativeMonetAvailable(): Boolean = DynamicColors.isDynamicColorAvailable()
 
 fun isDynamicThemingEnabled(context: Context): Boolean {
-    return Build.VERSION.SDK_INT >= 21 && PreferenceManager.getDefaultSharedPreferences(context).getBoolean("dynamic_theme", false)
+    return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("dynamic_theme", false)
 }
 
 fun getPrimaryColor(context: Context): Int {
@@ -226,22 +226,20 @@ fun BaseProgressIndicator<*>.updateColors(context: Context) {
 }
 
 fun CompoundButton.updateColors(context: Context) {
-    if (Build.VERSION.SDK_INT >= 21) {
-        val colorOnSurface = getColorOnSurface(context)
-        val csl = ColorStateList(
-            arrayOf(
-                intArrayOf(-android.R.attr.state_enabled),
-                intArrayOf(android.R.attr.state_checked),
-                intArrayOf(-android.R.attr.state_checked)
-            ),
-            intArrayOf(
-                adjustColorAlpha(colorOnSurface, 0.38f),
-                getPrimaryColor(context),
-                colorOnSurface
-            )
+    val colorOnSurface = getColorOnSurface(context)
+    val csl = ColorStateList(
+        arrayOf(
+            intArrayOf(-android.R.attr.state_enabled),
+            intArrayOf(android.R.attr.state_checked),
+            intArrayOf(-android.R.attr.state_checked)
+        ),
+        intArrayOf(
+            adjustColorAlpha(colorOnSurface, 0.38f),
+            getPrimaryColor(context),
+            colorOnSurface
         )
-        buttonTintList = csl
-    }
+    )
+    buttonTintList = csl
 }
 
 fun Menu.updateIconColors(context: Context, @ColorInt toolbarColor: Int) {
@@ -386,35 +384,33 @@ fun TabLayout.updateColors(context: Context) {
 @Suppress("DEPRECATION")
 @SuppressLint("NewApi")
 fun Window.updateStatusBarColor(context: Context) {
-    if (Build.VERSION.SDK_INT >= 21) {
-        val isDynamicTheming = isDynamicThemingEnabled(context)
-        val color = if (isDynamicTheming) {
-            if (context.isNightMode()) {
-                getSurfaceColor(context)
-            } else {
-                getPrimaryColor(context)
-            }
+    val isDynamicTheming = isDynamicThemingEnabled(context)
+    val color = if (isDynamicTheming) {
+        if (context.isNightMode()) {
+            getSurfaceColor(context)
         } else {
-            if (context.isNightMode()) {
-                MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, javaClass.canonicalName)
-            } else {
-                MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, javaClass.canonicalName)
-            }
+            getPrimaryColor(context)
         }
+    } else {
+        if (context.isNightMode()) {
+            MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, javaClass.canonicalName)
+        } else {
+            MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, javaClass.canonicalName)
+        }
+    }
 
-        statusBarColor = color
+    statusBarColor = color
 
-        if (isDynamicTheming) {
-            val lightStatusBar = isColorLight(color)
-            if (Build.VERSION.SDK_INT >= 31) {
-                insetsController?.setSystemBarsAppearance(if (lightStatusBar)
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS else 0,
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-            } else if (Build.VERSION.SDK_INT >= 23) {
-                val statusBarFlag = if (lightStatusBar) View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else 0
-                decorView.systemUiVisibility =
-                    (decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()) or statusBarFlag
-            }
+    if (isDynamicTheming) {
+        val lightStatusBar = isColorLight(color)
+        if (Build.VERSION.SDK_INT >= 31) {
+            insetsController?.setSystemBarsAppearance(if (lightStatusBar)
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS else 0,
+                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
+        } else if (Build.VERSION.SDK_INT >= 23) {
+            val statusBarFlag = if (lightStatusBar) View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else 0
+            decorView.systemUiVisibility =
+                (decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()) or statusBarFlag
         }
     }
 }
@@ -544,7 +540,6 @@ fun MaterialAlertDialogBuilder.updateBackgroundColor(context: Context): Material
     return setBackground(materialShapeDrawable)
 }
 
-@Suppress("DEPRECATION")
 @SuppressLint("PrivateApi")
 private fun EditText.updateCursorDrawable(@ColorInt color: Int) {
     // https://stackoverflow.com/a/59269370
@@ -586,9 +581,9 @@ private fun Class<*>.getFieldByName(vararg name: String): Field? {
     return null
 }
 
-private fun Drawable.tinted(@ColorInt color: Int): Drawable = when {
-    this is VectorDrawableCompat -> this.apply { setTintList(ColorStateList.valueOf(color)) }
-    Build.VERSION.SDK_INT >= 21 && this is VectorDrawable -> this.apply { setTintList(ColorStateList.valueOf(color)) }
+private fun Drawable.tinted(@ColorInt color: Int): Drawable = when (this) {
+    is VectorDrawableCompat -> this.apply { setTintList(ColorStateList.valueOf(color)) }
+    is VectorDrawable -> this.apply { setTintList(ColorStateList.valueOf(color)) }
     else -> DrawableCompat.wrap(this).also { DrawableCompat.setTint(it, color) }.let { DrawableCompat.unwrap(it) }
 }
 

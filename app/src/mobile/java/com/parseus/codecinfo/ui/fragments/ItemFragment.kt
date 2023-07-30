@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.*
 import android.widget.EdgeEffect
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -105,7 +104,7 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
                     binding.simpleCodecListView.apply {
                         layoutManager = LinearLayoutManager(context)
                         adapter = itemAdapter
-                        ViewCompat.setNestedScrollingEnabled(this, false)
+                        isNestedScrollingEnabled = false
                         addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
                         edgeEffectFactory = object : RecyclerView.EdgeEffectFactory() {
                             override fun createEdgeEffect(

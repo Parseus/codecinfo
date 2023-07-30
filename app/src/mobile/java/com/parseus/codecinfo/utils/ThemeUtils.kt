@@ -20,6 +20,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -338,7 +339,7 @@ fun NavigationRailView.updateColors(context: Context) {
     val indicatorColor = getSecondaryContainerColor(context)
     val activeIconColor = getOnSecondaryContainerColor(context)
 
-    DrawableCompat.setTintList(background.mutate(), ColorStateList.valueOf(backgroundColor))
+    background.mutate().setTintList(ColorStateList.valueOf(backgroundColor))
     itemActiveIndicatorColor = ColorStateList.valueOf(indicatorColor)
 
     val itemTextColorStateList = ColorStateList(
@@ -553,7 +554,7 @@ private fun EditText.updateCursorDrawable(@ColorInt color: Int) {
             val editorClass: Class<*> = if (editorField != null) editor.javaClass else TextView::class.java
             val cursorRes = TextView::class.java.getFieldByName("mCursorDrawableRes")?.get(this) as? Int ?: return
 
-            val tintedCursorDrawable = ContextCompat.getDrawable(context, cursorRes)?.tinted(color) ?: return
+            val tintedCursorDrawable = AppCompatResources.getDrawable(context, cursorRes)?.tinted(color) ?: return
 
             val cursorField = if (Build.VERSION.SDK_INT >= 28) {
                 editorClass.getFieldByName("mDrawableForCursor")
@@ -584,7 +585,7 @@ private fun Class<*>.getFieldByName(vararg name: String): Field? {
 private fun Drawable.tinted(@ColorInt color: Int): Drawable = when (this) {
     is VectorDrawableCompat -> this.apply { setTintList(ColorStateList.valueOf(color)) }
     is VectorDrawable -> this.apply { setTintList(ColorStateList.valueOf(color)) }
-    else -> DrawableCompat.wrap(this).also { DrawableCompat.setTint(it, color) }.let { DrawableCompat.unwrap(it) }
+    else -> DrawableCompat.wrap(this).also { it.setTint(color) }.let { DrawableCompat.unwrap(it) }
 }
 
 fun Number.spToPx(context: Context? = null): Float {

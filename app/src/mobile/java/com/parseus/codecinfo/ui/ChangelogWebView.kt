@@ -2,7 +2,6 @@ package com.parseus.codecinfo.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.Uri
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
@@ -44,7 +43,13 @@ class ChangelogWebView : WebView {
 
     inner class HardenedAssetLoadingWebClient : WebViewClient() {
 
-        private fun interceptRequest(url: Uri): WebResourceResponse? {
+        override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
+            if ("GET" != request.method) {
+                return null
+            }
+
+            val url = request.url
+
             if ("localhost" != url.host) {
                 return null
             }
@@ -63,14 +68,6 @@ class ChangelogWebView : WebView {
             }
 
             return null
-        }
-
-        override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
-            if ("GET" != request.method) {
-                return null
-            }
-
-            return interceptRequest(request.url)
         }
 
         @RequiresApi(24) override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) = true

@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Lifecycle
@@ -23,7 +21,6 @@ import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
-import com.parseus.codecinfo.ui.ItemDetailsHeaderView
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
 import com.parseus.codecinfo.ui.adapters.MobileDetailsAdapter
 import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
@@ -104,7 +101,7 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             if (knownProblems.isNotEmpty()) {
                 binding.knownProblemsList.apply {
                     layoutManager = LinearLayoutManager(context)
-                    ViewCompat.setNestedScrollingEnabled(this, false)
+                    isNestedScrollingEnabled = false
                     addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
                     itemAnimator = ExpandableItemAnimator()
                     isVisible = true
@@ -143,7 +140,7 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
         binding.fullCodecInfoContent.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = detailsAdapter
-            ViewCompat.setNestedScrollingEnabled(this, false)
+            isNestedScrollingEnabled = false
         }
     }
 

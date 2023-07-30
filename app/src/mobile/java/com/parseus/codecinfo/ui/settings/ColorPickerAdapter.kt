@@ -38,7 +38,7 @@ class ColorPickerAdapter(context: Context,
                 TooltipCompat.setTooltipText(this, tooltipText)
             }
             val drawable = DrawableCompat.wrap(itemColorPickerBackground.background)
-            DrawableCompat.setTint(drawable, color)
+            drawable.setTint(color)
             itemColorPickerCheck.isVisible = color == selectedColor
             val tintColor = if (isColorLight(color)) Color.BLACK else Color.WHITE
             ImageViewCompat.setImageTintList(itemColorPickerCheck, ColorStateList.valueOf(tintColor))

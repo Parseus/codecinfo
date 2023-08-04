@@ -102,7 +102,7 @@ dependencies {
     implementation "com.squareup.leakcanary:plumber-android:$leakCanary_version"
     implementation "com.squareup.moshi:moshi:$moshi_version"
     ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
-    implementation "com.squareup.okio:okio:3.4.0"
+    implementation "com.squareup.okio:okio:3.5.0"
 
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanary_version"
 

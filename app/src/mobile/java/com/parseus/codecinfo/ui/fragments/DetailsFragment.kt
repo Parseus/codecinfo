@@ -11,7 +11,6 @@ import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.kieronquinn.monetcompat.app.MonetFragment
 import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
@@ -21,6 +20,7 @@ import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
+import com.parseus.codecinfo.ui.CustomLinearLayoutManager
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
 import com.parseus.codecinfo.ui.adapters.MobileDetailsAdapter
 import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
@@ -100,7 +100,7 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             }
             if (knownProblems.isNotEmpty()) {
                 binding.knownProblemsList.apply {
-                    layoutManager = LinearLayoutManager(context)
+                    layoutManager = CustomLinearLayoutManager(context)
                     isNestedScrollingEnabled = false
                     addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
                     itemAnimator = ExpandableItemAnimator()
@@ -138,7 +138,7 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
         val detailsAdapter = MobileDetailsAdapter()
         detailsAdapter.add(propertyList)
         binding.fullCodecInfoContent.apply {
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = CustomLinearLayoutManager(context)
             adapter = detailsAdapter
             isNestedScrollingEnabled = false
         }

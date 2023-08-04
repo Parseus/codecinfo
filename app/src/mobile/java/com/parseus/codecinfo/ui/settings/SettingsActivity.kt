@@ -18,7 +18,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.*
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -31,6 +30,7 @@ import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.SettingsMainBinding
 import com.parseus.codecinfo.databinding.WallpaperColorPickerLayoutBinding
+import com.parseus.codecinfo.ui.CustomLinearLayoutManager
 import com.parseus.codecinfo.ui.fragments.AboutFragment
 import com.parseus.codecinfo.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -299,7 +299,7 @@ class SettingsActivity : MonetCompatActivity() {
                     MonetCompat.getInstance().getBackgroundColor(requireContext())
                 ))
                 layoutManager =
-                    LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+                    CustomLinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
 
                 adapter = ColorPickerAdapter(
                     requireContext(),

@@ -10,13 +10,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
+import com.parseus.codecinfo.ui.CustomLinearLayoutManager
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
@@ -66,7 +66,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
             }
             if (knownProblems.isNotEmpty()) {
                 binding.knownProblemsList.apply {
-                    layoutManager = LinearLayoutManager(context)
+                    layoutManager = CustomLinearLayoutManager(context)
                     ViewCompat.setNestedScrollingEnabled(this, false)
                     addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
                     itemAnimator = ExpandableItemAnimator()
@@ -92,7 +92,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
         val detailsAdapter = DetailsAdapter()
         detailsAdapter.add(propertyList)
         binding.fullCodecInfoContent.apply {
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = CustomLinearLayoutManager(context)
             adapter = detailsAdapter
             ViewCompat.setNestedScrollingEnabled(this, false)
         }

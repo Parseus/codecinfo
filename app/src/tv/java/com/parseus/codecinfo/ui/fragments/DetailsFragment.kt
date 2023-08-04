@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -67,7 +66,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
             if (knownProblems.isNotEmpty()) {
                 binding.knownProblemsList.apply {
                     layoutManager = CustomLinearLayoutManager(context)
-                    ViewCompat.setNestedScrollingEnabled(this, false)
+                    isNestedScrollingEnabled = false
                     addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
                     itemAnimator = ExpandableItemAnimator()
                     isVisible = true
@@ -94,7 +93,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
         binding.fullCodecInfoContent.apply {
             layoutManager = CustomLinearLayoutManager(context)
             adapter = detailsAdapter
-            ViewCompat.setNestedScrollingEnabled(this, false)
+            isNestedScrollingEnabled = false
         }
     }
 

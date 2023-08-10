@@ -660,7 +660,7 @@ private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, code
             codecName.contains("OMX.PSC", true) || codecName.contains("OMX.SNI", true)
             -> PanasonicSNIColorFormat.from(colorFormats[it])
             codecName.contains("OMX.TI", true) || codecName.contains("INTEL", true)
-                    || codecName.contains("OMX.rk", true)
+                    || codecName.contains("OMX.rk", true) || codecName.contains("OMX.sprd", true)
             -> OtherColorFormat.from(colorFormats[it])
             else -> null
         }

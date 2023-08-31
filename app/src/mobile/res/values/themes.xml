@@ -12,7 +12,7 @@
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/teal_600</item>
         <item name="colorSecondaryContainer">@color/teal_100</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondary">@color/white</item>
         <item name="colorError">@color/red_600</item>
     </style>
 
@@ -25,7 +25,7 @@
     </style>
 
     <style name="Platform.V21.Theme.CodecInfo" parent="Theme.Material3.DynamicColors.DayNight">
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
     </style>
     <style name="Platform.Theme.CodecInfo" parent="Platform.V21.Theme.CodecInfo" />
     

@@ -5,12 +5,10 @@ import android.os.Bundle
 import android.view.*
 import android.widget.EdgeEffect
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
@@ -23,6 +21,7 @@ import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.databinding.TabContentLayoutBinding
+import com.parseus.codecinfo.ui.CustomLinearLayoutManager
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.CodecAdapter
 import com.parseus.codecinfo.ui.adapters.DrmAdapter
@@ -103,9 +102,9 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
 
                 if (!emptyList) {
                     binding.simpleCodecListView.apply {
-                        layoutManager = LinearLayoutManager(context)
+                        layoutManager = CustomLinearLayoutManager(context)
                         adapter = itemAdapter
-                        ViewCompat.setNestedScrollingEnabled(this, false)
+                        isNestedScrollingEnabled = false
                         addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
                         edgeEffectFactory = object : RecyclerView.EdgeEffectFactory() {
                             override fun createEdgeEffect(

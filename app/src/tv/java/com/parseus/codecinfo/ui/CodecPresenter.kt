@@ -28,7 +28,7 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
         return ViewHolder(cardView)
     }
 
-    override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any) {
+    override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any?) {
         val info = item as CodecSimpleInfo
         (viewHolder as ViewHolder).simpleInfo = info
         viewHolder.cardView.apply {

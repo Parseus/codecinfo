@@ -3,12 +3,10 @@ package com.parseus.codecinfo.ui
 import android.animation.AnimatorInflater
 import android.content.Context
 import android.util.AttributeSet
-import androidx.annotation.RequiresApi
 import com.google.android.material.textview.MaterialTextView
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.utils.getSurfaceColor
 
-@RequiresApi(21)
 class ItemDetailsHeaderView : MaterialTextView {
 
     var isHeaderLifted: Boolean = false

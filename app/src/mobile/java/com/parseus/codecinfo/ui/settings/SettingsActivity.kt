@@ -18,7 +18,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.preference.*
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -31,6 +30,7 @@ import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.SettingsMainBinding
 import com.parseus.codecinfo.databinding.WallpaperColorPickerLayoutBinding
+import com.parseus.codecinfo.ui.CustomLinearLayoutManager
 import com.parseus.codecinfo.ui.fragments.AboutFragment
 import com.parseus.codecinfo.utils.*
 import kotlinx.coroutines.Dispatchers
@@ -42,39 +42,35 @@ class SettingsActivity : MonetCompatActivity() {
     private lateinit var binding: SettingsMainBinding
 
     override val recreateMode: Boolean
-        get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+        get() = !isNativeMonetAvailable()
     override val updateOnCreate: Boolean
-        get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+        get() = !isNativeMonetAvailable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CodecInfo)
-        if (Build.VERSION.SDK_INT >= 17) {
-            val startingFromAlias = intent?.component?.className?.startsWith("alias.SettingsActivity") == true
-            if (startingFromAlias) {
-                delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-            }
+        val startingFromAlias = intent?.component?.className?.startsWith("alias.SettingsActivity") == true
+        if (startingFromAlias) {
+            delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         }
 
         super.onCreate(savedInstanceState)
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            val enter = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
-                excludeTarget(android.R.id.statusBarBackground, true)
-                excludeTarget(android.R.id.navigationBarBackground, true)
-            }
-            val exit = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
-                excludeTarget(android.R.id.statusBarBackground, true)
-                excludeTarget(android.R.id.navigationBarBackground, true)
-            }
-            window.apply {
-                requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-                enterTransition = enter
-                exitTransition = exit
-                allowReturnTransitionOverlap = true
-            }
+        val enter = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
+            excludeTarget(android.R.id.statusBarBackground, true)
+            excludeTarget(android.R.id.navigationBarBackground, true)
+        }
+        val exit = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
+            excludeTarget(android.R.id.statusBarBackground, true)
+            excludeTarget(android.R.id.navigationBarBackground, true)
+        }
+        window.apply {
+            requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+            enterTransition = enter
+            exitTransition = exit
+            allowReturnTransitionOverlap = true
         }
 
-        if (Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()) {
+        if (!isNativeMonetAvailable()) {
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.CREATED) {
                     monet.awaitMonetReady()
@@ -144,25 +140,21 @@ class SettingsActivity : MonetCompatActivity() {
             val view = super.onCreateView(inflater, container, savedInstanceState)
 
             findPreference<CheckBoxPreference>("dynamic_theme")?.apply {
-                if (Build.VERSION.SDK_INT >= 21) {
-                    setOnPreferenceChangeListener { _, newValue ->
-                        if (!isNativeMonetAvailable()) {
-                            viewLifecycleOwner.lifecycleScope.launch {
-                                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                                    val wallpaperColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
-                                    findPreference<Preference>("show_wallaper_colors")?.isVisible =
-                                        newValue as Boolean && wallpaperColors.size > 1
-                                                && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
-                                }
+                setOnPreferenceChangeListener { _, newValue ->
+                    if (!isNativeMonetAvailable()) {
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                                val wallpaperColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
+                                findPreference<Preference>("show_wallaper_colors")?.isVisible =
+                                    newValue as Boolean && wallpaperColors.size > 1
+                                            && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
                             }
                         }
-
-                        dynamicThemeChanged = true
-                        activity?.let { ActivityCompat.recreate(it) }
-                        true
                     }
-                } else {
-                    isVisible = false
+
+                    dynamicThemeChanged = true
+                    activity?.let { ActivityCompat.recreate(it) }
+                    true
                 }
             }
 
@@ -171,8 +163,7 @@ class SettingsActivity : MonetCompatActivity() {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                         findPreference<Preference>("show_wallpaper_colors")?.apply {
                             val wallpaperColors = MonetCompat.getInstance().getAvailableWallpaperColors() ?: emptyList()
-                            isVisible = Build.VERSION.SDK_INT >= 21 && wallpaperColors.size > 1
-                                    && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
+                            isVisible = wallpaperColors.size > 1 && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
                         }
                     }
                 }
@@ -191,13 +182,9 @@ class SettingsActivity : MonetCompatActivity() {
             }
 
             findPreference<CheckBoxPreference>("immersive_mode")?.apply {
-                if (Build.VERSION.SDK_INT >= 19) {
-                    setOnPreferenceChangeListener { _, _ ->
-                        immersiveChanged = true
-                        true
-                    }
-                } else {
-                    isVisible = false
+                setOnPreferenceChangeListener { _, _ ->
+                    immersiveChanged = true
+                    true
                 }
             }
 
@@ -312,7 +299,7 @@ class SettingsActivity : MonetCompatActivity() {
                     MonetCompat.getInstance().getBackgroundColor(requireContext())
                 ))
                 layoutManager =
-                    LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
+                    CustomLinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
 
                 adapter = ColorPickerAdapter(
                     requireContext(),

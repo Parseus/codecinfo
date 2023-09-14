@@ -22,7 +22,7 @@ class CodecInfoApp : Application() {
         if (isNativeMonetAvailable()) {
             DynamicColors.applyToActivitiesIfAvailable(this,
                 DynamicColorsOptions.Builder().setPrecondition { _, _ -> isDynamicThemingEnabled(this) }.build())
-        } else if (Build.VERSION.SDK_INT >= 21) {
+        } else {
             if (Build.VERSION.SDK_INT <= 26) {
                 MonetCompat.enablePaletteCompat()
             }

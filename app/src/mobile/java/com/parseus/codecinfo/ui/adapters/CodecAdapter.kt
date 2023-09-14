@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import androidx.preference.PreferenceManager
@@ -18,7 +17,11 @@ import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.CodecAdapterRowBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
-import com.parseus.codecinfo.utils.*
+import com.parseus.codecinfo.utils.buildContainerTransform
+import com.parseus.codecinfo.utils.getActivity
+import com.parseus.codecinfo.utils.getPrimaryColor
+import com.parseus.codecinfo.utils.getSecondaryColor
+import com.parseus.codecinfo.utils.isInTwoPaneMode
 
 class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
 
@@ -143,7 +146,7 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
                         codecMediaTypeString, position, codecTypeString, codecName, codecId)
             }
 
-            ViewCompat.setTransitionName(layout, "$codecId/$codecName")
+            layout.transitionName = "$codecId/$codecName"
             layout.setOnClickListener {
                 val context = layout.context
                 val activity = context.getActivity() as? MainActivity
@@ -183,7 +186,7 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
                             replace(R.id.itemDetailsFragment, detailsFragment,
                                 act.getString(R.string.details_fragment_tag))
                         } else {
-                            addSharedElement(layout, ViewCompat.getTransitionName(layout)!!)
+                            addSharedElement(layout, layout.transitionName!!)
                             replace(R.id.content_fragment, detailsFragment,
                                 act.getString(R.string.details_fragment_tag))
                             addToBackStack(null)

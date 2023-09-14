@@ -1,7 +1,6 @@
 package com.parseus.codecinfo.ui.settings
 
 import android.content.Context
-import android.os.Build
 import android.util.AttributeSet
 import android.widget.CompoundButton
 import androidx.preference.CheckBoxPreference
@@ -18,10 +17,8 @@ class MonetCheckboxPreference : CheckBoxPreference {
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            val checkbox = holder.findViewById(android.R.id.checkbox) as? CompoundButton
-            checkbox?.updateColors(context)
-        }
+        val checkbox = holder.findViewById(android.R.id.checkbox) as? CompoundButton
+        checkbox?.updateColors(context)
     }
 
 }

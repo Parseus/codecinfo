@@ -5,7 +5,6 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.isVisible
@@ -14,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.parseus.codecinfo.databinding.WallpaperColorsAdapterItemBinding
 import com.parseus.codecinfo.utils.isColorLight
 
-@RequiresApi(21)
 class ColorPickerAdapter(context: Context,
                          private val selectedColor: Int?,
                          private val colors: List<Int>,
@@ -40,7 +38,7 @@ class ColorPickerAdapter(context: Context,
                 TooltipCompat.setTooltipText(this, tooltipText)
             }
             val drawable = DrawableCompat.wrap(itemColorPickerBackground.background)
-            DrawableCompat.setTint(drawable, color)
+            drawable.setTint(color)
             itemColorPickerCheck.isVisible = color == selectedColor
             val tintColor = if (isColorLight(color)) Color.BLACK else Color.WHITE
             ImageViewCompat.setImageTintList(itemColorPickerCheck, ColorStateList.valueOf(tintColor))

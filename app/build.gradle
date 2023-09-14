@@ -1,21 +1,19 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp' version '1.8.22-1.0.11'
+    id 'com.google.devtools.ksp' version '1.9.10-1.0.13'
 }
 
 android {
     namespace 'com.parseus.codecinfo'
-    compileSdkVersion 34
+    compileSdk 34
     defaultConfig {
         applicationId "com.parseus.codecinfo"
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion 34
-        versionCode 23
-        versionName "2.5.0"
+        versionCode 24
+        versionName "2.5.1"
         resConfigs 'en'
-
-        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         debug {
@@ -31,7 +29,7 @@ android {
         }
     }
 
-    flavorDimensions "app", "platform"
+    flavorDimensions = ["app", "platform"]
 
     productFlavors {
         nonFree {
@@ -57,7 +55,6 @@ android {
 
         tv {
             dimension "platform"
-            minSdkVersion 21
             versionCode 20000 + android.defaultConfig.versionCode
         }
     }
@@ -80,26 +77,10 @@ android {
         }
     }
 
-
     variantFilter { variant ->
         def names = variant.flavors*.name
         if (names.contains("nonFree") && names.contains("tv")) {
             setIgnore(true)
-        }
-    }
-
-    sourceSets {
-        nonFreeMobileDebug {
-            java.srcDirs += 'src/mobileDebug/java'
-        }
-        standardMobileDebug {
-            java.srcDirs += 'src/mobileDebug/java'
-        }
-        nonFreeMobileRelease {
-            java.srcDirs += 'src/mobileRelease/java'
-        }
-        standardMobileRelease {
-            java.srcDirs += 'src/mobileRelease/java'
         }
     }
 }
@@ -107,40 +88,37 @@ android {
 configurations {
     nonFreeMobileImplementation {}
     standardMobileImplementation {}
-    nonFreeMobileDebugImplementation {}
-    standardMobileDebugImplementation {}
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
 
-    implementation 'androidx.appcompat:appcompat:1.7.0-alpha02'
-    implementation "androidx.core:core-ktx:1.12.0-alpha05"
-    implementation 'androidx.preference:preference-ktx:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0-alpha03'
+    implementation "androidx.core:core-ktx:1.12.0"
+    implementation 'androidx.fragment:fragment-ktx:1.7.0-alpha04'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
+    implementation 'androidx.recyclerview:recyclerview:1.3.1'
 
     implementation "com.squareup.leakcanary:plumber-android:$leakCanary_version"
     implementation "com.squareup.moshi:moshi:$moshi_version"
     ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
-    implementation "com.squareup.okio:okio:3.3.0"
+    implementation "com.squareup.okio:okio:3.5.0"
 
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leakCanary_version"
-    standardMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
-    nonFreeMobileDebugImplementation 'androidx.multidex:multidex:2.0.1'
 
-    tvImplementation 'androidx.leanback:leanback:1.2.0-alpha02'
-    tvImplementation 'androidx.leanback:leanback-preference:1.2.0-alpha02'
+    tvImplementation 'androidx.leanback:leanback:1.2.0-alpha03'
+    tvImplementation 'androidx.leanback:leanback-preference:1.2.0-alpha03'
 
     standardMobileImplementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
 
     mobileImplementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    mobileImplementation 'androidx.core:core-splashscreen:1.0.1'
+    mobileImplementation 'androidx.core:core-splashscreen:1.1.0-alpha02'
     mobileImplementation 'androidx.palette:palette-ktx:1.0.0'
-    mobileImplementation 'androidx.webkit:webkit:1.7.0'
+    mobileImplementation 'androidx.webkit:webkit:1.8.0'
     mobileImplementation 'com.github.KieronQuinn:MonetCompat:0.4.1'
     mobileImplementation 'com.github.marcoscgdev:Licenser:2.0.0'
-    mobileImplementation 'com.google.android.material:material:1.10.0-alpha04'
+    mobileImplementation 'com.google.android.material:material:1.11.0-alpha02'
 
-    nonFreeMobileImplementation fileTree(include: ['*.jar'], dir: 'libs')
     nonFreeMobileImplementation 'com.google.android.play:app-update:2.1.0'
     nonFreeMobileImplementation 'com.google.android.play:app-update-ktx:2.1.0'
     nonFreeMobileImplementation 'com.google.android.play:review:2.0.1'

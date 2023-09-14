@@ -1,11 +1,8 @@
-@file:RequiresApi(18)
-
 package com.parseus.codecinfo.data.drm
 
 import android.content.Context
 import android.media.MediaDrm
 import android.os.Build
-import androidx.annotation.RequiresApi
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.utils.toHexString

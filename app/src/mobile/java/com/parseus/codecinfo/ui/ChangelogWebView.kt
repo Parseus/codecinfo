@@ -2,7 +2,6 @@ package com.parseus.codecinfo.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.Uri
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
@@ -44,7 +43,13 @@ class ChangelogWebView : WebView {
 
     inner class HardenedAssetLoadingWebClient : WebViewClient() {
 
-        private fun interceptRequest(url: Uri): WebResourceResponse? {
+        override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
+            if ("GET" != request.method) {
+                return null
+            }
+
+            val url = request.url
+
             if ("localhost" != url.host) {
                 return null
             }
@@ -53,31 +58,16 @@ class ChangelogWebView : WebView {
                 return try {
                     val inputStream = context.assets.open(url.path!!.substring(1))
                     WebResourceResponse("text/html", null, inputStream).also {
-                        if (Build.VERSION.SDK_INT >= 21) {
-                            it.responseHeaders = mapOf(
-                                "Content-Security-Policy" to CONTENT_SECURITY_POLICY,
-                                "Permissions-Policy" to PERMISSIONS_POLICY,
-                                "X-Content-Type-Options" to "nosniff"
-                            )
-                        }
+                        it.responseHeaders = mapOf(
+                            "Content-Security-Policy" to CONTENT_SECURITY_POLICY,
+                            "Permissions-Policy" to PERMISSIONS_POLICY,
+                            "X-Content-Type-Options" to "nosniff"
+                        )
                     }
                 } catch (e: Exception) { null }
             }
 
             return null
-        }
-
-        @RequiresApi(21)
-        override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest): WebResourceResponse? {
-            if ("GET" != request.method) {
-                return null
-            }
-
-            return interceptRequest(request.url)
-        }
-
-        override fun shouldInterceptRequest(view: WebView, url: String): WebResourceResponse? {
-            return interceptRequest(Uri.parse(url))
         }
 
         @RequiresApi(24) override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) = true

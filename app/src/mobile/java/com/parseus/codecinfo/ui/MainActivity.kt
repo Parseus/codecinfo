@@ -73,9 +73,9 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     val searchListeners = mutableListOf<SearchView.OnQueryTextListener>()
 
     override val recreateMode: Boolean
-        get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+        get() = !isNativeMonetAvailable()
     override val updateOnCreate: Boolean
-        get() = Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()
+        get() = !isNativeMonetAvailable()
 
     init {
         createInAppUpdateResultLauncher(this)
@@ -84,29 +84,27 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         disableApiBlacklistOnPie()
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            val reenter = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
-                excludeTarget(android.R.id.statusBarBackground, true)
-                excludeTarget(android.R.id.navigationBarBackground, true)
-            }
-            val exit = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
-                excludeTarget(android.R.id.statusBarBackground, true)
-                excludeTarget(android.R.id.navigationBarBackground, true)
-            }
-            window.apply {
-                requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-                reenterTransition = reenter
-                exitTransition = exit
-            }
-
-            installSplashScreen()
+        val reenter = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
+            excludeTarget(android.R.id.statusBarBackground, true)
+            excludeTarget(android.R.id.navigationBarBackground, true)
         }
+        val exit = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
+            excludeTarget(android.R.id.statusBarBackground, true)
+            excludeTarget(android.R.id.navigationBarBackground, true)
+        }
+        window.apply {
+            requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+            reenterTransition = reenter
+            exitTransition = exit
+        }
+
+        installSplashScreen()
 
         setTheme(R.style.Theme_CodecInfo)
 
         super.onCreate(savedInstanceState)
 
-        if (Build.VERSION.SDK_INT >= 21 && !isNativeMonetAvailable()) {
+        if (!isNativeMonetAvailable()) {
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.CREATED) {
                     monet.awaitMonetReady()
@@ -148,8 +146,6 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         binding.toolbar.updateToolBarColor(this)
 
         binding.updateProgressBar?.updateColors(this)
-
-        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
 
         if (savedInstanceState != null) {
             recreateDetailFragmentIfNeedded()
@@ -267,9 +263,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     override fun onDestroy() {
         clearSavedLists()
         searchListeners.clear()
-
         super.onDestroy()
-        destroySamsungGestures()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -291,7 +285,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 hide(WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars())
                 systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
-        } else if (Build.VERSION.SDK_INT >= 19) {
+        } else {
             val decorView = window.decorView
             val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -320,7 +314,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                     WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_SWIPE
                 }
             }
-        } else if (Build.VERSION.SDK_INT >= 19) {
+        } else {
             val decorView = window.decorView
             val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION

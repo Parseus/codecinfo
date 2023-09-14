@@ -5,15 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.kieronquinn.monetcompat.app.MonetFragment
 import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
@@ -23,7 +20,7 @@ import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
-import com.parseus.codecinfo.ui.ItemDetailsHeaderView
+import com.parseus.codecinfo.ui.CustomLinearLayoutManager
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
 import com.parseus.codecinfo.ui.adapters.MobileDetailsAdapter
 import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
@@ -93,11 +90,9 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            binding.itemDetailsContent.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener {
-                    _, _, scrollY, _, _ -> (binding.fullCodecInfoName as ItemDetailsHeaderView).isHeaderLifted = scrollY > 0
-            })
-        }
+        binding.itemDetailsContent.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener {
+                _, _, scrollY, _, _ -> binding.fullCodecInfoName.isHeaderLifted = scrollY > 0
+        })
 
         if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
             val knownProblems = KNOWN_PROBLEMS_DB.filter {
@@ -105,8 +100,8 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             }
             if (knownProblems.isNotEmpty()) {
                 binding.knownProblemsList.apply {
-                    layoutManager = LinearLayoutManager(context)
-                    ViewCompat.setNestedScrollingEnabled(this, false)
+                    layoutManager = CustomLinearLayoutManager(context)
+                    isNestedScrollingEnabled = false
                     addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
                     itemAnimator = ExpandableItemAnimator()
                     isVisible = true
@@ -136,17 +131,16 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
         }
     }
 
-    @Suppress("USELESS_CAST")
     private fun showFullDetails() {
-        (binding.fullCodecInfoName as TextView).text = codecName ?: drmName
-        (binding.fullCodecInfoName as TextView).setTextColor(getPrimaryColor(requireContext()))
+        binding.fullCodecInfoName.text = codecName ?: drmName
+        binding.fullCodecInfoName.setTextColor(getPrimaryColor(requireContext()))
 
         val detailsAdapter = MobileDetailsAdapter()
         detailsAdapter.add(propertyList)
         binding.fullCodecInfoContent.apply {
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = CustomLinearLayoutManager(context)
             adapter = detailsAdapter
-            ViewCompat.setNestedScrollingEnabled(this, false)
+            isNestedScrollingEnabled = false
         }
     }
 

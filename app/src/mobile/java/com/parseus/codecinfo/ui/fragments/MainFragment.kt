@@ -13,7 +13,6 @@ import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.databinding.FragmentMainBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.PagerAdapter
-import com.parseus.codecinfo.utils.initializeSamsungGesture
 import com.parseus.codecinfo.utils.updateColors
 
 @Suppress("unused")
@@ -50,8 +49,6 @@ class MainFragment : Fragment() {
                 tab.icon = AppCompatResources.getDrawable(requireContext(), infoType.tabIconResId)
                 tab.text = getString(infoType.tabTextResId)
             }.attach()
-
-            initializeSamsungGesture(requireContext(), viewPager, tabs)
 
             tabs.updateColors(requireContext())
         }

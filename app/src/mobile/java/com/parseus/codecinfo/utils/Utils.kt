@@ -12,11 +12,7 @@ import com.parseus.codecinfo.ui.settings.DarkTheme
 val externalAppIntentFlags: Int
     get() {
         val flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-        return if (Build.VERSION.SDK_INT >= 21) {
-            flags or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
-        } else {
-            flags or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
+        return flags or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
     }
 
 @SuppressLint("PrivateApi")
@@ -42,7 +38,7 @@ val isEmUi: Boolean
 fun isChromebook(context: Context) = context.packageManager.hasSystemFeature("org.chromium.arc")
 
 fun isBatterySaverDisallowed(context: Context): Boolean {
-    return Build.VERSION.SDK_INT !in 21..28
+    return Build.VERSION.SDK_INT > 28
             || isLgUx
             || isMiUi
             || isEmUi

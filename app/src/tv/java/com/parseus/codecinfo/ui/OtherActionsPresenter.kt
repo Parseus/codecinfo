@@ -33,7 +33,7 @@ class OtherActionsPresenter : Presenter() {
         return ViewHolder(cardView)
     }
 
-    override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any) {
+    override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any?) {
         val descriptor = item as OtherActionDescriptor
         (viewHolder as ViewHolder).descriptor = descriptor
         viewHolder.cardView.apply {

@@ -27,7 +27,7 @@ class DrmPresenter(@DrawableRes private val drawable: Int) : Presenter() {
         return ViewHolder(cardView)
     }
 
-    override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any) {
+    override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any?) {
         val info = item as DrmSimpleInfo
         (viewHolder as ViewHolder).simpleInfo = info
         viewHolder.cardView.apply {

@@ -1,19 +1,15 @@
 package com.parseus.codecinfo.utils
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.Looper
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
@@ -29,11 +25,7 @@ import com.marcoscg.licenser.LicenserDialog
 import com.mikhaellopez.ratebottomsheet.RateBottomSheet
 import com.mikhaellopez.ratebottomsheet.RateBottomSheetManager
 import com.parseus.codecinfo.R
-import com.samsung.android.sdk.SsdkVendorCheck
-import com.samsung.android.sdk.gesture.Sgesture
-import com.samsung.android.sdk.gesture.SgestureHand
 
-private var gestureHand: SgestureHand? = null
 const val SHOW_RATE_APP = true
 
 private const val MAX_FLEXIBLE_UPDATE_PRIORITY = 3
@@ -81,34 +73,6 @@ fun initializeAppRating(activity: AppCompatActivity) {
             }
         }
     }
-}
-
-fun initializeSamsungGesture(context: Context, pager: ViewPager2, tabLayout: TabLayout) {
-    if (SsdkVendorCheck.isSamsungDevice()) {
-        try {
-            val gesture = Sgesture()
-            gesture.initialize(context)
-
-            if (gesture.isFeatureEnabled(Sgesture.TYPE_HAND_PRIMITIVE)) {
-                gestureHand = SgestureHand(Looper.getMainLooper(), gesture)
-                gestureHand!!.start(Sgesture.TYPE_HAND_PRIMITIVE) { info ->
-                    if (info.angle in 225..315) {        // to the left
-                        val newPosition = (pager.currentItem - 1) and tabLayout.tabCount
-                        tabLayout.setScrollPosition(newPosition, 0f, true)
-                        pager.currentItem = newPosition
-                    } else if (info.angle in 45..135) {  // to the right
-                        val newPosition = (pager.currentItem + 1) and tabLayout.tabCount
-                        tabLayout.setScrollPosition(newPosition, 0f, true)
-                        pager.currentItem = newPosition
-                    }
-                }
-            }
-        } catch (_: Exception) {}
-    }
-}
-
-fun destroySamsungGestures() {
-    gestureHand?.stop()
 }
 
 fun checkForUpdate(activity: Activity, progressBar: LinearProgressIndicator?) {

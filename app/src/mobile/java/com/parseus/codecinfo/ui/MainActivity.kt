@@ -263,9 +263,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     override fun onDestroy() {
         clearSavedLists()
         searchListeners.clear()
-
         super.onDestroy()
-        destroySamsungGestures()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {

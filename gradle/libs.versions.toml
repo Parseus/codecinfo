@@ -1,0 +1,64 @@
+[versions]
+agp = "8.1.4"
+kotlin = "1.9.20"
+ksp = "1.9.20-1.0.14"
+
+app-update = "2.1.0"
+app-update-ktx = "2.1.0"
+appcompat = "1.7.0-alpha03"
+constraintlayout = "2.1.4"
+core = "1.13.0-alpha01"
+core-splashscreen = "1.1.0-alpha02"
+coroutines = "1.7.3"
+fragment = "1.7.0-alpha06"
+hiddenapibypass = "4.3"
+leakcanary = "2.12"
+leanback = "1.2.0-alpha04"
+leanback-preference = "1.2.0-alpha04"
+licenser = "2.0.0"
+material = "1.12.0-alpha01"
+monetcompat = "0.4.1"
+moshi = "1.15.0"
+okio = "3.6.0"
+palette = "1.0.0"
+preference = "1.2.1"
+recyclerview = "1.4.0-alpha01"
+review = "2.0.1"
+review-ktx = "2.0.1"
+splashscreen = "1.1.0-alpha02"
+webkit = "1.9.0-rc01"
+
+[libraries]
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "core" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
+androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment" }
+androidx-leanback = { module = "androidx.leanback:leanback", version.ref = "leanback" }
+androidx-leanback-preference = { module = "androidx.leanback:leanback-preference", version.ref = "leanback-preference" }
+androidx-palette = { module = "androidx.palette:palette-ktx", version.ref = "palette" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
+androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "preference" }
+androidx-webkit = { module = "androidx.webkit:webkit", version.ref = "webkit" }
+app-update = { module = "com.google.android.play:app-update", version.ref = "app-update" }
+app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "app-update-ktx" }
+coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+licenser = { module = "com.github.marcoscgdev:Licenser", version.ref = "licenser" }
+monetcompat = { module = "com.github.KieronQuinn:MonetCompat", version.ref = "monetcompat" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
+moshi-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi" }
+plumber-android = { module = "com.squareup.leakcanary:plumber-android", version.ref = "leakcanary" }
+review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "review-ktx" }
+review = { module = "com.google.android.play:review", version.ref = "review" }
+
+[plugins]
+agp = { id = "com.android.application", version.ref = "agp" }
+kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+[bundles]
+

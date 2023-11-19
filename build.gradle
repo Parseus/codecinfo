@@ -1,13 +1,6 @@
-buildscript {
-    ext {
-        leakCanary_version = '2.12'
-        moshi_version = '1.15.0'
-    }
-}
-
 plugins {
-    id 'com.android.application' version '8.1.4' apply false
-    id 'org.jetbrains.kotlin.android' version '1.9.20' apply false
+    alias libs.plugins.agp apply false
+    alias libs.plugins.kotlin apply false
 }
 
 tasks.register('clean', Delete) {

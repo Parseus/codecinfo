@@ -29,6 +29,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     flavorDimensions = ["app", "platform"]
 
     productFlavors {

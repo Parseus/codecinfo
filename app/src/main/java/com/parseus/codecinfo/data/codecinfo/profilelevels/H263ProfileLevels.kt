@@ -16,7 +16,7 @@ enum class H263Profiles(val value: Int) {
     H263ProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 
 }
@@ -34,7 +34,7 @@ enum class H263Levels(val value: Int) {
     H263LevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 
 }

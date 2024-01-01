@@ -17,7 +17,7 @@ enum class PanasonicSNIColorFormat(val value: Int) {
     OMX_COLOR_FormatYUV16_422PK(0x7F00000B);
 
     companion object {
-        fun from(findValue: Int) = values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = entries.find { it.value == findValue }?.name
     }
 
 }

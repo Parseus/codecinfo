@@ -26,7 +26,7 @@ enum class InstallSource(val installerPackageName: String,
 
     companion object {
         fun fromInstallSource(installSource: String?): InstallSource? {
-            return values().find { it.installerPackageName == installSource }
+            return entries.find { it.installerPackageName == installSource }
         }
     }
 

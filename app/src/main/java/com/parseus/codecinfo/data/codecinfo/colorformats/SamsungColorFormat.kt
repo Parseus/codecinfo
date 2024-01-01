@@ -42,7 +42,7 @@ enum class SamsungColorFormat(val value: Int) {
     OMX_SEC_COLOR_FormatYUV420Planar_TB_RL(0x7FC0000E);
 
     companion object {
-        fun from(findValue: Int) = values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = entries.find { it.value == findValue }?.name
     }
 
 }

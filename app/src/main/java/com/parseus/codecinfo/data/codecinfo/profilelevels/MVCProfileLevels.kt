@@ -9,7 +9,7 @@ enum class MVCProfiles(val value: Int) {
     MVCProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 
 }
@@ -35,6 +35,6 @@ enum class MVCLevels (val value: Int) {
     MVCLevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 }

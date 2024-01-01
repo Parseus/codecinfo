@@ -9,7 +9,7 @@ enum class NvidiaColorFormat(val value: Int) {
     NVX_IMAGE_COLOR_FormatY(0x7F000003);
 
     companion object {
-        fun from(findValue: Int) = values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = entries.find { it.value == findValue }?.name
     }
 
 }

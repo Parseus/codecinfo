@@ -12,7 +12,7 @@ enum class AC4Profiles(val value: Int) {
     AC4ProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 
 }
@@ -27,7 +27,7 @@ enum class AC4Levels(val value: Int) {
     AC4LevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 
 }

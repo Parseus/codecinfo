@@ -113,6 +113,7 @@
     <string name="drm_property_service_certificate">Service certificate</string>
     <string name="drm_property_current_srm_version">Current System Renewability Message (SRM) version</string>
     <string name="drm_property_srm_update_support">System Renewability Message (SRM) update supported</string>
+    <string name="drm_property_resource_rating_tier">Resource rating tier</string>
 
     <string name="drm_clearkey_dash_if">ClearKey (DASH-IF)</string>
     <string name="drm_clearkey_pssh_name">ClearKey (Common PSSH box format)</string>

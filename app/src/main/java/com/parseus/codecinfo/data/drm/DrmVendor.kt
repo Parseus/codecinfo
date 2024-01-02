@@ -70,7 +70,8 @@ enum class DrmVendor(val uuid: UUID,
                 R.string.drm_property_open_sessions to "numberOfOpenSessions",
                 R.string.drm_property_max_sessions to "maxNumberOfSessions",
                 R.string.drm_property_current_srm_version to "CurrentSRMVersion",
-                R.string.drm_property_srm_update_support to "SRMUpdateSupport"
+                R.string.drm_property_srm_update_support to "SRMUpdateSupport",
+                R.string.drm_property_resource_rating_tier to "resourceRatingTier"
         )
 
         val WIDEVINE_BYTE_ARRAY_PROPERTIES = mapOf(

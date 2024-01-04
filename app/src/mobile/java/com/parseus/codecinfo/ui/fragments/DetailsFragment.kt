@@ -16,8 +16,10 @@ import com.kieronquinn.monetcompat.app.MonetFragment
 import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
+import com.parseus.codecinfo.data.codecinfo.isDetailedCodecInfoCached
 import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
+import com.parseus.codecinfo.data.drm.isDetailedDrmInfoCached
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
 import com.parseus.codecinfo.ui.CustomLinearLayoutManager
@@ -114,14 +116,21 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 binding.loadingProgress.isVisible = true
 
-                propertyList = withContext(Dispatchers.IO) {
-                    when {
-                        codecId != null && codecName != null ->
-                            getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
-                        drmName != null && drmUuid != null ->
-                            //noinspection NewApi
-                            getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
-                        else -> emptyList()
+                propertyList = if (codecId != null && codecName != null && isDetailedCodecInfoCached(codecId!!, codecName!!)) {
+                    getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+                } else if (drmName != null && drmUuid != null && isDetailedDrmInfoCached(drmUuid!!)) {
+                    getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
+                } else {
+                    withContext(Dispatchers.IO) {
+                        when {
+                            codecId != null && codecName != null ->
+                                getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+
+                            drmName != null && drmUuid != null ->
+                                getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
+
+                            else -> emptyList()
+                        }
                     }
                 }
 

@@ -98,6 +98,7 @@ private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()
 val audioCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
 val videoCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
 
+val detailedCodecInfos: MutableMap<String, List<DetailsProperty>> = mutableMapOf()
 
 fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<CodecSimpleInfo> {
     if (isAudio && audioCodecList.isNotEmpty()) {
@@ -209,7 +210,15 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
     return codecSimpleInfoList
 }
 
+fun isDetailedCodecInfoCached(codecId: String, codecName: String): Boolean {
+    val combinedCodecName = "$codecId/$codecName"
+    return detailedCodecInfos[combinedCodecName] != null
+}
+
 fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): List<DetailsProperty> {
+    val combinedCodecName = "$codecId/$codecName"
+    if (detailedCodecInfos[combinedCodecName] != null) return detailedCodecInfos[combinedCodecName]!!
+
     val mediaCodecInfo = mediaCodecInfos.find { it.name == codecName } ?: return emptyList()
 
     // Google uses the same decoder for both DP and non-DP content for MPEG-4,
@@ -334,6 +343,8 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
     getProfileLevels(context, codecId, codecName, capabilities)?.let {
         propertyList.add(DetailsProperty(propertyList.size.toLong(), profileString, it))
     }
+
+    detailedCodecInfos[combinedCodecName] = propertyList
 
     return propertyList
 }

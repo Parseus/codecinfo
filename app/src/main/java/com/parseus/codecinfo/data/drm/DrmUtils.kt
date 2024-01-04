@@ -9,6 +9,7 @@ import com.parseus.codecinfo.utils.toHexString
 import java.util.*
 
 val drmList: MutableList<DrmSimpleInfo> = arrayListOf()
+val detailedDrmInfo: MutableMap<UUID, List<DetailsProperty>> = mutableMapOf()
 
 fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
     return drmList.ifEmpty {
@@ -39,7 +40,11 @@ fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
     }
 }
 
+fun isDetailedDrmInfoCached(uuid: UUID) = detailedDrmInfo[uuid] != null
+
 fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): List<DetailsProperty> {
+    if (detailedDrmInfo[uuid] != null) return detailedDrmInfo[uuid]!!
+
     val drmPropertyList = mutableListOf<DetailsProperty>()
     val mediaDrm = MediaDrm(uuid)
 
@@ -93,6 +98,8 @@ fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): Lis
     }
 
     mediaDrm.closeDrmInstance()
+
+    detailedDrmInfo[uuid] = drmPropertyList
 
     return drmPropertyList
 }

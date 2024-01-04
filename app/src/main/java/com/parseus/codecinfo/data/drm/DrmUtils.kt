@@ -3,6 +3,8 @@ package com.parseus.codecinfo.data.drm
 import android.content.Context
 import android.media.MediaDrm
 import android.os.Build
+import android.util.Log
+import androidx.preference.PreferenceManager
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.utils.toHexString
@@ -43,7 +45,11 @@ fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
 fun isDetailedDrmInfoCached(uuid: UUID) = detailedDrmInfo[uuid] != null
 
 fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): List<DetailsProperty> {
-    if (detailedDrmInfo[uuid] != null) return detailedDrmInfo[uuid]!!
+    if (detailedDrmInfo[uuid] != null) {
+        return detailedDrmInfo[uuid]!!.also {
+            saveToLogcat(context, uuid, drmVendor, it)
+        }
+    }
 
     val drmPropertyList = mutableListOf<DetailsProperty>()
     val mediaDrm = MediaDrm(uuid)
@@ -101,7 +107,9 @@ fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): Lis
 
     detailedDrmInfo[uuid] = drmPropertyList
 
-    return drmPropertyList
+    return drmPropertyList.also {
+        saveToLogcat(context, uuid, drmVendor, it)
+    }
 }
 
 private fun addReadableHdcpLevel(context: Context, hdcpLevel: Int, key: String,
@@ -180,5 +188,18 @@ private fun MediaDrm.closeDrmInstance() {
     } else {
         @Suppress("DEPRECATION")
         release()
+    }
+}
+
+private fun saveToLogcat(context: Context, drmUUID: UUID, drmVendor: DrmVendor?, detailsList: List<DetailsProperty>) {
+    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+    val saveDetailsToLogcat = prefs.getBoolean("save_details_to_logcat", false)
+    if (saveDetailsToLogcat) {
+        if (drmVendor != null) {
+            Log.i("DrmUtils", "DRM: ${drmVendor.getSimpleInfo(context)}")
+        } else {
+            Log.i("DrmUtils", "DRM UUID: $drmUUID")
+        }
+        Log.i("DrmUtils", detailsList.joinToString("\n"))
     }
 }

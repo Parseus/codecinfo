@@ -10,6 +10,7 @@ import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Build.VERSION.SDK_INT
+import android.util.Log
 import android.util.Range
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
@@ -217,7 +218,11 @@ fun isDetailedCodecInfoCached(codecId: String, codecName: String): Boolean {
 
 fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): List<DetailsProperty> {
     val combinedCodecName = "$codecId/$codecName"
-    if (detailedCodecInfos[combinedCodecName] != null) return detailedCodecInfos[combinedCodecName]!!
+    if (detailedCodecInfos[combinedCodecName] != null) {
+        return detailedCodecInfos[combinedCodecName]!!.also {
+            saveToLogcat(context, codecId, codecName, it)
+        }
+    }
 
     val mediaCodecInfo = mediaCodecInfos.find { it.name == codecName } ?: return emptyList()
 
@@ -346,7 +351,9 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
 
     detailedCodecInfos[combinedCodecName] = propertyList
 
-    return propertyList
+    return propertyList.also {
+        saveToLogcat(context, codecId, codecName, it)
+    }
 }
 
 @RequiresApi(30)
@@ -1075,4 +1082,13 @@ private fun needsHevc10BitProfileExcluded(codecId: String, profile: Int): Boolea
     // See https://github.com/google/ExoPlayer/issues/3537 for more info.
     return "video/hevc" == codecId && HEVCProfiles.HEVCProfileMain10.value == profile
             && ("sailfish" == Build.DEVICE || "marlin" == Build.DEVICE)
+}
+
+private fun saveToLogcat(context: Context, codecId: String, codecName: String, detailsList: List<DetailsProperty>) {
+    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+    val saveDetailsToLogcat = prefs.getBoolean("save_details_to_logcat", false)
+    if (saveDetailsToLogcat) {
+        Log.i("CodecUtils", "Codec MIME type: $codecId, codec name: $codecName")
+        Log.i("CodecUtils", detailsList.joinToString("\n"))
+    }
 }

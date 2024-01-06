@@ -61,6 +61,16 @@ fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): Lis
 
     if (drmVendor != null) {
         drmPropertyList.addStringProperties(context, mediaDrm, drmVendor.getVendorStringProperties())
+        if (drmVendor == DrmVendor.Widevine) {
+            try {
+                val decryptHashSupportString = context.getString(R.string.drm_property_decrypt_hash_support)
+                val propertyValue = mediaDrm.getPropertyString("decryptHashSupport")
+                if (propertyValue.isNotEmpty()) {
+                    drmPropertyList.add(DetailsProperty(drmPropertyList.size.toLong(),
+                        decryptHashSupportString, getHashFunctionDescriptionForWidevine(context, propertyValue)))
+                }
+            } catch (_: Throwable) {}
+        }
         drmPropertyList.addByteArrayProperties(context, mediaDrm, drmVendor.getVendorByteArrayProperties())
     }
 
@@ -179,6 +189,15 @@ private fun MutableList<DetailsProperty>.addByteArrayProperties(context: Context
                 add(DetailsProperty(size.toLong(), context.getString(key), propertyValue))
             }
         } catch (_: Throwable) {}
+    }
+}
+
+private fun getHashFunctionDescriptionForWidevine(context: Context, value: String): String {
+    return when (value.toInt()) {
+        0 -> context.getString(R.string.decrypt_hash_support_not_supported)
+        1 -> context.getString(R.string.decrypt_hash_support_crc)
+        2 -> context.getString(R.string.decrypt_hash_support_partner)
+        else -> "${context.getString(R.string.unknown)} ($value)"
     }
 }
 

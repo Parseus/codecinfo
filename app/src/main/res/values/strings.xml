@@ -114,6 +114,11 @@
     <string name="drm_property_current_srm_version">Current System Renewability Message (SRM) version</string>
     <string name="drm_property_srm_update_support">System Renewability Message (SRM) update supported</string>
     <string name="drm_property_resource_rating_tier">Resource rating tier</string>
+    <string name="drm_property_decrypt_hash_support">Hash function supported for Full Decrypt Path Testing</string>
+
+    <string name="decrypt_hash_support_not_supported">0 (not supported)</string>
+    <string name="decrypt_hash_support_crc">1 (CRC32)</string>
+    <string name="decrypt_hash_support_partner">2 (partner-defined hash)</string>
 
     <string name="drm_clearkey_dash_if">ClearKey (DASH-IF)</string>
     <string name="drm_clearkey_pssh_name">ClearKey (Common PSSH box format)</string>

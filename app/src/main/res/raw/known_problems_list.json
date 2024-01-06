@@ -487,5 +487,57 @@
     "urls": [
       "https://github.com/androidx/media/blob/8c5e1974f28c105a6b9a6bcba5a716c22e29f4b2/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2448"
     ]
+  },
+  {
+    "id": 24,
+    "codec_name": "OMX.google.opus.decoder",
+    "description": "This decoder is known to output PCM samples in VORBIS order, which does not match the channel layout required by AudioTrack.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/8396#issuecomment-1833867901"
+    ]
+  },
+  {
+    "id": 25,
+    "codec_name": "c2.android.opus.decoder",
+    "description": "This decoder is known to output PCM samples in VORBIS order, which does not match the channel layout required by AudioTrack.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/8396#issuecomment-1833867901"
+    ]
+  },
+  {
+    "id": 26,
+    "codec_name": "OMX.google.vorbis.decoder",
+    "description": "This decoder is known to output PCM samples in VORBIS order, which does not match the channel layout required by AudioTrack.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/8396#issuecomment-1833867901"
+    ]
+  },
+  {
+    "id": 27,
+    "codec_name": "c2.android.vorbis.decoder",
+    "description": "This decoder is known to output PCM samples in VORBIS order, which does not match the channel layout required by AudioTrack.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/8396#issuecomment-1833867901"
+    ]
   }
 ]

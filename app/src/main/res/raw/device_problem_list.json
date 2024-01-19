@@ -756,5 +756,27 @@
     "urls": [
       "https://github.com/google/ExoPlayer/issues/5821"
     ]
+  },
+  {
+    "id": 7,
+    "description": "All Huawei devices based on hi6210sft or hi6250 CPUs will immediately hang during MediaCodec.setOutputSurface(). Additionally, Huawei P9 lite will, eventually, get the decoder into a bad state if SetSurface is called enough times.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "hardwares": [
+      {
+        "op": "equals",
+        "value": "hi6210sft"
+      },
+      {
+        "op": "equals",
+        "value": "hi6250"
+      }
+    ],
+    "urls": [
+      "https://bugs.chromium.org/p/chromium/issues/detail?id=683401"
+    ]
   }
 ]

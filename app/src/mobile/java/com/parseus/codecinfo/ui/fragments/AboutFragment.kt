@@ -66,8 +66,17 @@ class AboutFragment : Fragment() {
 
             var icon = AppCompatResources.getDrawable(requireContext(), R.mipmap.ic_launcher)
             if (Build.VERSION.SDK_INT >= 26 && icon is AdaptiveIconDrawable && isDynamicThemingEnabled(requireContext())) {
-                icon.background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
-                    getPrimaryColor(requireContext()), BlendModeCompat.SRC_ATOP)
+                if (requireContext().isNightMode()) {
+                    icon.background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                        getSurfaceColor(requireContext()), BlendModeCompat.SRC_ATOP)
+                    icon.foreground.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                        getPrimaryColor(requireContext()), BlendModeCompat.SRC_ATOP)
+                } else {
+                    icon.background.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                        getPrimaryColor(requireContext()), BlendModeCompat.SRC_ATOP)
+                    icon.foreground.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                        getOnPrimaryColor(requireContext()), BlendModeCompat.SRC_ATOP)
+                }
             } else if (icon is BitmapDrawable) {
                 try {
                     val foregroundIcon = BitmapDrawable(resources, getAppVectorForegroundIcon())

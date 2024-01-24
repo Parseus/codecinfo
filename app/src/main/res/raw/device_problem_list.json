@@ -778,5 +778,52 @@
     "urls": [
       "https://bugs.chromium.org/p/chromium/issues/detail?id=683401"
     ]
+  },
+  {
+    "id": 8,
+    "description": "The H.264/AVC encoder on this device produces B-frames when high profile is chosen even when configured to turn them off.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 27
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "ASUS_X00T_3"
+      },
+      {
+        "op": "equals",
+        "value": "TC77"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4d7b23f0d117a67df33f5cab25d5971a72dc8017/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultEncoderFactory.java#L682"
+    ]
+  },
+  {
+    "id": 9,
+    "description": "Setting an operating rate close to Integer.MAX_VALUE on this device will cause the encoder to throw at configuration time. Setting the operating rate to 1000 will avoid being close to an integer overflow limit while being higher than a maximum feasible operating rate.",
+    "versions": [
+      {
+        "op": "between",
+        "value": 31,
+        "value2": 34
+      }
+    ],
+    "socModels": [
+      {
+        "op": "equals",
+        "value": "SM8550"
+      },
+      {
+        "op": "equals",
+        "value": "T612"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4d7b23f0d117a67df33f5cab25d5971a72dc8017/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultEncoderFactory.java#L532"
+    ]
   }
 ]

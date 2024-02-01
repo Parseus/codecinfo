@@ -825,5 +825,24 @@
     "urls": [
       "https://github.com/androidx/media/blob/4d7b23f0d117a67df33f5cab25d5971a72dc8017/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultEncoderFactory.java#L532"
     ]
+  },
+  {
+    "id": 10,
+    "description": "Decoders and encoders in Redmi Note 9 Pro will fail if KEY_FRAME_RATE is set too high.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 30
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "joyeuse"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/commit/8b38b34b9f02c3648d2988c4cdaca005fbf8f1cd"
+    ]
   }
 ]

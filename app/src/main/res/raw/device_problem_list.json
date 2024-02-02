@@ -844,5 +844,29 @@
     "urls": [
       "https://github.com/androidx/media/commit/8b38b34b9f02c3648d2988c4cdaca005fbf8f1cd"
     ]
+  },
+  {
+    "id": 11,
+    "description": "Decoders on FireTV Gen 2 are known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "manufacturers": [
+      {
+        "op": "equals",
+        "value": "Amazon"
+      }
+    ],
+    "models": [
+      {
+        "op": "equals",
+        "value": "AFTS"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/commit/2043d90a739b82b6222ca4d8b9d06710f0d37f46"
+    ]
   }
 ]

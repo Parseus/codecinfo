@@ -47,6 +47,14 @@ private const val AC3_MAX_SAMPLE_RATE = 48000
 private const val GOOGLE_RAW_DECODER = "OMX.google.raw.decoder"
 private const val MEDIATEK_RAW_DECODER = "OMX.MTK.AUDIO.DECODER.RAW"
 
+private val incorrectMpeg4ResolutionModelList = listOf(
+    "Nokia 1",
+    "moto c",
+    "infinix x650",
+    "LG-X230",
+    "twist 2 pro"
+)
+
 private val platformSupportedTypes = arrayOf(
         "audio/3gpp",
         "audio/amr-mb",
@@ -716,12 +724,17 @@ private fun getMaxResolution(codecId: String, videoCapabilities: MediaCodecInfo.
     // capabilities. The supported height reported for H265@3840x2160 is 2144,
     // and H264@1920x1080 is 1072.
     // Cross reference with CamcorderProfile to ensure a resolution is supported.
+    // Several other devices also indicate a wrong resolution (174x174) for MPEG-4 SP.
+    // On Huawei Mate 9, HEVC reports only H265@3840x2112 instead of full 4K.
     if (maxHeight == 1072 && CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P)) {
         defaultResolution[0] = 1920
         defaultResolution[1] = 1080
-    } else if (maxHeight == 2144 && CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_2160P)) {
+    } else if ((maxHeight == 2144 || (maxHeight == 2112 && Build.MODEL == "mha-l29")) && CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_2160P)) {
         defaultResolution[0] = 3840
         defaultResolution[1] = 2160
+    } else if (needsMaxResolutionFixForMPEG4(codecId)) {
+        defaultResolution[0] = 1280
+        defaultResolution[1] = 720
     }
 
     return if (!areCapabilitiesUnknown(videoCapabilities)) {
@@ -778,18 +791,33 @@ private fun getFrameRatePerResolutions(context: Context, codecId: String,
             return@forEachIndexed
         }
 
-        if (videoCapabilities.isSizeSupported(resolution[0], resolution[1])) {
-            maxFrameRate = getSupportedFrameRatesFor(codecId, videoCapabilities, resolution[0], resolution[1]).upper
+        try {
+            if (isSizeSupported(videoCapabilities, resolution[0], resolution[1])) {
+                maxFrameRate = getSupportedFrameRatesFor(codecId, videoCapabilities, resolution[0], resolution[1]).upper
 
-            if (option == 0) {
-                capabilities.append("${framerateClasses[index]}: ${"%.1f".format(maxFrameRate)} $fpsString\n")
-            } else {
-                capabilities.append("${resolution[0]}x${resolution[1]}: ${"%.1f".format(maxFrameRate)} $fpsString\n")
+                if (option == 0) {
+                    capabilities.append("${framerateClasses[index]}: ${"%.1f".format(maxFrameRate)} $fpsString\n")
+                } else {
+                    capabilities.append("${resolution[0]}x${resolution[1]}: ${"%.1f".format(maxFrameRate)} $fpsString\n")
+                }
             }
-        }
+        } catch (_: Throwable) {}
     }
 
     return capabilities.toString().dropLast(1) // Remove the last \n
+}
+
+private fun isSizeSupported(videoCapabilities: MediaCodecInfo.VideoCapabilities, width: Int, height: Int): Boolean {
+    if (videoCapabilities.isSizeSupported(width, height)) return true
+
+    if (width == 1920 && height == 1080) {
+        return CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P)
+    }
+    if (width == 3840 && height == 2160) {
+        return CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_2160P)
+    }
+
+    return false
 }
 
 @SuppressLint("NewApi")
@@ -1083,6 +1111,8 @@ private fun needsHevc10BitProfileExcluded(codecId: String, profile: Int): Boolea
     return "video/hevc" == codecId && HEVCProfiles.HEVCProfileMain10.value == profile
             && ("sailfish" == Build.DEVICE || "marlin" == Build.DEVICE)
 }
+
+private fun needsMaxResolutionFixForMPEG4(codecId: String) = "video/mp4v-es" == codecId && Build.MODEL in incorrectMpeg4ResolutionModelList
 
 private fun saveToLogcat(context: Context, codecId: String, codecName: String, detailsList: List<DetailsProperty>) {
     val prefs = PreferenceManager.getDefaultSharedPreferences(context)

@@ -21,7 +21,7 @@ enum class OtherColorFormat(val value: Int) {
     OMX_TI_COLOR_FormatYUV420PackedSemiPlanar(0x7F000100);
 
     companion object {
-        fun from(findValue: Int) = values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = entries.find { it.value == findValue }?.name
     }
 
 }

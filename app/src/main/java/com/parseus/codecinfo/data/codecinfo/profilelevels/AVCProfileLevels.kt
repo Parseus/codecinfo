@@ -25,7 +25,7 @@ enum class AVCProfiles(val value: Int) {
     AVCProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 }
 
@@ -36,7 +36,7 @@ enum class AVCQualcommProfiles(val value: Int) {
 
     companion object {
         fun from(findValue: Int): String? = try {
-            values().first { it.value == findValue }.name
+            entries.first { it.value == findValue }.name
         } catch (e: NoSuchElementException) {
             null
         }
@@ -49,7 +49,7 @@ enum class AVCSamsungProfiles(val value: Int) {
 
     companion object {
         fun from(findValue: Int): String? = try {
-            values().first { it.value == findValue }.name
+            entries.first { it.value == findValue }.name
         } catch (e: NoSuchElementException) {
             null
         }
@@ -82,7 +82,7 @@ enum class AVCLevels (val value: Int) {
 
     companion object {
         fun from(findValue: Int): String? = try {
-            values().first { it.value == findValue }.name
+            entries.first { it.value == findValue }.name
         } catch (e: NoSuchElementException) {
             null
         }

@@ -30,6 +30,11 @@
             app:key="show_hw_icon"
             app:title="Show an indicator on hardware-accelerated codecs"
             app:defaultValue="true" />
+
+        <androidx.preference.CheckBoxPreference
+            app:key="save_details_to_logcat"
+            app:title="Save codec/DRM details to Logcat"
+            app:defaultValue="false" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Sorting &amp; Filtering">

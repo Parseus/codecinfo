@@ -3,12 +3,15 @@ package com.parseus.codecinfo.data.drm
 import android.content.Context
 import android.media.MediaDrm
 import android.os.Build
+import android.util.Log
+import androidx.preference.PreferenceManager
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.utils.toHexString
 import java.util.*
 
 val drmList: MutableList<DrmSimpleInfo> = arrayListOf()
+val detailedDrmInfo: MutableMap<UUID, List<DetailsProperty>> = mutableMapOf()
 
 fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
     return drmList.ifEmpty {
@@ -16,7 +19,7 @@ fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
         if (Build.VERSION.SDK_INT >= 30) {
             val supported = MediaDrm.getSupportedCryptoSchemes()
             for (uuid in supported) {
-                val vendor = DrmVendor.values().find { it.uuid == uuid }
+                val vendor = DrmVendor.entries.find { it.uuid == uuid }
                 if (vendor != null) {
                     list.add(vendor.getSimpleInfo(context))
                 } else {
@@ -25,7 +28,7 @@ fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
                 }
             }
         } else {
-            DrmVendor.values().forEach {
+            DrmVendor.entries.forEach {
                 try {
                     // This can crash in native code if something goes wrong while querying it.
                     val schemeSupported = MediaDrm.isCryptoSchemeSupported(it.uuid)
@@ -39,7 +42,15 @@ fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
     }
 }
 
+fun isDetailedDrmInfoCached(uuid: UUID) = detailedDrmInfo[uuid] != null
+
 fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): List<DetailsProperty> {
+    if (detailedDrmInfo[uuid] != null) {
+        return detailedDrmInfo[uuid]!!.also {
+            saveToLogcat(context, uuid, drmVendor, it)
+        }
+    }
+
     val drmPropertyList = mutableListOf<DetailsProperty>()
     val mediaDrm = MediaDrm(uuid)
 
@@ -50,6 +61,16 @@ fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): Lis
 
     if (drmVendor != null) {
         drmPropertyList.addStringProperties(context, mediaDrm, drmVendor.getVendorStringProperties())
+        if (drmVendor == DrmVendor.Widevine) {
+            try {
+                val decryptHashSupportString = context.getString(R.string.drm_property_decrypt_hash_support)
+                val propertyValue = mediaDrm.getPropertyString("decryptHashSupport")
+                if (propertyValue.isNotEmpty()) {
+                    drmPropertyList.add(DetailsProperty(drmPropertyList.size.toLong(),
+                        decryptHashSupportString, getHashFunctionDescriptionForWidevine(context, propertyValue)))
+                }
+            } catch (_: Throwable) {}
+        }
         drmPropertyList.addByteArrayProperties(context, mediaDrm, drmVendor.getVendorByteArrayProperties())
     }
 
@@ -94,7 +115,11 @@ fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): Lis
 
     mediaDrm.closeDrmInstance()
 
-    return drmPropertyList
+    detailedDrmInfo[uuid] = drmPropertyList
+
+    return drmPropertyList.also {
+        saveToLogcat(context, uuid, drmVendor, it)
+    }
 }
 
 private fun addReadableHdcpLevel(context: Context, hdcpLevel: Int, key: String,
@@ -167,11 +192,33 @@ private fun MutableList<DetailsProperty>.addByteArrayProperties(context: Context
     }
 }
 
+private fun getHashFunctionDescriptionForWidevine(context: Context, value: String): String {
+    return when (value.toInt()) {
+        0 -> context.getString(R.string.decrypt_hash_support_not_supported)
+        1 -> context.getString(R.string.decrypt_hash_support_crc)
+        2 -> context.getString(R.string.decrypt_hash_support_partner)
+        else -> "${context.getString(R.string.unknown)} ($value)"
+    }
+}
+
 private fun MediaDrm.closeDrmInstance() {
     if (Build.VERSION.SDK_INT >= 28) {
         close()
     } else {
         @Suppress("DEPRECATION")
         release()
+    }
+}
+
+private fun saveToLogcat(context: Context, drmUUID: UUID, drmVendor: DrmVendor?, detailsList: List<DetailsProperty>) {
+    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+    val saveDetailsToLogcat = prefs.getBoolean("save_details_to_logcat", false)
+    if (saveDetailsToLogcat) {
+        if (drmVendor != null) {
+            Log.i("DrmUtils", "DRM: ${drmVendor.getSimpleInfo(context)}")
+        } else {
+            Log.i("DrmUtils", "DRM UUID: $drmUUID")
+        }
+        Log.i("DrmUtils", detailsList.joinToString("\n"))
     }
 }

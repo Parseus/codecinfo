@@ -10,7 +10,7 @@ enum class DTSUHDProfiles(val value: Int) {
     DTS_UDHProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 
 }

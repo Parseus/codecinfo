@@ -59,6 +59,11 @@
             app:title="Show an indicator on hardware-accelerated codecs"
             app:defaultValue="true" />
 
+        <com.parseus.codecinfo.ui.settings.MonetCheckboxPreference
+            app:key="save_details_to_logcat"
+            app:title="Save codec/DRM details to Logcat"
+            app:defaultValue="false" />
+
     </com.parseus.codecinfo.ui.settings.MonetPreferenceCategory>
 
     <com.parseus.codecinfo.ui.settings.MonetPreferenceCategory app:title="Sorting &amp; Filtering">

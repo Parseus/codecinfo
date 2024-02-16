@@ -18,7 +18,7 @@ enum class DolbyVisionProfiles(val value: Int) {
     DolbyVisionProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 
 }
@@ -41,7 +41,7 @@ enum class DolbyVisionLevels(val value: Int) {
     DolbyVisionLevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 
 }

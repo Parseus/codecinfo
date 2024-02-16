@@ -8,7 +8,7 @@ enum class AVSProfiles(val value: Int) {
     OMX_VIDEO_AVSProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 
 }
@@ -23,6 +23,6 @@ enum class AVSLevels (val value: Int) {
     OMX_VIDEO_AVSLevelMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 }

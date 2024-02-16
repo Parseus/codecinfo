@@ -18,9 +18,10 @@ fun getItemListString(context: Context): String {
         val codecSimpleInfoList = getSimpleCodecInfoList(context, true)
         codecSimpleInfoList.addAll(getSimpleCodecInfoList(context, false))
         codecSimpleInfoList.forEach { builder.append("$it\n") }
-    } else
+    } else {
         builder.append("${context.getString(R.string.drm_list)}:\n\n")
         getSimpleDrmInfoList(context).forEach { builder.append("$it\n") }
+    }
 
     return builder.toString()
 }

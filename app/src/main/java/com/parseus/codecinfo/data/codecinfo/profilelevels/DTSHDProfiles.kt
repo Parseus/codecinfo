@@ -11,7 +11,7 @@ enum class DTSHDProfiles(val value: Int) {
     DTS_HDProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 
 }

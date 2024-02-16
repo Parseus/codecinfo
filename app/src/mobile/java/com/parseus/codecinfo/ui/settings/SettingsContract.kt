@@ -20,6 +20,7 @@ class SettingsContract : ActivityResultContract<Unit?, Boolean>() {
                         || it.getBooleanExtra(SettingsActivity.ALIASES_CHANGED, false)
                         || it.getBooleanExtra(SettingsActivity.DYNAMIC_THEME_CHANGED, false)
                         || it.getBooleanExtra(SettingsActivity.HW_ICON_CHANGED, false)
+                        || it.getBooleanExtra(SettingsActivity.SAVE_DETAILS_TO_LOGCAT_CHANGED, false)
             } ?: false
 
         }

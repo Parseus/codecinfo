@@ -235,7 +235,7 @@
   {
     "id": 10,
     "codec_name": "OMX.rk.video_decoder.avc",
-    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
       {
         "op": "<=",
@@ -249,7 +249,7 @@
   {
     "id": 11,
     "codec_name": "OMX.broadcom.video_decoder.tunnel",
-    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
       {
         "op": "<=",
@@ -263,7 +263,7 @@
   {
     "id": 12,
     "codec_name": "OMX.broadcom.video_decoder.tunnel.secure",
-    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
       {
         "op": "<=",
@@ -277,7 +277,7 @@
   {
     "id": 13,
     "codec_name": "OMX.google.vorbis.decoder",
-    "description": "This decoder is known to behave incorrectly if flushed after receiving an input buffer with BUFFER_FLAG_END_OF_STREAM set.",
+    "description": "This decoder is known to behave incorrectly if flushed after receiving an input buffer with <i>BUFFER_FLAG_END_OF_STREAM</i> set.",
     "versions": [
       {
         "op": "<=",
@@ -291,7 +291,7 @@
   {
     "id": 14,
     "codec_name": "c2.android.aac.decoder",
-    "description": "This decoder is known to behave incorrectly if flushed prior to having output a MediaFormat.",
+    "description": "This decoder is known to behave incorrectly if flushed prior to having output a <i>MediaFormat</i>.",
     "versions": [
       {
         "op": "=",
@@ -435,7 +435,7 @@
   {
     "id": 20,
     "codec_name": "OMX.bcm.vdec.avc.tunnel",
-    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
       {
         "op": "<=",
@@ -449,7 +449,7 @@
   {
     "id": 21,
     "codec_name": "OMX.bcm.vdec.avc.tunnel.secure",
-    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
       {
         "op": "<=",
@@ -463,7 +463,7 @@
   {
     "id": 22,
     "codec_name": "OMX.bcm.vdec.hevc.tunnel",
-    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
       {
         "op": "<=",
@@ -477,7 +477,7 @@
   {
     "id": 23,
     "codec_name": "OMX.bcm.vdec.hevc.tunnel.secure",
-    "description": "This decoder is known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly on the host device.",
+    "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
       {
         "op": "<=",
@@ -486,6 +486,58 @@
     ],
     "urls": [
       "https://github.com/androidx/media/blob/8c5e1974f28c105a6b9a6bcba5a716c22e29f4b2/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2448"
+    ]
+  },
+  {
+    "id": 24,
+    "codec_name": "OMX.google.opus.decoder",
+    "description": "This decoder is known to output PCM samples in VORBIS order, which does not match the channel layout required by <i>AudioTrack</i>.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/8396#issuecomment-1833867901"
+    ]
+  },
+  {
+    "id": 25,
+    "codec_name": "c2.android.opus.decoder",
+    "description": "This decoder is known to output PCM samples in VORBIS order, which does not match the channel layout required by <i>AudioTrack</i>.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/8396#issuecomment-1833867901"
+    ]
+  },
+  {
+    "id": 26,
+    "codec_name": "OMX.google.vorbis.decoder",
+    "description": "This decoder is known to output PCM samples in VORBIS order, which does not match the channel layout required by <i>AudioTrack</i>.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/8396#issuecomment-1833867901"
+    ]
+  },
+  {
+    "id": 27,
+    "codec_name": "c2.android.vorbis.decoder",
+    "description": "This decoder is known to output PCM samples in VORBIS order, which does not match the channel layout required by <i>AudioTrack</i>.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "urls": [
+      "https://github.com/google/ExoPlayer/issues/8396#issuecomment-1833867901"
     ]
   }
 ]

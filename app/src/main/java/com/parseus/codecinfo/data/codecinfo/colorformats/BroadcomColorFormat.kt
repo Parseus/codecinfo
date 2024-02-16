@@ -35,7 +35,7 @@ enum class BroadcomColorFormat(val value: Int) {
     OMX_COLOR_FormatRawGrey14bit16bpp(0x7F00001D);
 
     companion object {
-        fun from(findValue: Int) = values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = entries.find { it.value == findValue }?.name
     }
 
 }

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.text.HtmlCompat
 import androidx.core.text.method.LinkMovementMethodCompat
 import androidx.core.text.util.LinkifyCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -74,10 +75,11 @@ class ExpandableItemAdapter(private val knownProblemsList: List<KnownProblem>)
         class ItemViewHolder(private val binding: ExpandableItemContentBinding) : ViewHolder(binding) {
 
             fun bind(knownProblem: KnownProblem, position: Int) {
+                val text = HtmlCompat.fromHtml(knownProblem.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
                 binding.root.contentDescription = binding.root.context.getString(
-                        R.string.known_issue_content_description, position, knownProblem.description,
+                        R.string.known_issue_content_description, position, text,
                         knownProblem.urls.joinToString())
-                binding.knownIssueItemDesc.text = knownProblem.description
+                binding.knownIssueItemDesc.text = text
                 val spannableBuilder = SpannableStringBuilder()
                 with (spannableBuilder) {
                     knownProblem.urls.forEach {

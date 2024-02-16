@@ -12,7 +12,7 @@ enum class MarvellColorFormat(val value: Int) {
     OMX_COLOR_FormatIppPicture(0x7F000006);
 
     companion object {
-        fun from(findValue: Int) = values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = entries.find { it.value == findValue }?.name
     }
 
 }

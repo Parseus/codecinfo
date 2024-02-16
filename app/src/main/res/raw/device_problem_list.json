@@ -756,5 +756,236 @@
     "urls": [
       "https://github.com/google/ExoPlayer/issues/5821"
     ]
+  },
+  {
+    "id": 7,
+    "description": "All Huawei devices based on hi6210sft or hi6250 CPUs will immediately hang during MediaCodec.setOutputSurface(). Additionally, Huawei P9 lite will, eventually, get the decoder into a bad state if SetSurface is called enough times.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "hardwares": [
+      {
+        "op": "equals",
+        "value": "hi6210sft"
+      },
+      {
+        "op": "equals",
+        "value": "hi6250"
+      }
+    ],
+    "urls": [
+      "https://bugs.chromium.org/p/chromium/issues/detail?id=683401"
+    ]
+  },
+  {
+    "id": 8,
+    "description": "The H.264/AVC encoder on this device produces B-frames when high profile is chosen even when configured to turn them off.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 27
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "ASUS_X00T_3"
+      },
+      {
+        "op": "equals",
+        "value": "TC77"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4d7b23f0d117a67df33f5cab25d5971a72dc8017/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultEncoderFactory.java#L682"
+    ]
+  },
+  {
+    "id": 9,
+    "description": "Setting an operating rate close to Integer.MAX_VALUE on this device will cause the encoder to throw at configuration time. Setting the operating rate to 1000 will avoid being close to an integer overflow limit while being higher than a maximum feasible operating rate.",
+    "versions": [
+      {
+        "op": "between",
+        "value": 31,
+        "value2": 34
+      }
+    ],
+    "socModels": [
+      {
+        "op": "equals",
+        "value": "SM8550"
+      },
+      {
+        "op": "equals",
+        "value": "T612"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/4d7b23f0d117a67df33f5cab25d5971a72dc8017/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultEncoderFactory.java#L532"
+    ]
+  },
+  {
+    "id": 10,
+    "description": "Decoders and encoders in Redmi Note 9 Pro will fail if KEY_FRAME_RATE is set too high.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 30
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "joyeuse"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/commit/8b38b34b9f02c3648d2988c4cdaca005fbf8f1cd"
+    ]
+  },
+  {
+    "id": 11,
+    "description": "Decoders on FireTV Gen 2 are known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "manufacturers": [
+      {
+        "op": "equals",
+        "value": "Amazon"
+      }
+    ],
+    "models": [
+      {
+        "op": "equals",
+        "value": "AFTS"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/commit/2043d90a739b82b6222ca4d8b9d06710f0d37f46"
+    ]
+  },
+  {
+    "id": 12,
+    "description": "<i>MediaCodecInfo</i> on this device reports that the maximum supported resolution of <i>video/mp4v-es</i> is 174x174, even though <i>CamcorderProfile</i> indicates it can support resolutions 1280x720 and 640x480.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "models": [
+      {
+        "op": "equals",
+        "value": "Nokia 1"
+      },
+      {
+        "op": "equals",
+        "value": "moto c"
+      },
+      {
+        "op": "equals",
+        "value": "infinix x650"
+      },
+      {
+        "op": "equals",
+        "value": "LG-X230"
+      },
+      {
+        "op": "equals",
+        "value": "twist 2 pro"
+      }
+    ],
+    "urls": [
+      "https://android.googlesource.com/platform/frameworks/support/+/3add9d80bc564c9473d34d8fbe536ced30cbd76a/camera/camera-video/src/main/java/androidx/camera/video/internal/compat/quirk/MediaCodecInfoReportIncorrectInfoQuirk.java#47"
+    ]
+  },
+  {
+    "id": 13,
+    "description": "<i>MediaCodecInfo</i> on this device doesn't indicate that it can support 3840x2160 (4K), even though its <i>CamcorderProfile</i> does.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "models": [
+      {
+        "op": "equals",
+        "value": "mha-l29"
+      },
+      {
+        "op": "equals",
+        "value": "Redmi Note 8 Pro"
+      }
+    ],
+    "urls": [
+      "https://android.googlesource.com/platform/frameworks/support/+/3add9d80bc564c9473d34d8fbe536ced30cbd76a/camera/camera-video/src/main/java/androidx/camera/video/internal/compat/quirk/MediaCodecInfoReportIncorrectInfoQuirk.java#67",
+      "https://android.googlesource.com/platform/frameworks/support/+/3add9d80bc564c9473d34d8fbe536ced30cbd76a/camera/camera-video/src/main/java/androidx/camera/video/internal/compat/quirk/MediaCodecInfoReportIncorrectInfoQuirk.java#78"
+    ]
+  },
+  {
+    "id": 14,
+    "description": "<i>MediaCodecInfo</i> on this device reports that the maximum supported resolution of <i>video/avc</i> is 1920x1072, even though <i>CamcorderProfile</i> indicates it can support 1920x1080.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "models": [
+      {
+        "op": "equals",
+        "value": "lg-k430"
+      },
+      {
+        "op": "equals",
+        "value": "redmi note 4"
+      },
+      {
+        "op": "equals",
+        "value": "m2003j15sc"
+      },
+      {
+        "op": "equals",
+        "value": "m2004j19c"
+      },
+      {
+        "op": "equals",
+        "value": "rmx3231"
+      },
+      {
+        "op": "equals",
+        "value": "v2117"
+      },
+      {
+        "op": "equals",
+        "value": "sm-a032f"
+      },
+      {
+        "op": "equals",
+        "value": "moto g(20)"
+      },
+      {
+        "op": "equals",
+        "value": "sm-a035m"
+      },
+      {
+        "op": "equals",
+        "value": "v2204"
+      },
+      {
+        "op": "equals",
+        "value": "23078pnd5g"
+      },
+      {
+        "op": "equals",
+        "value": "pht110"
+      }
+    ],
+    "urls": [
+      "https://android.googlesource.com/platform/frameworks/support/+/3add9d80bc564c9473d34d8fbe536ced30cbd76a/camera/camera-video/src/main/java/androidx/camera/video/internal/compat/quirk/MediaCodecInfoReportIncorrectInfoQuirk.java#84"
+    ]
   }
 ]

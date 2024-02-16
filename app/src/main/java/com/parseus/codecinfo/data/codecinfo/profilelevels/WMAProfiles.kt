@@ -20,7 +20,7 @@ enum class WMAProfiles(val value: Int) {
     OMX_AUDIO_WMAProfileMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int): String? = values().find { it.value == findValue }?.name
+        fun from(findValue: Int): String? = entries.find { it.value == findValue }?.name
     }
 
 }

@@ -19,7 +19,7 @@ enum class VC1Profiles(val value: Int) {
     OMF_MC_VIDEO_VC1ProfileAdvanced(0x04);
 
     companion object {
-        fun from(findValue: Int, extension: String?): String? = values().find {
+        fun from(findValue: Int, extension: String?): String? = entries.find {
             if (extension != null) {
                 it.value == findValue && it.name.contains(extension, true)
             } else {
@@ -55,7 +55,7 @@ enum class VC1Levels(val value: Int) {
     OMF_MC_VIDEO_VC1LevelUnknown(0x7F000000);
 
     companion object {
-        fun from(findValue: Int, extension: String?): String? = values().find {
+        fun from(findValue: Int, extension: String?): String? = entries.find {
             if (extension != null) {
             it.value == findValue && it.name.contains(extension, true)
             } else {

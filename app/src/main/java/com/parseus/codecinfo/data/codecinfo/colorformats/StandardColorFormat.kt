@@ -93,7 +93,7 @@ enum class StandardColorFormat(val value: Int) {
     OMX_COLOR_FormatMax(0x7FFFFFFF);
 
     companion object {
-        fun from(findValue: Int) = values().find { it.value == findValue }?.name
+        fun from(findValue: Int) = entries.find { it.value == findValue }?.name
     }
 
 }

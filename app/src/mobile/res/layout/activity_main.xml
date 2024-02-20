@@ -30,6 +30,8 @@
             android:layout_height="wrap_content"
             android:max="100"
             android:visibility="gone"
+            app:indicatorColor="?attr/colorSecondary"
+            tools:progress="50"
             tools:visibility="visible"/>
 
     </com.google.android.material.appbar.AppBarLayout>

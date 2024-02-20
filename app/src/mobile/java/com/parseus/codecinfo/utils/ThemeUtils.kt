@@ -223,7 +223,7 @@ fun AlertDialog.updateButtonColors(context: Context) {
 }
 
 fun BaseProgressIndicator<*>.updateColors(context: Context) {
-    setIndicatorColor(getPrimaryColor(context))
+    setIndicatorColor(getSecondaryColor(context))
 }
 
 fun CompoundButton.updateColors(context: Context) {

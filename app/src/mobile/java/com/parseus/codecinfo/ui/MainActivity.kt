@@ -35,7 +35,9 @@ import com.parseus.codecinfo.BuildConfig
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
+import com.parseus.codecinfo.data.codecinfo.detailedCodecInfos
 import com.parseus.codecinfo.data.codecinfo.videoCodecList
+import com.parseus.codecinfo.data.drm.detailedDrmInfo
 import com.parseus.codecinfo.data.drm.drmList
 import com.parseus.codecinfo.data.knownproblems.DATABASES_INITIALIZED
 import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
@@ -258,6 +260,8 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         audioCodecList.clear()
         videoCodecList.clear()
         drmList.clear()
+        detailedCodecInfos.clear()
+        detailedDrmInfo.clear()
     }
 
     override fun onDestroy() {

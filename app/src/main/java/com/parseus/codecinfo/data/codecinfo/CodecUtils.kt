@@ -41,7 +41,8 @@ private const val DIVX6_1080P_MAX_FRAME_RATE = 30
 private val DIVX4_MAX_RESOLUTION = intArrayOf(720, 576)
 private val DIVX6_MAX_RESOLUTION = intArrayOf(1920, 1080)
 
-// TODO: Find a good official source of the spec.
+// Source:
+// https://web.archive.org/web/20061231025413/http://www.sparta.lu.se/~bjorn/whitney/references/ac3spec.pdf
 private const val AC3_MAX_SAMPLE_RATE = 48000
 
 private const val GOOGLE_RAW_DECODER = "OMX.google.raw.decoder"

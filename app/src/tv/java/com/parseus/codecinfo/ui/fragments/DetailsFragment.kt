@@ -1,11 +1,11 @@
 package com.parseus.codecinfo.ui.fragments
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.core.os.BundleCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -51,12 +51,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
             codecId = it.getStringExtra("codecId")
             codecName = it.getStringExtra("codecName")
             drmName = it.getStringExtra("drmName")
-            drmUuid = if (Build.VERSION.SDK_INT >= 33) {
-                it.getSerializableExtra("drmUuid", UUID::class.java)
-            } else {
-                @Suppress("DEPRECATION")
-                it.getSerializableExtra("drmUuid") as UUID?
-            }
+            drmUuid = BundleCompat.getSerializable(it, "drmUuid", UUID::class.java)
         }
 
         if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {

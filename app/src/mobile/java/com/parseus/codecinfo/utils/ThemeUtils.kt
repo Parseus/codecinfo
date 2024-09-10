@@ -385,6 +385,8 @@ fun TabLayout.updateColors(context: Context) {
 @Suppress("DEPRECATION")
 @SuppressLint("NewApi")
 fun Window.updateStatusBarColor(context: Context) {
+    if (Build.VERSION.SDK_INT >= 35) return
+
     val isDynamicTheming = isDynamicThemingEnabled(context)
     val color = if (isDynamicTheming) {
         if (context.isNightMode()) {

@@ -62,6 +62,10 @@
     <string name="encoding_statistics">Exporting encoding statistics</string>
     <string name="hdr_editing">HDR editing</string>
     <string name="vendor_parameters">Supported vendor parameters</string>
+    <string name="detached_surface">Can detach the surface when in Surface mode</string>
+    <string name="dynamic_color_aspects">Dynamic change of color aspects</string>
+    <string name="hlg_editing">HLG editing</string>
+    <string name="roi_encoding">Region of interest encoding</string>
 
     <string name="bitrate_modes">Bitrate modes</string>
     <string name="cbr" translatable="false">Constant bitrate (CBR)</string>

@@ -287,6 +287,11 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             }
 
             propertyList.addFeature(context, capabilities, FEATURE_SecurePlayback, R.string.secure_playback)
+
+            if (SDK_INT >= 35) {
+                propertyList.addFeature(context, capabilities, FEATURE_DetachedSurface, R.string.detached_surface)
+                propertyList.addFeature(context, capabilities, FEATURE_DynamicColorAspects, R.string.dynamic_color_aspects)
+            }
         } else {
             if (SDK_INT >= 24) {
                 propertyList.addFeature(context, capabilities, FEATURE_IntraRefresh, R.string.intra_refresh)
@@ -297,6 +302,10 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             if (SDK_INT >= 33) {
                 propertyList.addFeature(context, capabilities, FEATURE_EncodingStatistics, R.string.encoding_statistics)
                 propertyList.addFeature(context, capabilities, FEATURE_HdrEditing, R.string.hdr_editing)
+            }
+            if (SDK_INT >= 35) {
+                propertyList.addFeature(context, capabilities, FEATURE_HlgEditing, R.string.hlg_editing)
+                propertyList.addFeature(context, capabilities, FEATURE_Roi, R.string.roi_encoding)
             }
         }
     }

@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace 'com.parseus.codecinfo'
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         applicationId "com.parseus.codecinfo"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 26
         versionName "2.7.0"
         resConfigs 'en'

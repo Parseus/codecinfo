@@ -68,12 +68,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlin {
-        jvmToolchain(11)
+        jvmToolchain(17)
     }
     packagingOptions {
         jniLibs {
@@ -85,11 +85,13 @@ android {
         }
     }
 
-    variantFilter { variant ->
-        def names = variant.flavors*.name
-        if (names.contains("nonFree") && names.contains("tv")) {
-            setIgnore(true)
-        }
+    androidComponents {
+        beforeVariants(selector().all(), { variantBuilder ->
+            def name = variantBuilder.flavorName
+            if ("nonFreeTv" == name) {
+                variantBuilder.enable = false
+            }
+        })
     }
 }
 

@@ -539,5 +539,27 @@
     "urls": [
       "https://github.com/google/ExoPlayer/issues/8396#issuecomment-1833867901"
     ]
+  },
+  {
+    "id": 28,
+    "codec_name": "OMX.google.h264.decoder",
+    "description": "This decoder is known to produce incorrect colors on this device.",
+    "models": [
+      {
+        "op": "equals",
+        "value": "ANE-LX1"
+      },
+      {
+        "op": "equals",
+        "value": "MHA-L29"
+      },
+      {
+        "op": "equals",
+        "value": "COR-L29"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/7b08bedf2c3fdcc0ead9edf2451e418f95f8b388/libraries/transformer/src/androidTest/java/androidx/media3/transformer/SequenceEffectTestUtil.java#L178"
+    ]
   }
 ]

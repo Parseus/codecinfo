@@ -70,6 +70,13 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (activity as? MainActivity != null) {
+            val searchListenerList = (activity as MainActivity).searchListeners
+            if (!searchListenerList.contains(this)) {
+                searchListenerList.add(this)
+            }
+        }
+
         if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
             view.applyMonetRecursively()
         }

@@ -3,6 +3,7 @@ agp = "8.6.1"
 kotlin = "2.0.20"
 ksp = "2.0.20-1.0.25"
 
+activity = "1.10.0-alpha02"
 app-update = "2.1.0"
 app-update-ktx = "2.1.0"
 appcompat = "1.7.0"
@@ -28,6 +29,7 @@ review-ktx = "2.0.1"
 webkit = "1.12.1"
 
 [libraries]
+androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "core" }

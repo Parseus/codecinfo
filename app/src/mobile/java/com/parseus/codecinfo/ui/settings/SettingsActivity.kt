@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.activity.addCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
@@ -48,6 +49,7 @@ class SettingsActivity : MonetCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CodecInfo)
+        enableEdgeToEdge()
         val startingFromAlias = intent?.component?.className?.startsWith("alias.SettingsActivity") == true
         if (startingFromAlias) {
             delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM

@@ -864,6 +864,10 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
                 profile = AC4Profiles.from(it.profile)
                 level = AC4Levels.from(it.level)
             }
+            codecId.contains("apv") -> {
+                profile = APVProfiles.from(it.profile)
+                level = APVLevels.from(it.level)
+            }
             codecId.contains("av01") -> {
                 profile = AV1Profiles.from(it.profile)
                 level = AV1Levels.from(it.level)

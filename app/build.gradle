@@ -18,9 +18,6 @@ android {
     buildTypes {
         debug {
             versionNameSuffix "-dev"
-            if (!gradle.startParameter.taskNames.toString().contains('StandardTv')) {
-                multiDexEnabled true
-            }
         }
         release {
             minifyEnabled true

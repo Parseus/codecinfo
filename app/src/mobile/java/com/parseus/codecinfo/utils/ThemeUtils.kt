@@ -30,6 +30,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.forEach
 import androidx.preference.PreferenceManager
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.DynamicColors
@@ -280,6 +281,15 @@ fun Menu.updateIconColors(context: Context, @ColorInt toolbarColor: Int) {
 
 private fun MaterialButton.updateColors(context: Context) {
     rippleColor = getRippleColorForMaterialButton(context)
+}
+
+fun AppBarLayout.updateBackgroundColor(context: Context) {
+    val backgroundColor = if (context.isNightMode()) {
+        getSurfaceColor(context)
+    } else {
+        getPrimaryColor(context)
+    }
+    setBackgroundColor(backgroundColor)
 }
 
 fun MaterialToolbar.updateToolBarColor(context: Context) {

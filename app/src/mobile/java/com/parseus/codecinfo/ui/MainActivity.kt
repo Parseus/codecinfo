@@ -178,6 +178,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
         binding.updateProgressBar?.updateColors(this)
 
+        binding.appBar.updateBackgroundColor(this)
         ViewCompat.setOnApplyWindowInsetsListener(binding.appBar) { view, windowInsets ->
             binding.appBar.doOnLayout {
                 val insets = windowInsets.getInsets(

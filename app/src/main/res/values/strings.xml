@@ -2,12 +2,11 @@
 
 <resources>
     <string name="app_name" translatable="false">&app_name;</string>
-    <string name="app_version_name">Version %1$s\n\u00A9 2018–2022 KN-Soft</string>
 
     <string name="action_settings">Settings</string>
     <string name="about_app">About &app_name;…</string>
     <string name="app_version">Version %s</string>
-    <string name="copyright" translatable="false">\u00A9 2018-2022 KN-Soft</string>
+    <string name="copyright" translatable="false">\u00A9 2018-2024 Parseus</string>
     <string name="source_code_link" translatable="false">https://github.com/Parseus/codecinfo</string>
 
     <string name="action_warning">Show device warnings</string>

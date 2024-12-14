@@ -10,6 +10,9 @@ import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.BulletSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,13 +20,34 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.text.parseAsHtml
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kieronquinn.monetcompat.extensions.applyMonet
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.AboutAppFragmentBinding
-import com.parseus.codecinfo.utils.*
+import com.parseus.codecinfo.ui.ImprovedBulletSpan
+import com.parseus.codecinfo.utils.SHOW_RATE_APP
+import com.parseus.codecinfo.utils.externalAppIntentFlags
+import com.parseus.codecinfo.utils.getOnPrimaryColor
+import com.parseus.codecinfo.utils.getPrimaryColor
+import com.parseus.codecinfo.utils.getSecondaryColor
+import com.parseus.codecinfo.utils.getSurfaceColor
+import com.parseus.codecinfo.utils.isDynamicThemingEnabled
+import com.parseus.codecinfo.utils.isNativeMonetAvailable
+import com.parseus.codecinfo.utils.isNightMode
+import com.parseus.codecinfo.utils.launchStoreIntent
+import com.parseus.codecinfo.utils.sendFeedbackEmail
+import com.parseus.codecinfo.utils.showLicensesDialog
+import com.parseus.codecinfo.utils.updateBackgroundColor
+import com.parseus.codecinfo.utils.updateButtonColors
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okio.buffer
+import okio.source
 
 class AboutFragment : Fragment() {
 
@@ -44,7 +68,6 @@ class AboutFragment : Fragment() {
                 val packageInfo = if (Build.VERSION.SDK_INT >= 33) {
                     requireActivity().packageManager.getPackageInfo(requireActivity().packageName, PackageManager.PackageInfoFlags.of(0L))
                 } else {
-                    @Suppress("DEPRECATION")
                     requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0)
                 }
                 appVersion.text = getString(R.string.app_version, packageInfo.versionName)
@@ -93,16 +116,32 @@ class AboutFragment : Fragment() {
 
     private fun showChangelog() {
         context?.let {
-            val dialogBuilder = MaterialAlertDialogBuilder(it)
-                .setTitle(R.string.about_changelog)
-                .setView(R.layout.about_app_changelog)
-            val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context)
-                .setPositiveButton(android.R.string.ok, null).create()
-            dialog.show()
-            if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
-                dialog.applyMonet()
+            viewLifecycleOwner.lifecycleScope.launch {
+                val spannableBuilder = withContext(Dispatchers.Default) {
+                    val htmlText: String
+                    it.assets.open("changelog.html").source().buffer().use { buffer ->
+                        htmlText = buffer.readUtf8()
+                    }
+                    SpannableStringBuilder(htmlText.parseAsHtml()).apply {
+                        val bulletSpans = getSpans(0, length, BulletSpan::class.java)
+                        bulletSpans.forEach { span ->
+                            val start = getSpanStart(span)
+                            val end = getSpanEnd(span)
+                            removeSpan(span)
+                            setSpan(ImprovedBulletSpan(), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+                        }
+                    }
+                }
+                val dialogBuilder = MaterialAlertDialogBuilder(it)
+                    .setTitle(R.string.about_changelog)
+                    .setMessage(spannableBuilder)
+                val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context)
+                    .setPositiveButton(android.R.string.ok, null).show()
+                if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
+                    dialog.applyMonet()
+                }
+                dialog.updateButtonColors(dialogBuilder.context)
             }
-            dialog.updateButtonColors(dialogBuilder.context)
         }
     }
 

@@ -102,11 +102,6 @@
             android:name="com.lge.support.SPLIT_WINDOW"
             android:value="true" />
 
-        <meta-data android:name="android.webkit.WebView.MetricsOptOut"
-            android:value="true" />
-        <meta-data android:name="android.webkit.WebView.EnableSafeBrowsing"
-            android:value="false" />
-
         <provider
             android:authorities="${applicationId}.fileprovider"
             android:name="androidx.core.content.FileProvider"

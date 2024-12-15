@@ -36,6 +36,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.loadingindicator.LoadingIndicator
 import com.google.android.material.navigationrail.NavigationRailView
 import com.google.android.material.progressindicator.BaseProgressIndicator
 import com.google.android.material.shape.MaterialShapeDrawable
@@ -225,6 +226,10 @@ fun AlertDialog.updateButtonColors(context: Context) {
 
 fun BaseProgressIndicator<*>.updateColors(context: Context) {
     setIndicatorColor(getSecondaryColor(context))
+}
+
+fun LoadingIndicator.updateColors(context: Context) {
+    setIndicatorColor(getPrimaryColor(context))
 }
 
 fun CompoundButton.updateColors(context: Context) {

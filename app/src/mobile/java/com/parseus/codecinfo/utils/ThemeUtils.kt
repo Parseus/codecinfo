@@ -226,6 +226,7 @@ fun AlertDialog.updateButtonColors(context: Context) {
 
 fun BaseProgressIndicator<*>.updateColors(context: Context) {
     setIndicatorColor(getSecondaryColor(context))
+    trackColor = getSecondaryContainerColor(context)
 }
 
 fun LoadingIndicator.updateColors(context: Context) {

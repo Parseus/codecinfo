@@ -6,7 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.os.BundleCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -71,6 +74,13 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
         if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
             view.applyMonetRecursively()
         }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(bottom = insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        ViewCompat.requestApplyInsets(view)
 
         binding.loadingProgress.updateColors(requireContext())
 

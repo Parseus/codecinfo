@@ -7,7 +7,6 @@ import android.widget.EdgeEffect
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
@@ -88,14 +87,13 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
         binding.loadingProgress.updateColors(requireContext())
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.simpleCodecListView) { v, windowInsets ->
-            v.doOnLayout {
-                val insets = windowInsets.getInsets(
-                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
-                )
-                v.updatePadding(left = insets.left, right = insets.right)
-            }
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()
+                    or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(left = insets.left, right = insets.right, bottom = insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
+        ViewCompat.requestApplyInsets(view)
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

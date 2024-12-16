@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowInsetsController
@@ -28,8 +29,7 @@ import androidx.core.content.FileProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.doOnLayout
-import androidx.core.view.updatePadding
+import androidx.core.view.forEach
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -179,14 +179,16 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         binding.updateProgressBar?.updateColors(this)
 
         binding.appBar.updateBackgroundColor(this)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.appBar) { view, windowInsets ->
-            binding.appBar.doOnLayout {
-                val insets = windowInsets.getInsets(
-                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
-                )
-                view.updatePadding(insets.left, insets.top, insets.right, insets.bottom)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.contentFragment) { view, windowInsets ->
+            var consumed = false
+            (view as ViewGroup).forEach { child ->
+                val childResult = ViewCompat.dispatchApplyWindowInsets(child, windowInsets)
+                if (childResult.isConsumed) {
+                    consumed = true
+                }
             }
-            WindowInsetsCompat.CONSUMED
+
+            if (consumed) WindowInsetsCompat.CONSUMED else windowInsets
         }
 
         if (savedInstanceState != null) {
@@ -325,7 +327,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     private fun enableImmersiveMode() {
         if (Build.VERSION.SDK_INT >= 30) {
             window.insetsController?.apply {
-                hide(WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars())
+                hide(WindowInsets.Type.systemBars())
                 systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } else {
@@ -349,7 +351,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     private fun disableImmersiveMode() {
         if (Build.VERSION.SDK_INT >= 30) {
             window.insetsController?.apply {
-                show(WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars())
+                show(WindowInsets.Type.systemBars())
                 systemBarsBehavior =  if (Build.VERSION.SDK_INT >= 31) {
                     WindowInsetsController.BEHAVIOR_DEFAULT
                 } else {

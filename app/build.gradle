@@ -5,8 +5,8 @@ plugins {
 }
 
 android {
-    namespace 'com.parseus.codecinfo'
-    compileSdk 35
+    namespace = 'com.parseus.codecinfo'
+    compileSdk = 35
     defaultConfig {
         applicationId "com.parseus.codecinfo"
         minSdkVersion 21
@@ -21,7 +21,7 @@ android {
         }
         release {
             minifyEnabled true
-            shrinkResources true
+            shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             packagingOptions {

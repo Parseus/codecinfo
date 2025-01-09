@@ -176,6 +176,10 @@ fun getSurfaceColor(context: Context): Int {
     }
 }
 
+fun getSurfaceContainerHighColor(context: Context): Int {
+    return MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurfaceContainerHigh, TAG)
+}
+
 fun getColorOnSurface(context: Context): Int {
     return if (isDynamicThemingEnabled(context)) {
         if (isNativeMonetAvailable()) {

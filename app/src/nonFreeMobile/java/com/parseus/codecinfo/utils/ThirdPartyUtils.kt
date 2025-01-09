@@ -21,10 +21,10 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.marcoscg.licenser.Library
 import com.marcoscg.licenser.License
-import com.marcoscg.licenser.LicenserDialog
 import com.mikhaellopez.ratebottomsheet.RateBottomSheet
 import com.mikhaellopez.ratebottomsheet.RateBottomSheetManager
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.ui.LicenserMaterialDialog
 
 const val SHOW_RATE_APP = true
 
@@ -187,7 +187,7 @@ fun launchStoreIntent(activity: Activity) {
 }
 
 fun showLicensesDialog(activity: AppCompatActivity) {
-    LicenserDialog(activity)
+    LicenserMaterialDialog(activity)
         .setTitle(R.string.about_licenses)
         .setLibrary(Library("Android Jetpack", "https://developer.android.com/jetpack", License.APACHE2))
         .setLibrary(Library("Kotlin", "https://github.com/JetBrains/kotlin", License.APACHE2))
@@ -199,7 +199,7 @@ fun showLicensesDialog(activity: AppCompatActivity) {
         .setLibrary(Library("RateBottomSheet", "https://github.com/lopspower/RateBottomSheet", License.APACHE2))
         .setLibrary(Library("Licenser", "https://github.com/marcoscgdev/Licenser", License.MIT))
         .setLibrary(Library("MonetCompat", "https://github.com/KieronQuinn/MonetCompat", License.MIT))
-        .setPositiveButton(android.R.string.ok, null)
-        .setBackgroundColor(getSurfaceColor(activity))
+        .setPositiveButton(android.R.string.ok)
+        .setBackgroundColor(getSurfaceContainerHighColor(activity))
         .show()
 }

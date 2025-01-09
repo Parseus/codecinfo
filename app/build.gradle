@@ -13,7 +13,6 @@ android {
         targetSdkVersion 35
         versionCode 26
         versionName "2.7.0"
-        resConfigs 'en'
     }
     buildTypes {
         debug {
@@ -32,6 +31,10 @@ android {
 
     buildFeatures {
         buildConfig = true
+    }
+
+    androidResources {
+        localeFilters = ["en"]
     }
 
     flavorDimensions = ["app", "platform"]

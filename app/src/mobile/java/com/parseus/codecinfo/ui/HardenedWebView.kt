@@ -2,6 +2,8 @@ package com.parseus.codecinfo.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
@@ -61,8 +63,18 @@ class HardenedWebView : WebView {
             return null
         }
 
-        @RequiresApi(24) override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) = true
-        override fun shouldOverrideUrlLoading(view: WebView, url: String) = true
+        @RequiresApi(24) override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+            if ("https" == request.url.scheme) {
+                view.context.startActivity(Intent(Intent.ACTION_VIEW, request.url))
+            }
+            return true
+        }
+        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+            if (url.startsWith("https://")) {
+                view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+            return true
+        }
 
     }
 

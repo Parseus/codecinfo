@@ -67,7 +67,7 @@ enum class StandardColorFormat(val value: Int) {
     COLOR_Format18bitBGRA5661(0x39),
     COLOR_Format19bitBGRA6661(0x3A),
     COLOR_Format24bitBGRA7881(0x3B),
-    COLOR_Format25bitBGRA8881(0x3C),
+    COLOR_FormatYUVP210(0x3C),
     COLOR_Format24BitBGRA6666(0x3D),
     COLOR_Format24BitRGBA6666(0x3E),
     COLOR_FormatSurface (0x7F000789),

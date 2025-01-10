@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.view.*
 import android.widget.EdgeEffect
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -70,11 +73,27 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (activity as? MainActivity != null) {
+            val searchListenerList = (activity as MainActivity).searchListeners
+            if (!searchListenerList.contains(this)) {
+                searchListenerList.add(this)
+            }
+        }
+
         if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
             view.applyMonetRecursively()
         }
 
         binding.loadingProgress.updateColors(requireContext())
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.simpleCodecListView) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()
+                    or WindowInsetsCompat.Type.displayCutout()
+            )
+            v.updatePadding(left = insets.left, right = insets.right, bottom = insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        ViewCompat.requestApplyInsets(view)
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

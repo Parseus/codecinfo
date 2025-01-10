@@ -6,8 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.marcoscg.licenser.Library
 import com.marcoscg.licenser.License
-import com.marcoscg.licenser.LicenserDialog
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.ui.LicenserMaterialDialog
 
 const val SHOW_RATE_APP = false
 
@@ -19,7 +19,7 @@ fun handleAppUpdateOnActivityResult(activity: android.app.Activity, requestCode:
 fun handleAppUpdateOnResume(activity: android.app.Activity) {}
 
 fun showLicensesDialog(activity: AppCompatActivity) {
-    LicenserDialog(activity)
+    LicenserMaterialDialog(activity)
         .setTitle(R.string.about_licenses)
         .setLibrary(Library("AndroidHiddenApiBypass", "https://github.com/LSPosed/AndroidHiddenApiBypass", License.APACHE2))
         .setLibrary(Library("Android Jetpack", "https://developer.android.com/jetpack", License.APACHE2))
@@ -31,7 +31,7 @@ fun showLicensesDialog(activity: AppCompatActivity) {
         .setLibrary(Library("Okio", "https://github.com/square/okio", License.APACHE2))
         .setLibrary(Library("Licenser", "https://github.com/marcoscgdev/Licenser", License.MIT))
         .setLibrary(Library("MonetCompat", "https://github.com/KieronQuinn/MonetCompat", License.MIT))
-        .setPositiveButton(android.R.string.ok, null)
-        .setBackgroundColor(getSurfaceColor(activity))
+        .setPositiveButton(android.R.string.ok)
+        .setBackgroundColor(getSurfaceContainerHighColor(activity))
         .show()
 }

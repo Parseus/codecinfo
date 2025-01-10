@@ -11,8 +11,15 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import androidx.activity.addCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
@@ -20,6 +27,9 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.forEach
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -35,7 +45,9 @@ import com.parseus.codecinfo.BuildConfig
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
+import com.parseus.codecinfo.data.codecinfo.detailedCodecInfos
 import com.parseus.codecinfo.data.codecinfo.videoCodecList
+import com.parseus.codecinfo.data.drm.detailedDrmInfo
 import com.parseus.codecinfo.data.drm.drmList
 import com.parseus.codecinfo.data.knownproblems.DATABASES_INITIALIZED
 import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
@@ -47,7 +59,27 @@ import com.parseus.codecinfo.ui.adapters.DeviceIssuesAdapter
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.ui.settings.DarkTheme
 import com.parseus.codecinfo.ui.settings.SettingsContract
-import com.parseus.codecinfo.utils.*
+import com.parseus.codecinfo.utils.checkForUpdate
+import com.parseus.codecinfo.utils.createInAppUpdateResultLauncher
+import com.parseus.codecinfo.utils.disableApiBlacklistOnPie
+import com.parseus.codecinfo.utils.getAllInfoString
+import com.parseus.codecinfo.utils.getAttributeColor
+import com.parseus.codecinfo.utils.getDefaultThemeOption
+import com.parseus.codecinfo.utils.getItemListString
+import com.parseus.codecinfo.utils.getPrimaryColor
+import com.parseus.codecinfo.utils.getSelectedCodecInfoString
+import com.parseus.codecinfo.utils.getSelectedDrmInfoString
+import com.parseus.codecinfo.utils.handleAppUpdateOnResume
+import com.parseus.codecinfo.utils.initializeAppRating
+import com.parseus.codecinfo.utils.isDynamicThemingEnabled
+import com.parseus.codecinfo.utils.isInTwoPaneMode
+import com.parseus.codecinfo.utils.isNativeMonetAvailable
+import com.parseus.codecinfo.utils.updateBackgroundColor
+import com.parseus.codecinfo.utils.updateButtonColors
+import com.parseus.codecinfo.utils.updateColors
+import com.parseus.codecinfo.utils.updateIconColors
+import com.parseus.codecinfo.utils.updateStatusBarColor
+import com.parseus.codecinfo.utils.updateToolBarColor
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import dev.kdrag0n.monet.theme.ColorScheme
@@ -55,7 +87,7 @@ import kotlinx.coroutines.launch
 import okio.buffer
 import okio.source
 import java.io.File
-import java.util.*
+import java.util.UUID
 
 class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
@@ -99,8 +131,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         }
 
         installSplashScreen()
-
-        setTheme(R.style.Theme_CodecInfo)
+        enableEdgeToEdge()
 
         super.onCreate(savedInstanceState)
 
@@ -146,6 +177,19 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         binding.toolbar.updateToolBarColor(this)
 
         binding.updateProgressBar?.updateColors(this)
+
+        binding.appBar.updateBackgroundColor(this)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.contentFragment) { view, windowInsets ->
+            var consumed = false
+            (view as ViewGroup).forEach { child ->
+                val childResult = ViewCompat.dispatchApplyWindowInsets(child, windowInsets)
+                if (childResult.isConsumed) {
+                    consumed = true
+                }
+            }
+
+            if (consumed) WindowInsetsCompat.CONSUMED else windowInsets
+        }
 
         if (savedInstanceState != null) {
             recreateDetailFragmentIfNeedded()
@@ -258,6 +302,8 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         audioCodecList.clear()
         videoCodecList.clear()
         drmList.clear()
+        detailedCodecInfos.clear()
+        detailedDrmInfo.clear()
     }
 
     override fun onDestroy() {
@@ -280,9 +326,8 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     @Suppress("DEPRECATION")
     private fun enableImmersiveMode() {
         if (Build.VERSION.SDK_INT >= 30) {
-            window.setDecorFitsSystemWindows(false)
             window.insetsController?.apply {
-                hide(WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars())
+                hide(WindowInsets.Type.systemBars())
                 systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } else {
@@ -305,9 +350,8 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     @Suppress("DEPRECATION")
     private fun disableImmersiveMode() {
         if (Build.VERSION.SDK_INT >= 30) {
-            window.setDecorFitsSystemWindows(true)
             window.insetsController?.apply {
-                show(WindowInsets.Type.navigationBars() or WindowInsets.Type.statusBars())
+                show(WindowInsets.Type.systemBars())
                 systemBarsBehavior =  if (Build.VERSION.SDK_INT >= 31) {
                     WindowInsetsController.BEHAVIOR_DEFAULT
                 } else {
@@ -326,6 +370,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 }
             }
         }
+        enableEdgeToEdge()
     }
 
     @SuppressLint("InflateParams")

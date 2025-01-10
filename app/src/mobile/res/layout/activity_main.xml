@@ -12,6 +12,7 @@
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -28,8 +29,12 @@
             android:id="@+id/updateProgressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingVertical="4dp"
             android:max="100"
             android:visibility="gone"
+            app:indicatorColor="?attr/colorSecondary"
+            app:trackColor="?attr/colorSecondaryContainer"
+            tools:progress="50"
             tools:visibility="visible"/>
 
     </com.google.android.material.appbar.AppBarLayout>

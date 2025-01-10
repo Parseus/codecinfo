@@ -8,11 +8,14 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.activity.addCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -48,6 +51,7 @@ class SettingsActivity : MonetCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CodecInfo)
+        enableEdgeToEdge()
         val startingFromAlias = intent?.component?.className?.startsWith("alias.SettingsActivity") == true
         if (startingFromAlias) {
             delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
@@ -105,6 +109,13 @@ class SettingsActivity : MonetCompatActivity() {
         }
         window.updateStatusBarColor(this)
         binding.toolbar.updateToolBarColor(this)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            view.updatePadding(top = insets.top, bottom = insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

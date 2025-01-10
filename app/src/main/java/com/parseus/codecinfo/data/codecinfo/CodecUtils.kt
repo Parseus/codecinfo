@@ -41,7 +41,8 @@ private const val DIVX6_1080P_MAX_FRAME_RATE = 30
 private val DIVX4_MAX_RESOLUTION = intArrayOf(720, 576)
 private val DIVX6_MAX_RESOLUTION = intArrayOf(1920, 1080)
 
-// TODO: Find a good official source of the spec.
+// Source:
+// https://web.archive.org/web/20061231025413/http://www.sparta.lu.se/~bjorn/whitney/references/ac3spec.pdf
 private const val AC3_MAX_SAMPLE_RATE = 48000
 
 private const val GOOGLE_RAW_DECODER = "OMX.google.raw.decoder"
@@ -286,6 +287,11 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             }
 
             propertyList.addFeature(context, capabilities, FEATURE_SecurePlayback, R.string.secure_playback)
+
+            if (SDK_INT >= 35) {
+                propertyList.addFeature(context, capabilities, FEATURE_DetachedSurface, R.string.detached_surface)
+                propertyList.addFeature(context, capabilities, FEATURE_DynamicColorAspects, R.string.dynamic_color_aspects)
+            }
         } else {
             if (SDK_INT >= 24) {
                 propertyList.addFeature(context, capabilities, FEATURE_IntraRefresh, R.string.intra_refresh)
@@ -296,6 +302,10 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             if (SDK_INT >= 33) {
                 propertyList.addFeature(context, capabilities, FEATURE_EncodingStatistics, R.string.encoding_statistics)
                 propertyList.addFeature(context, capabilities, FEATURE_HdrEditing, R.string.hdr_editing)
+            }
+            if (SDK_INT >= 35) {
+                propertyList.addFeature(context, capabilities, FEATURE_HlgEditing, R.string.hlg_editing)
+                propertyList.addFeature(context, capabilities, FEATURE_Roi, R.string.roi_encoding)
             }
         }
     }
@@ -853,6 +863,10 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
             codecId.contains("ac4") -> {
                 profile = AC4Profiles.from(it.profile)
                 level = AC4Levels.from(it.level)
+            }
+            codecId.contains("apv") -> {
+                profile = APVProfiles.from(it.profile)
+                level = APVLevels.from(it.level)
             }
             codecId.contains("av01") -> {
                 profile = AV1Profiles.from(it.profile)

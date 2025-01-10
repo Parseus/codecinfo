@@ -1,12 +1,15 @@
 package com.parseus.codecinfo.ui.fragments
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.core.os.BundleCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -72,6 +75,13 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             view.applyMonetRecursively()
         }
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(bottom = insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        ViewCompat.requestApplyInsets(view)
+
         binding.loadingProgress.updateColors(requireContext())
 
         if (!requireContext().isInTwoPaneMode()) {
@@ -84,12 +94,7 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             codecId = it.getString("codecId")
             codecName = it.getString("codecName")
             drmName = it.getString("drmName")
-            drmUuid = if (Build.VERSION.SDK_INT >= 33) {
-                it.getSerializable("drmUuid", UUID::class.java)
-            } else {
-                @Suppress("DEPRECATION")
-                it.getSerializable("drmUuid") as UUID?
-            }
+            drmUuid = BundleCompat.getSerializable(it, "drmUuid", UUID::class.java)
         }
 
         binding.itemDetailsContent.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener {

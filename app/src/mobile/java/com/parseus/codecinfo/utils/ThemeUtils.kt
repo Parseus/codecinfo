@@ -30,11 +30,13 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.forEach
 import androidx.preference.PreferenceManager
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.loadingindicator.LoadingIndicator
 import com.google.android.material.navigationrail.NavigationRailView
 import com.google.android.material.progressindicator.BaseProgressIndicator
 import com.google.android.material.shape.MaterialShapeDrawable
@@ -174,6 +176,10 @@ fun getSurfaceColor(context: Context): Int {
     }
 }
 
+fun getSurfaceContainerHighColor(context: Context): Int {
+    return MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurfaceContainerHigh, TAG)
+}
+
 fun getColorOnSurface(context: Context): Int {
     return if (isDynamicThemingEnabled(context)) {
         if (isNativeMonetAvailable()) {
@@ -223,6 +229,11 @@ fun AlertDialog.updateButtonColors(context: Context) {
 }
 
 fun BaseProgressIndicator<*>.updateColors(context: Context) {
+    setIndicatorColor(getSecondaryColor(context))
+    trackColor = getSecondaryContainerColor(context)
+}
+
+fun LoadingIndicator.updateColors(context: Context) {
     setIndicatorColor(getPrimaryColor(context))
 }
 
@@ -280,6 +291,15 @@ fun Menu.updateIconColors(context: Context, @ColorInt toolbarColor: Int) {
 
 private fun MaterialButton.updateColors(context: Context) {
     rippleColor = getRippleColorForMaterialButton(context)
+}
+
+fun AppBarLayout.updateBackgroundColor(context: Context) {
+    val backgroundColor = if (context.isNightMode()) {
+        getSurfaceColor(context)
+    } else {
+        getPrimaryColor(context)
+    }
+    setBackgroundColor(backgroundColor)
 }
 
 fun MaterialToolbar.updateToolBarColor(context: Context) {
@@ -385,6 +405,8 @@ fun TabLayout.updateColors(context: Context) {
 @Suppress("DEPRECATION")
 @SuppressLint("NewApi")
 fun Window.updateStatusBarColor(context: Context) {
+    if (Build.VERSION.SDK_INT >= 35) return
+
     val isDynamicTheming = isDynamicThemingEnabled(context)
     val color = if (isDynamicTheming) {
         if (context.isNightMode()) {

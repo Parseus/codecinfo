@@ -12,11 +12,10 @@
         android:fadeScrollbars="false"
         tools:listitem="@layout/codec_adapter_row" />
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
+    <com.google.android.material.loadingindicator.LoadingIndicator
         android:id="@+id/loadingProgress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminate="true" />
+        android:layout_gravity="center" />
 
 </FrameLayout>

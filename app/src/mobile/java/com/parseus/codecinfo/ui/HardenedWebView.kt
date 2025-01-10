@@ -2,18 +2,17 @@ package com.parseus.codecinfo.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.webkit.*
 import androidx.annotation.RequiresApi
-import androidx.webkit.WebSettingsCompat
-import androidx.webkit.WebViewFeature
-import com.parseus.codecinfo.utils.isNightMode
 
 @SuppressLint("NewApi")
 @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-class ChangelogWebView : WebView {
+class HardenedWebView : WebView {
 
     constructor(context: Context): super(context)
     constructor(context: Context, attrs: AttributeSet?): super(context, attrs)
@@ -27,18 +26,12 @@ class ChangelogWebView : WebView {
             allowUniversalAccessFromFileURLs = false
             cacheMode = WebSettings.LOAD_NO_CACHE
             saveFormData = false
-
-            val isNightMode = context.isNightMode()
-            if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
-                WebSettingsCompat.setAlgorithmicDarkeningAllowed(settings, isNightMode)
-            }
         }
         if (Build.VERSION.SDK_INT >= 26) {
             importantForAutofill = View.IMPORTANT_FOR_AUTOFILL_NO
         }
         CookieManager.getInstance().setAcceptCookie(false)
         webViewClient = HardenedAssetLoadingWebClient()
-        loadUrl("https://localhost/changelog.html")
     }
 
     inner class HardenedAssetLoadingWebClient : WebViewClient() {
@@ -54,9 +47,9 @@ class ChangelogWebView : WebView {
                 return null
             }
 
-            if ("/changelog.html" == url.path) {
+            if (url.toString().contains("base64")) {
                 return try {
-                    val inputStream = context.assets.open(url.path!!.substring(1))
+                    val inputStream = url.toString().byteInputStream()
                     WebResourceResponse("text/html", null, inputStream).also {
                         it.responseHeaders = mapOf(
                             "Content-Security-Policy" to CONTENT_SECURITY_POLICY,
@@ -70,51 +63,60 @@ class ChangelogWebView : WebView {
             return null
         }
 
-        @RequiresApi(24) override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) = true
-        override fun shouldOverrideUrlLoading(view: WebView, url: String) = true
+        @RequiresApi(24) override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+            if ("https" == request.url.scheme) {
+                view.context.startActivity(Intent(Intent.ACTION_VIEW, request.url))
+            }
+            return true
+        }
+        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+            if (url.startsWith("https://")) {
+                view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+            return true
+        }
 
     }
 
     companion object {
         private const val CONTENT_SECURITY_POLICY =
             "default-src 'none'; " +
-            "form-action 'none'; " +
-            "connect-src https://localhost/changelog.html; " +
-            "img-src blob: 'self'; " +
-            "script-src 'self'; " +
-            "style-src 'self'; " +
-            "frame-ancestors 'none'; " +
-            "base-uri 'none'"
+                    "form-action 'none'; " +
+                    "img-src blob: 'self'; " +
+                    "script-src 'self'; " +
+                    "style-src 'self'; " +
+                    "frame-ancestors 'none'; " +
+                    "base-uri 'none'"
         private const val PERMISSIONS_POLICY =
             "accelerometer=(), " +
-            "ambient-light-sensor=(), " +
-            "autoplay=(), " +
-            "battery=(), " +
-            "camera=(), " +
-            "clipboard-read=(), " +
-            "clipboard-write=(), " +
-            "display-capture=(), " +
-            "document-domain=(), " +
-            "encrypted-media=(), " +
-            "fullscreen=(), " +
-            "gamepad=(), " +
-            "geolocation=(), " +
-            "gyroscope=(), " +
-            "hid=(), " +
-            "idle-detection=(), " +
-            "interest-cohort=(), " +
-            "magnetometer=(), " +
-            "microphone=(), " +
-            "midi=(), " +
-            "payment=(), " +
-            "picture-in-picture=(), " +
-            "publickey-credentials-get=(), " +
-            "screen-wake-lock=(), " +
-            "serial=(), " +
-            "speaker-selection=(), " +
-            "sync-xhr=(), " +
-            "usb=(), " +
-            "xr-spatial-tracking=()"
+                    "ambient-light-sensor=(), " +
+                    "autoplay=(), " +
+                    "battery=(), " +
+                    "camera=(), " +
+                    "clipboard-read=(), " +
+                    "clipboard-write=(), " +
+                    "display-capture=(), " +
+                    "document-domain=(), " +
+                    "encrypted-media=(), " +
+                    "fullscreen=(), " +
+                    "gamepad=(), " +
+                    "geolocation=(), " +
+                    "gyroscope=(), " +
+                    "hid=(), " +
+                    "idle-detection=(), " +
+                    "interest-cohort=(), " +
+                    "magnetometer=(), " +
+                    "microphone=(), " +
+                    "midi=(), " +
+                    "payment=(), " +
+                    "picture-in-picture=(), " +
+                    "publickey-credentials-get=(), " +
+                    "screen-wake-lock=(), " +
+                    "serial=(), " +
+                    "speaker-selection=(), " +
+                    "sync-xhr=(), " +
+                    "usb=(), " +
+                    "xr-spatial-tracking=()"
     }
 
 }

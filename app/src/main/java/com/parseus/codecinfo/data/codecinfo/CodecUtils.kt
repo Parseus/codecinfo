@@ -78,6 +78,7 @@ private val framerateResolutions = arrayOf(
         intArrayOf(720, 576),
         intArrayOf(1280, 720),
         intArrayOf(1920, 1080),
+        intArrayOf(2560, 1440),
         intArrayOf(3840, 2160),
         intArrayOf(7680, 4320)
 )
@@ -89,6 +90,7 @@ private val framerateClasses = arrayOf(
         "576p",
         "720p",
         "1080p",
+        "1440p",
         "4K",
         "8K"
 )

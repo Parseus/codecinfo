@@ -911,6 +911,9 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
                 profile = HEVCProfiles.from(it.profile)
                 level = HEVCLevels.from(it.level)
             }
+            codecId.contains("iamf") -> {
+                profile = IAMFProfiles.from(it.profile)
+            }
             codecId.endsWith("mpeg") || codecId.contains("mpeg2") -> {
                 var extension = " "
 

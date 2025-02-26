@@ -359,7 +359,8 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
         } catch (_: Throwable) {}
     }
 
-    val profileString = if (codecId.contains("mp4a-latm") || codecId.contains("wma")) {
+    val profileString = if (codecId.contains("mp4a-latm") || codecId.contains("wma")
+        || codecId.contains("iamf")) {
         context.getString(R.string.profiles)
     } else {
         context.getString(R.string.profile_levels)

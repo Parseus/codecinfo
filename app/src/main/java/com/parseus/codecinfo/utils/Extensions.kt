@@ -64,5 +64,5 @@ fun MediaCodecInfo.isAudioCodec(): Boolean {
     return supportedTypes.joinToString().contains("audio")
 }
 
-tailrec fun Context.getActivity(): Activity? = this as? Activity
+fun Context.getActivity(): Activity? = this as? Activity
     ?: (this as? ContextWrapper)?.baseContext?.getActivity()

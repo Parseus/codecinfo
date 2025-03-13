@@ -39,6 +39,7 @@ import com.parseus.codecinfo.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.core.content.edit
 
 class SettingsActivity : MonetCompatActivity() {
 
@@ -327,8 +328,11 @@ class SettingsActivity : MonetCompatActivity() {
                     viewLifecycleOwner.lifecycleScope.launch {
                         viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                             withContext(Dispatchers.IO) {
-                                PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
-                                    .putInt("selected_color", it).commit()
+                                PreferenceManager.getDefaultSharedPreferences(requireContext()).edit(
+                                    commit = true
+                                ) {
+                                    putInt("selected_color", it)
+                                }
                             }
                             alertDialog.dismiss()
                             MonetCompat.getInstance().updateMonetColors()

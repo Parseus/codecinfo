@@ -3,6 +3,7 @@
 package com.parseus.codecinfo.utils
 
 import android.net.Uri
+import androidx.core.net.toUri
 
 enum class InstallSource(val installerPackageName: String,
                          private val marketPrefix: String,
@@ -20,9 +21,9 @@ enum class InstallSource(val installerPackageName: String,
             "market://details?id=",
             "https://play.google.com/store/apps/details?id=");
 
-    fun getMarketUri(packageName: String): Uri = Uri.parse("$marketPrefix$packageName")
+    fun getMarketUri(packageName: String): Uri = "$marketPrefix$packageName".toUri()
 
-    fun getWebUri(packageName: String): Uri = Uri.parse("$webPrefix$packageName")
+    fun getWebUri(packageName: String): Uri = "$webPrefix$packageName".toUri()
 
     companion object {
         fun fromInstallSource(installSource: String?): InstallSource? {

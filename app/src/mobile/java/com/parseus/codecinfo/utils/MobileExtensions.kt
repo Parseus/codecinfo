@@ -5,11 +5,11 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.util.TypedValue
 import androidx.annotation.AttrRes
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
@@ -41,7 +41,7 @@ fun Context.isNightMode(): Boolean {
 fun Fragment.sendFeedbackEmail() {
     val feedbackEmail = getString(R.string.feedback_email)
     val intent = Intent(Intent.ACTION_SENDTO).apply {
-        data = Uri.parse("mailto:")
+        data = "mailto:".toUri()
         putExtra(Intent.EXTRA_EMAIL, arrayOf(feedbackEmail))
         putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject))
     }

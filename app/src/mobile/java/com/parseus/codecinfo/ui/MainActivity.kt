@@ -1,7 +1,6 @@
 package com.parseus.codecinfo.ui
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.SearchManager
 import android.content.ClipData
 import android.content.Intent
@@ -20,12 +19,14 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.core.graphics.createBitmap
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -144,6 +145,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 }
             }
         } else {
+            monet.removeMonetColorsChangedListener(this)
             initializeUI(savedInstanceState)
             window.updateStatusBarColor(this)
         }
@@ -530,14 +532,14 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         startActivity(shareIntent)
     }
 
-    @TargetApi(29)
+    @RequiresApi(29)
     private fun storeInfoIconForShare(): ClipData? {
         return try {
             val iconFile = File(filesDir, INFO_ICON_FILE_NAME)
 
             if (!iconFile.exists()) {
                 val drawable = AppCompatResources.getDrawable(this, R.drawable.ic_info) as VectorDrawable
-                val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+                val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
                 val canvas = Canvas(bitmap)
                 drawable.run {
                     setBounds(0, 0, canvas.width, canvas.height)

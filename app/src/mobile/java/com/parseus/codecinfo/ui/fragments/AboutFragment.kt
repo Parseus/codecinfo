@@ -7,7 +7,6 @@ import android.graphics.Canvas
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.LayerDrawable
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
@@ -20,6 +19,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.net.toUri
 import androidx.core.text.parseAsHtml
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -102,7 +104,7 @@ class AboutFragment : Fragment() {
                 }
             } else if (icon is BitmapDrawable) {
                 try {
-                    val foregroundIcon = BitmapDrawable(resources, getAppVectorForegroundIcon())
+                    val foregroundIcon = getAppVectorForegroundIcon().toDrawable(resources)
                     val backgroundIcon = AppCompatResources.getDrawable(requireContext(),
                         R.drawable.legacy_about_app_icon_background)!!
                     backgroundIcon.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
@@ -147,7 +149,7 @@ class AboutFragment : Fragment() {
 
     private fun goToAppsGitHubPage() {
         if (isAdded) {
-            val issuePageIntent = Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_PAGE))
+            val issuePageIntent = Intent(Intent.ACTION_VIEW, GITHUB_PAGE.toUri())
             issuePageIntent.addFlags(externalAppIntentFlags)
             startActivity(issuePageIntent)
         }
@@ -155,7 +157,7 @@ class AboutFragment : Fragment() {
 
     private fun goToIssuePage() {
         if (isAdded) {
-            val issuePageIntent = Intent(Intent.ACTION_VIEW, Uri.parse(ISSUE_PAGE))
+            val issuePageIntent = Intent(Intent.ACTION_VIEW, ISSUE_PAGE.toUri())
             issuePageIntent.addFlags(externalAppIntentFlags)
             startActivity(issuePageIntent)
         }
@@ -164,7 +166,7 @@ class AboutFragment : Fragment() {
     private fun getAppVectorForegroundIcon(): Bitmap {
         val foregroundIcon = AppCompatResources.getDrawable(requireContext(), R.drawable.ic_launcher_foreground)!!
         val iconSize = resources.getDimensionPixelSize(R.dimen.about_dialog_app_icon_size)
-        val bitmap = Bitmap.createBitmap(iconSize, iconSize, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(iconSize, iconSize)
         val canvas = Canvas(bitmap)
         foregroundIcon.setBounds(0, 0, iconSize, iconSize)
         foregroundIcon.draw(canvas)

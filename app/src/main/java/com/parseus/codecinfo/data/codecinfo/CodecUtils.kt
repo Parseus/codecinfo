@@ -48,6 +48,10 @@ private const val AC3_MAX_SAMPLE_RATE = 48000
 private const val GOOGLE_RAW_DECODER = "OMX.google.raw.decoder"
 private const val MEDIATEK_RAW_DECODER = "OMX.MTK.AUDIO.DECODER.RAW"
 
+// Source:
+// https://android.googlesource.com/platform/frameworks/base/+/master/media/java/android/media/MediaCodecInfo.java#1883
+private const val SECURITY_MODEL_TRUSTED_CONTENT_ONLY = 2
+
 private val incorrectMpeg4ResolutionModelList = listOf(
     "Nokia 1",
     "moto c",
@@ -276,6 +280,10 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
                 capabilities.maxSupportedInstances.toString()))
     }
 
+    if (SDK_INT >= 36) {
+        addSecurityModel(context, mediaCodecInfo, propertyList)
+    }
+
     if (isAudio) {
         getAudioCapabilities(context, codecId, codecName, capabilities, propertyList)
     } else {
@@ -401,6 +409,20 @@ private fun addLowLatencyFeatureIfSupported(context: Context,
             codec?.release()
         }
     }
+}
+
+@SuppressLint("SwitchIntDef")
+@RequiresApi(36)
+private fun addSecurityModel(context: Context, codecInfo: MediaCodecInfo,
+                             propertyList: MutableList<DetailsProperty>) {
+    val securityModelString = when (val securityModel = codecInfo.securityModel) {
+        MediaCodecInfo.SECURITY_MODEL_SANDBOXED -> context.getString(R.string.security_model_sandboxed)
+        MediaCodecInfo.SECURITY_MODEL_MEMORY_SAFE -> context.getString(R.string.security_model_memory_safe)
+        SECURITY_MODEL_TRUSTED_CONTENT_ONLY -> context.getString(R.string.security_model_trusted_content_only)
+        else -> "${context.getString(R.string.unknown)} ($securityModel)"
+    }
+    propertyList.add(DetailsProperty(propertyList.size.toLong(),
+        context.getString(R.string.security_model), securityModelString))
 }
 
 private fun handleQualityRange(encoderCapabilities: MediaCodecInfo.EncoderCapabilities,

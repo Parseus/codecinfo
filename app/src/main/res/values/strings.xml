@@ -65,6 +65,11 @@
     <string name="dynamic_color_aspects">Dynamic change of color aspects</string>
     <string name="hlg_editing">HLG editing</string>
     <string name="roi_encoding">Region of interest encoding</string>
+    
+    <string name="security_model">Security model</string>
+    <string name="security_model_sandboxed">Sandboxed</string>
+    <string name="security_model_memory_safe">Memory-safe</string>
+    <string name="security_model_trusted_content_only">Trusted content only</string>
 
     <string name="bitrate_modes">Bitrate modes</string>
     <string name="cbr" translatable="false">Constant bitrate (CBR)</string>

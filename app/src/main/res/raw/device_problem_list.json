@@ -987,5 +987,28 @@
     "urls": [
       "https://android.googlesource.com/platform/frameworks/support/+/3add9d80bc564c9473d34d8fbe536ced30cbd76a/camera/camera-video/src/main/java/androidx/camera/video/internal/compat/quirk/MediaCodecInfoReportIncorrectInfoQuirk.java#84"
     ]
+  },
+  {
+    "id": 15,
+    "description": "Xiaomi and Oppo devices are known to have issues with the detached surface mode, including screen flickering.",
+    "versions": [
+      {
+        "op": ">=",
+        "value": 35
+      }
+    ],
+    "manufacturers": [
+      {
+        "op": "equals",
+        "value": "Xiaomi"
+      },
+      {
+        "op": "equals",
+        "value": "OPPO"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/issues/2059"
+    ]
   }
 ]

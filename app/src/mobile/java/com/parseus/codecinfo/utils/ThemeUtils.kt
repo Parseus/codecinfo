@@ -72,7 +72,7 @@ fun getPrimaryColor(context: Context): Int {
             }
         }
     } else {
-        MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, TAG)
+        MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, TAG)
     }
 }
 
@@ -334,7 +334,7 @@ fun MaterialToolbar.updateToolBarColor(context: Context) {
         if (context.isNightMode()) {
             setBackgroundColor(MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, TAG))
         } else {
-            setBackgroundColor(MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, TAG))
+            setBackgroundColor(MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, TAG))
         }
         setTitleTextColor(ContextCompat.getColor(context, com.google.android.material.R.color.m3_dark_default_color_primary_text))
     }
@@ -418,7 +418,7 @@ fun Window.updateStatusBarColor(context: Context) {
         if (context.isNightMode()) {
             MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, javaClass.canonicalName)
         } else {
-            MaterialColors.getColor(context, com.google.android.material.R.attr.colorPrimary, javaClass.canonicalName)
+            MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, javaClass.canonicalName)
         }
     }
 
@@ -543,7 +543,7 @@ fun MaterialAlertDialogBuilder.updateBackgroundColor(context: Context): Material
     val materialShapeDrawable = MaterialShapeDrawable(
         context,
         null,
-        com.google.android.material.R.attr.alertDialogStyle,
+        androidx.appcompat.R.attr.alertDialogStyle,
         com.google.android.material.R.style.MaterialAlertDialog_MaterialComponents
     )
     materialShapeDrawable.initializeElevationOverlay(context)

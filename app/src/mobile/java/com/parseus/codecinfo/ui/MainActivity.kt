@@ -543,7 +543,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 val canvas = Canvas(bitmap)
                 drawable.run {
                     setBounds(0, 0, canvas.width, canvas.height)
-                    setTint(getAttributeColor(com.google.android.material.R.attr.colorPrimary))
+                    setTint(getAttributeColor(androidx.appcompat.R.attr.colorPrimary))
                     draw(canvas)
                 }
 

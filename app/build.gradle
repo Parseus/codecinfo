@@ -74,6 +74,16 @@ android {
 
     kotlin {
         jvmToolchain(17)
+
+        compilerOptions {
+            freeCompilerArgs.addAll(
+                    "-Xjsr305=strict",
+                    "-Xemit-jvm-type-annotations",
+                    "-Xjvm-default=all",
+                    "-Xtype-enhancement-improvements-strict-mode",
+                    "-Xjspecify-annotations=strict"
+            )
+        }
     }
     packagingOptions {
         jniLibs {

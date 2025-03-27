@@ -819,11 +819,31 @@
       },
       {
         "op": "equals",
+        "value": "SM7450"
+      },
+      {
+        "op": "equals",
+        "value": "SM6450"
+      },
+      {
+        "op": "equals",
+        "value": "SC9863A"
+      },
+      {
+        "op": "equals",
         "value": "T612"
+      },
+      {
+        "op": "equals",
+        "value": "T606"
+      },
+      {
+        "op": "equals",
+        "value": "T603"
       }
     ],
     "urls": [
-      "https://github.com/androidx/media/blob/4d7b23f0d117a67df33f5cab25d5971a72dc8017/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultEncoderFactory.java#L532"
+      "https://github.com/androidx/media/blob/a4f5f67d7eb30ae25f90802f4c032e1c7148885c/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultEncoderFactory.java#L660"
     ]
   },
   {

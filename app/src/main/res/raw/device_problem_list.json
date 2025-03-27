@@ -1030,5 +1030,72 @@
     "urls": [
       "https://github.com/androidx/media/issues/2059"
     ]
+  },
+  {
+    "id": 16,
+    "description": "On devices with a Samsung Exynos 1380 or Qualcomm SA8155P SoC, decoder configuration fails if <i>KEY_OPERATING_RATE</i> is set but not <i>KEY_PRIORITY</i>.",
+    "versions": [
+      {
+        "op": ">=",
+        "value": 31
+      }
+    ],
+    "socModels": [
+      {
+        "op": "equals",
+        "value": "s5e8835"
+      },
+      {
+        "op": "equals",
+        "value": "SA8155P"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/a4f5f67d7eb30ae25f90802f4c032e1c7148885c/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultDecoderFactory.java#L424"
+    ]
+  },
+  {
+    "id": 17,
+    "description": "Some Samsung Galaxy Z Fold and Tab S8 devices report support for HLG tone mapping but the feature only works on PQ.",
+    "models": [
+      {
+        "op": "startsWith",
+        "value": "SM-F936"
+      },
+      {
+        "op": "startsWith",
+        "value": "SM-F916"
+      },
+      {
+        "op": "startsWith",
+        "value": "SM-F721"
+      },
+      {
+        "op": "equals",
+        "value": "SM-X900"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/a4f5f67d7eb30ae25f90802f4c032e1c7148885c/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultDecoderFactory.java#L448"
+    ]
+  },
+  {
+    "id": 18,
+    "description": "The Samsung Galaxy Fold 4 HDR10 codec plugin for tonemapping sets incorrect crop values on Android 13 and older.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 34
+      }
+    ],
+    "models": [
+      {
+        "op": "startsWith",
+        "value": "SM-F936"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/a4f5f67d7eb30ae25f90802f4c032e1c7148885c/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultDecoderFactory.java#L457"
+    ]
   }
 ]

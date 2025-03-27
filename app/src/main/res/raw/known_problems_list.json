@@ -561,5 +561,20 @@
     "urls": [
       "https://github.com/androidx/media/blob/7b08bedf2c3fdcc0ead9edf2451e418f95f8b388/libraries/transformer/src/androidTest/java/androidx/media3/transformer/SequenceEffectTestUtil.java#L178"
     ]
+  },
+  {
+    "id": 29,
+    "codec_name": "OMX.qti.audio.decoder.flac",
+    "description": "This decoder is known to fail at decoding some valid FLAC bitstreams.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 32
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/commit/7e5d6debccc1406de14a353934b3659e52bfe1eb",
+      "https://github.com/google/ExoPlayer/issues/9349"
+    ]
   }
 ]

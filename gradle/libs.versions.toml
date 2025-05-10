@@ -1,7 +1,7 @@
 [versions]
-agp = "8.9.2"
+agp = "8.10.0"
 kotlin = "2.1.20"
-ksp = "2.1.20-2.0.0"
+ksp = "2.1.20-2.0.1"
 
 activity = "1.11.0-rc01"
 app-update = "2.1.0"

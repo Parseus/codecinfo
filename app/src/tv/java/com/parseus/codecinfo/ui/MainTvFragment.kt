@@ -100,6 +100,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         if (knownProblems.isNotEmpty()) {
             otherPresenterAdapter.add(OtherActionDescriptor(ACTION_DEVICE_ISSUES_ID, R.drawable.ic_warning, R.string.known_issue_warning))
         }
+        otherPresenterAdapter.add(OtherActionDescriptor(ACTION_SHARE_ID, R.drawable.ic_share, R.string.action_share))
         otherPresenterAdapter.add(OtherActionDescriptor(ACTION_SETTINGS_ID, R.drawable.ic_settings, R.string.action_settings))
         otherPresenterAdapter.add(OtherActionDescriptor(ACTION_ABOUT_ID, R.drawable.ic_info, R.string.about_app))
 
@@ -112,23 +113,28 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
 
     override fun onItemClicked(itemViewHolder: Presenter.ViewHolder?, item: Any?,
                                rowViewHolder: RowPresenter.ViewHolder?, row: Row?) {
-        if (item is CodecSimpleInfo) {
-            val intent = Intent(requireActivity(), TvCodecDetailsActivity::class.java).apply {
-                putExtra("codecId", item.codecId)
-                putExtra("codecName", item.codecName)
+        when (item) {
+            is CodecSimpleInfo -> {
+                val intent = Intent(requireActivity(), TvCodecDetailsActivity::class.java).apply {
+                    putExtra("codecId", item.codecId)
+                    putExtra("codecName", item.codecName)
+                }
+                startActivity(intent)
             }
-            startActivity(intent)
-        } else if (item is DrmSimpleInfo) {
-            val intent = Intent(requireActivity(), TvCodecDetailsActivity::class.java).apply {
-                putExtra("drmName", item.drmName)
-                putExtra("drmUuid", item.drmUuid)
+            is DrmSimpleInfo -> {
+                val intent = Intent(requireActivity(), TvCodecDetailsActivity::class.java).apply {
+                    putExtra("drmName", item.drmName)
+                    putExtra("drmUuid", item.drmUuid)
+                }
+                startActivity(intent)
             }
-            startActivity(intent)
-        } else if (item is OtherActionDescriptor) {
-            when (item.actionId) {
-                ACTION_SETTINGS_ID -> startActivity(Intent(requireActivity(), TvSettingsActivity::class.java))
-                ACTION_ABOUT_ID -> startActivity(Intent(requireActivity(), TvAboutActivity::class.java))
-                ACTION_DEVICE_ISSUES_ID -> startActivity(Intent(requireActivity(), TvDeviceIssuesActivity::class.java))
+            is OtherActionDescriptor -> {
+                when (item.actionId) {
+                    ACTION_SETTINGS_ID -> startActivity(Intent(requireActivity(), TvSettingsActivity::class.java))
+                    ACTION_ABOUT_ID -> startActivity(Intent(requireActivity(), TvAboutActivity::class.java))
+                    ACTION_DEVICE_ISSUES_ID -> startActivity(Intent(requireActivity(), TvDeviceIssuesActivity::class.java))
+                    ACTION_SHARE_ID -> startActivity(Intent(requireActivity(), TvShareActivity::class.java))
+                }
             }
         }
     }
@@ -137,6 +143,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         private const val ACTION_SETTINGS_ID = 1000
         private const val ACTION_ABOUT_ID = 1001
         private const val ACTION_DEVICE_ISSUES_ID = 1002
+        private const val ACTION_SHARE_ID = 1003
     }
 
 }

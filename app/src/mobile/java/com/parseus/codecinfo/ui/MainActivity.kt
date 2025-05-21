@@ -12,11 +12,8 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
@@ -29,6 +26,7 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.createBitmap
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.forEach
 import androidx.fragment.app.commit
@@ -325,54 +323,14 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun enableImmersiveMode() {
-        if (Build.VERSION.SDK_INT >= 30) {
-            window.insetsController?.apply {
-                hide(WindowInsets.Type.systemBars())
-                systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        } else {
-            val decorView = window.decorView
-            val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-            decorView.systemUiVisibility = flags
-            decorView.setOnSystemUiVisibilityChangeListener { visibility ->
-                if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
-                    decorView.systemUiVisibility = flags
-                }
-            }
-        }
+        WindowCompat.getInsetsController(window, window.decorView).hide(WindowInsetsCompat.Type.systemBars())
+        WindowCompat.setDecorFitsSystemWindows(window, true)
     }
 
-    @Suppress("DEPRECATION")
     private fun disableImmersiveMode() {
-        if (Build.VERSION.SDK_INT >= 30) {
-            window.insetsController?.apply {
-                show(WindowInsets.Type.systemBars())
-                systemBarsBehavior =  if (Build.VERSION.SDK_INT >= 31) {
-                    WindowInsetsController.BEHAVIOR_DEFAULT
-                } else {
-                    WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_SWIPE
-                }
-            }
-        } else {
-            val decorView = window.decorView
-            val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-            decorView.systemUiVisibility = flags
-            decorView.setOnSystemUiVisibilityChangeListener { visibility ->
-                if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
-                    decorView.systemUiVisibility = flags
-                }
-            }
-        }
-        enableEdgeToEdge()
+        WindowCompat.getInsetsController(window, window.decorView).show(WindowInsetsCompat.Type.systemBars())
+        WindowCompat.setDecorFitsSystemWindows(window, false)
     }
 
     @SuppressLint("InflateParams")

@@ -206,7 +206,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
                     KNOWN_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 KNOWN_PROBLEMS_DB = emptyList()
             }
 
@@ -214,13 +214,14 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
                     DEVICE_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 DEVICE_PROBLEMS_DB = emptyList()
             }
 
             DATABASES_INITIALIZED = true
         }
 
+        @Suppress("KotlinConstantConditions")
         if (!BuildConfig.DEBUG) {
             initializeAppRating(this)
             checkForUpdate(this, binding.updateProgressBar)
@@ -287,6 +288,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
             return
         }
 
+        @Suppress("KotlinConstantConditions")
         if (!BuildConfig.DEBUG) {
             handleAppUpdateOnResume(this)
         }
@@ -512,7 +514,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
             val imageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", iconFile)
             ClipData.newUri(contentResolver, null, imageUri)
-        } catch (e: Exception) { null }
+        } catch (_: Exception) { null }
     }
 
     companion object {

@@ -57,7 +57,7 @@ class HardenedWebView : WebView {
                             "X-Content-Type-Options" to "nosniff"
                         )
                     }
-                } catch (e: Exception) { null }
+                } catch (_: Exception) { null }
             }
 
             return null

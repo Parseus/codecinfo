@@ -1,7 +1,6 @@
 package com.parseus.codecinfo.ui.settings
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Build
@@ -135,7 +134,7 @@ class SettingsActivity : MonetCompatActivity() {
     }
 
     override fun finish() {
-        setResult(Activity.RESULT_OK, Intent().apply {
+        setResult(RESULT_OK, Intent().apply {
             putExtra(ALIASES_CHANGED, aliasesChanged)
             putExtra(FILTER_TYPE_CHANGED, filterTypeChanged)
             putExtra(SORTING_CHANGED, sortingChanged)

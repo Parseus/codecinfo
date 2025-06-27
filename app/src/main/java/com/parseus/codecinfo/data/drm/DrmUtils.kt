@@ -78,7 +78,7 @@ fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): Lis
     if (Build.VERSION.SDK_INT >= 28) {
         val connectedHdcpLevel = try {
             mediaDrm.connectedHdcpLevel
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             MediaDrm.HDCP_LEVEL_UNKNOWN
         }
         addReadableHdcpLevel(context, connectedHdcpLevel,
@@ -86,7 +86,7 @@ fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): Lis
 
         val maxHdcpLevel = try {
             mediaDrm.maxHdcpLevel
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             MediaDrm.HDCP_LEVEL_UNKNOWN
         }
         addReadableHdcpLevel(context, maxHdcpLevel,
@@ -94,7 +94,7 @@ fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): Lis
 
         val maxSessionCount = try {
             mediaDrm.maxSessionCount
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             0
         }
         if (maxSessionCount > 0) {
@@ -162,7 +162,7 @@ private fun getDrmDescriptionFromUuid(uuid: UUID, context: Context) = try {
     mediaDrm.closeDrmInstance()
 
     drmName
-} catch (t: Throwable) {
+} catch (_: Throwable) {
     context.getString(R.string.unknown)
 }
 

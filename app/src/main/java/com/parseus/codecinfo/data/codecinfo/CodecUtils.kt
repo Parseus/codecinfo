@@ -128,7 +128,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
     if (mediaCodecInfos.isEmpty()) {
         mediaCodecInfos = try {
             MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Some devices (like Xiaomi Redmi Note 4) seem to
             // throw an exception when trying to list codecs.
             // Return an empty list to inform the user abput it.
@@ -177,7 +177,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         mediaCodecInfo.supportedTypes.forEachIndexed{ index,  codecId ->
             try {
                 mediaCodecInfo.getCapabilitiesForType(codecId)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Some devices (e.g. Kindle Fire HD) can report a codec in the supported list
                 // but don't really implement it (or it's buggy). In this case just skip this.
                 return@forEachIndexed
@@ -205,7 +205,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
 
     val sortType = try {
         prefs.getString("sort_type", "0")!!.toInt()
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         prefs.getInt("sort_type", 0)
     }
     val comparator: Comparator<CodecSimpleInfo> = when (sortType) {
@@ -334,7 +334,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
     }
 
     if (isEncoder) {
-        val encoderCapabilities = capabilities.encoderCapabilities
+        val encoderCapabilities = capabilities.encoderCapabilities!!
         var bitrateModesString =
                 "${context.getString(R.string.cbr)}: " +
                         "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR)}" +
@@ -438,7 +438,7 @@ private fun handleQualityRange(encoderCapabilities: MediaCodecInfo.EncoderCapabi
             val qualityRangeMethod = encoderCapabilities::class.java
                     .getDeclaredMethod("getQualityRange")
             qualityRangeMethod.invoke(encoderCapabilities) as Range<Int>
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
@@ -486,7 +486,7 @@ private fun handleComplexityRange(encoderCapabilities: MediaCodecInfo.EncoderCap
 private fun getAudioCapabilities(context: Context, codecId: String, codecName: String,
                                  capabilities: MediaCodecInfo.CodecCapabilities,
                                  propertyList: MutableList<DetailsProperty>) {
-    val audioCapabilities = capabilities.audioCapabilities
+    val audioCapabilities = capabilities.audioCapabilities!!
 
     var minChannelCount = 1
     val maxChannelCount = adjustMaxInputChannelCount(codecId, codecName,
@@ -672,7 +672,7 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
 private fun getVideoCapabilities(context: Context, codecId: String, codecName: String,
                                  capabilities: MediaCodecInfo.CodecCapabilities,
                                  propertyList: MutableList<DetailsProperty>) {
-    val videoCapabilities = capabilities.videoCapabilities
+    val videoCapabilities = capabilities.videoCapabilities!!
 
     val maxResolution = getMaxResolution(codecId, videoCapabilities)
     propertyList.add(DetailsProperty(propertyList.size.toLong(),
@@ -1055,7 +1055,7 @@ private fun MutableList<DetailsProperty>.addFeature(context: Context,
  * Needed on M and older to get correct information about VP9 support.
  */
 private fun getMaxVP9ProfileLevel(capabilities: MediaCodecInfo.CodecCapabilities): Int {
-    val maxBitrate = capabilities.videoCapabilities.bitrateRange.upper
+    val maxBitrate = capabilities.videoCapabilities!!.bitrateRange.upper
 
     // https://www.webmproject.org/vp9/levels
     return when {

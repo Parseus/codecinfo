@@ -73,7 +73,7 @@ class AboutFragment : Fragment() {
                     requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0)
                 }
                 appVersion.text = getString(R.string.app_version, packageInfo.versionName)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 appVersion.isVisible = false
             }
             showLicenses.setOnClickListener { showLicensesDialog(requireActivity() as AppCompatActivity) }

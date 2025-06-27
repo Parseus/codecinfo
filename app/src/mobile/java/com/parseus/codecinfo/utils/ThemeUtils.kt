@@ -27,6 +27,7 @@ import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.forEach
 import androidx.preference.PreferenceManager
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
@@ -405,8 +406,6 @@ fun TabLayout.updateColors(context: Context) {
 @Suppress("DEPRECATION")
 @SuppressLint("NewApi")
 fun Window.updateStatusBarColor(context: Context) {
-    if (Build.VERSION.SDK_INT >= 35) return
-
     val isDynamicTheming = isDynamicThemingEnabled(context)
     val color = if (isDynamicTheming) {
         if (context.isNightMode()) {
@@ -420,6 +419,11 @@ fun Window.updateStatusBarColor(context: Context) {
         } else {
             MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, javaClass.canonicalName)
         }
+    }
+
+    if (Build.VERSION.SDK_INT >= 35) {
+        WindowCompat.getInsetsController(this, decorView).isAppearanceLightStatusBars = isColorLight(color)
+        return
     }
 
     statusBarColor = color

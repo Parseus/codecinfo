@@ -14,7 +14,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -39,6 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.core.content.edit
+import androidx.core.view.forEach
 
 class SettingsActivity : MonetCompatActivity() {
 
@@ -110,11 +110,15 @@ class SettingsActivity : MonetCompatActivity() {
         window.updateStatusBarColor(this)
         binding.toolbar.updateToolBarColor(this)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
-            val insets = windowInsets.getInsets(
-                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
-            )
-            view.updatePadding(top = insets.top, bottom = insets.bottom)
-            WindowInsetsCompat.CONSUMED
+            var consumed = false
+            (view as ViewGroup).forEach { child ->
+                val childResult = ViewCompat.dispatchApplyWindowInsets(child, windowInsets)
+                if (childResult.isConsumed) {
+                    consumed = true
+                }
+            }
+
+            if (consumed) WindowInsetsCompat.CONSUMED else windowInsets
         }
     }
 

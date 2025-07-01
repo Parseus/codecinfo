@@ -1,7 +1,6 @@
 package com.parseus.codecinfo.ui.settings
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Build
@@ -15,7 +14,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -39,6 +37,8 @@ import com.parseus.codecinfo.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.core.content.edit
+import androidx.core.view.forEach
 
 class SettingsActivity : MonetCompatActivity() {
 
@@ -110,11 +110,15 @@ class SettingsActivity : MonetCompatActivity() {
         window.updateStatusBarColor(this)
         binding.toolbar.updateToolBarColor(this)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
-            val insets = windowInsets.getInsets(
-                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
-            )
-            view.updatePadding(top = insets.top, bottom = insets.bottom)
-            WindowInsetsCompat.CONSUMED
+            var consumed = false
+            (view as ViewGroup).forEach { child ->
+                val childResult = ViewCompat.dispatchApplyWindowInsets(child, windowInsets)
+                if (childResult.isConsumed) {
+                    consumed = true
+                }
+            }
+
+            if (consumed) WindowInsetsCompat.CONSUMED else windowInsets
         }
     }
 
@@ -134,7 +138,7 @@ class SettingsActivity : MonetCompatActivity() {
     }
 
     override fun finish() {
-        setResult(Activity.RESULT_OK, Intent().apply {
+        setResult(RESULT_OK, Intent().apply {
             putExtra(ALIASES_CHANGED, aliasesChanged)
             putExtra(FILTER_TYPE_CHANGED, filterTypeChanged)
             putExtra(SORTING_CHANGED, sortingChanged)
@@ -327,8 +331,11 @@ class SettingsActivity : MonetCompatActivity() {
                     viewLifecycleOwner.lifecycleScope.launch {
                         viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                             withContext(Dispatchers.IO) {
-                                PreferenceManager.getDefaultSharedPreferences(requireContext()).edit()
-                                    .putInt("selected_color", it).commit()
+                                PreferenceManager.getDefaultSharedPreferences(requireContext()).edit(
+                                    commit = true
+                                ) {
+                                    putInt("selected_color", it)
+                                }
                             }
                             alertDialog.dismiss()
                             MonetCompat.getInstance().updateMonetColors()

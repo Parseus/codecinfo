@@ -76,7 +76,9 @@ enum class DrmVendor(val uuid: UUID,
 
         val WIDEVINE_BYTE_ARRAY_PROPERTIES = mapOf(
                 R.string.drm_property_provisioning_id to "provisioningUniqueId",
-                R.string.drm_property_service_certificate to "serviceCertificate"
+                R.string.drm_property_service_certificate to "serviceCertificate",
+                R.string.drm_property_provisioning_service_certificate to "provisioningServiceCertificate",
+                R.string.drm_property_metrics to "metrics"
         )
     }
 

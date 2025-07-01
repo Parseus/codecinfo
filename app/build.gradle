@@ -6,13 +6,13 @@ plugins {
 
 android {
     namespace = 'com.parseus.codecinfo'
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId "com.parseus.codecinfo"
         minSdkVersion 21
-        targetSdkVersion 35
-        versionCode 26
-        versionName "2.7.0"
+        targetSdkVersion 36
+        versionCode 27
+        versionName "2.8.0"
     }
     buildTypes {
         debug {
@@ -74,6 +74,16 @@ android {
 
     kotlin {
         jvmToolchain(17)
+
+        compilerOptions {
+            freeCompilerArgs.addAll(
+                    "-Xjsr305=strict",
+                    "-Xemit-jvm-type-annotations",
+                    "-Xjvm-default=all",
+                    "-Xtype-enhancement-improvements-strict-mode",
+                    "-Xjspecify-annotations=strict"
+            )
+        }
     }
     packagingOptions {
         jniLibs {

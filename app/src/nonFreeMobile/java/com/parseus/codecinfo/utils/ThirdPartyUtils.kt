@@ -178,7 +178,7 @@ fun launchStoreIntent(activity: Activity) {
             marketIntent.addFlags(externalAppIntentFlags)
             try {
                 startActivity(marketIntent)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 val webIntent = Intent(Intent.ACTION_VIEW, source.getWebUri(packageName))
                 startActivity(webIntent)
             }

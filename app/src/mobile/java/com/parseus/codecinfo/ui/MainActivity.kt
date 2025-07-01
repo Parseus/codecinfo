@@ -1,7 +1,6 @@
 package com.parseus.codecinfo.ui
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.app.SearchManager
 import android.content.ClipData
 import android.content.Intent
@@ -13,21 +12,21 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.core.graphics.createBitmap
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.forEach
 import androidx.fragment.app.commit
@@ -144,6 +143,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 }
             }
         } else {
+            monet.removeMonetColorsChangedListener(this)
             initializeUI(savedInstanceState)
             window.updateStatusBarColor(this)
         }
@@ -206,7 +206,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
                     KNOWN_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 KNOWN_PROBLEMS_DB = emptyList()
             }
 
@@ -214,13 +214,14 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
                     DEVICE_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 DEVICE_PROBLEMS_DB = emptyList()
             }
 
             DATABASES_INITIALIZED = true
         }
 
+        @Suppress("KotlinConstantConditions")
         if (!BuildConfig.DEBUG) {
             initializeAppRating(this)
             checkForUpdate(this, binding.updateProgressBar)
@@ -287,6 +288,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
             return
         }
 
+        @Suppress("KotlinConstantConditions")
         if (!BuildConfig.DEBUG) {
             handleAppUpdateOnResume(this)
         }
@@ -323,54 +325,14 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         }
     }
 
-    @Suppress("DEPRECATION")
     private fun enableImmersiveMode() {
-        if (Build.VERSION.SDK_INT >= 30) {
-            window.insetsController?.apply {
-                hide(WindowInsets.Type.systemBars())
-                systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        } else {
-            val decorView = window.decorView
-            val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-            decorView.systemUiVisibility = flags
-            decorView.setOnSystemUiVisibilityChangeListener { visibility ->
-                if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
-                    decorView.systemUiVisibility = flags
-                }
-            }
-        }
+        WindowCompat.getInsetsController(window, window.decorView).hide(WindowInsetsCompat.Type.systemBars())
+        WindowCompat.setDecorFitsSystemWindows(window, true)
     }
 
-    @Suppress("DEPRECATION")
     private fun disableImmersiveMode() {
-        if (Build.VERSION.SDK_INT >= 30) {
-            window.insetsController?.apply {
-                show(WindowInsets.Type.systemBars())
-                systemBarsBehavior =  if (Build.VERSION.SDK_INT >= 31) {
-                    WindowInsetsController.BEHAVIOR_DEFAULT
-                } else {
-                    WindowInsetsController.BEHAVIOR_SHOW_BARS_BY_SWIPE
-                }
-            }
-        } else {
-            val decorView = window.decorView
-            val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-            decorView.systemUiVisibility = flags
-            decorView.setOnSystemUiVisibilityChangeListener { visibility ->
-                if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
-                    decorView.systemUiVisibility = flags
-                }
-            }
-        }
-        enableEdgeToEdge()
+        WindowCompat.getInsetsController(window, window.decorView).show(WindowInsetsCompat.Type.systemBars())
+        WindowCompat.setDecorFitsSystemWindows(window, false)
     }
 
     @SuppressLint("InflateParams")
@@ -530,18 +492,18 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         startActivity(shareIntent)
     }
 
-    @TargetApi(29)
+    @RequiresApi(29)
     private fun storeInfoIconForShare(): ClipData? {
         return try {
             val iconFile = File(filesDir, INFO_ICON_FILE_NAME)
 
             if (!iconFile.exists()) {
                 val drawable = AppCompatResources.getDrawable(this, R.drawable.ic_info) as VectorDrawable
-                val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+                val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
                 val canvas = Canvas(bitmap)
                 drawable.run {
                     setBounds(0, 0, canvas.width, canvas.height)
-                    setTint(getAttributeColor(com.google.android.material.R.attr.colorPrimary))
+                    setTint(getAttributeColor(androidx.appcompat.R.attr.colorPrimary))
                     draw(canvas)
                 }
 
@@ -552,7 +514,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
             val imageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", iconFile)
             ClipData.newUri(contentResolver, null, imageUri)
-        } catch (e: Exception) { null }
+        } catch (_: Exception) { null }
     }
 
     companion object {

@@ -2,11 +2,8 @@
 <resources>
     <string name="close_details">Close details</string>
 
-    <string name="action_share">Share</string>
     <string name="choose_share">Choose info to share</string>
-    <string name="codec_list">Codec list</string>
     <string name="codec_details_selected">Selected codec details</string>
-    <string name="codec_drm_all_info">All codecs and DRMs with details</string>
 
     <string name="feedback_email" translatable="false">parseus.dev@gmail.com</string>
     <string name="email_subject">Feedback</string>

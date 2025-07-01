@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="codec_drm_list">List of all codecs and DRMs</string>
+</resources>

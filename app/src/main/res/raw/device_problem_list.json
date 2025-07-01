@@ -776,7 +776,7 @@
       }
     ],
     "urls": [
-      "https://bugs.chromium.org/p/chromium/issues/detail?id=683401"
+      "https://issues.chromium.org/issues/40502699"
     ]
   },
   {
@@ -819,11 +819,31 @@
       },
       {
         "op": "equals",
+        "value": "SM7450"
+      },
+      {
+        "op": "equals",
+        "value": "SM6450"
+      },
+      {
+        "op": "equals",
+        "value": "SC9863A"
+      },
+      {
+        "op": "equals",
         "value": "T612"
+      },
+      {
+        "op": "equals",
+        "value": "T606"
+      },
+      {
+        "op": "equals",
+        "value": "T603"
       }
     ],
     "urls": [
-      "https://github.com/androidx/media/blob/4d7b23f0d117a67df33f5cab25d5971a72dc8017/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultEncoderFactory.java#L532"
+      "https://github.com/androidx/media/blob/a4f5f67d7eb30ae25f90802f4c032e1c7148885c/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultEncoderFactory.java#L660"
     ]
   },
   {
@@ -986,6 +1006,96 @@
     ],
     "urls": [
       "https://android.googlesource.com/platform/frameworks/support/+/3add9d80bc564c9473d34d8fbe536ced30cbd76a/camera/camera-video/src/main/java/androidx/camera/video/internal/compat/quirk/MediaCodecInfoReportIncorrectInfoQuirk.java#84"
+    ]
+  },
+  {
+    "id": 15,
+    "description": "Xiaomi and Oppo devices are known to have issues with the detached surface mode, including screen flickering.",
+    "versions": [
+      {
+        "op": ">=",
+        "value": 35
+      }
+    ],
+    "manufacturers": [
+      {
+        "op": "equals",
+        "value": "Xiaomi"
+      },
+      {
+        "op": "equals",
+        "value": "OPPO"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/issues/2059"
+    ]
+  },
+  {
+    "id": 16,
+    "description": "On devices with a Samsung Exynos 1380 or Qualcomm SA8155P SoC, decoder configuration fails if <i>KEY_OPERATING_RATE</i> is set but not <i>KEY_PRIORITY</i>.",
+    "versions": [
+      {
+        "op": ">=",
+        "value": 31
+      }
+    ],
+    "socModels": [
+      {
+        "op": "equals",
+        "value": "s5e8835"
+      },
+      {
+        "op": "equals",
+        "value": "SA8155P"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/a4f5f67d7eb30ae25f90802f4c032e1c7148885c/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultDecoderFactory.java#L424"
+    ]
+  },
+  {
+    "id": 17,
+    "description": "Some Samsung Galaxy Z Fold and Tab S8 devices report support for HLG tone mapping but the feature only works on PQ.",
+    "models": [
+      {
+        "op": "startsWith",
+        "value": "SM-F936"
+      },
+      {
+        "op": "startsWith",
+        "value": "SM-F916"
+      },
+      {
+        "op": "startsWith",
+        "value": "SM-F721"
+      },
+      {
+        "op": "equals",
+        "value": "SM-X900"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/a4f5f67d7eb30ae25f90802f4c032e1c7148885c/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultDecoderFactory.java#L448"
+    ]
+  },
+  {
+    "id": 18,
+    "description": "The Samsung Galaxy Fold 4 HDR10 codec plugin for tonemapping sets incorrect crop values on Android 13 and older.",
+    "versions": [
+      {
+        "op": "<",
+        "value": 34
+      }
+    ],
+    "models": [
+      {
+        "op": "startsWith",
+        "value": "SM-F936"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/blob/a4f5f67d7eb30ae25f90802f4c032e1c7148885c/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultDecoderFactory.java#L457"
     ]
   }
 ]

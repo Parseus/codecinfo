@@ -48,6 +48,10 @@ private const val AC3_MAX_SAMPLE_RATE = 48000
 private const val GOOGLE_RAW_DECODER = "OMX.google.raw.decoder"
 private const val MEDIATEK_RAW_DECODER = "OMX.MTK.AUDIO.DECODER.RAW"
 
+// Source:
+// https://android.googlesource.com/platform/frameworks/base/+/master/media/java/android/media/MediaCodecInfo.java#1883
+private const val SECURITY_MODEL_TRUSTED_CONTENT_ONLY = 2
+
 private val incorrectMpeg4ResolutionModelList = listOf(
     "Nokia 1",
     "moto c",
@@ -78,6 +82,7 @@ private val framerateResolutions = arrayOf(
         intArrayOf(720, 576),
         intArrayOf(1280, 720),
         intArrayOf(1920, 1080),
+        intArrayOf(2560, 1440),
         intArrayOf(3840, 2160),
         intArrayOf(7680, 4320)
 )
@@ -89,6 +94,7 @@ private val framerateClasses = arrayOf(
         "576p",
         "720p",
         "1080p",
+        "1440p",
         "4K",
         "8K"
 )
@@ -122,7 +128,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
     if (mediaCodecInfos.isEmpty()) {
         mediaCodecInfos = try {
             MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Some devices (like Xiaomi Redmi Note 4) seem to
             // throw an exception when trying to list codecs.
             // Return an empty list to inform the user abput it.
@@ -171,7 +177,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         mediaCodecInfo.supportedTypes.forEachIndexed{ index,  codecId ->
             try {
                 mediaCodecInfo.getCapabilitiesForType(codecId)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Some devices (e.g. Kindle Fire HD) can report a codec in the supported list
                 // but don't really implement it (or it's buggy). In this case just skip this.
                 return@forEachIndexed
@@ -199,7 +205,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
 
     val sortType = try {
         prefs.getString("sort_type", "0")!!.toInt()
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         prefs.getInt("sort_type", 0)
     }
     val comparator: Comparator<CodecSimpleInfo> = when (sortType) {
@@ -274,6 +280,10 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
                 capabilities.maxSupportedInstances.toString()))
     }
 
+    if (SDK_INT >= 36) {
+        addSecurityModel(context, mediaCodecInfo, propertyList)
+    }
+
     if (isAudio) {
         getAudioCapabilities(context, codecId, codecName, capabilities, propertyList)
     } else {
@@ -324,7 +334,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
     }
 
     if (isEncoder) {
-        val encoderCapabilities = capabilities.encoderCapabilities
+        val encoderCapabilities = capabilities.encoderCapabilities!!
         var bitrateModesString =
                 "${context.getString(R.string.cbr)}: " +
                         "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR)}" +
@@ -357,7 +367,8 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
         } catch (_: Throwable) {}
     }
 
-    val profileString = if (codecId.contains("mp4a-latm") || codecId.contains("wma")) {
+    val profileString = if (codecId.contains("mp4a-latm") || codecId.contains("wma")
+        || codecId.contains("iamf")) {
         context.getString(R.string.profiles)
     } else {
         context.getString(R.string.profile_levels)
@@ -400,6 +411,20 @@ private fun addLowLatencyFeatureIfSupported(context: Context,
     }
 }
 
+@SuppressLint("SwitchIntDef")
+@RequiresApi(36)
+private fun addSecurityModel(context: Context, codecInfo: MediaCodecInfo,
+                             propertyList: MutableList<DetailsProperty>) {
+    val securityModelString = when (val securityModel = codecInfo.securityModel) {
+        MediaCodecInfo.SECURITY_MODEL_SANDBOXED -> context.getString(R.string.security_model_sandboxed)
+        MediaCodecInfo.SECURITY_MODEL_MEMORY_SAFE -> context.getString(R.string.security_model_memory_safe)
+        SECURITY_MODEL_TRUSTED_CONTENT_ONLY -> context.getString(R.string.security_model_trusted_content_only)
+        else -> "${context.getString(R.string.unknown)} ($securityModel)"
+    }
+    propertyList.add(DetailsProperty(propertyList.size.toLong(),
+        context.getString(R.string.security_model), securityModelString))
+}
+
 private fun handleQualityRange(encoderCapabilities: MediaCodecInfo.EncoderCapabilities,
                                defaultMediaFormat: MediaFormat,
                                propertyList: MutableList<DetailsProperty>,
@@ -413,7 +438,7 @@ private fun handleQualityRange(encoderCapabilities: MediaCodecInfo.EncoderCapabi
             val qualityRangeMethod = encoderCapabilities::class.java
                     .getDeclaredMethod("getQualityRange")
             qualityRangeMethod.invoke(encoderCapabilities) as Range<Int>
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
@@ -461,7 +486,7 @@ private fun handleComplexityRange(encoderCapabilities: MediaCodecInfo.EncoderCap
 private fun getAudioCapabilities(context: Context, codecId: String, codecName: String,
                                  capabilities: MediaCodecInfo.CodecCapabilities,
                                  propertyList: MutableList<DetailsProperty>) {
-    val audioCapabilities = capabilities.audioCapabilities
+    val audioCapabilities = capabilities.audioCapabilities!!
 
     var minChannelCount = 1
     val maxChannelCount = adjustMaxInputChannelCount(codecId, codecName,
@@ -647,7 +672,7 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
 private fun getVideoCapabilities(context: Context, codecId: String, codecName: String,
                                  capabilities: MediaCodecInfo.CodecCapabilities,
                                  propertyList: MutableList<DetailsProperty>) {
-    val videoCapabilities = capabilities.videoCapabilities
+    val videoCapabilities = capabilities.videoCapabilities!!
 
     val maxResolution = getMaxResolution(codecId, videoCapabilities)
     propertyList.add(DetailsProperty(propertyList.size.toLong(),
@@ -909,6 +934,9 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
                 profile = HEVCProfiles.from(it.profile)
                 level = HEVCLevels.from(it.level)
             }
+            codecId.contains("iamf") -> {
+                profile = IAMFProfiles.from(it.profile)
+            }
             codecId.endsWith("mpeg") || codecId.contains("mpeg2") -> {
                 var extension = " "
 
@@ -1027,7 +1055,7 @@ private fun MutableList<DetailsProperty>.addFeature(context: Context,
  * Needed on M and older to get correct information about VP9 support.
  */
 private fun getMaxVP9ProfileLevel(capabilities: MediaCodecInfo.CodecCapabilities): Int {
-    val maxBitrate = capabilities.videoCapabilities.bitrateRange.upper
+    val maxBitrate = capabilities.videoCapabilities!!.bitrateRange.upper
 
     // https://www.webmproject.org/vp9/levels
     return when {

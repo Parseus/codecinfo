@@ -1,5 +1,6 @@
 package com.parseus.codecinfo.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.core.content.IntentCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
+import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.data.drm.DrmVendor
@@ -19,6 +21,8 @@ import com.parseus.codecinfo.ui.CustomLinearLayoutManager
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
+import com.parseus.codecinfo.utils.getSelectedCodecInfoString
+import com.parseus.codecinfo.utils.getSelectedDrmInfoString
 import java.util.*
 
 class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -36,6 +40,27 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ItemDetailsFragmentLayoutBinding.inflate(inflater, container, false)
+        binding.share.setOnClickListener {
+            val textToShare = when {
+                codecId != null && codecName != null -> getSelectedCodecInfoString(requireContext(),
+                    codecId!!, codecName!!)
+                drmName != null && drmUuid != null -> getSelectedDrmInfoString(requireContext(),
+                    drmName!!, drmUuid!!)
+                else -> ""
+            }
+            val shareIntent = Intent.createChooser(Intent().apply {
+                action = Intent.ACTION_SEND
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, textToShare)
+                val title = if (codecId != null && codecName != null) {
+                    "${getString(R.string.codec_details)}: $codecName"
+                } else {
+                    "${getString(R.string.drm_details)}: $drmName"
+                }
+                putExtra(Intent.EXTRA_TITLE, title)
+            }, null)
+            startActivity(shareIntent)
+        }
         return binding.root
     }
 

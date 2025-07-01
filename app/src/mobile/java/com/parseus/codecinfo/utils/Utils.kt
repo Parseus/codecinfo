@@ -21,7 +21,7 @@ fun getSystemProperty(property: String): String? {
         val c = Class.forName("android.os.SystemProperties")
         val get = c.getMethod("get", String::class.java)
         get.invoke(c, property) as? String
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         null
     }
 }

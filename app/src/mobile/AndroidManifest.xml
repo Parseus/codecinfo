@@ -45,7 +45,8 @@
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:label="@string/action_settings"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/Theme.CodecInfo">
             <meta-data
                 android:name="com.samsung.android.dex.transient_bar_delay"
                 android:value="2000" />

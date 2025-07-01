@@ -34,7 +34,7 @@ data class KnownProblem(
         hardwares?.forEach {
             if ((it.op == "equals" && hardware == it.value)
                     || (it.op == "startsWith" && hardware.startsWith(it.value))) {
-                hardwareAffected = Build.HARDWARE.equals(it.value, true)
+                hardwareAffected = hardware.equals(it.value, true)
             }
 
             // Second case: devices that have no additional version requirement.
@@ -79,16 +79,16 @@ data class KnownProblem(
             }
         }
 
+        var socModelAffected = false
         if (Build.VERSION.SDK_INT >= 31) {
             val socModel = Build.SOC_MODEL
-            var socModelAffected = false
             socModels?.forEach {
                 if ((it.op == "equals" && socModel == it.value)
                     || (it.op == "startsWith" && socModel.startsWith(it.value))) {
-                    socModelAffected = Build.HARDWARE.equals(it.value, true)
+                    socModelAffected = socModel.equals(it.value, true)
                 }
 
-                // Fifth case: SoC models that have no additional version requirement.
+                // Fifth case: SoCs that have no additional version requirement.
                 if (socModelAffected && versions == null) {
                     return true
                 }
@@ -115,11 +115,13 @@ data class KnownProblem(
             }
 
             if (((devices != null && deviceAffected) || (models != null && modelAffected)
-                    || (hardwares != null && hardwareAffected)) && versionAffected) {
-                // Fifth case: both device/model/hardware and version match.
+                    || (hardwares != null && hardwareAffected) || (socModels != null && socModelAffected))
+                && versionAffected) {
+                // Sixth case: both device/model/hardware/SoC and version match.
                 return true
-            } else if (devices == null && models == null && versionAffected) {
-                // Sixth case: version matches regardless of the device/model/hardware.
+            } else if (devices == null && models == null && hardwares == null && socModels == null
+                && versionAffected) {
+                // Seventh case: version matches regardless of the device/model/hardware/SoC.
                 return true
             }
         }

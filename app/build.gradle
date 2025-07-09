@@ -11,8 +11,8 @@ android {
         applicationId "com.parseus.codecinfo"
         minSdkVersion 21
         targetSdkVersion 36
-        versionCode 27
-        versionName "2.8.0"
+        versionCode 28
+        versionName "2.9.0"
     }
     buildTypes {
         debug {

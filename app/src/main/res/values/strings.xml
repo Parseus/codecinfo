@@ -130,6 +130,8 @@
     <string name="drm_property_decrypt_hash_support">Hash function supported for Full Decrypt Path Testing</string>
     <string name="drm_property_provisioning_service_certificate">Provisioning service certificate</string>
     <string name="drm_property_metrics">Metrics</string>
+    <string name="drm_property_analog_output_capabilities">Analog output capabilities</string>
+    <string name="drm_property_can_disable_analog_output">Can disable analog output</string>
 
     <string name="decrypt_hash_support_not_supported">0 (not supported)</string>
     <string name="decrypt_hash_support_crc">1 (CRC32)</string>

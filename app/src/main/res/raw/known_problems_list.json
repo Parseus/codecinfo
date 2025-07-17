@@ -576,5 +576,31 @@
       "https://github.com/androidx/media/commit/7e5d6debccc1406de14a353934b3659e52bfe1eb",
       "https://github.com/google/ExoPlayer/issues/9349"
     ]
+  },
+  {
+    "id": 30,
+    "codec_name": "c2.mtk.avc.decoder",
+    "description": "Flushing a c2.mtk decoder that outputs to a SurfaceTexture often fails and leaves the SurfaceTexture's BufferQueue in an unrecoverable state. Release the codec instead.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/commit/910b6ab88401a3efcd226cdbbfdb0936bddbb65b"
+    ]
+  },
+  {
+    "id": 31,
+    "codec_name": "c2.mtk.hevc.decoder",
+    "description": "Flushing a c2.mtk decoder that outputs to a SurfaceTexture often fails and leaves the SurfaceTexture's BufferQueue in an unrecoverable state. Release the codec instead.",
+    "versions": [
+      {
+        "op": "all"
+      }
+    ],
+    "urls": [
+      "https://github.com/androidx/media/commit/910b6ab88401a3efcd226cdbbfdb0936bddbb65b"
+    ]
   }
 ]

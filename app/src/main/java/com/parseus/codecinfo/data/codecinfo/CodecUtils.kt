@@ -1119,8 +1119,11 @@ private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {
         return false
     }
 
-    // Intel codecs which specifically mention HW acceleration in their names
+    // Intel codecs which are known to be HW-only
     if (codecName.startsWith("omx.intel.hw_vd", true)) {
+        return false
+    }
+    if (codecName.contains("omx.intel.videodecoder", true)) {
         return false
     }
 

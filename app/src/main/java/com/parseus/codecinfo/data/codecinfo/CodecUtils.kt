@@ -14,7 +14,6 @@ import android.util.Log
 import android.util.Range
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
-import androidx.core.text.HtmlCompat
 import androidx.preference.PreferenceManager
 import com.parseus.codecinfo.*
 import com.parseus.codecinfo.data.DetailsProperty

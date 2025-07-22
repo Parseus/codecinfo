@@ -93,7 +93,7 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
             v.updatePadding(left = insets.left, right = insets.right, bottom = insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
-        ViewCompat.requestApplyInsets(view)
+        view.requestApplyInsets()
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

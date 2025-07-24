@@ -1010,7 +1010,7 @@
   },
   {
     "id": 15,
-    "description": "Xiaomi and Oppo devices are known to have issues with the detached surface mode, including screen flickering.",
+    "description": "Xiaomi, Oppo, Realme, Motorola and Lenovo devices are known to have issues with the detached surface mode, including screen flickering.",
     "versions": [
       {
         "op": ">=",
@@ -1025,6 +1025,18 @@
       {
         "op": "equals",
         "value": "OPPO"
+      },
+      {
+        "op": "equals",
+        "value": "realme"
+      },
+      {
+        "op": "equals",
+        "value": "motorola"
+      },
+      {
+        "op": "equals",
+        "value": "lenovo"
       }
     ],
     "urls": [

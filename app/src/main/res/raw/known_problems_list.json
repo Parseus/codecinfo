@@ -602,5 +602,19 @@
     "urls": [
       "https://github.com/androidx/media/commit/910b6ab88401a3efcd226cdbbfdb0936bddbb65b"
     ]
+  },
+  {
+    "id": 32,
+    "codec_name": "omx.amlogic.hevc.decoder.awesome",
+    "description": "Fire TV 3's Amlogic HEVC decoder doesn't produce any output frames without setting the magic <b>vdec-lowlatency</b> <i>MediaFormat</i> option.",
+    "models": [
+      {
+        "op": "equals",
+        "value": "AFTN"
+      }
+    ],
+    "urls": [
+      "https://github.com/moonlight-stream/moonlight-android/commit/6aac8e6be6ab78671ca90cd49fefd3943736df36"
+    ]
   }
 ]

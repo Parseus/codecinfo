@@ -616,5 +616,33 @@
     "urls": [
       "https://github.com/moonlight-stream/moonlight-android/commit/6aac8e6be6ab78671ca90cd49fefd3943736df36"
     ]
+  },
+  {
+    "id": 33,
+    "codec_name": "omx.amlogic.hevc.decoder.awesome",
+    "description": "Fire TV 3's Amlogic HEVC decoder hangs when receiving a stream with 16 reference frames.",
+    "models": [
+      {
+        "op": "equals",
+        "value": "AFTN"
+      }
+    ],
+    "urls": [
+      "https://github.com/moonlight-stream/moonlight-android/commit/b0144a3256ddda54def93a25b65181f309dacb4a"
+    ]
+  },
+  {
+    "id": 34,
+    "codec_name": "OMX.Nvidia.hevc.decoder",
+    "description": "Pixel C's Nvidia HEVC decoder hangs when receiving a stream with 16 reference frames.",
+    "models": [
+      {
+        "op": "equals",
+        "value": "Pixel C"
+      }
+    ],
+    "urls": [
+      "https://github.com/moonlight-stream/moonlight-android/commit/b0144a3256ddda54def93a25b65181f309dacb4a"
+    ]
   }
 ]

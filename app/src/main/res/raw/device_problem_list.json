@@ -1109,5 +1109,133 @@
     "urls": [
       "https://github.com/androidx/media/blob/a4f5f67d7eb30ae25f90802f4c032e1c7148885c/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultDecoderFactory.java#L457"
     ]
+  },
+  {
+    "id": 19,
+    "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
+    "versions": [
+      {
+        "op": "equals",
+        "value": 24
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "Hi3798MV200"
+      },
+      {
+        "op": "equals",
+        "value": "cvt_mt5886_eu_1g"
+      }
+    ],
+    "urls": [
+      "https://github.com/TeamNewPipe/NewPipe/blob/22a709d53b21cf7bed8487f6974786f60e831046/app/src/main/java/org/schabi/newpipe/util/DeviceUtils.java#L325"
+    ]
+  },
+  {
+    "id": 20,
+    "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
+    "versions": [
+      {
+        "op": "equals",
+        "value": 25
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "RealtekATV"
+      }
+    ],
+    "urls": [
+      "https://github.com/TeamNewPipe/NewPipe/blob/22a709d53b21cf7bed8487f6974786f60e831046/app/src/main/java/org/schabi/newpipe/util/DeviceUtils.java#L325"
+    ]
+  },
+  {
+    "id": 21,
+    "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
+    "versions": [
+      {
+        "op": ">=",
+        "value": 26
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "PH7M_EU_5596"
+      }
+    ],
+    "urls": [
+      "https://github.com/TeamNewPipe/NewPipe/blob/22a709d53b21cf7bed8487f6974786f60e831046/app/src/main/java/org/schabi/newpipe/util/DeviceUtils.java#L325"
+    ]
+  },
+  {
+    "id": 22,
+    "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
+    "versions": [
+      {
+        "op": "equals",
+        "value": 23
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "QM16XE_U"
+      }
+    ],
+    "urls": [
+      "https://github.com/TeamNewPipe/NewPipe/blob/22a709d53b21cf7bed8487f6974786f60e831046/app/src/main/java/org/schabi/newpipe/util/DeviceUtils.java#L325"
+    ]
+  },
+  {
+    "id": 23,
+    "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
+    "versions": [
+      {
+        "op": "equals",
+        "value": 29
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "BRAVIA_VH1"
+      },
+      {
+        "op": "equals",
+        "value": "BRAVIA_VH2"
+      }
+    ],
+    "urls": [
+      "https://github.com/TeamNewPipe/NewPipe/blob/22a709d53b21cf7bed8487f6974786f60e831046/app/src/main/java/org/schabi/newpipe/util/DeviceUtils.java#L325"
+    ]
+  },
+  {
+    "id": 24,
+    "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
+    "devices": [
+      {
+        "op": "equals",
+        "value": "BRAVIA_ATV2"
+      },
+      {
+        "op": "equals",
+        "value": "BRAVIA_ATV3_4K"
+      },
+      {
+        "op": "equals",
+        "value": "TX_50JXW834"
+      },
+      {
+        "op": "equals",
+        "value": "HMB9213NW"
+      }
+    ],
+    "urls": [
+      "https://github.com/TeamNewPipe/NewPipe/blob/22a709d53b21cf7bed8487f6974786f60e831046/app/src/main/java/org/schabi/newpipe/util/DeviceUtils.java#L325"
+    ]
   }
 ]

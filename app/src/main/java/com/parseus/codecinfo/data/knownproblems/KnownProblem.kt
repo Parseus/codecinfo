@@ -130,13 +130,15 @@ data class KnownProblem(
             }
 
             if (((devices != null && deviceAffected) || (models != null && modelAffected)
-                    || (hardwares != null && hardwareAffected) || (socModels != null && socModelAffected))
+                    || (hardwares != null && hardwareAffected)
+                        || (manufacturers != null && manufacturerAffected)
+                        || (socModels != null && socModelAffected))
                 && versionAffected) {
                 // Sixth case: both device/model/hardware/SoC and version match.
                 return true
             } else if (devices == null && models == null && hardwares == null && socModels == null
-                && versionAffected) {
-                // Seventh case: version matches regardless of the device/model/hardware/SoC.
+                && manufacturers == null && versionAffected) {
+                // Seventh case: version matches regardless of the device/model/manufacturer/hardware/SoC.
                 return true
             }
         }

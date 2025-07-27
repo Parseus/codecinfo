@@ -20,6 +20,7 @@ data class KnownProblem(
         val models: List<Model>? = null,
         val hardwares: List<Hardware>? = null,
         val socModels: List<SoCModel>? = null,
+        val manufacturers: List<Manufacturers>? = null,
         val urls: List<String>
 ) {
 
@@ -75,6 +76,20 @@ data class KnownProblem(
 
             // Fourth case: device models that have no additional version requirement.
             if (modelAffected && versions == null) {
+                return true
+            }
+        }
+
+        val manufacturer = Build.MANUFACTURER
+        var manufacturerAffected = false
+        manufacturers?.forEach {
+            if ((it.op == "equals" && manufacturer == it.value)
+                || (it.op == "startsWith" && manufacturer.startsWith(it.value))) {
+                manufacturerAffected = manufacturer.equals(it.value, true)
+            }
+
+            // Second case: devices that have no additional version requirement.
+            if (manufacturerAffected && versions == null) {
                 return true
             }
         }
@@ -162,6 +177,12 @@ data class Hardware(
 
 @JsonClass(generateAdapter = true)
 data class SoCModel(
+    val op: String,
+    val value: String
+)
+
+@JsonClass(generateAdapter = true)
+data class Manufacturers(
     val op: String,
     val value: String
 )

@@ -24,6 +24,7 @@ class HardenedWebView : WebView {
             allowFileAccess = false
             allowFileAccessFromFileURLs = false
             allowUniversalAccessFromFileURLs = false
+            blockNetworkLoads = true
             cacheMode = WebSettings.LOAD_NO_CACHE
             saveFormData = false
         }

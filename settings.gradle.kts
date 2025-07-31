@@ -19,8 +19,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = "https://jitpack.io" }
+        maven ( url = "https://jitpack.io" )
     }
 }
 rootProject.name = "CodecInfo"
-include ':app'
+include(":app")

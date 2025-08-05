@@ -548,7 +548,7 @@ fun MaterialAlertDialogBuilder.updateBackgroundColor(context: Context): Material
         context,
         null,
         androidx.appcompat.R.attr.alertDialogStyle,
-        com.google.android.material.R.style.MaterialAlertDialog_MaterialComponents
+        com.google.android.material.R.style.MaterialAlertDialog_Material3Expressive
     )
     materialShapeDrawable.initializeElevationOverlay(context)
     materialShapeDrawable.fillColor = ColorStateList.valueOf(getSurfaceColor(context))

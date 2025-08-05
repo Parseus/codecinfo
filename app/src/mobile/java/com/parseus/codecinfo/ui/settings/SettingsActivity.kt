@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.activity.addCallback
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
@@ -38,7 +37,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import androidx.core.content.edit
-import androidx.core.view.forEach
+import androidx.core.view.ViewGroupCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.updatePadding
 
 class SettingsActivity : MonetCompatActivity() {
 
@@ -51,7 +52,7 @@ class SettingsActivity : MonetCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CodecInfo)
-        enableEdgeToEdge()
+        WindowCompat.enableEdgeToEdge(window)
         val startingFromAlias = intent?.component?.className?.startsWith("alias.SettingsActivity") == true
         if (startingFromAlias) {
             delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
@@ -109,16 +110,12 @@ class SettingsActivity : MonetCompatActivity() {
         }
         window.updateStatusBarColor(this)
         binding.toolbar.updateToolBarColor(this)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
-            var consumed = false
-            (view as ViewGroup).forEach { child ->
-                val childResult = ViewCompat.dispatchApplyWindowInsets(child, windowInsets)
-                if (childResult.isConsumed) {
-                    consumed = true
-                }
-            }
-
-            if (consumed) WindowInsetsCompat.CONSUMED else windowInsets
+        binding.appBar.updateBackgroundColor(this)
+        ViewGroupCompat.installCompatInsetsDispatch(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.content) { view, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            view.updatePadding(bottom = insets.bottom)
+            WindowInsetsCompat.CONSUMED
         }
     }
 

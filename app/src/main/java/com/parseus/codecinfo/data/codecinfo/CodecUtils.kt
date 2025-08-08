@@ -111,7 +111,8 @@ private val knownVendorLowLatencyOptions = listOf(
     // https://github.com/codewalkerster/android_vendor_amlogic_common_prebuilt_libstagefrighthw/commit/41fefc4e035c476d58491324a5fe7666bfc2989e
     "vendor.low-latency.enable",
     // https://github.com/yuan1617/Framwork/blob/master/frameworks/av/media/libstagefright/ACodec.cpp
-    "vdec-lowlatency"
+    "vdec-lowlatency",
+    "vendor.mtk.ext.venc.wfd.low-latency-enabled"
 )
 
 private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()

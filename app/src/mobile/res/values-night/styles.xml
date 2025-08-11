@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Widget.CodecInfo.Toolbar.PrimarySurface" parent="Widget.Material3.Toolbar.Surface">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.Material3.Toolbar.Surface</item>
+    <style name="Widget.CodecInfo.Toolbar.PrimarySurface" parent="Widget.Material3Expressive.Toolbar.Surface">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.Material3Expressive.Toolbar.Surface</item>
     </style>
 </resources>

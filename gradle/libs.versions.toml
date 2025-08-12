@@ -41,7 +41,7 @@ androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version
 androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "preference" }
 app-update = { module = "com.google.android.play:app-update", version.ref = "app-update" }
 app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "app-update-ktx" }
-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 material = { module = "com.google.android.material:material", version.ref = "material" }

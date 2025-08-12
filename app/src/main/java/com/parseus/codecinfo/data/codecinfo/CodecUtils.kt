@@ -99,20 +99,31 @@ private val framerateClasses = arrayOf(
 )
 
 private val knownVendorLowLatencyOptions = listOf(
+    // Qualcomm
     // https://cs.android.com/android/platform/superproject/+/master:hardware/qcom/sdm845/media/mm-video-v4l2/vidc/vdec/src/omx_vdec_extensions.hpp
     "vendor.qti-ext-dec-picture-order.enable",
     "vendor.qti-ext-dec-low-latency.enable",
     // https://cs.android.com/android/platform/superproject/+/master:hardware/qcom/sdm845/media/mm-video-v4l2/vidc/venc/src/omx_video_extensions.hpp
     "vendor.gti-ext-enc-low-latency.enable",
-    // https://developer.huawei.com/consumer/cn/forum/topic/0202325564295980115
-    "vendor.hisi-ext-low-latency-video-dec.video-scene-for-low-latency-req",
+
+    // Samsung (Exynos only)
+    // https://github.com/LineageOS/android_hardware_samsung_slsi-linaro_codec2/blob/lineage-22.2/include/api/ExynosC2Constants.h
     "vendor.rtc-ext-dec-low-latency.enable",
     "vendor.rtc-ext-enc-low-latency.enable",
-    // https://github.com/codewalkerster/android_vendor_amlogic_common_prebuilt_libstagefrighthw/commit/41fefc4e035c476d58491324a5fe7666bfc2989e
-    "vendor.low-latency.enable",
+
+    // Mediatek
     // https://github.com/yuan1617/Framwork/blob/master/frameworks/av/media/libstagefright/ACodec.cpp
     "vdec-lowlatency",
-    "vendor.mtk.ext.venc.wfd.low-latency-enabled"
+    "vendor.mtk-codec2.low-latency-mode",
+    "vendor.mtk.ext.venc.wfd.low-latency-enabled",
+
+    // HiSilicon
+    // https://developer.huawei.com/consumer/cn/forum/topic/0202325564295980115
+    "vendor.hisi-ext-low-latency-video-dec.video-scene-for-low-latency-req",
+
+    // Amlogic
+    // https://github.com/codewalkerster/android_vendor_amlogic_common_prebuilt_libstagefrighthw/commit/41fefc4e035c476d58491324a5fe7666bfc2989e
+    "vendor.low-latency.enable"
 )
 
 private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()

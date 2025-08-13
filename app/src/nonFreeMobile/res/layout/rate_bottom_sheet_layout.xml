@@ -4,21 +4,19 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <View
-        android:layout_width="31dp"
-        android:layout_height="3dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="5dp"
-        android:background="#EBEBEB" />
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"/>
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btnRateBottomSheetCancel"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="?attr/minTouchTargetSize"
+        android:layout_height="?attr/minTouchTargetSize"
         android:layout_gravity="end"
-        android:layout_margin="5dp"
+        android:layout_margin="8dp"
         android:background="?attr/selectableItemBackground"
-        android:padding="5dp"
+        android:padding="8dp"
         android:contentDescription="@string/rate_popup_close_description"
         app:srcCompat="@drawable/ic_close" />
 
@@ -85,8 +83,7 @@
                 android:id="@+id/btnRateBottomSheetOk"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/rate_popup_ok"
-                style="@style/Widget.Material3Expressive.Button"/>
+                android:text="@string/rate_popup_ok"/>
 
         </LinearLayout>
 

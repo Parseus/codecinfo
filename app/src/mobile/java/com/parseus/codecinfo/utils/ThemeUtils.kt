@@ -434,7 +434,7 @@ fun Window.updateStatusBarColor(context: Context) {
             insetsController?.setSystemBarsAppearance(if (lightStatusBar)
                 WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS else 0,
                 WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-        } else if (Build.VERSION.SDK_INT >= 23) {
+        } else {
             val statusBarFlag = if (lightStatusBar) View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else 0
             decorView.systemUiVisibility =
                 (decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()) or statusBarFlag

@@ -6,6 +6,6 @@
         <item name="settingsIconColor">?android:attr/textColorSecondary</item>
     </style>
 
-    <style name="Platform.V21.Theme.CodecInfo" parent="Theme.AppCompat.NoActionBar" />
-    <style name="Platform.Theme.CodecInfo" parent="Platform.V21.Theme.CodecInfo" />
+    <style name="Platform.V23.Theme.CodecInfo" parent="Theme.AppCompat.NoActionBar" />
+    <style name="Platform.Theme.CodecInfo" parent="Platform.V23.Theme.CodecInfo" />
 </resources>

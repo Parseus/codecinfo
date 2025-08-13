@@ -1074,7 +1074,7 @@
     "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
     "versions": [
       {
-        "op": "equals",
+        "op": "=",
         "value": 24
       }
     ],
@@ -1097,7 +1097,7 @@
     "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
     "versions": [
       {
-        "op": "equals",
+        "op": "=",
         "value": 25
       }
     ],
@@ -1135,7 +1135,7 @@
     "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
     "versions": [
       {
-        "op": "equals",
+        "op": "=",
         "value": 23
       }
     ],
@@ -1154,7 +1154,7 @@
     "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
     "versions": [
       {
-        "op": "equals",
+        "op": "=",
         "value": 29
       }
     ],

@@ -18,8 +18,8 @@
     "description": "This codec is unable to play 7.1 audio encoded with AAC on some Samsung devices with Android <7.0.",
     "versions": [
       {
-        "op": "<",
-        "value": 24
+        "op": "=",
+        "value": 23
       }
     ],
     "devices": [
@@ -62,8 +62,8 @@
     "description": "This codec is unable to play 7.1 audio encoded with AAC on Android <7.0.",
     "versions": [
       {
-        "op": "<",
-        "value": 24
+        "op": "=",
+        "value": 23
       }
     ],
     "devices": [
@@ -106,8 +106,8 @@
     "description": "This decoder is known to output six audio channels when provided with input with fewer than six channels on Samsung Galaxy S6/S7.",
     "versions": [
       {
-        "op": "<",
-        "value": 24
+        "op": "=",
+        "value": 23
       }
     ],
     "devices": [
@@ -131,17 +131,12 @@
   {
     "id": 5,
     "codec_name": "OMX.google.raw.decoder",
-    "description": "OMX.google.raw.decoder doesn't resize its output buffers correctly prior on Android <7.0, except on Android TV running 6.0. This will cause a native crash when attempting to fill an input buffer that is bigger than the output one.",
+    "description": "OMX.google.raw.decoder doesn't resize its output buffers correctly prior on non-TV devices running on Android 6.0. This will cause a native crash when attempting to fill an input buffer that is bigger than the output one.",
     "versions": [
       {
-        "op": "<",
-        "value": 24,
-        "platform": "mobile"
-      },
-      {
-        "op": "<",
+        "op": "=",
         "value": 23,
-        "platform": "tv"
+        "platform": "mobile"
       }
     ],
     "urls": [
@@ -164,56 +159,6 @@
   },
   {
     "id": 7,
-    "codec_name": "OMX.Exynos.AVC.Decoder",
-    "description": "This decoder is known to fail on Odroid-XU3 and Nexus 10 when adapting, despite advertising itself as an adaptive decoder.",
-    "versions": [
-      {
-        "op": "<=",
-        "value": 22
-      }
-    ],
-    "models": [
-      {
-        "op": "equals",
-        "value": "ODROID-XU3"
-      },
-      {
-        "op": "equals",
-        "value": "Nexus 10"
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/2806",
-      "https://github.com/google/ExoPlayer/pull/2612"
-    ]
-  },
-  {
-    "id": 8,
-    "codec_name": "OMX.Exynos.AVC.Decoder.secure",
-    "description": "This decoder is known to fail on Odroid-XU3 and Nexus 10 when adapting, despite advertising itself as an adaptive decoder.",
-    "versions": [
-      {
-        "op": "<=",
-        "value": 22
-      }
-    ],
-    "models": [
-      {
-        "op": "equals",
-        "value": "ODROID-XU3"
-      },
-      {
-        "op": "equals",
-        "value": "Nexus 10"
-      }
-    ],
-    "urls": [
-      "https://github.com/google/ExoPlayer/issues/2806",
-      "https://github.com/google/ExoPlayer/pull/2612"
-    ]
-  },
-  {
-    "id": 9,
     "codec_name": "OMX.google.raw.decoder",
     "description": "This device does not list a generic raw audio decoder, yet it can be instantiated by name.",
     "versions": [
@@ -233,7 +178,7 @@
     ]
   },
   {
-    "id": 10,
+    "id": 8,
     "codec_name": "OMX.rk.video_decoder.avc",
     "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
@@ -247,7 +192,7 @@
     ]
   },
   {
-    "id": 11,
+    "id": 9,
     "codec_name": "OMX.broadcom.video_decoder.tunnel",
     "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
@@ -261,7 +206,7 @@
     ]
   },
   {
-    "id": 12,
+    "id": 10,
     "codec_name": "OMX.broadcom.video_decoder.tunnel.secure",
     "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
@@ -275,12 +220,12 @@
     ]
   },
   {
-    "id": 13,
+    "id": 11,
     "codec_name": "OMX.google.vorbis.decoder",
     "description": "This decoder is known to behave incorrectly if flushed after receiving an input buffer with <i>BUFFER_FLAG_END_OF_STREAM</i> set.",
     "versions": [
       {
-        "op": "<=",
+        "op": "=",
         "value": 23
       }
     ],
@@ -289,7 +234,7 @@
     ]
   },
   {
-    "id": 14,
+    "id": 12,
     "codec_name": "c2.android.aac.decoder",
     "description": "This decoder is known to behave incorrectly if flushed prior to having output a <i>MediaFormat</i>.",
     "versions": [
@@ -303,21 +248,7 @@
     ]
   },
   {
-    "id": 15,
-    "codec_name": "OMX.google.aac.decoder",
-    "description": "This decoder may throw an exception after recieving an end-of-stream buffer.",
-    "versions": [
-      {
-        "op": "=",
-        "value": 21
-      }
-    ],
-    "urls": [
-      "https://github.com/androidx/media/blob/4b4a9fe02215dc75ca671e4ea70612a5a4c5af10/libraries/exoplayer/src/main/java/androidx/media3/exoplayer/mediacodec/MediaCodecRenderer.java#L2459"
-    ]
-  },
-  {
-    "id": 16,
+    "id": 13,
     "codec_name": "c2.qti.video.decoder.hevc",
     "description": "HEVC codec on Pixel and Pixel XL declares support for 10-bit videos despite not actually supporting them.",
     "devices": [
@@ -335,7 +266,7 @@
     ]
   },
   {
-    "id": 17,
+    "id": 14,
     "codec_name": "OMX.Exynos.AVC.Decoder.secure",
     "description": "This decoder is known to turn off or reboot the device after while trying to play an adaptive stream.",
     "versions": [
@@ -367,13 +298,13 @@
     ]
   },
   {
-    "id": 18,
+    "id": 15,
     "codec_name": "OMX.Nvidia.h264.decode",
     "description": "This decoder is known to turn off or reboot the device after while trying to play an adaptive stream.",
     "versions": [
       {
-        "op": "<",
-        "value": 24
+        "op": "=",
+        "value": 23
       }
     ],
     "models": [
@@ -400,13 +331,13 @@
     ]
   },
   {
-    "id": 19,
+    "id": 16,
     "codec_name": "OMX.Nvidia.h264.decode.secure",
     "description": "This decoder is known to turn off or reboot the device after while trying to play an adaptive stream.",
     "versions": [
       {
-        "op": "<",
-        "value": 24
+        "op": "=",
+        "value": 23
       }
     ],
     "models": [
@@ -433,7 +364,7 @@
     ]
   },
   {
-    "id": 20,
+    "id": 17,
     "codec_name": "OMX.bcm.vdec.avc.tunnel",
     "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
@@ -447,7 +378,7 @@
     ]
   },
   {
-    "id": 21,
+    "id": 18,
     "codec_name": "OMX.bcm.vdec.avc.tunnel.secure",
     "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
@@ -461,7 +392,7 @@
     ]
   },
   {
-    "id": 22,
+    "id": 19,
     "codec_name": "OMX.bcm.vdec.hevc.tunnel",
     "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
@@ -475,7 +406,7 @@
     ]
   },
   {
-    "id": 23,
+    "id": 20,
     "codec_name": "OMX.bcm.vdec.hevc.tunnel.secure",
     "description": "This decoder is known to handle <i>BUFFER_FLAG_END_OF_STREAM</i> propagation incorrectly on the host device.",
     "versions": [
@@ -489,7 +420,7 @@
     ]
   },
   {
-    "id": 24,
+    "id": 21,
     "codec_name": "OMX.google.opus.decoder",
     "description": "This decoder is known to output PCM samples in VORBIS order, which does not match the channel layout required by <i>AudioTrack</i>.",
     "versions": [
@@ -502,7 +433,7 @@
     ]
   },
   {
-    "id": 25,
+    "id": 22,
     "codec_name": "c2.android.opus.decoder",
     "description": "This decoder is known to output PCM samples in VORBIS order, which does not match the channel layout required by <i>AudioTrack</i>.",
     "versions": [
@@ -515,7 +446,7 @@
     ]
   },
   {
-    "id": 26,
+    "id": 23,
     "codec_name": "OMX.google.vorbis.decoder",
     "description": "This decoder is known to output PCM samples in VORBIS order, which does not match the channel layout required by <i>AudioTrack</i>.",
     "versions": [
@@ -528,7 +459,7 @@
     ]
   },
   {
-    "id": 27,
+    "id": 24,
     "codec_name": "c2.android.vorbis.decoder",
     "description": "This decoder is known to output PCM samples in VORBIS order, which does not match the channel layout required by <i>AudioTrack</i>.",
     "versions": [
@@ -541,7 +472,7 @@
     ]
   },
   {
-    "id": 28,
+    "id": 25,
     "codec_name": "OMX.google.h264.decoder",
     "description": "This decoder is known to produce incorrect colors on this device.",
     "models": [
@@ -563,7 +494,7 @@
     ]
   },
   {
-    "id": 29,
+    "id": 26,
     "codec_name": "OMX.qti.audio.decoder.flac",
     "description": "This decoder is known to fail at decoding some valid FLAC bitstreams.",
     "versions": [
@@ -578,7 +509,7 @@
     ]
   },
   {
-    "id": 30,
+    "id": 27,
     "codec_name": "c2.mtk.avc.decoder",
     "description": "Flushing a c2.mtk decoder that outputs to a SurfaceTexture often fails and leaves the SurfaceTexture's BufferQueue in an unrecoverable state. Release the codec instead.",
     "versions": [
@@ -591,7 +522,7 @@
     ]
   },
   {
-    "id": 31,
+    "id": 28,
     "codec_name": "c2.mtk.hevc.decoder",
     "description": "Flushing a c2.mtk decoder that outputs to a SurfaceTexture often fails and leaves the SurfaceTexture's BufferQueue in an unrecoverable state. Release the codec instead.",
     "versions": [
@@ -604,7 +535,7 @@
     ]
   },
   {
-    "id": 32,
+    "id": 29,
     "codec_name": "omx.amlogic.hevc.decoder.awesome",
     "description": "Fire TV 3's Amlogic HEVC decoder doesn't produce any output frames without setting the magic <b>vdec-lowlatency</b> <i>MediaFormat</i> option.",
     "models": [
@@ -618,7 +549,7 @@
     ]
   },
   {
-    "id": 33,
+    "id": 30,
     "codec_name": "omx.amlogic.hevc.decoder.awesome",
     "description": "Fire TV 3's Amlogic HEVC decoder hangs when receiving a stream with 16 reference frames.",
     "models": [
@@ -632,7 +563,7 @@
     ]
   },
   {
-    "id": 34,
+    "id": 31,
     "codec_name": "OMX.Nvidia.hevc.decoder",
     "description": "Pixel C's Nvidia HEVC decoder hangs when receiving a stream with 16 reference frames.",
     "models": [

@@ -153,9 +153,8 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         }
     }
 
-    if (SDK_INT <= 23 && mediaCodecInfos.find { it.name.endsWith("secure") } == null) {
-        // Some devices don't list secure decoders on API 21 with a newer way of querying codecs,
-        // but potentially could also happen on API levels 22 and 23.
+    if (SDK_INT == 23 && mediaCodecInfos.find { it.name.endsWith("secure") } == null) {
+        // Some devices may not list secure decoders on API 23 with a newer way of querying codecs.
         // In that case try the old way.
         try {
             @Suppress("DEPRECATION")
@@ -165,7 +164,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         } catch (_: Exception) {}
     }
 
-    if (SDK_INT in 22..25 && Build.DEVICE == "R9"
+    if (SDK_INT <= 25 && Build.DEVICE == "R9"
         && mediaCodecInfos.find { it.name == GOOGLE_RAW_DECODER } == null
         && mediaCodecInfos.find { it.name == MEDIATEK_RAW_DECODER } != null) {
         // Oppo R9 does not list a generic raw audio decoder, yet it can be instantiated by name.
@@ -292,10 +291,8 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             context.getString(if (isVendor(mediaCodecInfo))
                 R.string.codec_provider_oem else R.string.codec_provider_android)))
 
-    if (SDK_INT >= 23) {
-        propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.max_instances),
-                capabilities.maxSupportedInstances.toString()))
-    }
+    propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.max_instances),
+        capabilities.maxSupportedInstances.toString()))
 
     if (SDK_INT >= 36) {
         addSecurityModel(context, mediaCodecInfo, propertyList)
@@ -891,7 +888,7 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
 
     // On Android <=6.0, some devices do not advertise VP9 profile level support.
     // In this case, estimate the level from MediaCodecInfo.VideoCapabilities instead.
-    if (SDK_INT <= 23 && codecId.endsWith("vp9") && profileLevels.isEmpty()) {
+    if (SDK_INT == 23 && codecId.endsWith("vp9") && profileLevels.isEmpty()) {
         val vp9Level = getMaxVP9ProfileLevel(capabilities)
         // Assume all platforms before N only support VP9 profile 0.
         profile = VP9Profiles.VP9Profile0.name

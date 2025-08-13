@@ -9,7 +9,7 @@ android {
     compileSdk = 36
     defaultConfig {
         applicationId = "com.parseus.codecinfo"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
         versionCode = 28
         versionName = "2.9.0"
@@ -34,6 +34,7 @@ android {
     }
 
     androidResources {
+        @Suppress("UnstableApiUsage")
         localeFilters += listOf("en")
     }
 
@@ -77,11 +78,12 @@ android {
 
         compilerOptions {
             freeCompilerArgs.addAll(
-                    "-Xjsr305=strict",
-                    "-Xemit-jvm-type-annotations",
-                    "-Xjvm-default=all",
-                    "-Xtype-enhancement-improvements-strict-mode",
-                    "-Xjspecify-annotations=strict"
+                "-Xannotation-default-target=param-property",
+                "-Xjsr305=strict",
+                "-Xemit-jvm-type-annotations",
+                "-Xjvm-default=all",
+                "-Xtype-enhancement-improvements-strict-mode",
+                "-Xjspecify-annotations=strict"
             )
         }
     }

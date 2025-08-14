@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.appcompat.widget.TooltipCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -60,6 +61,8 @@ abstract class ABaseRateBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.apply {
+            TooltipCompat.setTooltipText(btnRateBottomSheetCancel,
+                getString(R.string.rate_popup_close_description))
             btnRateBottomSheetCancel.visibility =
                     if (RateBottomSheetManager.showCloseButtonIcon) View.VISIBLE else View.GONE
 

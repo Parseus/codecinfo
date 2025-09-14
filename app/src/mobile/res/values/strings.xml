@@ -8,6 +8,7 @@
     <string name="feedback_email" translatable="false">parseus.dev@gmail.com</string>
     <string name="email_subject">Feedback</string>
     <string name="choose_email">Send feedback via…</string>
+    <string name="no_apps_for_action">No apps can perform this action.</string>
     <string name="no_email_apps">No apps can perform this action. Unable to copy the email address to the clipboard.</string>
     <string name="no_email_apps_clipboard">No apps can perform this action. Email address was copied to the clipboard.</string>
 

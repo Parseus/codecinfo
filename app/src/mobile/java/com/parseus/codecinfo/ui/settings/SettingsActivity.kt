@@ -314,7 +314,7 @@ class SettingsActivity : MonetCompatActivity() {
             val alertDialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context).create()
             val colorPickerView = WallpaperColorPickerLayoutBinding.inflate(layoutInflater).root
             colorPickerView.apply {
-                ViewCompat.setBackgroundTintList(this, ColorStateList.valueOf(
+                setBackgroundTintList(ColorStateList.valueOf(
                     MonetCompat.getInstance().getBackgroundColor(requireContext())
                 ))
                 layoutManager =

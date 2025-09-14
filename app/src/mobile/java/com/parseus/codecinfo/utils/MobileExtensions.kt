@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.util.TypedValue
 import androidx.annotation.AttrRes
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
@@ -48,7 +47,7 @@ fun Fragment.sendFeedbackEmail() {
     if (intent.resolveActivity(requireActivity().packageManager) != null) {
         startActivity(Intent.createChooser(intent, getString(R.string.choose_email)))
     } else {
-        val clipboard = ContextCompat.getSystemService(requireContext(), ClipboardManager::class.java)
+        val clipboard = requireContext().getSystemService<ClipboardManager>()
         clipboard?.setPrimaryClip(ClipData.newPlainText("email", feedbackEmail))
 
         Snackbar.make(requireActivity().findViewById(android.R.id.content),

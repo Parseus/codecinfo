@@ -6,7 +6,6 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
 import com.parseus.codecinfo.R
@@ -28,7 +27,7 @@ class OtherActionsPresenter : Presenter() {
         val cardView = ImageCardView(parent.context).apply {
             isFocusable = true
             isFocusableInTouchMode = true
-            setBackgroundColor(ContextCompat.getColor(parent.context, R.color.teal_700))
+            setBackgroundColor(parent.context.getColor(R.color.teal_700))
         }
         return ViewHolder(cardView)
     }

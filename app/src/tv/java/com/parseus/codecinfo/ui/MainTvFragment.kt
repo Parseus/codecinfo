@@ -3,7 +3,6 @@ package com.parseus.codecinfo.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
 import com.parseus.codecinfo.R
@@ -29,8 +28,8 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        brandColor = ContextCompat.getColor(requireContext(), R.color.purple_600)
-        searchAffordanceColor = ContextCompat.getColor(requireContext(), R.color.teal_700)
+        brandColor = requireContext().getColor(R.color.purple_600)
+        searchAffordanceColor = requireContext().getColor(R.color.teal_700)
         title = getString(R.string.app_name)
         headersState = HEADERS_ENABLED
         isHeadersTransitionOnBackEnabled = true

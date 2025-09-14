@@ -272,7 +272,7 @@ fun Menu.updateIconColors(context: Context, @ColorInt toolbarColor: Int) {
             }
         }
     } else {
-        ContextCompat.getColor(context, com.google.android.material.R.color.m3_dark_default_color_primary_text)
+        context.getColor(com.google.android.material.R.color.m3_dark_default_color_primary_text)
     }
 
     val searchView = findItem(R.id.menu_item_search).actionView as SearchView
@@ -337,7 +337,7 @@ fun MaterialToolbar.updateToolBarColor(context: Context) {
         } else {
             setBackgroundColor(MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, TAG))
         }
-        setTitleTextColor(ContextCompat.getColor(context, com.google.android.material.R.color.m3_dark_default_color_primary_text))
+        setTitleTextColor(context.getColor(com.google.android.material.R.color.m3_dark_default_color_primary_text))
     }
 }
 

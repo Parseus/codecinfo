@@ -26,7 +26,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.ColorUtils
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.forEach
 import androidx.preference.PreferenceManager
@@ -611,7 +610,7 @@ private fun Class<*>.getFieldByName(vararg name: String): Field? {
 private fun Drawable.tinted(@ColorInt color: Int): Drawable = when (this) {
     is VectorDrawableCompat -> this.apply { setTintList(ColorStateList.valueOf(color)) }
     is VectorDrawable -> this.apply { setTintList(ColorStateList.valueOf(color)) }
-    else -> DrawableCompat.wrap(this).also { it.setTint(color) }.let { DrawableCompat.unwrap(it) }
+    else -> this.apply { setTint(color) }
 }
 
 fun Number.spToPx(context: Context? = null): Float {

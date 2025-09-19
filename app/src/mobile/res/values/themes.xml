@@ -24,10 +24,10 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Platform.V21.Theme.CodecInfo" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
+    <style name="Platform.V23.Theme.CodecInfo" parent="Theme.Material3Expressive.DynamicColors.DayNight.NoActionBar">
         <item name="android:statusBarColor">?attr/colorPrimary</item>
     </style>
-    <style name="Platform.Theme.CodecInfo" parent="Platform.V21.Theme.CodecInfo" />
+    <style name="Platform.Theme.CodecInfo" parent="Platform.V23.Theme.CodecInfo" />
     
     <style name="ThemeOverlay.CodecInfo.NavigationRailView" parent="">
         <item name="colorOnSurface">@color/m3_ref_palette_neutral95</item>

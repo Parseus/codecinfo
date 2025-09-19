@@ -80,7 +80,7 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
             v.updatePadding(bottom = insets.bottom)
             WindowInsetsCompat.CONSUMED
         }
-        ViewCompat.requestApplyInsets(view)
+        view.requestApplyInsets()
 
         binding.loadingProgress.updateColors(requireContext())
 

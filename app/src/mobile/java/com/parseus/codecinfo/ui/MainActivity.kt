@@ -15,7 +15,6 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.Window
 import androidx.activity.addCallback
-import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatDelegate
@@ -26,6 +25,7 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.createBitmap
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
+import androidx.core.view.ViewGroupCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.forEach
@@ -130,7 +130,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         }
 
         installSplashScreen()
-        enableEdgeToEdge()
+        WindowCompat.enableEdgeToEdge(window)
 
         super.onCreate(savedInstanceState)
 
@@ -179,6 +179,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         binding.updateProgressBar?.updateColors(this)
 
         binding.appBar.updateBackgroundColor(this)
+        ViewGroupCompat.installCompatInsetsDispatch(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.contentFragment) { view, windowInsets ->
             var consumed = false
             (view as ViewGroup).forEach { child ->

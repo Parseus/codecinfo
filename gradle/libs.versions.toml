@@ -1,26 +1,26 @@
 [versions]
-agp = "8.11.0"
-kotlin = "2.2.0"
-ksp = "2.2.0-2.0.2"
+agp = "8.13.0"
+kotlin = "2.2.20"
+ksp = "2.2.20-2.0.3"
 
-activity = "1.12.0-alpha03"
+activity = "1.12.0-alpha08"
 app-update = "2.1.0"
 app-update-ktx = "2.1.0"
 appcompat = "1.7.1"
 constraintlayout = "2.2.1"
-core = "1.17.0-alpha01"
-core-splashscreen = "1.2.0-beta02"
+core = "1.17.0"
+core-splashscreen = "1.2.0-rc01"
 coroutines = "1.10.2"
-fragment = "1.8.8"
+fragment = "1.8.9"
 hiddenapibypass = "6.1"
 leakcanary = "2.14"
 leanback = "1.2.0"
 leanback-preference = "1.2.0"
 licenser = "2.0.0"
-material = "1.14.0-alpha02"
+material = "1.14.0-alpha04"
 monetcompat = "0.4.1"
 moshi = "1.15.2"
-okio = "3.13.0"
+okio = "3.16.0"
 palette = "1.0.0"
 preference = "1.2.1"
 recyclerview = "1.4.0"
@@ -41,7 +41,7 @@ androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version
 androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "preference" }
 app-update = { module = "com.google.android.play:app-update", version.ref = "app-update" }
 app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "app-update-ktx" }
-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 material = { module = "com.google.android.material:material", version.ref = "material" }

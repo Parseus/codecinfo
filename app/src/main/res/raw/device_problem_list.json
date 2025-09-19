@@ -72,11 +72,6 @@
   {
     "id": 3,
     "description": "OEM-provided codecs for some FireTV devices are known to implement MediaCodec#setOutputSurface(Surface) incorrectly.",
-    "versions": [
-      {
-        "op": "all"
-      }
-    ],
     "models": [
       {
         "op": "equals",
@@ -719,11 +714,6 @@
   {
     "id": 5,
     "description": "Nvidia devices apply additional post-processing which may cause issues with some media player libraries.",
-    "versions": [
-      {
-        "op": "all"
-      }
-    ],
     "manufacturers": [
       {
         "op": "equals",
@@ -760,11 +750,6 @@
   {
     "id": 7,
     "description": "All Huawei devices based on hi6210sft or hi6250 CPUs will immediately hang during MediaCodec.setOutputSurface(). Additionally, Huawei P9 lite will, eventually, get the decoder into a bad state if SetSurface is called enough times.",
-    "versions": [
-      {
-        "op": "all"
-      }
-    ],
     "hardwares": [
       {
         "op": "equals",
@@ -868,17 +853,6 @@
   {
     "id": 11,
     "description": "Decoders on FireTV Gen 2 are known to handle BUFFER_FLAG_END_OF_STREAM propagation incorrectly.",
-    "versions": [
-      {
-        "op": "all"
-      }
-    ],
-    "manufacturers": [
-      {
-        "op": "equals",
-        "value": "Amazon"
-      }
-    ],
     "models": [
       {
         "op": "equals",
@@ -892,11 +866,6 @@
   {
     "id": 12,
     "description": "<i>MediaCodecInfo</i> on this device reports that the maximum supported resolution of <i>video/mp4v-es</i> is 174x174, even though <i>CamcorderProfile</i> indicates it can support resolutions 1280x720 and 640x480.",
-    "versions": [
-      {
-        "op": "all"
-      }
-    ],
     "models": [
       {
         "op": "equals",
@@ -926,11 +895,6 @@
   {
     "id": 13,
     "description": "<i>MediaCodecInfo</i> on this device doesn't indicate that it can support 3840x2160 (4K), even though its <i>CamcorderProfile</i> does.",
-    "versions": [
-      {
-        "op": "all"
-      }
-    ],
     "models": [
       {
         "op": "equals",
@@ -949,11 +913,6 @@
   {
     "id": 14,
     "description": "<i>MediaCodecInfo</i> on this device reports that the maximum supported resolution of <i>video/avc</i> is 1920x1072, even though <i>CamcorderProfile</i> indicates it can support 1920x1080.",
-    "versions": [
-      {
-        "op": "all"
-      }
-    ],
     "models": [
       {
         "op": "equals",
@@ -1010,7 +969,7 @@
   },
   {
     "id": 15,
-    "description": "Xiaomi and Oppo devices are known to have issues with the detached surface mode, including screen flickering.",
+    "description": "Xiaomi, Oppo, Realme, Motorola and Lenovo devices are known to have issues with the detached surface mode, including screen flickering.",
     "versions": [
       {
         "op": ">=",
@@ -1025,6 +984,18 @@
       {
         "op": "equals",
         "value": "OPPO"
+      },
+      {
+        "op": "equals",
+        "value": "realme"
+      },
+      {
+        "op": "equals",
+        "value": "motorola"
+      },
+      {
+        "op": "equals",
+        "value": "lenovo"
       }
     ],
     "urls": [
@@ -1096,6 +1067,134 @@
     ],
     "urls": [
       "https://github.com/androidx/media/blob/a4f5f67d7eb30ae25f90802f4c032e1c7148885c/libraries/transformer/src/main/java/androidx/media3/transformer/DefaultDecoderFactory.java#L457"
+    ]
+  },
+  {
+    "id": 19,
+    "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 24
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "Hi3798MV200"
+      },
+      {
+        "op": "equals",
+        "value": "cvt_mt5886_eu_1g"
+      }
+    ],
+    "urls": [
+      "https://github.com/TeamNewPipe/NewPipe/blob/22a709d53b21cf7bed8487f6974786f60e831046/app/src/main/java/org/schabi/newpipe/util/DeviceUtils.java#L325"
+    ]
+  },
+  {
+    "id": 20,
+    "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 25
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "RealtekATV"
+      }
+    ],
+    "urls": [
+      "https://github.com/TeamNewPipe/NewPipe/blob/22a709d53b21cf7bed8487f6974786f60e831046/app/src/main/java/org/schabi/newpipe/util/DeviceUtils.java#L325"
+    ]
+  },
+  {
+    "id": 21,
+    "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
+    "versions": [
+      {
+        "op": ">=",
+        "value": 26
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "PH7M_EU_5596"
+      }
+    ],
+    "urls": [
+      "https://github.com/TeamNewPipe/NewPipe/blob/22a709d53b21cf7bed8487f6974786f60e831046/app/src/main/java/org/schabi/newpipe/util/DeviceUtils.java#L325"
+    ]
+  },
+  {
+    "id": 22,
+    "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 23
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "QM16XE_U"
+      }
+    ],
+    "urls": [
+      "https://github.com/TeamNewPipe/NewPipe/blob/22a709d53b21cf7bed8487f6974786f60e831046/app/src/main/java/org/schabi/newpipe/util/DeviceUtils.java#L325"
+    ]
+  },
+  {
+    "id": 23,
+    "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
+    "versions": [
+      {
+        "op": "=",
+        "value": 29
+      }
+    ],
+    "devices": [
+      {
+        "op": "equals",
+        "value": "BRAVIA_VH1"
+      },
+      {
+        "op": "equals",
+        "value": "BRAVIA_VH2"
+      }
+    ],
+    "urls": [
+      "https://github.com/TeamNewPipe/NewPipe/blob/22a709d53b21cf7bed8487f6974786f60e831046/app/src/main/java/org/schabi/newpipe/util/DeviceUtils.java#L325"
+    ]
+  },
+  {
+    "id": 24,
+    "description": "Codecs on this device have broken tunneled video playback but claim to support it. This can cause a black video player surface while attempting to play a video, stuttering or even crashes.",
+    "devices": [
+      {
+        "op": "equals",
+        "value": "BRAVIA_ATV2"
+      },
+      {
+        "op": "equals",
+        "value": "BRAVIA_ATV3_4K"
+      },
+      {
+        "op": "equals",
+        "value": "TX_50JXW834"
+      },
+      {
+        "op": "equals",
+        "value": "HMB9213NW"
+      }
+    ],
+    "urls": [
+      "https://github.com/TeamNewPipe/NewPipe/blob/22a709d53b21cf7bed8487f6974786f60e831046/app/src/main/java/org/schabi/newpipe/util/DeviceUtils.java#L325"
     ]
   }
 ]

@@ -20,6 +20,7 @@ data class KnownProblem(
         val models: List<Model>? = null,
         val hardwares: List<Hardware>? = null,
         val socModels: List<SoCModel>? = null,
+        val manufacturers: List<Manufacturers>? = null,
         val urls: List<String>
 ) {
 
@@ -79,6 +80,20 @@ data class KnownProblem(
             }
         }
 
+        val manufacturer = Build.MANUFACTURER
+        var manufacturerAffected = false
+        manufacturers?.forEach {
+            if ((it.op == "equals" && manufacturer == it.value)
+                || (it.op == "startsWith" && manufacturer.startsWith(it.value))) {
+                manufacturerAffected = manufacturer.equals(it.value, true)
+            }
+
+            // Second case: devices that have no additional version requirement.
+            if (manufacturerAffected && versions == null) {
+                return true
+            }
+        }
+
         var socModelAffected = false
         if (Build.VERSION.SDK_INT >= 31) {
             val socModel = Build.SOC_MODEL
@@ -115,13 +130,15 @@ data class KnownProblem(
             }
 
             if (((devices != null && deviceAffected) || (models != null && modelAffected)
-                    || (hardwares != null && hardwareAffected) || (socModels != null && socModelAffected))
+                    || (hardwares != null && hardwareAffected)
+                        || (manufacturers != null && manufacturerAffected)
+                        || (socModels != null && socModelAffected))
                 && versionAffected) {
                 // Sixth case: both device/model/hardware/SoC and version match.
                 return true
             } else if (devices == null && models == null && hardwares == null && socModels == null
-                && versionAffected) {
-                // Seventh case: version matches regardless of the device/model/hardware/SoC.
+                && manufacturers == null && versionAffected) {
+                // Seventh case: version matches regardless of the device/model/manufacturer/hardware/SoC.
                 return true
             }
         }
@@ -162,6 +179,12 @@ data class Hardware(
 
 @JsonClass(generateAdapter = true)
 data class SoCModel(
+    val op: String,
+    val value: String
+)
+
+@JsonClass(generateAdapter = true)
+data class Manufacturers(
     val op: String,
     val value: String
 )

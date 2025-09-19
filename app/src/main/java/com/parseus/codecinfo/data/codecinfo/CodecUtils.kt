@@ -14,7 +14,6 @@ import android.util.Log
 import android.util.Range
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
-import androidx.core.text.HtmlCompat
 import androidx.preference.PreferenceManager
 import com.parseus.codecinfo.*
 import com.parseus.codecinfo.data.DetailsProperty
@@ -100,11 +99,29 @@ private val framerateClasses = arrayOf(
 )
 
 private val knownVendorLowLatencyOptions = listOf(
+    // Qualcomm
     // https://cs.android.com/android/platform/superproject/+/master:hardware/qcom/sdm845/media/mm-video-v4l2/vidc/vdec/src/omx_vdec_extensions.hpp
+    "vendor.qti-ext-dec-picture-order.enable",
     "vendor.qti-ext-dec-low-latency.enable",
+    // https://cs.android.com/android/platform/superproject/+/master:hardware/qcom/sdm845/media/mm-video-v4l2/vidc/venc/src/omx_video_extensions.hpp
+    "vendor.gti-ext-enc-low-latency.enable",
+
+    // Samsung (Exynos only)
+    // https://github.com/LineageOS/android_hardware_samsung_slsi-linaro_codec2/blob/lineage-22.2/include/api/ExynosC2Constants.h
+    "vendor.rtc-ext-dec-low-latency.enable",
+    "vendor.rtc-ext-enc-low-latency.enable",
+
+    // Mediatek
+    // https://github.com/yuan1617/Framwork/blob/master/frameworks/av/media/libstagefright/ACodec.cpp
+    "vdec-lowlatency",
+    "vendor.mtk-codec2.low-latency-mode",
+    "vendor.mtk.ext.venc.wfd.low-latency-enabled",
+
+    // HiSilicon
     // https://developer.huawei.com/consumer/cn/forum/topic/0202325564295980115
     "vendor.hisi-ext-low-latency-video-dec.video-scene-for-low-latency-req",
-    "vendor.rtc-ext-dec-low-latency.enable",
+
+    // Amlogic
     // https://github.com/codewalkerster/android_vendor_amlogic_common_prebuilt_libstagefrighthw/commit/41fefc4e035c476d58491324a5fe7666bfc2989e
     "vendor.low-latency.enable"
 )
@@ -136,9 +153,8 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         }
     }
 
-    if (SDK_INT <= 23 && mediaCodecInfos.find { it.name.endsWith("secure") } == null) {
-        // Some devices don't list secure decoders on API 21 with a newer way of querying codecs,
-        // but potentially could also happen on API levels 22 and 23.
+    if (SDK_INT == 23 && mediaCodecInfos.find { it.name.endsWith("secure") } == null) {
+        // Some devices may not list secure decoders on API 23 with a newer way of querying codecs.
         // In that case try the old way.
         try {
             @Suppress("DEPRECATION")
@@ -148,7 +164,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         } catch (_: Exception) {}
     }
 
-    if (SDK_INT in 22..25 && Build.DEVICE == "R9"
+    if (SDK_INT <= 25 && Build.DEVICE == "R9"
         && mediaCodecInfos.find { it.name == GOOGLE_RAW_DECODER } == null
         && mediaCodecInfos.find { it.name == MEDIATEK_RAW_DECODER } != null) {
         // Oppo R9 does not list a generic raw audio decoder, yet it can be instantiated by name.
@@ -267,18 +283,16 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
     propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.software_only),
             isSoftwareOnly(mediaCodecInfo).toString()))
 
-    if (!isEncoder && SDK_INT >= 30) {
-        addLowLatencyFeatureIfSupported(context, codecName, capabilities, propertyList)
+    if (SDK_INT >= 30) {
+        addLowLatencyFeatureIfSupported(context, codecName, isEncoder, capabilities, propertyList)
     }
 
     propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.codec_provider),
             context.getString(if (isVendor(mediaCodecInfo))
                 R.string.codec_provider_oem else R.string.codec_provider_android)))
 
-    if (SDK_INT >= 23) {
-        propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.max_instances),
-                capabilities.maxSupportedInstances.toString()))
-    }
+    propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.max_instances),
+        capabilities.maxSupportedInstances.toString()))
 
     if (SDK_INT >= 36) {
         addSecurityModel(context, mediaCodecInfo, propertyList)
@@ -388,22 +402,30 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
 @RequiresApi(30)
 private fun addLowLatencyFeatureIfSupported(context: Context,
                                             codecName: String,
+                                            isEncoder: Boolean,
                                             capabilities: MediaCodecInfo.CodecCapabilities,
                                             propertyList: MutableList<DetailsProperty>) {
-    if (capabilities.isFeatureSupported(FEATURE_LowLatency)) {
-        propertyList.addFeature(context, capabilities, FEATURE_LowLatency, R.string.low_latency)
+    if (!isEncoder && capabilities.isFeatureSupported(FEATURE_LowLatency)) {
+        propertyList.addFeature(context, capabilities, FEATURE_LowLatency, R.string.low_latency_decoder)
     } else if (SDK_INT >= 31) {
         var codec: MediaCodec? = null
         try {
             codec = MediaCodec.createByCodecName(codecName)
             val vendorLowLatencyKey = codec.supportedVendorParameters.find { it in knownVendorLowLatencyOptions }
             val featureString = if (vendorLowLatencyKey != null) {
-                HtmlCompat.fromHtml(context.getString(R.string.feature_low_latency_vendor_supported, vendorLowLatencyKey),
-                    HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+                val supportStringResId = if (isEncoder)
+                    R.string.feature_low_latency_vendor_supported_encoder
+                else
+                    R.string.feature_low_latency_vendor_supported_decoder
+                context.getString(supportStringResId, vendorLowLatencyKey)
             } else {
                 false.toString()
             }
-            propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.low_latency), featureString))
+            val lowLatencyResId = if (isEncoder)
+                R.string.low_latency_encoder
+            else
+                R.string.low_latency_decoder
+            propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(lowLatencyResId), featureString))
         } catch (_: Exception) {}
         finally {
             codec?.release()
@@ -720,6 +742,7 @@ private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, code
             codecName.contains("Renesas", true) -> RenesasColorFormat.from(colorFormats[it])
             codecName.contains("OMX.PSC", true) || codecName.contains("OMX.SNI", true)
             -> PanasonicSNIColorFormat.from(colorFormats[it])
+            codecName.contains("OMX.sf", true) -> StarFiveColorFormat.from(colorFormats[it])
             codecName.contains("OMX.TI", true) || codecName.contains("INTEL", true)
                     || codecName.contains("OMX.rk", true) || codecName.contains("OMX.sprd", true)
             -> OtherColorFormat.from(colorFormats[it])
@@ -865,7 +888,7 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
 
     // On Android <=6.0, some devices do not advertise VP9 profile level support.
     // In this case, estimate the level from MediaCodecInfo.VideoCapabilities instead.
-    if (SDK_INT <= 23 && codecId.endsWith("vp9") && profileLevels.isEmpty()) {
+    if (SDK_INT == 23 && codecId.endsWith("vp9") && profileLevels.isEmpty()) {
         val vp9Level = getMaxVP9ProfileLevel(capabilities)
         // Assume all platforms before N only support VP9 profile 0.
         profile = VP9Profiles.VP9Profile0.name
@@ -1104,8 +1127,11 @@ private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {
         return false
     }
 
-    // Intel codecs which specifically mention HW acceleration in their names
+    // Intel codecs which are known to be HW-only
     if (codecName.startsWith("omx.intel.hw_vd", true)) {
+        return false
+    }
+    if (codecName.contains("omx.intel.videodecoder", true)) {
         return false
     }
 

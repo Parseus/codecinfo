@@ -27,6 +27,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.kieronquinn.monetcompat.extensions.applyMonet
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.AboutAppFragmentBinding
@@ -151,7 +152,12 @@ class AboutFragment : Fragment() {
         if (isAdded) {
             val issuePageIntent = Intent(Intent.ACTION_VIEW, GITHUB_PAGE.toUri())
             issuePageIntent.addFlags(externalAppIntentFlags)
-            startActivity(issuePageIntent)
+            try {
+                startActivity(issuePageIntent)
+            } catch (_: Exception) {
+                Snackbar.make(requireActivity().findViewById(android.R.id.content),
+                    R.string.no_apps_for_action, Snackbar.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -159,7 +165,12 @@ class AboutFragment : Fragment() {
         if (isAdded) {
             val issuePageIntent = Intent(Intent.ACTION_VIEW, ISSUE_PAGE.toUri())
             issuePageIntent.addFlags(externalAppIntentFlags)
-            startActivity(issuePageIntent)
+            try {
+                startActivity(issuePageIntent)
+            } catch (_: Exception) {
+                Snackbar.make(requireActivity().findViewById(android.R.id.content),
+                    R.string.no_apps_for_action, Snackbar.LENGTH_LONG).show()
+            }
         }
     }
 

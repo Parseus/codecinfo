@@ -51,9 +51,13 @@ fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): Lis
         }
     }
 
-    val drmPropertyList = mutableListOf<DetailsProperty>()
-    val mediaDrm = MediaDrm(uuid)
+    val mediaDrm = try {
+        MediaDrm(uuid)
+    } catch (_: Exception) {
+        return emptyList()
+    }
 
+    val drmPropertyList = mutableListOf<DetailsProperty>()
     drmPropertyList.add(DetailsProperty(0L, context.getString(R.string.drm_property_uuid), uuid.toString()))
 
     drmPropertyList.addStringProperties(context, mediaDrm, DrmVendor.STANDARD_STRING_PROPERTIES)

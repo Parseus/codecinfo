@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Widget.CodecInfo.AppBarLayout.PrimarySurface" parent="Widget.MaterialComponents.AppBarLayout.PrimarySurface">
+    <style name="Widget.CodecInfo.AppBarLayout.PrimarySurface" parent="Widget.Material3Expressive.AppBarLayout">
         <item name="liftOnScroll">true</item>
 
         <!-- On newer API levels, hide shadows while keeping elevation. -->
@@ -22,12 +22,12 @@
         <item name="android:importantForAccessibility">no</item>
     </style>
 
-    <style name="Widget.CodecInfo.NavigationRailView" parent="Widget.Material3.NavigationRailView">
+    <style name="Widget.CodecInfo.NavigationRailView" parent="Widget.Material3Expressive.NavigationRailView">
         <item name="backgroundTint">?attr/colorPrimarySurface</item>
         <item name="materialThemeOverlay">@style/ThemeOverlay.CodecInfo.NavigationRailView</item>
     </style>
 
-    <style name="Widget.CodecInfo.Toolbar.PrimarySurface" parent="Widget.Material3.Toolbar">
+    <style name="Widget.CodecInfo.Toolbar.PrimarySurface" parent="Widget.Material3Expressive.Toolbar">
         <item name="android:background">?attr/colorPrimary</item>
         <item name="materialThemeOverlay">@style/ThemeOverlay.MaterialComponents.Toolbar.Primary</item>
         <item name="titleTextColor">?attr/colorOnPrimary</item>

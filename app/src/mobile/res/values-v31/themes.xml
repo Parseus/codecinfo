@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Platform.V31.Theme.CodecInfo" parent="Platform.V21.Theme.CodecInfo">
-        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.Material3.DynamicColors.DayNight</item>
+    <style name="Platform.V31.Theme.CodecInfo" parent="Platform.V23.Theme.CodecInfo">
+        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.Material3Expressive.DynamicColors.DayNight</item>
     </style>
 
     <style name="Platform.Theme.CodecInfo" parent="Platform.V31.Theme.CodecInfo" />

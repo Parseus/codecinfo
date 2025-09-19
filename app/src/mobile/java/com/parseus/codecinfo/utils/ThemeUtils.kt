@@ -26,7 +26,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.ColorUtils
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.forEach
 import androidx.preference.PreferenceManager
@@ -272,7 +271,7 @@ fun Menu.updateIconColors(context: Context, @ColorInt toolbarColor: Int) {
             }
         }
     } else {
-        ContextCompat.getColor(context, com.google.android.material.R.color.m3_dark_default_color_primary_text)
+        context.getColor(com.google.android.material.R.color.m3_dark_default_color_primary_text)
     }
 
     val searchView = findItem(R.id.menu_item_search).actionView as SearchView
@@ -337,7 +336,7 @@ fun MaterialToolbar.updateToolBarColor(context: Context) {
         } else {
             setBackgroundColor(MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, TAG))
         }
-        setTitleTextColor(ContextCompat.getColor(context, com.google.android.material.R.color.m3_dark_default_color_primary_text))
+        setTitleTextColor(context.getColor(com.google.android.material.R.color.m3_dark_default_color_primary_text))
     }
 }
 
@@ -434,7 +433,7 @@ fun Window.updateStatusBarColor(context: Context) {
             insetsController?.setSystemBarsAppearance(if (lightStatusBar)
                 WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS else 0,
                 WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-        } else if (Build.VERSION.SDK_INT >= 23) {
+        } else {
             val statusBarFlag = if (lightStatusBar) View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else 0
             decorView.systemUiVisibility =
                 (decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()) or statusBarFlag
@@ -548,7 +547,7 @@ fun MaterialAlertDialogBuilder.updateBackgroundColor(context: Context): Material
         context,
         null,
         androidx.appcompat.R.attr.alertDialogStyle,
-        com.google.android.material.R.style.MaterialAlertDialog_MaterialComponents
+        com.google.android.material.R.style.MaterialAlertDialog_Material3Expressive
     )
     materialShapeDrawable.initializeElevationOverlay(context)
     materialShapeDrawable.fillColor = ColorStateList.valueOf(getSurfaceColor(context))
@@ -611,7 +610,7 @@ private fun Class<*>.getFieldByName(vararg name: String): Field? {
 private fun Drawable.tinted(@ColorInt color: Int): Drawable = when (this) {
     is VectorDrawableCompat -> this.apply { setTintList(ColorStateList.valueOf(color)) }
     is VectorDrawable -> this.apply { setTintList(ColorStateList.valueOf(color)) }
-    else -> DrawableCompat.wrap(this).also { it.setTint(color) }.let { DrawableCompat.unwrap(it) }
+    else -> this.apply { setTint(color) }
 }
 
 fun Number.spToPx(context: Context? = null): Float {

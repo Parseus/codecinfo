@@ -920,7 +920,7 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
                 profile = AV1Profiles.from(it.profile)
                 level = AV1Levels.from(it.level)
             }
-            codecId.contains("avc") -> {
+            codecId.contains("avc") || codecId.contains("svc") -> {
                 profile = AVCProfiles.from(it.profile)
                 if (profile == null) {
                     if (codecName.contains("qcom", true) || codecName.contains("qti", true)) {

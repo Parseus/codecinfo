@@ -14,7 +14,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.Window
-import androidx.activity.addCallback
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatDelegate
@@ -108,6 +108,20 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     override val updateOnCreate: Boolean
         get() = !isNativeMonetAvailable()
 
+    // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
+    private val memoryLeakFixBackDispatcher = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            finishAfterTransition()
+        }
+    }
+    private val homeAsUpBackDispatcher = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+            isEnabled = false
+            onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
     init {
         createInAppUpdateResultLauncher(this)
     }
@@ -148,19 +162,16 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
             window.updateStatusBarColor(this)
         }
 
-        onBackPressedDispatcher.addCallback(this) {
-            if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
-                // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
-                finishAfterTransition()
-            } else {
-                if (!isInTwoPaneMode()) {
-                    supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-                }
-                isEnabled = false
-                onBackPressedDispatcher.onBackPressed()
-                isEnabled = true
-            }
+        supportFragmentManager.addOnBackStackChangedListener {
+            memoryLeakFixBackDispatcher.isEnabled =
+                Build.VERSION.SDK_INT == 29
+                && isTaskRoot
+                && (supportFragmentManager.primaryNavigationFragment?.childFragmentManager?.backStackEntryCount ?: 0) == 0
+                && supportFragmentManager.backStackEntryCount == 0
+            homeAsUpBackDispatcher.isEnabled = !isInTwoPaneMode() && (supportActionBar!!.displayOptions and ActionBar.DISPLAY_HOME_AS_UP == ActionBar.DISPLAY_HOME_AS_UP)
         }
+        onBackPressedDispatcher.addCallback(memoryLeakFixBackDispatcher)
+        onBackPressedDispatcher.addCallback(homeAsUpBackDispatcher)
     }
 
     private fun initializeUI(savedInstanceState: Bundle?) {
@@ -343,7 +354,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
             android.R.id.home -> {
                 supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-                supportFragmentManager.popBackStack()
+                onBackPressedDispatcher.onBackPressed()
             }
 
             R.id.menu_item_warning -> {

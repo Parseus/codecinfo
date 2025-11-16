@@ -720,6 +720,15 @@ private fun getVideoCapabilities(context: Context, codecId: String, codecName: S
                 context.getString(R.string.max_frame_rate_per_resolution), frameRatePerResolutions))
     }
 
+    if (SDK_INT >= 29) {
+        videoCapabilities.supportedPerformancePoints?.let {
+            if (it.isNotEmpty()) {
+                propertyList.add(DetailsProperty(propertyList.size.toLong(),
+                    context.getString(R.string.performance_points), it.joinToString("\n")))
+            }
+        }
+    }
+
     addColorFormats(capabilities, codecName, context, propertyList)
 }
 

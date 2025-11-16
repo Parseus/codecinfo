@@ -95,6 +95,8 @@
     <string name="codec_provider_android">Android platform</string>
     <string name="codec_provider_oem">Device vendor / OEM</string>
 
+    <string name="performance_points">Supported performance points</string>
+
     <string name="drm_list">DRM list</string>
     <string name="drm_details">DRM details</string>
     <string name="drm_details_selected">Selected DRM details</string>

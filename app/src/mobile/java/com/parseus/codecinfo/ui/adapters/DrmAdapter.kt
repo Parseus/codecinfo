@@ -16,6 +16,7 @@ import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.utils.buildContainerTransform
 import com.parseus.codecinfo.utils.getActivity
+import com.parseus.codecinfo.utils.getColorOnSurfaceVariant
 import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
 import com.parseus.codecinfo.utils.isInTwoPaneMode
@@ -94,6 +95,7 @@ class DrmAdapter(private val drmList: List<DrmSimpleInfo>) : RecyclerView.Adapte
             drmId.setTextColor(getPrimaryColor(drmId.context))
             drmName.text = drmSimpleInfo.drmName
             drmName.setTextColor(getSecondaryColor(drmName.context))
+            moreInfo.setTextColor(getColorOnSurfaceVariant(moreInfo.context))
             if (itemView.context.isInTwoPaneMode()) {
                 moreInfo.visibility = View.GONE
             }

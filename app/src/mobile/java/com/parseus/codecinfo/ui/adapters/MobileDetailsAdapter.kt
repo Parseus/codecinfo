@@ -3,6 +3,7 @@ package com.parseus.codecinfo.ui.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.parseus.codecinfo.databinding.ItemDetailsAdapterRowBinding
+import com.parseus.codecinfo.utils.getColorOnSurfaceVariant
 import com.parseus.codecinfo.utils.getSecondaryColor
 
 class MobileDetailsAdapter : DetailsAdapter() {
@@ -16,6 +17,7 @@ class MobileDetailsAdapter : DetailsAdapter() {
         override fun bindDetails(name: String, info: String) {
             super.bindDetails(name, info)
             codecName.setTextColor(getSecondaryColor(codecName.context))
+            codecInfo.setTextColor(getColorOnSurfaceVariant(codecInfo.context))
         }
     }
 

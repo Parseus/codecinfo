@@ -1,5 +1,6 @@
 package com.parseus.codecinfo.ui.adapters
 
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.utils.buildContainerTransform
 import com.parseus.codecinfo.utils.getActivity
+import com.parseus.codecinfo.utils.getColorOnSurfaceVariant
 import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
 import com.parseus.codecinfo.utils.isInTwoPaneMode
@@ -115,14 +117,19 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
             codecName.text = codecInfo.codecName
             codecName.setTextColor(getSecondaryColor(codecName.context))
 
+            val onSurfaceVariantColor = getColorOnSurfaceVariant(itemView.context)
+
             codecType.text = itemView.resources.getString(
                     if (codecInfo.isEncoder) R.string.encoder else R.string.decoder)
+            codecType.setTextColor(onSurfaceVariantColor)
+            moreInfo.setTextColor(onSurfaceVariantColor)
             if (itemView.context.isInTwoPaneMode()) {
                 moreInfo.visibility = View.GONE
             }
 
             hwIcon.isVisible = codecInfo.isHardwareAccelereated
                     && PreferenceManager.getDefaultSharedPreferences(layout.context).getBoolean("show_hw_icon", true)
+            hwIcon.imageTintList = ColorStateList.valueOf(onSurfaceVariantColor)
 
             if (KNOWN_PROBLEMS_DB.isNotEmpty()) {
                 val knownProblems = KNOWN_PROBLEMS_DB.filter {

@@ -14,14 +14,13 @@
     tools:ignore="SelectableText">
 
     <TextView
+        style="@style/Widget.Material3.TextView.ListItem.Overline"
         android:id="@+id/codec_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:gravity="center_vertical"
-        android:alpha="@dimen/list_item_text_alpha"
         android:maxLines="1"
-        android:textAppearance="?attr/textAppearanceOverline"
         android:textColor="?attr/colorPrimary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/codec_type"
@@ -29,26 +28,24 @@
         tools:text="Codec name"/>
 
     <TextView
+        style="@style/Widget.Material3.TextView.ListItem.Overline"
         android:id="@+id/codec_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:alpha="@dimen/list_item_text_alpha"
-        android:textAppearance="?attr/textAppearanceOverline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/codec_name"
         tools:text="Encoder/decoder"/>
 
     <TextView
+        style="@style/Widget.Material3.TextView.ListItem.LabelText"
         android:id="@+id/codec_full_name"
         android:layout_width="0dp"
         android:layout_height="24dp"
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
-        android:alpha="@dimen/list_item_text_alpha"
         android:maxLines="1"
         android:textColor="?attr/colorSecondary"
-        android:textAppearance="?attr/textAppearanceTitleMedium"
         app:autoSizeMinTextSize="8sp"
         app:autoSizeMaxTextSize="16sp"
         app:autoSizeStepGranularity="1sp"
@@ -59,16 +56,15 @@
         tools:text="Codec full name"/>
 
     <TextView
+        style="@style/Widget.Material3.TextView.ListItem.SupportingText"
         android:id="@+id/more_info"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
-        android:alpha="@dimen/list_item_text_alpha"
-        android:textAppearance="?attr/textAppearanceLabelMedium"
-        android:textColor="?attr/colorOnSurface"
         android:text="@string/more_info"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/known_problem_icon"
         app:layout_constraintTop_toBottomOf="@id/codec_full_name"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_bias="0.0"/>
@@ -88,6 +84,7 @@
         android:id="@+id/known_problem_icon"
         android:layout_width="@dimen/icon_size"
         android:layout_height="@dimen/icon_size"
+        android:layout_marginTop="@dimen/hw_indicator_top_margin"
         android:visibility="gone"
         app:srcCompat="@drawable/mtrl_ic_error"
         app:tint="?attr/colorError"

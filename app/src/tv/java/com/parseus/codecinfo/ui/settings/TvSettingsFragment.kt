@@ -3,7 +3,6 @@ package com.parseus.codecinfo.ui.settings
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.XmlRes
-import androidx.core.os.bundleOf
 import androidx.leanback.preference.LeanbackPreferenceFragmentCompat
 import androidx.leanback.preference.LeanbackSettingsFragmentCompat
 import androidx.preference.*
@@ -32,10 +31,10 @@ class TvSettingsFragment : LeanbackSettingsFragmentCompat(), DialogPreference.Ta
 
     private fun buildPreferenceFragment(@XmlRes preferenceResId: Int, root: String?): PreferenceFragmentCompat {
         return TvPreferenceFragment().apply {
-            arguments = bundleOf(
-                PREFERENCE_RESOURCE_ID to preferenceResId,
-                PreferenceFragmentCompat.ARG_PREFERENCE_ROOT to root
-            )
+            arguments = Bundle().apply {
+                putInt(PREFERENCE_RESOURCE_ID, preferenceResId)
+                putString(PreferenceFragmentCompat.ARG_PREFERENCE_ROOT, root)
+            }
         }
     }
 

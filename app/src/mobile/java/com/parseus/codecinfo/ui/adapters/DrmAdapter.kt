@@ -1,10 +1,10 @@
 package com.parseus.codecinfo.ui.adapters
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.core.os.bundleOf
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
@@ -117,10 +117,10 @@ class DrmAdapter(private val drmList: List<DrmSimpleInfo>) : RecyclerView.Adapte
                         }
 
                     val detailsFragment = DetailsFragment().also { fragment ->
-                        fragment.arguments = bundleOf(
-                            "drmName" to drmSimpleInfo.drmName,
-                            "drmUuid" to drmSimpleInfo.drmUuid
-                        )
+                        fragment.arguments = Bundle().apply {
+                            putString("drmName", drmSimpleInfo.drmName)
+                            putSerializable("drmUuid", drmSimpleInfo.drmUuid)
+                        }
 
                         if (!act.isInTwoPaneMode()) {
                             fragment.sharedElementEnterTransition = buildContainerTransform(layout, true)

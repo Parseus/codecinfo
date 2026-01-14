@@ -1,11 +1,11 @@
 package com.parseus.codecinfo.ui.adapters
 
 import android.content.res.ColorStateList
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import androidx.preference.PreferenceManager
@@ -168,10 +168,10 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
                         }
 
                     val detailsFragment = DetailsFragment().also { fragment ->
-                        fragment.arguments = bundleOf(
-                            "codecId" to codecInfo.codecId,
-                            "codecName" to codecInfo.codecName
-                        )
+                        fragment.arguments = Bundle().apply {
+                            putString("codecId", codecInfo.codecId)
+                            putString("codecName", codecInfo.codecName)
+                        }
                         if (!act.isInTwoPaneMode()) {
                             fragment.sharedElementEnterTransition = buildContainerTransform(layout, true)
                             fragment.sharedElementReturnTransition = buildContainerTransform(layout, false)

@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.agp)
-    alias(libs.plugins.kotlin)
     alias(libs.plugins.ksp)
 }
 
@@ -77,20 +76,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-        jvmToolchain(17)
-
-        compilerOptions {
-            freeCompilerArgs.addAll(
-                "-Xannotation-default-target=param-property",
-                "-Xjsr305=strict",
-                "-Xemit-jvm-type-annotations",
-                "-Xjvm-default=all",
-                "-Xtype-enhancement-improvements-strict-mode",
-                "-Xjspecify-annotations=strict"
-            )
-        }
-    }
     packaging {
         jniLibs {
             excludes += listOf("kotlin/**")
@@ -100,13 +85,28 @@ android {
                          "META-INF/*.version")
         }
     }
+}
 
-    androidComponents {
-        beforeVariants(selector().all()) { variantBuilder ->
-            if ("nonFreeTv" == variantBuilder.flavorName) {
-                variantBuilder.enable = false
-            }
+androidComponents {
+    beforeVariants(selector().all()) { variantBuilder ->
+        if ("nonFreeTv" == variantBuilder.flavorName) {
+            variantBuilder.enable = false
         }
+    }
+}
+
+kotlin {
+    jvmToolchain(17)
+
+    compilerOptions {
+        freeCompilerArgs.addAll(
+            "-Xannotation-default-target=param-property",
+            "-Xjsr305=strict",
+            "-Xemit-jvm-type-annotations",
+            "-jvm-default=enable",
+            "-Xtype-enhancement-improvements-strict-mode",
+            "-Xjspecify-annotations=strict"
+        )
     }
 }
 

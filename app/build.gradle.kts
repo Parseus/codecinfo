@@ -26,6 +26,10 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
+            optimization.keepRules {
+                ignoreFrom("androidx.recyclerview:recyclerview")
+            }
+
             packaging {
                 resources.excludes += "DebugProbesKt.bin"
             }

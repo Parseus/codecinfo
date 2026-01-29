@@ -12,5 +12,17 @@
 -checkdiscard class kotlin.coroutines.jvm.internal.DebugMetadata
 
 -keepattributes SourceFile, LineNumberTable
--allowaccessmodification
 -repackageclasses
+
+-keep public class androidx.recyclerview.widget.RecyclerView$LayoutManager {
+    public <init>(android.content.Context, android.util.AttributeSet, int, int);
+    public <init>();
+}
+-keep class androidx.recyclerview.widget.LinearLayoutManager {
+    public <init>(android.content.Context, android.util.AttributeSet, int, int);
+    public <init>();
+}
+-keep class com.parseus.codecinfo.ui.CustomLinearLayoutManager
+
+# https://github.com/square/moshi/issues/1663
+-keep,allowobfuscation,allowshrinking class com.squareup.moshi.JsonAdapter

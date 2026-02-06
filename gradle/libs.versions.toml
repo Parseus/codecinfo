@@ -1,7 +1,7 @@
 [versions]
 agp = "9.0.0"
 kotlin = "2.3.0"
-ksp = "2.3.4"
+ksp = "2.3.5"
 
 activity = "1.13.0-alpha01"
 app-update = "2.1.0"
@@ -17,7 +17,7 @@ leakcanary = "2.14"
 leanback = "1.2.0"
 leanback-preference = "1.2.0"
 licenser = "2.0.0"
-material = "1.14.0-alpha08"
+material = "1.14.0-alpha09"
 monetcompat = "0.4.1"
 moshi = "1.15.2"
 okio = "3.16.4"

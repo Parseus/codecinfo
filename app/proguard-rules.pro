@@ -11,7 +11,7 @@
 }
 -checkdiscard class kotlin.coroutines.jvm.internal.DebugMetadata
 
--keepattributes SourceFile, LineNumberTable
+-maximumremovedandroidloglevel 7
 -repackageclasses
 
 -keep public class androidx.recyclerview.widget.RecyclerView$LayoutManager {

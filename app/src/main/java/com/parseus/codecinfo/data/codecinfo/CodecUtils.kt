@@ -1020,6 +1020,10 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
                 profile = VP9Profiles.from(it.profile)
                 level = VP9Levels.from(it.level)
             }
+            codecId.contains("vvc") -> {
+                profile = VVCProfiles.from(it.profile)
+                level = VVCLevels.from(it.level)
+            }
             codecId.contains("wma") -> {
                 profile = WMAProfiles.from(it.profile)
             }

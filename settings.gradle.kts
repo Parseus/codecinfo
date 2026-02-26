@@ -19,8 +19,14 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven ( url = "https://jitpack.io" )
+        maven ( url = "https://jitpack.io" ) {
+            content {
+                includeModule("com.github.KieronQuinn", "MonetCompat")
+                includeModule("com.github.marcoscgdev", "Licenser")
+            }
+        }
     }
 }
 rootProject.name = "CodecInfo"
 include(":app")
+include(":baselineprofile")

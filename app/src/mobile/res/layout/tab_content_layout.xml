@@ -12,6 +12,15 @@
         android:fadeScrollbars="false"
         tools:listitem="@layout/codec_adapter_row" />
 
+    <TextView
+        android:id="@+id/noItemsAvailable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:textAppearance="?attr/textAppearanceBodyLargeEmphasized"
+        android:visibility="gone" />
+
+
     <com.google.android.material.loadingindicator.LoadingIndicator
         android:id="@+id/loadingProgress"
         android:layout_width="wrap_content"

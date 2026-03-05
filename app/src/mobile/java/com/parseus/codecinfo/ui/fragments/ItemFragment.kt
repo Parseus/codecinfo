@@ -134,15 +134,15 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
                             }
                         }
                     }
-                } else if (!emptyListInformed) {
-                    // Do not spam the user with multiple snackbars.
-                    emptyListInformed = true
+                } else {
+                    binding.simpleCodecListView.isVisible = false
+                    binding.noItemsAvailable.isVisible = true
                     val errorId = if (InfoType.currentInfoType != InfoType.DRM)
-                        R.string.unable_to_get_codec_info_error
-                    else R.string.unable_to_get_drm_info_error
-                    Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                        errorId, Snackbar.LENGTH_LONG).show()
+                        R.string.no_codecs_available
+                    else R.string.no_drms_available
+                    binding.noItemsAvailable.setText(errorId)
                 }
+                requireActivity().reportFullyDrawn()
             }
         }
     }

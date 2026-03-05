@@ -28,7 +28,7 @@
 
         <androidx.preference.CheckBoxPreference
             app:key="show_hw_icon"
-            app:title="Show an indicator on hardware-accelerated codecs"
+            app:title="Show an indicator on hardware codecs"
             app:defaultValue="true" />
 
         <androidx.preference.CheckBoxPreference
@@ -59,7 +59,12 @@
 
         <androidx.preference.CheckBoxPreference
             app:key="show_aliases"
-            app:title="Show aliases for another underlying codecs"
+            app:title="Show aliases for underlying codecs"
+            app:defaultValue="false" />
+
+        <androidx.preference.CheckBoxPreference
+            app:key="show_hw_codecs_only"
+            app:title="Show only hardware codecs"
             app:defaultValue="false" />
 
     </PreferenceCategory>

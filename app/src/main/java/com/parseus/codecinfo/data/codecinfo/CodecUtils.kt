@@ -175,11 +175,16 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         } catch (_: Exception) {}
     }
 
+    val showHwCodecsOnly = prefs.getBoolean("show_hw_codecs_only", false)
     val showAliases = prefs.getBoolean("show_aliases", false)
     val filteringOption = prefs.getString("filter_type", "2")!!.toInt()
     var codecSimpleInfoList = ArrayList<CodecSimpleInfo>()
 
     for ((codecIndex, mediaCodecInfo) in mediaCodecInfos.withIndex()) {
+        if (showHwCodecsOnly && !isHardwareAccelerated(mediaCodecInfo)) {
+            continue
+        }
+
         if ((filteringOption == 0 && mediaCodecInfo.isEncoder) || (filteringOption == 1 && !mediaCodecInfo.isEncoder)) {
             continue
         }
@@ -231,7 +236,9 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         else -> compareByDescending<CodecSimpleInfo> { it.codecName }.thenBy { it.codecId }
     }
 
-    codecSimpleInfoList = codecSimpleInfoList.sortedWith(comparator).distinct() as ArrayList<CodecSimpleInfo>
+    if (codecSimpleInfoList.isNotEmpty()) {
+        codecSimpleInfoList = codecSimpleInfoList.sortedWith(comparator).distinct() as ArrayList<CodecSimpleInfo>
+    }
 
     if (isAudio) {
         audioCodecList.addAll(codecSimpleInfoList)

@@ -3,17 +3,24 @@ package com.parseus.codecinfo.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.app.ActivityCompat
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
+import com.parseus.codecinfo.data.codecinfo.audioCodecList
+import com.parseus.codecinfo.data.codecinfo.detailedCodecInfos
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
+import com.parseus.codecinfo.data.codecinfo.videoCodecList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
+import com.parseus.codecinfo.data.drm.detailedDrmInfo
+import com.parseus.codecinfo.data.drm.drmList
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.data.knownproblems.DATABASES_INITIALIZED
 import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
+import com.parseus.codecinfo.ui.settings.SettingsContract
 import com.parseus.codecinfo.ui.settings.TvSettingsActivity
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -22,6 +29,12 @@ import okio.source
 
 @Suppress("unused")
 class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
+
+    private var shouldRecreateActivity = false
+
+    private val settingsContract = registerForActivityResult(SettingsContract()) { result ->
+        shouldRecreateActivity = result
+    }
 
     private lateinit var adapter: ArrayObjectAdapter
 
@@ -108,6 +121,27 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         onItemViewClickedListener = this
 
         setOnSearchClickedListener { startActivity(Intent(requireActivity(), TvSearchActivity::class.java)) }
+
+        requireActivity().reportFullyDrawn()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (shouldRecreateActivity) {
+            shouldRecreateActivity = false
+            clearSavedLists()
+            ActivityCompat.recreate(requireActivity())
+            return
+        }
+    }
+
+    private fun clearSavedLists() {
+        audioCodecList.clear()
+        videoCodecList.clear()
+        drmList.clear()
+        detailedCodecInfos.clear()
+        detailedDrmInfo.clear()
     }
 
     override fun onItemClicked(itemViewHolder: Presenter.ViewHolder?, item: Any?,
@@ -129,7 +163,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
             }
             is OtherActionDescriptor -> {
                 when (item.actionId) {
-                    ACTION_SETTINGS_ID -> startActivity(Intent(requireActivity(), TvSettingsActivity::class.java))
+                    ACTION_SETTINGS_ID -> settingsContract.launch(null)
                     ACTION_ABOUT_ID -> startActivity(Intent(requireActivity(), TvAboutActivity::class.java))
                     ACTION_DEVICE_ISSUES_ID -> startActivity(Intent(requireActivity(), TvDeviceIssuesActivity::class.java))
                     ACTION_SHARE_ID -> startActivity(Intent(requireActivity(), TvShareActivity::class.java))

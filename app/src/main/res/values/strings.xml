@@ -19,8 +19,8 @@
     <string name="codec_list">Codec list</string>
     <string name="codec_drm_all_info">All codecs and DRMs with details</string>
 
-    <string name="unable_to_get_codec_info_error">Unable to get the list of codecs due to an Android platform bug.</string>
-    <string name="unable_to_get_drm_info_error">Unable to get the list of DRM due to an Android platform bug.</string>
+    <string name="no_codecs_available">No codecs available.\n\nIf you didn\'t set any filtering options, the list of codecs might not be available due to an Android platform bug.</string>
+    <string name="no_drms_available">No DRMs available.\n\nIf you didn\'t set any filtering options, the list of DRMs might not be available due to an Android platform bug.</string>
 
     <string name="category_audio">Audio</string>
     <string name="category_video">Video</string>

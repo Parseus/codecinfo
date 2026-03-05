@@ -1,5 +1,6 @@
 package com.parseus.codecinfo.ui.settings
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.addCallback
@@ -23,6 +24,33 @@ class TvSettingsActivity : FragmentActivity() {
                 isEnabled = true
             }
         }
+    }
+
+    override fun finish() {
+        setResult(RESULT_OK, Intent().apply {
+            putExtra(ALIASES_CHANGED, aliasesChanged)
+            putExtra(FILTER_TYPE_CHANGED, filterTypeChanged)
+            putExtra(SORTING_CHANGED, sortingChanged)
+            putExtra(HW_ICON_CHANGED, hwIconChanged)
+            putExtra(SAVE_DETAILS_TO_LOGCAT_CHANGED, saveDetailsToLogcatChanged)
+            putExtra(HW_ONLY_CODECS_CHANGED, hwOnlyCodecsChanged)
+        })
+        super.finish()
+    }
+
+    companion object {
+        var aliasesChanged = false
+        var filterTypeChanged = false
+        var sortingChanged = false
+        var hwIconChanged = false
+        var saveDetailsToLogcatChanged = false
+        var hwOnlyCodecsChanged = false
+        const val ALIASES_CHANGED = "aliases_changed"
+        const val FILTER_TYPE_CHANGED = "filter_type_changed"
+        const val SORTING_CHANGED = "sorting_changed"
+        const val HW_ICON_CHANGED = "hw_icon_changed"
+        const val SAVE_DETAILS_TO_LOGCAT_CHANGED = "save_details_to_logcat_changed"
+        const val HW_ONLY_CODECS_CHANGED = "hw_only_codecs_changed"
     }
 
 }

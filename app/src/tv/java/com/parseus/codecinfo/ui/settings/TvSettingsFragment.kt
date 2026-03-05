@@ -5,8 +5,19 @@ import android.os.Bundle
 import androidx.annotation.XmlRes
 import androidx.leanback.preference.LeanbackPreferenceFragmentCompat
 import androidx.leanback.preference.LeanbackSettingsFragmentCompat
-import androidx.preference.*
+import androidx.preference.CheckBoxPreference
+import androidx.preference.DialogPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceScreen
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.ui.settings.TvSettingsActivity.Companion.aliasesChanged
+import com.parseus.codecinfo.ui.settings.TvSettingsActivity.Companion.filterTypeChanged
+import com.parseus.codecinfo.ui.settings.TvSettingsActivity.Companion.hwIconChanged
+import com.parseus.codecinfo.ui.settings.TvSettingsActivity.Companion.hwOnlyCodecsChanged
+import com.parseus.codecinfo.ui.settings.TvSettingsActivity.Companion.saveDetailsToLogcatChanged
+import com.parseus.codecinfo.ui.settings.TvSettingsActivity.Companion.sortingChanged
 
 class TvSettingsFragment : LeanbackSettingsFragmentCompat(), DialogPreference.TargetFragment {
 
@@ -44,9 +55,44 @@ class TvSettingsFragment : LeanbackSettingsFragmentCompat(), DialogPreference.Ta
             super.onCreate(savedInstanceState)
 
             findPreference<CheckBoxPreference>("show_aliases")?.apply {
-                if (Build.VERSION.SDK_INT < 29) {
+                if (Build.VERSION.SDK_INT >= 29) {
+                    setOnPreferenceChangeListener { _, _ ->
+                        aliasesChanged = true
+                        true
+                    }
+                } else {
                     isVisible = false
                 }
+            }
+
+            val filterType = findPreference<ListPreference>("filter_type")
+            filterType!!.setOnPreferenceChangeListener { _, _ ->
+                filterTypeChanged = true
+                true
+            }
+
+            val sortingType = findPreference<ListPreference>("sort_type")
+            sortingType!!.setOnPreferenceChangeListener { _, _ ->
+                sortingChanged = true
+                true
+            }
+
+            val showHwIcon = findPreference<CheckBoxPreference>("show_hw_icon")
+            showHwIcon!!.setOnPreferenceChangeListener { _, _ ->
+                hwIconChanged = true
+                true
+            }
+
+            val saveDetailsToLogcat = findPreference<CheckBoxPreference>("save_details_to_logcat")
+            saveDetailsToLogcat!!.setOnPreferenceChangeListener { _, _ ->
+                saveDetailsToLogcatChanged = true
+                true
+            }
+
+            val hwOnlyCodecs = findPreference<CheckBoxPreference>("show_hw_codecs_only")
+            hwOnlyCodecs!!.setOnPreferenceChangeListener { _, _ ->
+                hwOnlyCodecsChanged = true
+                true
             }
         }
 

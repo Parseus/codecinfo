@@ -691,7 +691,7 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
         "audio/amr-wb-plus" -> 2
         "audio/dts" -> 8
         "audio/eac3" -> 16
-        // source: https://mpeg.chiariglione.org/standards/mpeg-1/audio
+        // source: https://web.archive.org/web/20240616183622/https://mpeg.chiariglione.org/standards/mpeg-1/audio
         "audio/mpeg", "audio/mpeg-l1", "audio/mpeg-l2" -> 2
         // Default to the platform limit, which is 30.
         else -> DEFAULT_MAX_INPUT_CHANNEL_LIMIT

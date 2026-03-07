@@ -897,7 +897,7 @@ private fun isSizeSupported(videoCapabilities: MediaCodecInfo.VideoCapabilities,
 @SuppressLint("NewApi")
 private fun getProfileLevels(context: Context, codecId: String, codecName: String,
                              capabilities: MediaCodecInfo.CodecCapabilities): String? {
-    val profileLevels = capabilities.profileLevels
+    var profileLevels = capabilities.profileLevels.asList()
     val stringBuilder = StringBuilder()
     var profile: String?
     var level: String? = ""
@@ -913,12 +913,12 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
                 profile, VP9Profiles.VP9Profile0.value, level, vp9Level))
 
         return stringBuilder.toString()
-    } else if (profileLevels.isNullOrEmpty()) {
+    } else if (profileLevels.isEmpty()) {
         return null
     }
 
     val comparator: Comparator<MediaCodecInfo.CodecProfileLevel> = compareBy { it.profile }
-    profileLevels.sortedWith(comparator)
+    profileLevels = profileLevels.sortedWith(comparator)
     profileLevels.reversed().distinctBy { it.profile }.reversed().forEach {
         when {
             codecId.contains("mp4a-latm") -> {

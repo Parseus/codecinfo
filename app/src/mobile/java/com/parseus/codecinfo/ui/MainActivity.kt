@@ -58,6 +58,7 @@ import com.parseus.codecinfo.ui.adapters.DeviceIssuesAdapter
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.ui.settings.DarkTheme
 import com.parseus.codecinfo.ui.settings.SettingsContract
+import com.parseus.codecinfo.utils.canEnableMemoryLeakFixBackDispatcher
 import com.parseus.codecinfo.utils.checkForUpdate
 import com.parseus.codecinfo.utils.createInAppUpdateResultLauncher
 import com.parseus.codecinfo.utils.disableApiBlacklistOnPie
@@ -65,6 +66,7 @@ import com.parseus.codecinfo.utils.getAllInfoString
 import com.parseus.codecinfo.utils.getAttributeColor
 import com.parseus.codecinfo.utils.getDefaultThemeOption
 import com.parseus.codecinfo.utils.getItemListString
+import com.parseus.codecinfo.utils.getMemoryLeakFixBackDispatcher
 import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSelectedCodecInfoString
 import com.parseus.codecinfo.utils.getSelectedDrmInfoString
@@ -108,12 +110,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     override val updateOnCreate: Boolean
         get() = !isNativeMonetAvailable()
 
-    // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
-    private val memoryLeakFixBackDispatcher = object : OnBackPressedCallback(false) {
-        override fun handleOnBackPressed() {
-            finishAfterTransition()
-        }
-    }
+    private val memoryLeakFixBackDispatcher = getMemoryLeakFixBackDispatcher()
     private val homeAsUpBackDispatcher = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
             supportActionBar!!.setDisplayHomeAsUpEnabled(false)
@@ -163,11 +160,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         }
 
         supportFragmentManager.addOnBackStackChangedListener {
-            memoryLeakFixBackDispatcher.isEnabled =
-                Build.VERSION.SDK_INT == 29
-                && isTaskRoot
-                && (supportFragmentManager.primaryNavigationFragment?.childFragmentManager?.backStackEntryCount ?: 0) == 0
-                && supportFragmentManager.backStackEntryCount == 0
+            memoryLeakFixBackDispatcher.isEnabled = canEnableMemoryLeakFixBackDispatcher()
             homeAsUpBackDispatcher.isEnabled = !isInTwoPaneMode() && (supportActionBar!!.displayOptions and ActionBar.DISPLAY_HOME_AS_UP == ActionBar.DISPLAY_HOME_AS_UP)
         }
         onBackPressedDispatcher.addCallback(memoryLeakFixBackDispatcher)

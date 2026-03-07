@@ -89,7 +89,7 @@ class SettingsActivity : MonetCompatActivity() {
         onBackPressedDispatcher.addCallback(this) {
             if (supportFragmentManager.findFragmentByTag("about_fragment") != null) {
                 goBackToMainFragment()
-            } else if (Build.VERSION.SDK_INT == 29 && isTaskRoot && supportFragmentManager.backStackEntryCount == 0) {
+            } else if (canEnableMemoryLeakFixBackDispatcher()) {
                 // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
                 finishAfterTransition()
             } else {

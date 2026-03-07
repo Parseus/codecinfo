@@ -21,7 +21,6 @@ import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.ui.settings.SettingsContract
-import com.parseus.codecinfo.ui.settings.TvSettingsActivity
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import okio.buffer

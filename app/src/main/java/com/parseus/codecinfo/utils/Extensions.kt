@@ -9,11 +9,25 @@ import android.content.res.Configuration
 import android.media.MediaCodecInfo
 import android.os.BatteryManager
 import android.os.Build
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.getSystemService
+import androidx.fragment.app.FragmentActivity
 import java.util.*
 
 private const val AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv"
 private const val GOOGLE_ANDROID_TV_INSTALLED = "com.google.android.tv.installed"
+
+// Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
+fun Activity.getMemoryLeakFixBackDispatcher() = object : OnBackPressedCallback(false) {
+    override fun handleOnBackPressed() {
+        finishAfterTransition()
+    }
+}
+
+fun FragmentActivity.canEnableMemoryLeakFixBackDispatcher() = Build.VERSION.SDK_INT == 29
+        && isTaskRoot
+        && (supportFragmentManager.primaryNavigationFragment?.childFragmentManager?.backStackEntryCount ?: 0) == 0
+        && supportFragmentManager.backStackEntryCount == 0
 
 @Suppress("DEPRECATION")
 fun Context.isTv(): Boolean {

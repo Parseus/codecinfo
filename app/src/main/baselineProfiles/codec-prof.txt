@@ -1,0 +1,3 @@
+PLcom/parseus/codecinfo/data/codecinfo/colorformats/**->**(**)**
+PLcom/parseus/codecinfo/data/codecinfo/profilelevels/**->**(**)**
+PLcom/parseus/codecinfo/data/drm/**->**(**)**

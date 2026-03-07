@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.agp)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -91,6 +92,15 @@ android {
     }
 }
 
+baselineProfile {
+    dexLayoutOptimization = true
+    saveInSrc = true
+    
+    warnings {
+        disabledVariants = false
+    }
+}
+
 androidComponents {
     beforeVariants(selector().all()) { variantBuilder ->
         if ("nonFreeTv" == variantBuilder.flavorName) {
@@ -125,7 +135,9 @@ dependencies {
     implementation(libs.androidx.core)
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.preference)
+    implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.startup)
 
     implementation(libs.plumber.android)
     implementation(libs.moshi)
@@ -150,4 +162,6 @@ dependencies {
     nonFreeMobileImplementation(libs.app.update.ktx)
     nonFreeMobileImplementation(libs.review)
     nonFreeMobileImplementation(libs.review.ktx)
+
+    "baselineProfile"(project(":baselineprofile"))
 }

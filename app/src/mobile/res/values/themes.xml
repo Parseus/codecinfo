@@ -33,4 +33,10 @@
         <item name="colorOnSurface">@color/m3_ref_palette_neutral95</item>
         <item name="colorOnSurfaceVariant">@color/m3_ref_palette_neutral_variant70</item>
     </style>
+
+    <style name="Theme.CodecInfo.Dialog.MinWidth" parent="Theme.Material3.DayNight.Dialog.MinWidth">
+        <item name="android:windowMinWidthMajor">@dimen/abc_dialog_min_width_major</item>
+        <item name="android:windowMinWidthMinor">@dimen/abc_dialog_min_width_minor</item>
+        <item name="dialogCornerRadius">@dimen/m3_alert_dialog_corner_size</item>
+    </style>
 </resources>

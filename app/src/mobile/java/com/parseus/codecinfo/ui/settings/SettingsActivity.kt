@@ -1,12 +1,14 @@
 package com.parseus.codecinfo.ui.settings
 
 import android.annotation.SuppressLint
+import android.app.assist.AssistContent
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.activity.addCallback
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
@@ -40,6 +42,8 @@ import androidx.core.content.edit
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.updatePadding
+import com.parseus.codecinfo.ui.externalLinks.ExternalLinksViewModel
+import kotlin.getValue
 
 class SettingsActivity : MonetCompatActivity() {
 
@@ -50,12 +54,22 @@ class SettingsActivity : MonetCompatActivity() {
     override val updateOnCreate: Boolean
         get() = !isNativeMonetAvailable()
 
+    private val externalLinksViewModel: ExternalLinksViewModel by viewModels()
+    private lateinit var externalLinksHelper: ExternalLinksHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.Theme_CodecInfo)
         WindowCompat.enableEdgeToEdge(window)
         val startingFromAlias = intent?.component?.className?.startsWith("alias.SettingsActivity") == true
         if (startingFromAlias) {
             delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+
+        externalLinksHelper = ExternalLinksHelper(this, lifecycle)
+        externalLinksViewModel.launchExternalLink.observe(this) {
+            if (it != null) {
+                externalLinksHelper.launchInBrowser(this, it)
+            }
         }
 
         super.onCreate(savedInstanceState)
@@ -146,6 +160,14 @@ class SettingsActivity : MonetCompatActivity() {
             putExtra(HW_ONLY_CODECS_CHANGED, hwOnlyCodecsChanged)
         })
         super.finish()
+    }
+
+    override fun onProvideAssistContent(outContent: AssistContent) {
+        super.onProvideAssistContent(outContent)
+
+        if (Build.VERSION.SDK_INT >= 31) {
+            outContent.webUri = externalLinksViewModel.urlOpened
+        }
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {

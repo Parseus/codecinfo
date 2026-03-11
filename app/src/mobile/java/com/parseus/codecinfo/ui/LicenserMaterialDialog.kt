@@ -1,24 +1,33 @@
 package com.parseus.codecinfo.ui
 
+import android.net.Uri
 import android.util.Base64
 import android.widget.LinearLayout
+import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kieronquinn.monetcompat.extensions.applyMonet
 import com.marcoscg.licenser.Library
 import com.marcoscg.licenser.Licenser
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.ui.externalLinks.ExternalLinksViewModel
+import com.parseus.codecinfo.ui.externalLinks.HardenedAssetLoadingWebView
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
 import com.parseus.codecinfo.utils.isNativeMonetAvailable
 import com.parseus.codecinfo.utils.updateButtonColors
 
-class LicenserMaterialDialog(val activity: AppCompatActivity) : Licenser() {
+class LicenserMaterialDialog(val activity: FragmentActivity) : Licenser() {
 
     private val alertDialogBuilder = MaterialAlertDialogBuilder(activity)
     private var alertDialog: AlertDialog? = null
-    private val webView = HardenedWebView(activity)
+    private val webView = HardenedAssetLoadingWebView(activity)
+
+    private val externalLinksViewModel: ExternalLinksViewModel by activity.viewModels()
+    private val openExternalLink: (url: Uri) -> Unit = { url ->
+        externalLinksViewModel.launchExternalLink.value = url
+    }
 
     init {
         val container = LinearLayout(activity)
@@ -53,6 +62,7 @@ class LicenserMaterialDialog(val activity: AppCompatActivity) : Licenser() {
 
     fun show() {
         if (webView.url == null) {
+            webView.openExternalLink = openExternalLink
             webView.loadData(
                 Base64.encodeToString(getDialogHTMLContent(activity).toByteArray(), Base64.NO_PADDING),
                 "text/html; charset=UTF-8", "base64")

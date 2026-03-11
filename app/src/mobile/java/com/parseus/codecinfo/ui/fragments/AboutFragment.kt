@@ -1,6 +1,5 @@
 package com.parseus.codecinfo.ui.fragments
 
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -25,15 +24,15 @@ import androidx.core.net.toUri
 import androidx.core.text.parseAsHtml
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.kieronquinn.monetcompat.extensions.applyMonet
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.AboutAppFragmentBinding
 import com.parseus.codecinfo.ui.ImprovedBulletSpan
+import com.parseus.codecinfo.ui.externalLinks.ExternalLinksViewModel
 import com.parseus.codecinfo.utils.SHOW_RATE_APP
-import com.parseus.codecinfo.utils.externalAppIntentFlags
 import com.parseus.codecinfo.utils.getOnPrimaryColor
 import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
@@ -56,6 +55,8 @@ class AboutFragment : Fragment() {
 
     private var _binding: AboutAppFragmentBinding? = null
     private val binding get() = _binding!!
+
+    private val externalLinksViewModel: ExternalLinksViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = AboutAppFragmentBinding.inflate(inflater, container, false)
@@ -150,27 +151,13 @@ class AboutFragment : Fragment() {
 
     private fun goToAppsGitHubPage() {
         if (isAdded) {
-            val issuePageIntent = Intent(Intent.ACTION_VIEW, GITHUB_PAGE.toUri())
-            issuePageIntent.addFlags(externalAppIntentFlags)
-            try {
-                startActivity(issuePageIntent)
-            } catch (_: Exception) {
-                Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                    R.string.no_apps_for_action, Snackbar.LENGTH_LONG).show()
-            }
+            externalLinksViewModel.launchExternalLink.value = GITHUB_PAGE.toUri()
         }
     }
 
     private fun goToIssuePage() {
         if (isAdded) {
-            val issuePageIntent = Intent(Intent.ACTION_VIEW, ISSUE_PAGE.toUri())
-            issuePageIntent.addFlags(externalAppIntentFlags)
-            try {
-                startActivity(issuePageIntent)
-            } catch (_: Exception) {
-                Snackbar.make(requireActivity().findViewById(android.R.id.content),
-                    R.string.no_apps_for_action, Snackbar.LENGTH_LONG).show()
-            }
+            externalLinksViewModel.launchExternalLink.value = ISSUE_PAGE.toUri()
         }
     }
 

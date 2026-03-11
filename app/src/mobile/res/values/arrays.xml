@@ -11,4 +11,16 @@
         <item>2</item>
     </string-array>
 
+    <string-array name="settings_open_external_links_titles">
+        <item>Custom tabs</item>
+        <item>External browser</item>
+        <item>WebView</item>
+    </string-array>
+
+    <string-array name="settings_open_external_links_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
 </resources>

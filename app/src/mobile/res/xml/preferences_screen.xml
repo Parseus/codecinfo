@@ -64,6 +64,14 @@
             app:title="Save codec/DRM details to Logcat"
             app:defaultValue="false" />
 
+        <androidx.preference.ListPreference
+            app:entries="@array/settings_open_external_links_titles"
+            app:entryValues="@array/settings_open_external_links_values"
+            app:defaultValue="0"
+            app:key="open_external_links"
+            app:title="Open external links in (if possible)"
+            app:useSimpleSummaryProvider="true"/>
+
     </com.parseus.codecinfo.ui.settings.MonetPreferenceCategory>
 
     <com.parseus.codecinfo.ui.settings.MonetPreferenceCategory app:title="Sorting &amp; Filtering">

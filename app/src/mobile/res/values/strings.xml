@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="action_close">Close</string>
+
     <string name="close_details">Close details</string>
 
     <string name="choose_share">Choose info to share</string>

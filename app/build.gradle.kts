@@ -151,6 +151,7 @@ dependencies {
 
     standardMobileImplementation(libs.hiddenapibypass)
 
+    "mobileImplementation"(libs.androidx.browser)
     "mobileImplementation"(libs.androidx.constraintlayout)
     "mobileImplementation"(libs.androidx.core.splashscreen)
     "mobileImplementation"(libs.androidx.palette)

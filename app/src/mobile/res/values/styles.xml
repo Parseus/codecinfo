@@ -25,6 +25,8 @@
     <style name="Widget.CodecInfo.NavigationRailView" parent="Widget.Material3Expressive.NavigationRailView">
         <item name="backgroundTint">?attr/colorPrimarySurface</item>
         <item name="materialThemeOverlay">@style/ThemeOverlay.CodecInfo.NavigationRailView</item>
+        <item name="expandedMinWidth">@dimen/navigation_rail_expanded_min_width</item>
+        <item name="contentMarginTop">0dp</item>
     </style>
 
     <style name="Widget.CodecInfo.Toolbar.PrimarySurface" parent="Widget.Material3Expressive.Toolbar">

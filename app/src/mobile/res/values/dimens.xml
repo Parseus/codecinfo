@@ -12,4 +12,6 @@
 
     <dimen name="about_dialog_app_icon_size">40dp</dimen>
 
+    <dimen name="navigation_rail_expanded_min_width">110dp</dimen>
+
 </resources>

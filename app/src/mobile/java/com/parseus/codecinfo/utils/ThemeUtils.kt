@@ -347,12 +347,12 @@ fun NavigationRailView.updateColors(context: Context) {
 
     if (context.isNightMode()) {
         backgroundColor = getSurfaceColor(context)
-        activeTextColor = getColorOnSurface(context)
+        activeTextColor = if (isExpanded) getOnSecondaryContainerColor(context) else getColorOnSurface(context)
         inactiveColor = getColorOnSurfaceVariant(context)
     } else {
         backgroundColor = getPrimaryColor(context)
         val onPrimaryColor = getOnPrimaryColor(context)
-        activeTextColor = onPrimaryColor
+        activeTextColor = if (isExpanded) getOnSecondaryContainerColor(context) else onPrimaryColor
         inactiveColor = onPrimaryColor
     }
 

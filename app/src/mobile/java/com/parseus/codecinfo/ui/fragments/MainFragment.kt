@@ -1,5 +1,6 @@
 package com.parseus.codecinfo.ui.fragments
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -54,7 +55,7 @@ class MainFragment : Fragment() {
         }
 
         binding.navigationRail?.let { navigationRail ->
-            navigationRail.updateColors(requireContext())
+            updateNavigationRail(resources.configuration)
 
             addFragmentToViewHierarchy()
 
@@ -69,6 +70,22 @@ class MainFragment : Fragment() {
 
                 true
             }
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        updateNavigationRail(newConfig)
+    }
+
+    private fun updateNavigationRail(configuration: Configuration) {
+        binding.navigationRail?.let {
+            if (configuration.screenWidthDp >= 1200) {
+                it.expand()
+            } else {
+                it.collapse()
+            }
+            it.updateColors(requireContext())
         }
     }
 

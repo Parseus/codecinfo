@@ -12,7 +12,6 @@
 -checkdiscard class kotlin.coroutines.jvm.internal.DebugMetadata
 
 -maximumremovedandroidloglevel 7
--repackageclasses
 
 -keep public class androidx.recyclerview.widget.RecyclerView$LayoutManager {
     public <init>(android.content.Context, android.util.AttributeSet, int, int);

@@ -119,7 +119,6 @@ kotlin {
             "-Xjsr305=strict",
             "-Xemit-jvm-type-annotations",
             "-jvm-default=enable",
-            "-Xtype-enhancement-improvements-strict-mode",
             "-Xjspecify-annotations=strict"
         )
     }

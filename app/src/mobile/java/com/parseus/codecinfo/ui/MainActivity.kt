@@ -216,7 +216,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
             }
 
             try {
-                resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
+                resources.openRawResource(R.raw.device_problem_list).source().buffer().use {
                     DEVICE_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
                 }
             } catch (_: Exception) {

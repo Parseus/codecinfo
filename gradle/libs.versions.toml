@@ -24,7 +24,6 @@ leanback-preference = "1.2.0"
 licenser = "2.0.0"
 material = "1.14.0-alpha10"
 monetcompat = "0.4.1"
-moshi = "1.15.2"
 okio = "3.17.0"
 palette = "1.0.0"
 preference = "1.2.1"
@@ -32,6 +31,7 @@ profileinstaller = "1.4.1"
 recyclerview = "1.4.0"
 review = "2.0.2"
 review-ktx = "2.0.2"
+serialization = "1.10.0"
 startup = "1.2.0"
 uiautomator = "2.4.0-beta02"
 
@@ -63,14 +63,14 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 licenser = { module = "com.github.marcoscgdev:Licenser", version.ref = "licenser" }
 monetcompat = { module = "com.github.KieronQuinn:MonetCompat", version.ref = "monetcompat" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
-moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
-moshi-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshi" }
 plumber-android = { module = "com.squareup.leakcanary:plumber-android", version.ref = "leakcanary" }
 review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "review-ktx" }
 review = { module = "com.google.android.play:review", version.ref = "review" }
+serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 
 [plugins]
 agp = { id = "com.android.application", version.ref = "agp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

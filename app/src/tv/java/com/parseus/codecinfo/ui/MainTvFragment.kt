@@ -19,13 +19,12 @@ import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.data.knownproblems.DATABASES_INITIALIZED
 import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
-import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.ui.settings.SettingsContract
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
-import okio.buffer
-import okio.source
+import com.parseus.codecinfo.utils.jsonInstance
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.decodeFromStream
 
+@OptIn(ExperimentalSerializationApi::class)
 @Suppress("unused")
 class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
 
@@ -80,20 +79,17 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         adapter.add(ListRow(drmPresenterHeader, drmPresentAdapter))
 
         if (!DATABASES_INITIALIZED) {
-            val moshi = Moshi.Builder().build()
-            val type = Types.newParameterizedType(List::class.java, KnownProblem::class.java)
-            val adapter = moshi.adapter<List<KnownProblem>>(type)
             try {
-                resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
-                    KNOWN_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
+                resources.openRawResource(R.raw.known_problems_list).use {
+                    KNOWN_PROBLEMS_DB = jsonInstance.decodeFromStream(it) ?: emptyList()
                 }
             } catch (e: Exception) {
                 KNOWN_PROBLEMS_DB = emptyList()
             }
 
             try {
-                resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
-                    DEVICE_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
+                resources.openRawResource(R.raw.device_problem_list).use {
+                    DEVICE_PROBLEMS_DB = jsonInstance.decodeFromStream(it) ?: emptyList()
                 }
             } catch (e: Exception) {
                 DEVICE_PROBLEMS_DB = emptyList()

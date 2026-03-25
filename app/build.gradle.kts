@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.agp)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.serialization)
     alias(libs.plugins.baselineprofile)
 }
 
@@ -140,9 +141,8 @@ dependencies {
     implementation(libs.androidx.startup)
 
     implementation(libs.plumber.android)
-    implementation(libs.moshi)
-    ksp(libs.moshi.codegen)
     implementation(libs.okio)
+    implementation(libs.serialization.json)
 
     debugImplementation(libs.leakcanary.android)
 

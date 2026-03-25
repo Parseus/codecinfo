@@ -22,6 +22,3 @@
     public <init>();
 }
 -keep class com.parseus.codecinfo.ui.CustomLinearLayoutManager
-
-# https://github.com/square/moshi/issues/1663
--keep,allowobfuscation,allowshrinking class com.squareup.moshi.JsonAdapter

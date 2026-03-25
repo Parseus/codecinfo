@@ -51,7 +51,6 @@ import com.parseus.codecinfo.data.drm.drmList
 import com.parseus.codecinfo.data.knownproblems.DATABASES_INITIALIZED
 import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
-import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.databinding.ActivityMainBinding
 import com.parseus.codecinfo.databinding.DeviceIssuesLayoutBinding
 import com.parseus.codecinfo.ui.adapters.DeviceIssuesAdapter
@@ -75,21 +74,21 @@ import com.parseus.codecinfo.utils.initializeAppRating
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
 import com.parseus.codecinfo.utils.isInTwoPaneMode
 import com.parseus.codecinfo.utils.isNativeMonetAvailable
+import com.parseus.codecinfo.utils.jsonInstance
 import com.parseus.codecinfo.utils.updateBackgroundColor
 import com.parseus.codecinfo.utils.updateButtonColors
 import com.parseus.codecinfo.utils.updateColors
 import com.parseus.codecinfo.utils.updateIconColors
 import com.parseus.codecinfo.utils.updateStatusBarColor
 import com.parseus.codecinfo.utils.updateToolBarColor
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import dev.kdrag0n.monet.theme.ColorScheme
 import kotlinx.coroutines.launch
-import okio.buffer
-import okio.source
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.decodeFromStream
 import java.io.File
 import java.util.UUID
 
+@OptIn(ExperimentalSerializationApi::class)
 class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
     private lateinit var binding: ActivityMainBinding
@@ -203,21 +202,17 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         handleIntent(intent)
 
         if (!DATABASES_INITIALIZED) {
-            val moshi = Moshi.Builder().build()
-            val type = Types.newParameterizedType(List::class.java, KnownProblem::class.java)
-            val adapter = moshi.adapter<List<KnownProblem>>(type)
-
             try {
-                resources.openRawResource(R.raw.known_problems_list).source().buffer().use {
-                    KNOWN_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
+                resources.openRawResource(R.raw.known_problems_list).use {
+                    KNOWN_PROBLEMS_DB = jsonInstance.decodeFromStream(it) ?: emptyList()
                 }
             } catch (_: Exception) {
                 KNOWN_PROBLEMS_DB = emptyList()
             }
 
             try {
-                resources.openRawResource(R.raw.device_problem_list).source().buffer().use {
-                    DEVICE_PROBLEMS_DB = adapter.fromJson(it) ?: emptyList()
+                resources.openRawResource(R.raw.device_problem_list).use {
+                    DEVICE_PROBLEMS_DB = jsonInstance.decodeFromStream(it) ?: emptyList()
                 }
             } catch (_: Exception) {
                 DEVICE_PROBLEMS_DB = emptyList()

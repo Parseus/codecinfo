@@ -3,25 +3,25 @@ package com.parseus.codecinfo.data.knownproblems
 import android.content.Context
 import android.os.Build
 import com.parseus.codecinfo.utils.isTv
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 var KNOWN_PROBLEMS_DB: List<KnownProblem> = emptyList()
 var DEVICE_PROBLEMS_DB: List<KnownProblem> = emptyList()
 var DATABASES_INITIALIZED = false
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class KnownProblem(
-        val id: Long,
-        @Json(name = "codec_name") val codecName: String? = null,
-        val description: String,
-        val versions: List<Version>? = null,
-        val devices: List<Device>? = null,
-        val models: List<Model>? = null,
-        val hardwares: List<Hardware>? = null,
-        val socModels: List<SoCModel>? = null,
-        val manufacturers: List<Manufacturers>? = null,
-        val urls: List<String>
+    val id: Long,
+    @SerialName("codec_name") val codecName: String? = null,
+    val description: String,
+    val versions: List<Version>? = null,
+    val devices: List<Device>? = null,
+    val models: List<Model>? = null,
+    val hardwares: List<Hardware>? = null,
+    val socModels: List<SoCModel>? = null,
+    val manufacturers: List<Manufacturers>? = null,
+    val urls: List<String>
 ) {
 
     fun isAffected(context: Context, codec: String? = null): Boolean {
@@ -149,7 +149,7 @@ data class KnownProblem(
 
 }
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Version(
         val op: String,
         val value: Int = Int.MAX_VALUE,
@@ -157,33 +157,33 @@ data class Version(
         val platform: String? = null
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Device(
         val op: String,
         val value: String,
         val manufacturer: String? = null
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Model(
         val op: String,
         val value: String,
         val manufacturer: String? = null
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Hardware(
         val op: String,
         val value: String
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class SoCModel(
     val op: String,
     val value: String
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Manufacturers(
     val op: String,
     val value: String

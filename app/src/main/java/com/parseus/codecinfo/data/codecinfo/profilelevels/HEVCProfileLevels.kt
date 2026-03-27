@@ -8,6 +8,8 @@ enum class HEVCProfiles(val value: Int) {
     HEVCProfileMain(0x01),
     HEVCProfileMain10(0x02),
     HEVCProfileMainStill(0x04),
+    HEVCProfileMain400(0x08),
+    HEVCProfileMain444(0x10),
     HEVCProfileMain10HDR10(0x1000),
     HEVCProfileMain10HDR10Plus(0x2000),
     HEVCProfileMax(0x7FFFFFFF);

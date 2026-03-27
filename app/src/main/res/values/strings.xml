@@ -35,6 +35,7 @@
 
     <string name="frames_per_second">fps</string>
     <string name="unknown">Unknown</string>
+    <string name="unknown_or_not_supported">Unknown or not supported</string>
 
     <string name="profiles">Profiles</string>
     <string name="profile_levels">Profile levels</string>
@@ -72,6 +73,7 @@
     <string name="dynamic_color_aspects">Dynamic change of color aspects</string>
     <string name="hlg_editing">HLG editing</string>
     <string name="roi_encoding">Region of interest encoding</string>
+    <string name="supported_layering_schemas">Supported temporal layering schemas</string>
     
     <string name="security_model">Security model</string>
     <string name="security_model_sandboxed">Sandboxed</string>

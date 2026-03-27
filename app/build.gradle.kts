@@ -8,14 +8,14 @@ plugins {
 android {
     namespace = "com.parseus.codecinfo"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
+        version = release(37) {
+            minorApiLevel = 0
         }
     }
     defaultConfig {
         applicationId = "com.parseus.codecinfo"
         minSdk = 23
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 29
         versionName = "2.10.0"
     }

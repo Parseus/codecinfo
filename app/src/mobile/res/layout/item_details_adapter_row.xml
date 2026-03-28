@@ -14,7 +14,7 @@
     <TextView
         style="@style/Widget.Material3.TextView.ListItem.LabelText"
         android:id="@+id/codec_property"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:firstBaselineToTopHeight="@dimen/list_baseline_primary"
         android:textColor="?attr/colorSecondary"
@@ -23,7 +23,7 @@
     <TextView
         style="@style/Widget.Material3.TextView.ListItem.SupportingText"
         android:id="@+id/codec_value"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
         tools:text="Item value"/>

@@ -38,7 +38,11 @@ fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
                 } catch (_: Throwable) {}
             }
         }
-        list.sortedBy { it.drmName }
+        if (list.isNotEmpty()) {
+            list.sortedBy { it.drmName }
+        } else {
+            emptyList()
+        }
     }
 }
 

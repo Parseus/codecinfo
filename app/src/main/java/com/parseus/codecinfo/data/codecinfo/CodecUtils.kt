@@ -338,6 +338,19 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
                 propertyList.addFeature(context, capabilities, FEATURE_HlgEditing, R.string.hlg_editing)
                 propertyList.addFeature(context, capabilities, FEATURE_Roi, R.string.roi_encoding)
             }
+            if (SDK_INT >= 37) {
+                val schemas = capabilities.encoderCapabilities!!.supportedLayeringSchemas
+                val schemasString = if (schemas.isNotEmpty()) {
+                    schemas.joinToString("\n")
+                } else {
+                    context.getString(R.string.unknown_or_not_supported)
+                }
+                propertyList.add(DetailsProperty(
+                    propertyList.size.toLong(),
+                    context.getString(R.string.supported_layering_schemas),
+                    schemasString
+                ))
+            }
         }
     }
 
@@ -373,20 +386,6 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
         val defaultMediaFormat = capabilities.defaultFormat
         handleComplexityRange(encoderCapabilities, defaultMediaFormat, context, propertyList)
         handleQualityRange(encoderCapabilities, defaultMediaFormat, propertyList, context)
-
-        if (SDK_INT >= 37) {
-            val schemas = encoderCapabilities.supportedLayeringSchemas
-            val schemasString = if (schemas.isNotEmpty()) {
-                schemas.joinToString("\n")
-            } else {
-                context.getString(R.string.unknown_or_not_supported)
-            }
-            propertyList.add(DetailsProperty(
-                propertyList.size.toLong(),
-                    context.getString(R.string.supported_layering_schemas),
-                schemasString
-            ))
-        }
     }
 
     if (SDK_INT >= 31) {

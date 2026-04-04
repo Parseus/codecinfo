@@ -50,7 +50,7 @@ class SettingsRepository(context: Context) : PreferenceDataStore() {
 
     val settingsFlow: Flow<Settings> = dataStore.data.map { preferences ->
         Settings(
-            darkTheme = (preferences[DARK_THEME] ?: DarkTheme.fromValue(getDefaultThemeOption(context)).toString()).toInt(),
+            darkTheme = (preferences[DARK_THEME] ?: DarkTheme.fromValue(getDefaultThemeOption(context))!!.value.toString()).toInt(),
             dynamicTheme = preferences[DYNAMIC_THEME] ?: false,
             dynamicThemeWallpaperSource = preferences[DYNAMIC_THEME_WALLPAPER_SOURCE] ?: "1",
             immersiveMode = preferences[IMMERSIVE_MODE] ?: true,

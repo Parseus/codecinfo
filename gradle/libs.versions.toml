@@ -1,7 +1,6 @@
 [versions]
 agp = "9.1.0"
 kotlin = "2.3.20"
-ksp = "2.3.6"
 
 activity = "1.13.0"
 app-update = "2.1.0"
@@ -74,5 +73,4 @@ serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-jso
 agp = { id = "com.android.application", version.ref = "agp" }
 android-test = { id = "com.android.test", version.ref = "agp" }
 baselineprofile = { id = "androidx.baselineprofile", version.ref = "baselineprofile" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

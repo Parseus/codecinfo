@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.agp)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.serialization)
     alias(libs.plugins.baselineprofile)
 }

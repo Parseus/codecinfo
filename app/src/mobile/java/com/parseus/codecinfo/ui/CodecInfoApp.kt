@@ -4,20 +4,22 @@ import android.app.Application
 import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.preference.PreferenceManager
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import com.kieronquinn.monetcompat.core.MonetCompat
-import com.kieronquinn.monetcompat.core.WallpaperTypes
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
 import com.parseus.codecinfo.utils.isNativeMonetAvailable
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 class CodecInfoApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Initialize DataStore and trigger migration if needed
+        val settings = runBlocking { settingsRepository.settingsFlow.first() }
 
         if (isNativeMonetAvailable()) {
             DynamicColors.applyToActivitiesIfAvailable(this,
@@ -27,21 +29,14 @@ class CodecInfoApp : Application() {
                 MonetCompat.enablePaletteCompat()
             }
             MonetCompat.useSystemColorsOnAndroid12 = false
-            MonetCompat.wallpaperSource = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString("dynamic_theme_wallpaper_source", WallpaperTypes.WALLPAPER_SYSTEM.toString())!!.toInt()
+            MonetCompat.wallpaperSource = settings.dynamicThemeWallpaperSource.toInt()
             MonetCompat.wallpaperColorPicker = {
-                val userPickedColor = getWallpaperColorFromPreferences()
+                val userPickedColor = settings.selectedColor
                 it?.firstOrNull { color -> color == userPickedColor } ?: it?.firstOrNull()
             }
         }
 
         enableSettingsIntentFilter()
-    }
-
-    private suspend fun getWallpaperColorFromPreferences(): Int? = withContext(Dispatchers.IO) {
-        val color = PreferenceManager.getDefaultSharedPreferences(this@CodecInfoApp)
-            .getInt("selected_color", Int.MAX_VALUE)
-        return@withContext  if (color == Int.MAX_VALUE) null else color
     }
 
     private fun enableSettingsIntentFilter() {

@@ -33,7 +33,6 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.preference.PreferenceManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.transition.platform.MaterialSharedAxis
@@ -51,6 +50,7 @@ import com.parseus.codecinfo.data.drm.drmList
 import com.parseus.codecinfo.data.knownproblems.DATABASES_INITIALIZED
 import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.databinding.ActivityMainBinding
 import com.parseus.codecinfo.databinding.DeviceIssuesLayoutBinding
 import com.parseus.codecinfo.ui.adapters.DeviceIssuesAdapter
@@ -63,7 +63,6 @@ import com.parseus.codecinfo.utils.createInAppUpdateResultLauncher
 import com.parseus.codecinfo.utils.disableApiBlacklistOnPie
 import com.parseus.codecinfo.utils.getAllInfoString
 import com.parseus.codecinfo.utils.getAttributeColor
-import com.parseus.codecinfo.utils.getDefaultThemeOption
 import com.parseus.codecinfo.utils.getItemListString
 import com.parseus.codecinfo.utils.getMemoryLeakFixBackDispatcher
 import com.parseus.codecinfo.utils.getPrimaryColor
@@ -96,7 +95,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     private var shouldRecreateActivity = false
 
     private val useImmersiveMode: Boolean
-        get() = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("immersive_mode", true)
+        get() = settingsRepository.getSettingsSync().immersiveMode
 
     private val settingsContract = registerForActivityResult(SettingsContract()) { result ->
         shouldRecreateActivity = result
@@ -171,9 +170,8 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
         setContentView(binding.root)
 
-        val defaultThemeMode = getDefaultThemeOption(this)
-        val darkTheme = PreferenceManager.getDefaultSharedPreferences(this)
-            .getString("dark_theme", defaultThemeMode.toString())!!.toInt()
+        val settings = settingsRepository.getSettingsSync()
+        val darkTheme = settings.darkTheme
         AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
 
         setSupportActionBar(binding.toolbar)

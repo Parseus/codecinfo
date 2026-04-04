@@ -10,9 +10,9 @@ import androidx.annotation.AttrRes
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
-import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.ui.settings.DarkTheme
 
 fun Context.isInTwoPaneMode(): Boolean {
@@ -28,8 +28,8 @@ fun Context.getAttributeColor(@AttrRes attrColor: Int,
 }
 
 fun Context.isNightMode(): Boolean {
-    val appTheme = DarkTheme.fromValue(PreferenceManager.getDefaultSharedPreferences(this)
-        .getString("dark_theme", getDefaultThemeOption(this).toString())!!.toInt()) ?: getDefaultThemeOption(this)
+    val settings = settingsRepository.getSettingsSync()
+    val appTheme = DarkTheme.fromValue(settings.darkTheme)
     return when (appTheme) {
         DarkTheme.Light -> false
         DarkTheme.Dark -> true

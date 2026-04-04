@@ -28,6 +28,7 @@ android {
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
+            @Suppress("UnstableApiUsage")
             optimization.keepRules {
                 ignoreFrom("androidx.recyclerview:recyclerview")
             }
@@ -133,6 +134,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core)
+    implementation(libs.androidx.datastore)
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.preference)
     implementation(libs.androidx.profileinstaller)

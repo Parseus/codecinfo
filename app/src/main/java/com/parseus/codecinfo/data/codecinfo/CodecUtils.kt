@@ -14,12 +14,13 @@ import android.util.Log
 import android.util.Range
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
-import androidx.preference.PreferenceManager
 import com.parseus.codecinfo.*
 import com.parseus.codecinfo.data.DetailsProperty
+import com.parseus.codecinfo.data.Settings
 import com.parseus.codecinfo.data.codecinfo.colorformats.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.VP9Levels.*
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.utils.*
 import java.util.*
 import kotlin.math.min
@@ -140,8 +141,6 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         return videoCodecList
     }
 
-    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-
     if (mediaCodecInfos.isEmpty()) {
         mediaCodecInfos = try {
             MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
@@ -175,9 +174,10 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         } catch (_: Exception) {}
     }
 
-    val showHwCodecsOnly = prefs.getBoolean("show_hw_codecs_only", false)
-    val showAliases = prefs.getBoolean("show_aliases", false)
-    val filteringOption = prefs.getString("filter_type", "2")!!.toInt()
+    val settings = context.settingsRepository.getSettingsSync()
+    val showHwCodecsOnly = settings.showHwCodecsOnly
+    val showAliases = settings.showAliases
+    val filteringOption = settings.filterType.toInt()
     var codecSimpleInfoList = ArrayList<CodecSimpleInfo>()
 
     for ((codecIndex, mediaCodecInfo) in mediaCodecInfos.withIndex()) {
@@ -224,11 +224,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         }
     }
 
-    val sortType = try {
-        prefs.getString("sort_type", "0")!!.toInt()
-    } catch (_: Exception) {
-        prefs.getInt("sort_type", 0)
-    }
+    val sortType = settings.sortType.toInt()
     val comparator: Comparator<CodecSimpleInfo> = when (sortType) {
         0 -> compareBy({ it.codecId }, { it.codecName })
         1 -> compareByDescending<CodecSimpleInfo> { it.codecId }.thenBy { it.codecName }
@@ -754,6 +750,7 @@ private fun getVideoCapabilities(context: Context, codecId: String, codecName: S
 
 private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, codecName: String,
                             context: Context, propertyList: MutableList<DetailsProperty>) {
+    val settings = context.settingsRepository.getSettingsSync()
     val colorFormats = capabilities.colorFormats
     val colorFormatStrings = Array(colorFormats.size) {
         var colorFormat = when {
@@ -784,7 +781,7 @@ private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, code
             colorFormat = StandardColorFormat.from(colorFormats[it])
         }
 
-        getFormattedColorProfileString(context, colorFormat
+        getFormattedColorProfileString(settings, colorFormat
                 ?: context.getString(R.string.unknown), colorFormats[it])
     }.toSortedSet()
     propertyList.add(DetailsProperty(propertyList.size.toLong(),
@@ -792,10 +789,8 @@ private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, code
             colorFormatStrings.joinToString("\n")))
 }
 
-private fun getFormattedColorProfileString(context: Context, colorFormat: String, colorFormatInt: Int): String {
-    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-
-    return when (prefs.getString("known_values_color_profiles", "1")!!.toInt()) {
+private fun getFormattedColorProfileString(settings: Settings, colorFormat: String, colorFormatInt: Int): String {
+    return when (settings.knownValuesColorProfiles.toInt()) {
         0 -> colorFormat
         1 -> "$colorFormat (${colorFormatInt.toHexHstring()})"
         else -> "$colorFormat ($colorFormatInt)"
@@ -869,8 +864,8 @@ private fun getFrameRatePerResolutions(context: Context, codecId: String,
     val capabilities = StringBuilder()
     var maxFrameRate: Double
     val fpsString = context.getString(R.string.frames_per_second)
-    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-    val option = prefs.getString("known_resolutions", "0")!!.toInt()
+    val settings = context.settingsRepository.getSettingsSync()
+    val option = settings.knownResolutions.toInt()
     val maxResolution = getMaxResolution(codecId, videoCapabilities)
 
     framerateResolutions.forEachIndexed { index, resolution ->
@@ -915,6 +910,8 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
     var profile: String?
     var level: String? = ""
 
+    val settings = context.settingsRepository.getSettingsSync()
+
     // On Android <=6.0, some devices do not advertise VP9 profile level support.
     // In this case, estimate the level from MediaCodecInfo.VideoCapabilities instead.
     if (SDK_INT == 23 && codecId.endsWith("vp9") && profileLevels.isEmpty()) {
@@ -922,7 +919,7 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
         // Assume all platforms before N only support VP9 profile 0.
         profile = VP9Profiles.VP9Profile0.name
         level = VP9Levels.from(vp9Level)!!
-        stringBuilder.append(getFormattedProfileLevelString(context,
+        stringBuilder.append(getFormattedProfileLevelString(settings, context,
                 profile, VP9Profiles.VP9Profile0.value, level, vp9Level))
 
         return stringBuilder.toString()
@@ -1057,7 +1054,7 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
             }
         }
 
-        stringBuilder.append(getFormattedProfileLevelString(context,
+        stringBuilder.append(getFormattedProfileLevelString(settings, context,
                 profile, it.profile, level, it.level))
     }
 
@@ -1065,10 +1062,10 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
     return stringBuilder.toString()
 }
 
-private fun getFormattedProfileLevelString(context: Context, profile: String?, profileInt: Int,
+private fun getFormattedProfileLevelString(settings: Settings, context: Context,
+                                           profile: String?, profileInt: Int,
                                            level: String?, levelInt: Int): String {
-    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-    val option = prefs.getString("known_values_profile_levels", "1")!!.toInt()
+    val option = settings.knownValuesProfileLevels.toInt()
     val unknownString = context.getString(R.string.unknown)
 
     val profileString = when (option) {
@@ -1216,8 +1213,8 @@ private fun needsHevc10BitProfileExcluded(codecId: String, profile: Int): Boolea
 private fun needsMaxResolutionFixForMPEG4(codecId: String) = "video/mp4v-es" == codecId && Build.MODEL in incorrectMpeg4ResolutionModelList
 
 private fun saveToLogcat(context: Context, codecId: String, codecName: String, detailsList: List<DetailsProperty>) {
-    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-    val saveDetailsToLogcat = prefs.getBoolean("save_details_to_logcat", false)
+    val settings = context.settingsRepository.getSettingsSync()
+    val saveDetailsToLogcat = settings.saveDetailsToLogcat
     if (saveDetailsToLogcat) {
         Log.i("CodecUtils", "Codec MIME type: $codecId, codec name: $codecName")
         Log.i("CodecUtils", detailsList.joinToString("\n"))

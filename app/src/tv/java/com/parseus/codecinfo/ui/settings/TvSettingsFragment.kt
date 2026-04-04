@@ -2,6 +2,7 @@ package com.parseus.codecinfo.ui.settings
 
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import androidx.annotation.XmlRes
 import androidx.leanback.preference.LeanbackPreferenceFragmentCompat
 import androidx.leanback.preference.LeanbackSettingsFragmentCompat
@@ -12,6 +13,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.ui.settings.TvSettingsActivity.Companion.aliasesChanged
 import com.parseus.codecinfo.ui.settings.TvSettingsActivity.Companion.filterTypeChanged
 import com.parseus.codecinfo.ui.settings.TvSettingsActivity.Companion.hwIconChanged
@@ -50,6 +52,11 @@ class TvSettingsFragment : LeanbackSettingsFragmentCompat(), DialogPreference.Ta
     }
 
     class TvPreferenceFragment : LeanbackPreferenceFragmentCompat() {
+
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+            preferenceManager.preferenceDataStore = requireContext().settingsRepository
+        }
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)

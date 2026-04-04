@@ -4,9 +4,9 @@ import android.content.Context
 import android.media.MediaDrm
 import android.os.Build
 import android.util.Log
-import androidx.preference.PreferenceManager
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.utils.toHexString
 import java.util.*
 
@@ -219,8 +219,8 @@ private fun MediaDrm.closeDrmInstance() {
 }
 
 private fun saveToLogcat(context: Context, drmUUID: UUID, drmVendor: DrmVendor?, detailsList: List<DetailsProperty>) {
-    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-    val saveDetailsToLogcat = prefs.getBoolean("save_details_to_logcat", false)
+    val settings = context.settingsRepository.getSettingsSync()
+    val saveDetailsToLogcat = settings.saveDetailsToLogcat
     if (saveDetailsToLogcat) {
         if (drmVendor != null) {
             Log.i("DrmUtils", "DRM: ${drmVendor.getSimpleInfo(context)}")

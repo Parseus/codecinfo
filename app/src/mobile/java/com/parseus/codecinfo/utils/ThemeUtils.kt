@@ -28,7 +28,6 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
 import androidx.core.view.forEach
-import androidx.preference.PreferenceManager
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
@@ -44,6 +43,7 @@ import com.google.android.material.tabs.TabLayout
 import com.kieronquinn.monetcompat.core.MonetCompat
 import com.kieronquinn.monetcompat.extensions.toArgb
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.data.settingsRepository
 import java.lang.reflect.Field
 import kotlin.math.roundToInt
 
@@ -52,7 +52,7 @@ private const val TAG = "ThemeUtils"
 fun isNativeMonetAvailable(): Boolean = DynamicColors.isDynamicColorAvailable()
 
 fun isDynamicThemingEnabled(context: Context): Boolean {
-    return PreferenceManager.getDefaultSharedPreferences(context).getBoolean("dynamic_theme", false)
+    return context.settingsRepository.getSettingsSync().dynamicTheme
 }
 
 fun getPrimaryColor(context: Context): Int {

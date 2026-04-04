@@ -8,13 +8,13 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SortedList
 import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.databinding.CodecAdapterRowBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
@@ -128,7 +128,7 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
             }
 
             hwIcon.isVisible = codecInfo.isHardwareAccelereated
-                    && PreferenceManager.getDefaultSharedPreferences(layout.context).getBoolean("show_hw_icon", true)
+                    && itemView.context.settingsRepository.getSettingsSync().showHwIcon
             hwIcon.imageTintList = ColorStateList.valueOf(onSurfaceVariantColor)
 
             if (KNOWN_PROBLEMS_DB.isNotEmpty()) {

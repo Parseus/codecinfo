@@ -26,10 +26,10 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.kieronquinn.monetcompat.app.MonetCompatActivity
 import com.kieronquinn.monetcompat.core.MonetCompat
-import com.kieronquinn.monetcompat.core.WallpaperTypes
 import com.kieronquinn.monetcompat.extensions.applyMonet
 import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.databinding.SettingsMainBinding
 import com.parseus.codecinfo.databinding.WallpaperColorPickerLayoutBinding
 import com.parseus.codecinfo.ui.CustomLinearLayoutManager
@@ -38,7 +38,6 @@ import com.parseus.codecinfo.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import androidx.core.content.edit
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.updatePadding
@@ -173,6 +172,8 @@ class SettingsActivity : MonetCompatActivity() {
     class SettingsFragment : PreferenceFragmentCompat() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+            preferenceManager.preferenceDataStore = requireContext().settingsRepository
+
             val view = super.onCreateView(inflater, container, savedInstanceState)
 
             findPreference<CheckBoxPreference>("dynamic_theme")?.apply {
@@ -207,8 +208,6 @@ class SettingsActivity : MonetCompatActivity() {
                 findPreference<ListPreference>("dynamic_theme_wallpaper_source")?.apply {
                     isVisible = Build.VERSION.SDK_INT >= 27
                             && (findPreference<CheckBoxPreference>("dynamic_theme")?.isChecked ?: false)
-                    value = PreferenceManager.getDefaultSharedPreferences(requireContext())
-                        .getString("dynamic_theme_wallpaper_source", WallpaperTypes.WALLPAPER_SYSTEM.toString())
                     setOnPreferenceChangeListener { _, newValue ->
                         MonetCompat.wallpaperSource = (newValue as String).toInt()
                         MonetCompat.getInstance().updateMonetColors()
@@ -237,8 +236,7 @@ class SettingsActivity : MonetCompatActivity() {
 
             findPreference<ListPreference>("dark_theme")!!.apply {
                 setDarkThemeOptions(this)
-                val currentTheme = PreferenceManager.getDefaultSharedPreferences(requireContext())
-                        .getString("dark_theme", getDefaultThemeOption(requireContext()).toString())!!
+                val currentTheme = value ?: getDefaultThemeOption(requireContext()).toString()
                 icon = AppCompatResources.getDrawable(requireContext(),
                         getCurrentThemeIcon(currentTheme.toInt()))
                 setOnPreferenceChangeListener { pref, newValue ->
@@ -357,11 +355,7 @@ class SettingsActivity : MonetCompatActivity() {
                     viewLifecycleOwner.lifecycleScope.launch {
                         viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                             withContext(Dispatchers.IO) {
-                                PreferenceManager.getDefaultSharedPreferences(requireContext()).edit(
-                                    commit = true
-                                ) {
-                                    putInt("selected_color", it)
-                                }
+                                requireContext().settingsRepository.setSelectedColor(it)
                             }
                             alertDialog.dismiss()
                             MonetCompat.getInstance().updateMonetColors()
@@ -407,8 +401,6 @@ class SettingsActivity : MonetCompatActivity() {
                 this.entries = entries.toTypedArray()
                 this.entryValues = entryValues.toTypedArray()
                 setDefaultValue(getDefaultThemeOption(requireContext()).toString())
-                value = PreferenceManager.getDefaultSharedPreferences(requireContext())
-                        .getString("dark_theme", getDefaultThemeOption(requireContext()).toString())
             }
         }
 

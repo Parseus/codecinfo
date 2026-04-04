@@ -22,9 +22,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.ui.externalLinks.FallbackWebBrowserDialog
 
 class ExternalLinksHelper(private val context: Context, lifecycle: Lifecycle) : DefaultLifecycleObserver {
@@ -120,9 +120,8 @@ class ExternalLinksHelper(private val context: Context, lifecycle: Lifecycle) : 
         }
 
         if (!nativeAppLaunched) {
-            var openInMethod = OpenInMethod.from(PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getString("open_external_links", OpenInMethod.CustomTabs.value.toString())!!.toInt())
+            val settings = context.settingsRepository.getSettingsSync()
+            var openInMethod = OpenInMethod.from(settings.openExternalLinks.toInt())
             if (openInMethod == OpenInMethod.WebView && uri.toString().contains("developer.android.com")) {
                 // Android documentation doesn't load in WebView for some reason, so load it externally.
                 openInMethod = OpenInMethod.ExternalBrowser

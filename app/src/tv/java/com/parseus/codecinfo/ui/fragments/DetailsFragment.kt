@@ -9,12 +9,17 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.content.IntentCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
+import com.parseus.codecinfo.data.codecinfo.isDetailedCodecInfoCached
 import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
+import com.parseus.codecinfo.data.drm.isDetailedDrmInfoCached
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
 import com.parseus.codecinfo.ui.CustomLinearLayoutManager
@@ -23,6 +28,9 @@ import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
 import com.parseus.codecinfo.utils.getSelectedCodecInfoString
 import com.parseus.codecinfo.utils.getSelectedDrmInfoString
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
@@ -95,14 +103,32 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
             }
         }
 
-        propertyList = when {
-            codecId != null && codecName != null ->
-                getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
-            drmName != null && drmUuid != null ->
-                getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
-            else -> emptyList()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                binding.loadingProgress.isVisible = true
+
+                propertyList = if (codecId != null && codecName != null && isDetailedCodecInfoCached(codecId!!, codecName!!)) {
+                    getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+                } else if (drmName != null && drmUuid != null && isDetailedDrmInfoCached(drmUuid!!)) {
+                    getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
+                } else {
+                    withContext(Dispatchers.IO) {
+                        when {
+                            codecId != null && codecName != null ->
+                                getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+
+                            drmName != null && drmUuid != null ->
+                                getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
+
+                            else -> emptyList()
+                        }
+                    }
+                }
+
+                binding.loadingProgress.isVisible = false
+                getFullDetails()
+            }
         }
-        getFullDetails()
     }
 
     private fun getFullDetails() {

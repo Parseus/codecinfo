@@ -74,6 +74,10 @@ class ExpandableItemAdapter(private val knownProblemsList: List<KnownProblem>)
 
         class ItemViewHolder(private val binding: ExpandableItemContentBinding) : ViewHolder(binding) {
 
+            init {
+                binding.knownIssueItemSources.movementMethod = LinkMovementMethodCompat.getInstance()
+            }
+
             fun bind(knownProblem: KnownProblem, position: Int) {
                 val text = HtmlCompat.fromHtml(knownProblem.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
                 binding.root.contentDescription = binding.root.context.getString(
@@ -91,7 +95,6 @@ class ExpandableItemAdapter(private val knownProblemsList: List<KnownProblem>)
                 binding.knownIssueItemSources.run {
                     setText(spannableBuilder, TextView.BufferType.SPANNABLE)
                     LinkifyCompat.addLinks(this, WEB_URLS)
-                    movementMethod = LinkMovementMethodCompat.getInstance()
                 }
             }
         }

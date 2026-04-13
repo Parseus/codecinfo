@@ -1,5 +1,6 @@
 package com.parseus.codecinfo.data.knownproblems
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import com.parseus.codecinfo.utils.isTv
@@ -24,127 +25,77 @@ data class KnownProblem(
     val urls: List<String>
 ) {
 
+    @SuppressLint("NewApi")
     fun isAffected(context: Context, codec: String? = null): Boolean {
-        // First case: codec name equality.
         if (!codec.equals(codecName, true)) {
             return false
         }
 
-        val hardware = Build.HARDWARE
-        var hardwareAffected = false
-        hardwares?.forEach {
-            if ((it.op == "equals" && hardware == it.value)
-                    || (it.op == "startsWith" && hardware.startsWith(it.value))) {
-                hardwareAffected = hardware.equals(it.value, true)
-            }
+        val sdkVersion = Build.VERSION.SDK_INT
 
-            // Second case: devices that have no additional version requirement.
-            if (hardwareAffected && versions == null) {
-                return true
-            }
-        }
-
-        val device = Build.DEVICE
-        var deviceAffected = false
-        devices?.forEach {
-            if ((it.op == "equals" && device == it.value)
-                    || (it.op == "startsWith" && device.startsWith(it.value))) {
-                deviceAffected = if (it.manufacturer == null) {
-                    true
-                } else {
-                    Build.MANUFACTURER.equals(it.manufacturer, true)
-                }
-            }
-
-            // Third case: devices that have no additional version requirement.
-            if (deviceAffected && versions == null) {
-                return true
-            }
-        }
-
-        val model = Build.MODEL
-        var modelAffected = false
-        models?.forEach {
-            if ((it.op == "equals" && model == it.value)
-                    || (it.op == "startsWith" && model.startsWith(it.value))) {
-                modelAffected = if (it.manufacturer == null) {
-                    true
-                } else {
-                    Build.MANUFACTURER.equals(it.manufacturer, true)
-                }
-            }
-
-            // Fourth case: device models that have no additional version requirement.
-            if (modelAffected && versions == null) {
-                return true
-            }
-        }
+        val hardwareAffected = hardwares?.any { matches(Build.HARDWARE, it.op, it.value) } ?: false
+        if (hardwareAffected && versions == null) return true
 
         val manufacturer = Build.MANUFACTURER
-        var manufacturerAffected = false
-        manufacturers?.forEach {
-            if ((it.op == "equals" && manufacturer == it.value)
-                || (it.op == "startsWith" && manufacturer.startsWith(it.value))) {
-                manufacturerAffected = manufacturer.equals(it.value, true)
+        val deviceAffected = devices?.any {
+            matches(Build.DEVICE, it.op, it.value) &&
+                    (it.manufacturer == null || manufacturer.equals(it.manufacturer, true))
+        } ?: false
+        if (deviceAffected && versions == null) return true
+
+        val modelAffected = models?.any {
+            matches(Build.MODEL, it.op, it.value) &&
+                    (it.manufacturer == null || manufacturer.equals(it.manufacturer, true))
+        } ?: false
+        if (modelAffected && versions == null) return true
+
+        val manufacturerAffected = manufacturers?.any { matches(manufacturer, it.op, it.value) } ?: false
+        if (manufacturerAffected && versions == null) return true
+
+        val socModelAffected = if (sdkVersion >= 31) {
+            socModels?.any { matches(Build.SOC_MODEL, it.op, it.value) } ?: false
+        } else false
+        if (socModelAffected && versions == null) return true
+
+        // If versions are null, and we haven't returned true yet, it's not affected
+        val currentVersions = versions ?: return false
+
+        val isTv = context.isTv()
+        val anyCriteriaPresent = devices != null || models != null || hardwares != null ||
+                manufacturers != null || socModels != null
+        val anyCriteriaAffected = deviceAffected || modelAffected || hardwareAffected ||
+                manufacturerAffected || socModelAffected
+
+        return currentVersions.any { version ->
+            if (("tv" == version.platform && !isTv) || ("mobile" == version.platform && isTv)) {
+                return@any false
             }
 
-            // Second case: devices that have no additional version requirement.
-            if (manufacturerAffected && versions == null) {
-                return true
-            }
-        }
-
-        var socModelAffected = false
-        if (Build.VERSION.SDK_INT >= 31) {
-            val socModel = Build.SOC_MODEL
-            socModels?.forEach {
-                if ((it.op == "equals" && socModel == it.value)
-                    || (it.op == "startsWith" && socModel.startsWith(it.value))) {
-                    socModelAffected = socModel.equals(it.value, true)
-                }
-
-                // Fifth case: SoCs that have no additional version requirement.
-                if (socModelAffected && versions == null) {
-                    return true
-                }
-            }
-        }
-
-        versions?.forEach { (op, value, value2, platform) ->
-            if (("tv" == platform && !context.isTv())
-                    || ("mobile" == platform && context.isTv())) {
-                return@forEach
-            }
-            
-            val deviceVersion = Build.VERSION.SDK_INT
-            val versionAffected = when (op) {
-                "=" -> deviceVersion == value
-                ">=" -> deviceVersion >= value
-                ">" -> deviceVersion > value
-                "<=" -> deviceVersion <= value
-                "<" -> deviceVersion < value
-                "between" -> deviceVersion in value..(value2 ?: value)
-                "!=" -> deviceVersion != value
+            val versionMatch = when (version.op) {
+                "=" -> sdkVersion == version.value
+                ">=" -> sdkVersion >= version.value
+                ">" -> sdkVersion > version.value
+                "<=" -> sdkVersion <= version.value
+                "<" -> sdkVersion < version.value
+                "between" -> sdkVersion in version.value..(version.value2 ?: version.value)
+                "!=" -> sdkVersion != version.value
                 "all" -> true
                 else -> false
             }
 
-            if (((devices != null && deviceAffected) || (models != null && modelAffected)
-                    || (hardwares != null && hardwareAffected)
-                        || (manufacturers != null && manufacturerAffected)
-                        || (socModels != null && socModelAffected))
-                && versionAffected) {
-                // Sixth case: both device/model/hardware/SoC and version match.
-                return true
-            } else if (devices == null && models == null && hardwares == null && socModels == null
-                && manufacturers == null && versionAffected) {
-                // Seventh case: version matches regardless of the device/model/manufacturer/hardware/SoC.
-                return true
-            }
+            // Version matches if:
+            // 1. Both a specific criteria (device/model/etc.) AND version match
+            // 2. OR no specific criteria are defined, and only the version matches
+            versionMatch && (!anyCriteriaPresent || anyCriteriaAffected)
         }
+    }
 
-        // Still here? It either isn't affected or this a (currently) unknown case, then.
-        return false
+    private fun matches(actual: String, op: String, expected: String): Boolean {
+        return when (op) {
+            "equals" -> actual.equals(expected, ignoreCase = true)
+            "startsWith" -> actual.startsWith(expected, ignoreCase = true)
+            else -> false
+        }
     }
 
 }

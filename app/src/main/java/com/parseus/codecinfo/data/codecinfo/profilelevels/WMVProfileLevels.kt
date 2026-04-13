@@ -20,7 +20,7 @@ enum class WMVLevels(val value: Int) {
     OMX_VIDEO_WMVLevelLow(0x00),
     OMX_VIDEO_WMVLevelMedium(0x01),
     OMX_VIDEO_WMVLevelHigh(0x02),
-    OMX_VIDEO_WMVl0(0x03),
+    OMX_VIDEO_WMVL0(0x03),
     OMX_VIDEO_WMVL1(0x04),
     OMX_VIDEO_WMVL2(0x05),
     OMX_VIDEO_WMVL3(0x06),

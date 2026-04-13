@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SortedList
-import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
@@ -25,69 +25,9 @@ import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
 import com.parseus.codecinfo.utils.isInTwoPaneMode
 
-class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
-
-    private val sortedList = SortedList(CodecSimpleInfo::class.java, object : SortedListAdapterCallback<CodecSimpleInfo>(this) {
-        override fun compare(o1: CodecSimpleInfo, o2: CodecSimpleInfo): Int {
-            val comp = o1.codecId.compareTo(o2.codecId)
-            return if (comp != 0) comp else o1.codecName.compareTo(o2.codecName)
-        }
-
-        override fun onInserted(position: Int, count: Int) {
-            notifyItemRangeInserted(position, count)
-        }
-
-        override fun onRemoved(position: Int, count: Int) {
-            notifyItemRangeRemoved(position, count)
-        }
-
-        override fun onMoved(fromPosition: Int, toPosition: Int) {
-            notifyItemMoved(fromPosition, toPosition)
-        }
-
-        override fun onChanged(position: Int, count: Int) {
-            notifyItemRangeChanged(position, count)
-        }
-
-        override fun areContentsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
-            return oldItem == newItem
-        }
-
-        override fun areItemsTheSame(item1: CodecSimpleInfo, item2: CodecSimpleInfo): Boolean {
-            return item1.id == item2.id
-        }
-
-    })
-
-    init {
-        setHasStableIds(true)
-    }
-
-    override fun getItemId(position: Int): Long {
-        return sortedList.get(position).id
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
-
-    fun add(infoList: List<CodecSimpleInfo>) {
-        sortedList.addAll(infoList)
-    }
-
-    fun replaceAll(infoList: List<CodecSimpleInfo>) {
-        sortedList.run {
-            beginBatchedUpdates()
-            for (i in sortedList.size() - 1 downTo 0) {
-                val info = sortedList[i]
-                if (!infoList.contains(info)) {
-                    sortedList.remove(info)
-                }
-            }
-            addAll(infoList)
-            endBatchedUpdates()
-        }
-    }
+class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHolder>(
+    CodecDiffCallback()
+) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CodecInfoViewHolder {
         val binding = CodecAdapterRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -95,11 +35,8 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: CodecInfoViewHolder, position: Int) {
-        val codecInfoItem = sortedList[position]
-        holder.bindCodecInfo(codecInfoItem, position)
+        holder.bindCodecInfo(getItem(position), position)
     }
-
-    override fun getItemCount() = sortedList.size()
 
     class CodecInfoViewHolder(binding: CodecAdapterRowBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -132,12 +69,10 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
             hwIcon.imageTintList = ColorStateList.valueOf(onSurfaceVariantColor)
 
             if (KNOWN_PROBLEMS_DB.isNotEmpty()) {
-                val knownProblems = KNOWN_PROBLEMS_DB.filter {
+                val knownProblems = KNOWN_PROBLEMS_DB.any {
                     it.isAffected(itemView.context, codecInfo.codecName)
                 }
-                if (knownProblems.isNotEmpty()) {
-                    knownIssueIcon.isVisible = true
-                }
+                knownIssueIcon.isVisible = knownProblems
             }
 
             val codecTypeString = layout.context.getString(
@@ -209,6 +144,11 @@ class CodecAdapter : RecyclerView.Adapter<CodecAdapter.CodecInfoViewHolder>() {
             }
         }
 
+    }
+
+    private class CodecDiffCallback : DiffUtil.ItemCallback<CodecSimpleInfo>() {
+        override fun areItemsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo) = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo) = oldItem == newItem
     }
 
 }

@@ -14,7 +14,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.divider.MaterialDividerItemDecoration
-import com.google.android.material.snackbar.Snackbar
 import com.kieronquinn.monetcompat.app.MonetFragment
 import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.R
@@ -36,8 +35,6 @@ import com.parseus.codecinfo.utils.updateColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-internal var emptyListInformed = false
 
 class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
 
@@ -107,13 +104,17 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
                         if (codecSimpleInfoList.isEmpty()) emptyList = true
                         CodecAdapter().also {
                             if (!emptyList) {
-                                it.add(codecSimpleInfoList)
+                                it.submitList(codecSimpleInfoList)
                             }
                         }
                     } else {
                         val drmSimpleInfoList = getSimpleDrmInfoList(requireContext())
                         if (drmSimpleInfoList.isEmpty()) emptyList = true
-                        DrmAdapter(drmSimpleInfoList)
+                        DrmAdapter().also {
+                            if (!emptyList) {
+                                it.submitList(drmSimpleInfoList)
+                            }
+                        }
                     }
                 }
 
@@ -170,11 +171,11 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
         val adapter = binding.simpleCodecListView.adapter
         if (adapter is CodecAdapter) {
             val fullList = getSimpleCodecInfoList(requireContext(), InfoType.currentInfoType == InfoType.Audio)
-            adapter.replaceAll(filterCodecs(fullList, query))
+            adapter.submitList(filterCodecs(fullList, query))
         } else {
             (adapter as DrmAdapter)
             val fullList = getSimpleDrmInfoList(requireContext())
-            adapter.replaceAll(filterDrm(fullList, query))
+            adapter.submitList(filterDrm(fullList, query))
         }
     }
 

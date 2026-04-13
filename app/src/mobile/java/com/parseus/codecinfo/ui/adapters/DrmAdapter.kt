@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.commit
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SortedList
-import androidx.recyclerview.widget.SortedListAdapterCallback
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.databinding.DrmAdapterRowBinding
@@ -21,56 +21,7 @@ import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
 import com.parseus.codecinfo.utils.isInTwoPaneMode
 
-class DrmAdapter(private val drmList: List<DrmSimpleInfo>) : RecyclerView.Adapter<DrmAdapter.DrmInfoViewHolder>() {
-
-    private val sortedList = SortedList(DrmSimpleInfo::class.java, object : SortedListAdapterCallback<DrmSimpleInfo>(this) {
-        override fun compare(o1: DrmSimpleInfo, o2: DrmSimpleInfo): Int {
-            return o1.drmName.compareTo(o2.drmName)
-        }
-
-        override fun onInserted(position: Int, count: Int) {
-            notifyItemRangeInserted(position, count)
-        }
-
-        override fun onRemoved(position: Int, count: Int) {
-            notifyItemRangeRemoved(position, count)
-        }
-
-        override fun onMoved(fromPosition: Int, toPosition: Int) {
-            notifyItemMoved(fromPosition, toPosition)
-        }
-
-        override fun onChanged(position: Int, count: Int) {
-            notifyItemRangeChanged(position, count)
-        }
-
-        override fun areContentsTheSame(oldItem: DrmSimpleInfo, newItem: DrmSimpleInfo): Boolean {
-            return oldItem == newItem
-        }
-
-        override fun areItemsTheSame(item1: DrmSimpleInfo, item2: DrmSimpleInfo): Boolean {
-            return item1.id == item2.id
-        }
-
-    })
-
-    fun add(infoList: List<DrmSimpleInfo>) {
-        sortedList.addAll(infoList)
-    }
-
-    fun replaceAll(infoList: List<DrmSimpleInfo>) {
-        sortedList.run {
-            beginBatchedUpdates()
-            for (i in sortedList.size() - 1 downTo 0) {
-                val info = sortedList[i]
-                if (!infoList.contains(info)) {
-                    sortedList.remove(info)
-                }
-            }
-            addAll(infoList)
-            endBatchedUpdates()
-        }
-    }
+class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmDiffCallback()) {
     
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrmInfoViewHolder {
         val binding = DrmAdapterRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -78,11 +29,8 @@ class DrmAdapter(private val drmList: List<DrmSimpleInfo>) : RecyclerView.Adapte
     }
 
     override fun onBindViewHolder(holder: DrmInfoViewHolder, position: Int) {
-        val drmItem = drmList[position]
-        holder.bindDrmInfo(drmItem, position)
+        holder.bindDrmInfo(getItem(position), position)
     }
-
-    override fun getItemCount() = drmList.size
 
     class DrmInfoViewHolder(binding: DrmAdapterRowBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -159,6 +107,11 @@ class DrmAdapter(private val drmList: List<DrmSimpleInfo>) : RecyclerView.Adapte
             }
         }
 
+    }
+
+    private class DrmDiffCallback : DiffUtil.ItemCallback<DrmSimpleInfo>() {
+        override fun areItemsTheSame(oldItem: DrmSimpleInfo, newItem: DrmSimpleInfo) = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: DrmSimpleInfo, newItem: DrmSimpleInfo) = oldItem == newItem
     }
 
 }

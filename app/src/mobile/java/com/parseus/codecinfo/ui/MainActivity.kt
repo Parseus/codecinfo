@@ -7,7 +7,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
@@ -22,7 +21,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
-import androidx.core.graphics.createBitmap
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewGroupCompat
@@ -62,7 +61,6 @@ import com.parseus.codecinfo.utils.checkForUpdate
 import com.parseus.codecinfo.utils.createInAppUpdateResultLauncher
 import com.parseus.codecinfo.utils.disableApiBlacklistOnPie
 import com.parseus.codecinfo.utils.getAllInfoString
-import com.parseus.codecinfo.utils.getAttributeColor
 import com.parseus.codecinfo.utils.getItemListString
 import com.parseus.codecinfo.utils.getMemoryLeakFixBackDispatcher
 import com.parseus.codecinfo.utils.getPrimaryColor
@@ -81,7 +79,9 @@ import com.parseus.codecinfo.utils.updateIconColors
 import com.parseus.codecinfo.utils.updateStatusBarColor
 import com.parseus.codecinfo.utils.updateToolBarColor
 import dev.kdrag0n.monet.theme.ColorScheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.decodeFromStream
 import java.io.File
@@ -462,47 +462,58 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
             else -> ""
         }
 
-        val shareIntent = Intent.createChooser(Intent().apply {
-            action = Intent.ACTION_SEND
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, textToShare)
+        lifecycleScope.launch {
+            val shareIntent = Intent.createChooser(Intent().apply {
+                action = Intent.ACTION_SEND
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, textToShare)
 
-            val title = if (option != 2) {
-                getString(if (isCodecShared) R.string.codec_list else R.string.drm_list)
-            } else {
-                if (isCodecShared) {
-                    "${getString(R.string.codec_details)}: $codecName"
+                val title = if (option != 2) {
+                    getString(if (isCodecShared) R.string.codec_list else R.string.drm_list)
                 } else {
-                    "${getString(R.string.drm_details)}: $drmName"
+                    if (isCodecShared) {
+                        "${getString(R.string.codec_details)}: $codecName"
+                    } else {
+                        "${getString(R.string.drm_details)}: $drmName"
+                    }
                 }
-            }
 
-            putExtra(Intent.EXTRA_TITLE, title)
+                putExtra(Intent.EXTRA_TITLE, title)
 
-            if (Build.VERSION.SDK_INT >= 29) {
-                storeInfoIconForShare()?.let {
-                    clipData = it
-                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                if (Build.VERSION.SDK_INT >= 29) {
+                    storeInfoIconForShare()?.let {
+                        clipData = it
+                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    }
                 }
-            }
 
-        }, null)
-        startActivity(shareIntent)
+            }, null)
+            startActivity(shareIntent)
+        }
     }
 
     @RequiresApi(29)
-    private fun storeInfoIconForShare(): ClipData? {
-        return try {
-            val iconFile = File(filesDir, INFO_ICON_FILE_NAME)
+    private suspend fun storeInfoIconForShare(): ClipData? = withContext(Dispatchers.IO) {
+        try {
+            val iconColor = getPrimaryColor(this@MainActivity)
+            // Include color in filename to handle theme/dynamic color changes
+            val fileName = "$INFO_ICON_FILE_NAME_PREFIX${Integer.toHexString(iconColor)}.png"
+            val iconFile = File(filesDir, fileName)
 
             if (!iconFile.exists()) {
-                val drawable = AppCompatResources.getDrawable(this, R.drawable.ic_info) as VectorDrawable
-                val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight)
-                val canvas = Canvas(bitmap)
-                drawable.run {
-                    setBounds(0, 0, canvas.width, canvas.height)
-                    setTint(getAttributeColor(androidx.appcompat.R.attr.colorPrimary))
-                    draw(canvas)
+                val drawable = AppCompatResources.getDrawable(this@MainActivity,
+                    R.drawable.ic_info)?.mutate() ?: return@withContext null
+                val bitmap = drawable.toBitmap(
+                    width = drawable.intrinsicWidth,
+                    height = drawable.intrinsicHeight,
+                    config = Bitmap.Config.ARGB_8888
+                ).apply {
+                    val canvas = Canvas(this)
+                    drawable.mutate().apply {
+                        setBounds(0, 0, canvas.width, canvas.height)
+                        setTint(iconColor)
+                        draw(canvas)
+                    }
                 }
 
                 iconFile.outputStream().use {
@@ -510,13 +521,13 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                 }
             }
 
-            val imageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", iconFile)
+            val imageUri = FileProvider.getUriForFile(this@MainActivity, "${packageName}.fileprovider", iconFile)
             ClipData.newUri(contentResolver, null, imageUri)
         } catch (_: Exception) { null }
     }
 
     companion object {
-        private const val INFO_ICON_FILE_NAME = "info_icon.png"
+        private const val INFO_ICON_FILE_NAME_PREFIX = "info_icon_"
     }
 
 }

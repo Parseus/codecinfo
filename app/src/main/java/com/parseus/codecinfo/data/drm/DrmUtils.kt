@@ -14,36 +14,40 @@ val drmList: MutableList<DrmSimpleInfo> = arrayListOf()
 val detailedDrmInfo: MutableMap<UUID, List<DetailsProperty>> = mutableMapOf()
 
 fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
-    return drmList.ifEmpty {
-        val list = mutableListOf<DrmSimpleInfo>()
-        if (Build.VERSION.SDK_INT >= 30) {
-            val supported = MediaDrm.getSupportedCryptoSchemes()
-            for (uuid in supported) {
-                val vendor = DrmVendor.entries.find { it.uuid == uuid }
-                if (vendor != null) {
-                    list.add(vendor.getSimpleInfo(context))
-                } else {
-                    val drmName = getDrmDescriptionFromUuid(uuid, context)
-                    list.add(DrmSimpleInfo(list.size.toLong(), drmName, uuid))
-                }
-            }
-        } else {
-            DrmVendor.entries.forEach {
-                try {
-                    // This can crash in native code if something goes wrong while querying it.
-                    val schemeSupported = MediaDrm.isCryptoSchemeSupported(it.uuid)
-                    if (schemeSupported) {
-                        list.add(it.getSimpleInfo(context))
-                    }
-                } catch (_: Throwable) {}
+    if (drmList.isNotEmpty()) {
+        return drmList
+    }
+
+    val list = mutableListOf<DrmSimpleInfo>()
+    if (Build.VERSION.SDK_INT >= 30) {
+        val supported = MediaDrm.getSupportedCryptoSchemes()
+        for (uuid in supported) {
+            val vendor = DrmVendor.entries.find { it.uuid == uuid }
+            if (vendor != null) {
+                list.add(vendor.getSimpleInfo(context))
+            } else {
+                val drmName = getDrmDescriptionFromUuid(uuid, context)
+                list.add(DrmSimpleInfo(list.size.toLong(), drmName, uuid))
             }
         }
-        if (list.isNotEmpty()) {
-            list.sortedBy { it.drmName }
-        } else {
-            emptyList()
+    } else {
+        DrmVendor.entries.forEach {
+            try {
+                // This can crash in native code if something goes wrong while querying it.
+                val schemeSupported = MediaDrm.isCryptoSchemeSupported(it.uuid)
+                if (schemeSupported) {
+                    list.add(it.getSimpleInfo(context))
+                }
+            } catch (_: Throwable) {}
         }
     }
+
+    val sortedList = list.sortedBy { it.drmName }
+
+    drmList.clear()
+    drmList.addAll(sortedList)
+
+    return sortedList
 }
 
 fun isDetailedDrmInfoCached(uuid: UUID) = detailedDrmInfo[uuid] != null

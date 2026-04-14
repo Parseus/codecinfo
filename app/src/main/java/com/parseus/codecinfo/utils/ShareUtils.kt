@@ -10,57 +10,47 @@ import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import java.util.*
 
-fun getItemListString(context: Context): String {
-    val builder = StringBuilder()
+fun getItemListString(context: Context): String = buildString {
+    val infoType = InfoType.currentInfoType
+    val isDrm = infoType == InfoType.DRM
 
-    if (InfoType.currentInfoType != InfoType.DRM) {
-        builder.append("${context.getString(R.string.codec_list)}:\n\n")
-        val codecSimpleInfoList = getSimpleCodecInfoList(context, true)
-        codecSimpleInfoList.addAll(getSimpleCodecInfoList(context, false))
-        codecSimpleInfoList.forEach { builder.append("$it\n") }
+    val titleRes = if (isDrm) R.string.drm_list else R.string.codec_list
+    append(context.getString(titleRes), ":\n\n")
+
+    if (isDrm) {
+        getSimpleDrmInfoList(context).joinTo(this, separator = "\n", postfix = "\n")
     } else {
-        builder.append("${context.getString(R.string.drm_list)}:\n\n")
-        getSimpleDrmInfoList(context).forEach { builder.append("$it\n") }
+        // Use + to create a new list instead of addAll to avoid mutating the cache
+        val allCodecs = getSimpleCodecInfoList(context, true) + getSimpleCodecInfoList(context, false)
+        allCodecs.joinTo(this, separator = "\n", postfix = "\n")
     }
-
-    return builder.toString()
 }
 
-fun getAllInfoString(context: Context): String {
-    val builder = StringBuilder()
+fun getAllInfoString(context: Context): String = buildString {
+    appendLine("${context.getString(R.string.codec_list)}:")
 
-    builder.append("${context.getString(R.string.codec_list)}:\n")
-    val codecSimpleInfoList = getSimpleCodecInfoList(context, true)
-    codecSimpleInfoList.addAll(getSimpleCodecInfoList(context, false))
+    // Use + to create a new list instead of addAll to avoid mutating the internal cache
+    val codecSimpleInfoList = getSimpleCodecInfoList(context, true) + getSimpleCodecInfoList(context, false)
 
     for (info in codecSimpleInfoList) {
-        builder.append("\n$info\n")
-        getDetailedCodecInfo(context, info.codecId, info.codecName).forEach { builder.append("$it\n") }
+        appendLine("\n$info")
+        getDetailedCodecInfo(context, info.codecId, info.codecName).forEach { appendLine(it) }
     }
 
-    builder.append("\n\n${context.getString(R.string.drm_list)}:\n")
+    appendLine("\n\n${context.getString(R.string.drm_list)}:")
     getSimpleDrmInfoList(context).forEach { infoItem ->
-        builder.append("\n$infoItem\n")
-        getDetailedDrmInfo(context, infoItem.drmUuid, DrmVendor.getFromUuid(infoItem.drmUuid)).forEach { builder.append("$it\n") }
+        appendLine("\n$infoItem")
+        val drmVendor = DrmVendor.getFromUuid(infoItem.drmUuid)
+        getDetailedDrmInfo(context, infoItem.drmUuid, drmVendor).forEach { appendLine(it) }
     }
-
-    return builder.toString()
 }
 
-fun getSelectedCodecInfoString(context: Context, codecId: String, codecName: String): String {
-    val builder = StringBuilder()
-    builder.append("${context.getString(R.string.codec_details)}: $codecName\n\n")
-
-    getDetailedCodecInfo(context, codecId, codecName).forEach { builder.append("$it\n") }
-
-    return builder.toString()
+fun getSelectedCodecInfoString(context: Context, codecId: String, codecName: String): String = buildString {
+    appendLine("${context.getString(R.string.codec_details)}: $codecName\n")
+    getDetailedCodecInfo(context, codecId, codecName).forEach { appendLine(it) }
 }
 
-fun getSelectedDrmInfoString(context: Context, drmName: String, drmUuid: UUID): String {
-    val builder = StringBuilder()
-    builder.append("${context.getString(R.string.drm_details)}: $drmName\n\n")
-
-    getDetailedDrmInfo(context, drmUuid, DrmVendor.getFromUuid(drmUuid)).forEach { builder.append("$it\n") }
-
-    return builder.toString()
+fun getSelectedDrmInfoString(context: Context, drmName: String, drmUuid: UUID): String = buildString {
+    appendLine("${context.getString(R.string.drm_details)}: $drmName\n")
+    getDetailedDrmInfo(context, drmUuid, DrmVendor.getFromUuid(drmUuid)).forEach { appendLine(it) }
 }

@@ -74,6 +74,10 @@ fun ByteArray.toHexString(): String {
     return this.joinToString("") { String.format("%02x", it) }
 }
 
+fun String.containsAny(vararg keywords: String): Boolean {
+    return keywords.any { this.contains(it, ignoreCase = true) }
+}
+
 fun MediaCodecInfo.isAudioCodec(): Boolean {
     return supportedTypes.joinToString().contains("audio")
 }

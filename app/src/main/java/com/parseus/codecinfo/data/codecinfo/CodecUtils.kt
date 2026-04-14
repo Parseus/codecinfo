@@ -752,41 +752,39 @@ private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, code
                             context: Context, propertyList: MutableList<DetailsProperty>) {
     val settings = context.settingsRepository.getSettingsSync()
     val colorFormats = capabilities.colorFormats
-    val colorFormatStrings = Array(colorFormats.size) {
-        var colorFormat = when {
-            codecName.contains("brcm", true) -> BroadcomColorFormat.from(colorFormats[it])
-            codecName.contains("qcom", true) || codecName.contains("qti", true)
-                    || codecName.contains("ittiam", true)
-            -> QualcommColorFormat.from(colorFormats[it])
-            codecName.contains("OMX.SEC", true) || codecName.contains("Exynos", true)
-            -> SamsungColorFormat.from(colorFormats[it])
-            codecName.contains("OMX.MTK", true) -> MediaTekColorFormat.from(colorFormats[it])
-            codecName.contains("OMX.IMG", true) -> IMGColorFormat.from(colorFormats[it])
-            codecName.contains("Marvell", true) -> MarvellColorFormat.from(colorFormats[it])
-            codecName.contains("Nvidia", true) -> NvidiaColorFormat.from(colorFormats[it])
-            codecName.contains("OMX.ST", true) -> SonyColorFormat.from(colorFormats[it])
-            codecName.contains("Renesas", true) -> RenesasColorFormat.from(colorFormats[it])
-            codecName.contains("OMX.PSC", true) || codecName.contains("OMX.SNI", true)
-            -> PanasonicSNIColorFormat.from(colorFormats[it])
-            codecName.contains("OMX.sf", true) -> StarFiveColorFormat.from(colorFormats[it])
-            codecName.contains("OMX.TI", true) || codecName.contains("INTEL", true)
-                    || codecName.contains("OMX.rk", true) || codecName.contains("OMX.sprd", true)
-            -> OtherColorFormat.from(colorFormats[it])
-            else -> null
-        }
+    val unknownString = context.getString(R.string.unknown)
 
+    val vendorLookup: (Int) -> String? = when {
+        codecName.contains("brcm", true) -> BroadcomColorFormat::from
+        codecName.containsAny("qcom", "qti", "ittiam") -> QualcommColorFormat::from
+        codecName.containsAny("OMX.SEC", "Exynos") -> SamsungColorFormat::from
+        codecName.contains("OMX.MTK", true) -> MediaTekColorFormat::from
+        codecName.contains("OMX.IMG", true) -> IMGColorFormat::from
+        codecName.contains("Marvell", true) -> MarvellColorFormat::from
+        codecName.contains("Nvidia", true) -> NvidiaColorFormat::from
+        codecName.contains("OMX.ST", true) -> SonyColorFormat::from
+        codecName.contains("Renesas", true) -> RenesasColorFormat::from
+        codecName.containsAny("OMX.PSC", "OMX.SNI") -> PanasonicSNIColorFormat::from
+        codecName.contains("OMX.sf", true) -> StarFiveColorFormat::from
+        codecName.containsAny("OMX.TI", "INTEL", "OMX.rk", "OMX.sprd") -> OtherColorFormat::from
+        else -> { _ -> null }
+    }
+
+    val colorFormatStrings = colorFormats.map { format ->
         // When in doubt, use a standard color formats from the SDK / OpenMAX IL
         // (at least MSVDX/Topaz codecs tend to use some of those from the second one)
-        if (colorFormat == null) {
-            colorFormat = StandardColorFormat.from(colorFormats[it])
-        }
+        val colorFormatName = vendorLookup(format)
+            ?: StandardColorFormat.from(format)
+            ?: unknownString
 
-        getFormattedColorProfileString(settings, colorFormat
-                ?: context.getString(R.string.unknown), colorFormats[it])
+        getFormattedColorProfileString(settings, colorFormatName, format)
     }.toSortedSet()
-    propertyList.add(DetailsProperty(propertyList.size.toLong(),
-            context.getString(R.string.color_profiles),
-            colorFormatStrings.joinToString("\n")))
+
+    propertyList.add(DetailsProperty(
+        id = propertyList.size.toLong(),
+        name = context.getString(R.string.color_profiles),
+        value = colorFormatStrings.joinToString("\n")
+    ))
 }
 
 private fun getFormattedColorProfileString(settings: Settings, colorFormat: String, colorFormatInt: Int): String {

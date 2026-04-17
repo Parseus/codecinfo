@@ -21,6 +21,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
@@ -28,10 +29,13 @@ import androidx.core.view.ViewGroupCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.forEach
+import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.window.layout.FoldingFeature
+import androidx.window.layout.WindowInfoTracker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.transition.platform.MaterialSharedAxis
@@ -162,6 +166,8 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     private fun initializeUI(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
 
+        setupFoldableSupport()
+
         setContentView(binding.root)
 
         val settings = settingsRepository.getSettingsSync()
@@ -197,6 +203,35 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         if (!BuildConfig.DEBUG) {
             initializeAppRating(this)
             checkForUpdate(this, binding.updateProgressBar)
+        }
+    }
+
+    private fun setupFoldableSupport() {
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                WindowInfoTracker.getOrCreate(this@MainActivity)
+                    .windowLayoutInfo(this@MainActivity)
+                    .collect { newLayoutInfo ->
+                        val separatorGuideline = binding.separatorGuideline ?: return@collect
+                        val foldingFeature = newLayoutInfo.displayFeatures
+                            .filterIsInstance<FoldingFeature>()
+                            .firstOrNull { it.orientation == FoldingFeature.Orientation.VERTICAL }
+
+                        if (foldingFeature != null) {
+                            // Position the guideline at the fold/hinge
+                            separatorGuideline.setGuidelineBegin(foldingFeature.bounds.left)
+
+                            // Hide a manual divider on devices with a physical hinge
+                            // (e.g. Surface Duo).
+                            binding.separator?.isVisible = !foldingFeature.isSeparating
+                        } else {
+                            // Reset to default percentage if no vertical fold is present
+                            val defaultPercent = ResourcesCompat.getFloat(resources, R.dimen.separator_guideline_percent)
+                            separatorGuideline.setGuidelinePercent(defaultPercent)
+                            binding.separator?.isVisible = true
+                        }
+                    }
+            }
         }
     }
 

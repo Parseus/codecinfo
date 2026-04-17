@@ -16,15 +16,9 @@ import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.detailedDrmInfo
 import com.parseus.codecinfo.data.drm.drmList
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
-import com.parseus.codecinfo.data.knownproblems.DATABASES_INITIALIZED
 import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
-import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.ui.settings.SettingsContract
-import com.parseus.codecinfo.utils.jsonInstance
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.decodeFromStream
 
-@OptIn(ExperimentalSerializationApi::class)
 @Suppress("unused")
 class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
 
@@ -77,26 +71,6 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         }
 
         adapter.add(ListRow(drmPresenterHeader, drmPresentAdapter))
-
-        if (!DATABASES_INITIALIZED) {
-            try {
-                resources.openRawResource(R.raw.known_problems_list).use {
-                    KNOWN_PROBLEMS_DB = jsonInstance.decodeFromStream(it) ?: emptyList()
-                }
-            } catch (e: Exception) {
-                KNOWN_PROBLEMS_DB = emptyList()
-            }
-
-            try {
-                resources.openRawResource(R.raw.device_problem_list).use {
-                    DEVICE_PROBLEMS_DB = jsonInstance.decodeFromStream(it) ?: emptyList()
-                }
-            } catch (e: Exception) {
-                DEVICE_PROBLEMS_DB = emptyList()
-            }
-
-            DATABASES_INITIALIZED = true
-        }
 
         val otherPresenterHeader = HeaderItem(4, getString(R.string.category_other))
         val otherPresenterAdapter = ArrayObjectAdapter(OtherActionsPresenter())

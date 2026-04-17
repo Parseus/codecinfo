@@ -27,6 +27,16 @@
         android:theme="@style/Theme.CodecInfo"
         tools:ignore="MissingClass,RtlEnabled,UnusedAttribute">
 
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="com.parseus.codecinfo.ui.DatabaseInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
     </application>
 
 </manifest>

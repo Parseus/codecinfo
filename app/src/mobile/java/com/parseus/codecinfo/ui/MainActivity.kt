@@ -46,9 +46,7 @@ import com.parseus.codecinfo.data.codecinfo.detailedCodecInfos
 import com.parseus.codecinfo.data.codecinfo.videoCodecList
 import com.parseus.codecinfo.data.drm.detailedDrmInfo
 import com.parseus.codecinfo.data.drm.drmList
-import com.parseus.codecinfo.data.knownproblems.DATABASES_INITIALIZED
 import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
-import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.databinding.ActivityMainBinding
 import com.parseus.codecinfo.databinding.DeviceIssuesLayoutBinding
@@ -71,7 +69,6 @@ import com.parseus.codecinfo.utils.initializeAppRating
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
 import com.parseus.codecinfo.utils.isInTwoPaneMode
 import com.parseus.codecinfo.utils.isNativeMonetAvailable
-import com.parseus.codecinfo.utils.jsonInstance
 import com.parseus.codecinfo.utils.updateBackgroundColor
 import com.parseus.codecinfo.utils.updateButtonColors
 import com.parseus.codecinfo.utils.updateColors
@@ -82,12 +79,9 @@ import dev.kdrag0n.monet.theme.ColorScheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.decodeFromStream
 import java.io.File
 import java.util.UUID
 
-@OptIn(ExperimentalSerializationApi::class)
 class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
     private lateinit var binding: ActivityMainBinding
@@ -198,26 +192,6 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         }
 
         handleIntent(intent)
-
-        if (!DATABASES_INITIALIZED) {
-            try {
-                resources.openRawResource(R.raw.known_problems_list).use {
-                    KNOWN_PROBLEMS_DB = jsonInstance.decodeFromStream(it) ?: emptyList()
-                }
-            } catch (_: Exception) {
-                KNOWN_PROBLEMS_DB = emptyList()
-            }
-
-            try {
-                resources.openRawResource(R.raw.device_problem_list).use {
-                    DEVICE_PROBLEMS_DB = jsonInstance.decodeFromStream(it) ?: emptyList()
-                }
-            } catch (_: Exception) {
-                DEVICE_PROBLEMS_DB = emptyList()
-            }
-
-            DATABASES_INITIALIZED = true
-        }
 
         @Suppress("KotlinConstantConditions")
         if (!BuildConfig.DEBUG) {

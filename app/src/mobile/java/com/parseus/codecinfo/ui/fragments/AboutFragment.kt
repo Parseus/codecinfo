@@ -136,6 +136,9 @@ class AboutFragment : Fragment() {
                         }
                     }
                 }
+
+                if (!isAdded) return@launch
+
                 val dialogBuilder = MaterialAlertDialogBuilder(it)
                     .setTitle(R.string.about_changelog)
                     .setMessage(spannableBuilder)

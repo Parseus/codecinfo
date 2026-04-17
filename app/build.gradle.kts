@@ -29,6 +29,7 @@ android {
 
             @Suppress("UnstableApiUsage")
             optimization.keepRules {
+                ignoreFrom("androidx.core:core")
                 ignoreFrom("androidx.recyclerview:recyclerview")
             }
 

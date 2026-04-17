@@ -53,10 +53,6 @@ class TvSettingsFragment : LeanbackSettingsFragmentCompat(), DialogPreference.Ta
 
     class TvPreferenceFragment : LeanbackPreferenceFragmentCompat() {
 
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
-            preferenceManager.preferenceDataStore = requireContext().settingsRepository
-        }
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -104,6 +100,7 @@ class TvSettingsFragment : LeanbackSettingsFragmentCompat(), DialogPreference.Ta
         }
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            preferenceManager.preferenceDataStore = requireContext().settingsRepository
             val prefResId = requireArguments().getInt(PREFERENCE_RESOURCE_ID)
 
             if (rootKey == null) {

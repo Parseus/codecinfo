@@ -172,8 +172,6 @@ class SettingsActivity : MonetCompatActivity() {
     class SettingsFragment : PreferenceFragmentCompat() {
 
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-            preferenceManager.preferenceDataStore = requireContext().settingsRepository
-
             val view = super.onCreateView(inflater, container, savedInstanceState)
 
             findPreference<CheckBoxPreference>("dynamic_theme")?.apply {
@@ -290,6 +288,7 @@ class SettingsActivity : MonetCompatActivity() {
         }
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            preferenceManager.preferenceDataStore = requireContext().settingsRepository
             addPreferencesFromResource(R.xml.preferences_screen)
         }
 

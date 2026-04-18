@@ -22,16 +22,19 @@ import android.graphics.Path
 import android.text.Layout
 import android.text.Spanned
 import android.text.style.LeadingMarginSpan
-import androidx.core.graphics.withSave
+import androidx.annotation.ColorInt
+import androidx.annotation.Px
+import androidx.core.graphics.withTranslation
 
 /**
  * Copy of [android.text.style.BulletSpan] from SDK for Android 9.0
  * with removed internal code and converted to Kotlin.
  */
 class ImprovedBulletSpan(
-    val bulletRadius: Int = STANDARD_BULLET_RADIUS,
-    val gapWidth: Int = STANDARD_GAP_WIDTH,
-    val color: Int = STANDARD_COLOR
+    @Px val bulletRadius: Int = STANDARD_BULLET_RADIUS,
+    @Px val gapWidth: Int = STANDARD_GAP_WIDTH,
+    @ColorInt val color: Int = STANDARD_COLOR,
+    val wantColor: Boolean = false
 ) : LeadingMarginSpan {
 
     companion object {
@@ -41,7 +44,7 @@ class ImprovedBulletSpan(
         private const val STANDARD_COLOR = 0
     }
 
-    private lateinit var bulletPath: Path
+    private var bulletPath: Path? = null
 
     override fun getLeadingMargin(first: Boolean): Int {
         return 2 * bulletRadius + gapWidth
@@ -54,8 +57,15 @@ class ImprovedBulletSpan(
             first: Boolean,
             layout: Layout?
     ) {
-        if ((text as Spanned).getSpanStart(this) == start) {
+        if (text is Spanned && text.getSpanStart(this) == start) {
             val style = paint.style
+            var oldColor = 0
+
+            if (wantColor) {
+                oldColor = paint.color
+                paint.color = color
+            }
+
             paint.style = Paint.Style.FILL
 
             val yPosition = if (layout != null) {
@@ -68,20 +78,28 @@ class ImprovedBulletSpan(
             val xPosition = (x + dir * bulletRadius).toFloat()
 
             if (canvas.isHardwareAccelerated) {
-                if (!::bulletPath.isInitialized) {
-                    bulletPath = Path()
-                    bulletPath.addCircle(0.0f, 0.0f, bulletRadius.toFloat(), Path.Direction.CW)
+                if (bulletPath == null) {
+                    bulletPath = Path().apply {
+                        addCircle(0.0f, 0.0f, bulletRadius.toFloat(), Path.Direction.CW)
+                    }
                 }
 
-                canvas.withSave {
-                    translate(xPosition, yPosition)
-                    drawPath(bulletPath, paint)
+                canvas.withTranslation(xPosition, yPosition) {
+                    drawPath(bulletPath!!, paint)
                 }
             } else {
                 canvas.drawCircle(xPosition, yPosition, bulletRadius.toFloat(), paint)
             }
 
+            if (wantColor) {
+                paint.color = oldColor
+            }
+
             paint.style = style
         }
+    }
+
+    override fun toString(): String {
+        return "BulletSpan{bulletRadius=$bulletRadius, gapWidth=$gapWidth, color=${"%08X".format(color)}"
     }
 }

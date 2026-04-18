@@ -28,6 +28,11 @@ class OtherActionsPresenter : Presenter() {
             isFocusable = true
             isFocusableInTouchMode = true
             setBackgroundColor(parent.context.getColor(R.color.teal_700))
+
+            cardType = ImageCardView.CARD_TYPE_INFO_UNDER
+            infoVisibility = ImageCardView.CARD_REGION_VISIBLE_ALWAYS
+            setMainImageDimensions(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
+            setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
         }
         return ViewHolder(cardView)
     }
@@ -37,17 +42,13 @@ class OtherActionsPresenter : Presenter() {
         (viewHolder as ViewHolder).descriptor = descriptor
         viewHolder.cardView.apply {
             titleText = context.getString(descriptor.nameResId)
-
-            cardType = ImageCardView.CARD_TYPE_INFO_UNDER
-            infoVisibility = ImageCardView.CARD_REGION_VISIBLE_ALWAYS
-
-            setMainImageDimensions(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
             mainImage = AppCompatResources.getDrawable(context, descriptor.drawableId)
-            setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
         }
     }
 
-    override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {}
+    override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {
+        (viewHolder as ViewHolder).cardView.mainImage = null
+    }
 
     companion object {
         private const val GRID_ITEM_WIDTH = 300

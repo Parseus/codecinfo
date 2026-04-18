@@ -73,6 +73,8 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroyView() {
+        binding.fullCodecInfoContent.adapter = null
+        binding.knownProblemsList.adapter = null
         _binding = null
         super.onDestroyView()
     }

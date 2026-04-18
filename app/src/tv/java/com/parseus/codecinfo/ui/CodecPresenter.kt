@@ -15,7 +15,7 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
 
     class ViewHolder(view: View) : Presenter.ViewHolder(view) {
         val cardView = view as ImageCardView
-        lateinit var simpleInfo: CodecSimpleInfo
+        var simpleInfo: CodecSimpleInfo? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
@@ -23,6 +23,11 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
             isFocusable = true
             isFocusableInTouchMode = true
             setBackgroundColor(parent.context.getColor(R.color.teal_700))
+
+            cardType = ImageCardView.CARD_TYPE_INFO_UNDER
+            infoVisibility = ImageCardView.CARD_REGION_VISIBLE_ALWAYS
+            setMainImageDimensions(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
+            setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
         }
         return ViewHolder(cardView)
     }
@@ -33,30 +38,30 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
         viewHolder.cardView.apply {
             titleText = info.codecId
             contentText = info.codecName
-
-            cardType = ImageCardView.CARD_TYPE_INFO_UNDER
-            infoVisibility = ImageCardView.CARD_REGION_VISIBLE_ALWAYS
-
-            setMainImageDimensions(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
             mainImage = AppCompatResources.getDrawable(context, drawable)
-            setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
 
-            if (info.isHardwareAccelereated) {
-                badgeImage = AppCompatResources.getDrawable(context, R.drawable.ic_hardware)
-            }
-
-            if (KNOWN_PROBLEMS_DB.isNotEmpty()) {
-                val knownProblems = KNOWN_PROBLEMS_DB.filter {
-                    it.isAffected(context, info.codecName)
+            // Reset badge for every bind to handle recycling
+            badgeImage = when {
+                KNOWN_PROBLEMS_DB.any { it.isAffected(context, info.codecName) } -> {
+                    AppCompatResources.getDrawable(context, R.drawable.ic_error)
                 }
-                if (knownProblems.isNotEmpty()) {
-                    badgeImage = AppCompatResources.getDrawable(context, R.drawable.ic_error)
+                info.isHardwareAccelereated -> {
+                    AppCompatResources.getDrawable(context, R.drawable.ic_hardware)
                 }
+                else -> null
             }
         }
     }
 
-    override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {}
+    override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {
+        val vh = viewHolder as ViewHolder
+        vh.simpleInfo = null
+        with(vh.cardView) {
+            // Clear images to free up memory and prevent flickering on reuse
+            mainImage = null
+            badgeImage = null
+        }
+    }
 
     companion object {
         private const val GRID_ITEM_WIDTH = 300

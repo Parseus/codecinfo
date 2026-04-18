@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityCompat
+import androidx.core.view.doOnPreDraw
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
+import androidx.lifecycle.lifecycleScope
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
@@ -18,9 +20,17 @@ import com.parseus.codecinfo.data.drm.drmList
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.ui.settings.SettingsContract
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Suppress("unused")
 class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
+
+    private val audioPresentAdapter = ArrayObjectAdapter(CodecPresenter(R.drawable.ic_audio))
+    private val videoPresentAdapter = ArrayObjectAdapter(CodecPresenter(R.drawable.ic_video))
+    private val drmPresentAdapter = ArrayObjectAdapter(DrmPresenter(R.drawable.ic_lock))
 
     private var shouldRecreateActivity = false
 
@@ -33,45 +43,36 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupUI()
+        setupAdapter()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            loadData()
+        }
+    }
+
+    private fun setupUI() {
         brandColor = requireContext().getColor(R.color.purple_600)
         searchAffordanceColor = requireContext().getColor(R.color.teal_700)
         title = getString(R.string.app_name)
         headersState = HEADERS_ENABLED
         isHeadersTransitionOnBackEnabled = true
 
-        adapter = ArrayObjectAdapter(ListRowPresenter())
+        onItemViewClickedListener = this
+        setOnSearchClickedListener { startActivity(Intent(requireActivity(), TvSearchActivity::class.java)) }
+    }
+
+    private fun setupAdapter() {
+        adapter = ArrayObjectAdapter(ListRowPresenter()).apply {
+            add(ListRow(HeaderItem(1, getString(R.string.category_audio)), audioPresentAdapter))
+            add(ListRow(HeaderItem(2, getString(R.string.category_video)), videoPresentAdapter))
+            add(ListRow(HeaderItem(3, getString(R.string.category_drm)), drmPresentAdapter))
+        }
         setAdapter(adapter)
+        setupOtherActionsRow()
+    }
 
-        val audioCodecList = getSimpleCodecInfoList(requireContext(), true)
-        val audioPresenterHeader = HeaderItem(1, getString(R.string.category_audio))
-        val audioPresentAdapter = ArrayObjectAdapter(CodecPresenter(R.drawable.ic_audio))
-
-        for (audioCodec in audioCodecList) {
-            audioPresentAdapter.add(audioCodec)
-        }
-
-        adapter.add(ListRow(audioPresenterHeader, audioPresentAdapter))
-
-        val videoCodecList = getSimpleCodecInfoList(requireContext(), false)
-        val videoPresenterHeader = HeaderItem(2, getString(R.string.category_video))
-        val videoPresentAdapter = ArrayObjectAdapter(CodecPresenter(R.drawable.ic_video))
-
-        for (videoCodec in videoCodecList) {
-            videoPresentAdapter.add(videoCodec)
-        }
-
-        adapter.add(ListRow(videoPresenterHeader, videoPresentAdapter))
-
-        val drmInfoList = getSimpleDrmInfoList(requireContext())
-        val drmPresenterHeader = HeaderItem(3, getString(R.string.category_drm))
-        val drmPresentAdapter = ArrayObjectAdapter(DrmPresenter(R.drawable.ic_lock))
-
-        for (drmInfo in drmInfoList) {
-            drmPresentAdapter.add(drmInfo)
-        }
-
-        adapter.add(ListRow(drmPresenterHeader, drmPresentAdapter))
-
+    private fun setupOtherActionsRow() {
         val otherPresenterHeader = HeaderItem(4, getString(R.string.category_other))
         val otherPresenterAdapter = ArrayObjectAdapter(OtherActionsPresenter())
 
@@ -79,19 +80,53 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
             it.isAffected(requireContext(), null)
         }
         if (knownProblems.isNotEmpty()) {
-            otherPresenterAdapter.add(OtherActionDescriptor(ACTION_DEVICE_ISSUES_ID, R.drawable.ic_warning, R.string.known_issue_warning))
+            otherPresenterAdapter.add(
+                OtherActionDescriptor(
+                    ACTION_DEVICE_ISSUES_ID,
+                    R.drawable.ic_warning,
+                    R.string.known_issue_warning
+                )
+            )
         }
-        otherPresenterAdapter.add(OtherActionDescriptor(ACTION_SHARE_ID, R.drawable.ic_share, R.string.action_share))
-        otherPresenterAdapter.add(OtherActionDescriptor(ACTION_SETTINGS_ID, R.drawable.ic_settings, R.string.action_settings))
-        otherPresenterAdapter.add(OtherActionDescriptor(ACTION_ABOUT_ID, R.drawable.ic_info, R.string.about_app))
+        otherPresenterAdapter.add(
+            OtherActionDescriptor(
+                ACTION_SHARE_ID,
+                R.drawable.ic_share,
+                R.string.action_share
+            )
+        )
+        otherPresenterAdapter.add(
+            OtherActionDescriptor(
+                ACTION_SETTINGS_ID,
+                R.drawable.ic_settings,
+                R.string.action_settings
+            )
+        )
+        otherPresenterAdapter.add(
+            OtherActionDescriptor(
+                ACTION_ABOUT_ID,
+                R.drawable.ic_info,
+                R.string.about_app
+            )
+        )
 
         adapter.add(ListRow(otherPresenterHeader, otherPresenterAdapter))
+    }
 
-        onItemViewClickedListener = this
+    private suspend fun loadData() = coroutineScope {
+        val context = context ?: return@coroutineScope
 
-        setOnSearchClickedListener { startActivity(Intent(requireActivity(), TvSearchActivity::class.java)) }
+        val audioList = async(Dispatchers.IO) { getSimpleCodecInfoList(context, true) }
+        val videoList = async(Dispatchers.IO) { getSimpleCodecInfoList(context, false) }
+        val drmList = async(Dispatchers.IO) { getSimpleDrmInfoList(context) }
 
-        requireActivity().reportFullyDrawn()
+        audioPresentAdapter.setItems(audioList.await(), null)
+        videoPresentAdapter.setItems(videoList.await(), null)
+        drmPresentAdapter.setItems(drmList.await(), null)
+
+        view?.doOnPreDraw {
+            requireActivity().reportFullyDrawn()
+        }
     }
 
     override fun onResume() {

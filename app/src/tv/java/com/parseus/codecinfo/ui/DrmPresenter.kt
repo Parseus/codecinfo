@@ -14,7 +14,7 @@ class DrmPresenter(@DrawableRes private val drawable: Int) : Presenter() {
 
     class ViewHolder(view: View) : Presenter.ViewHolder(view) {
         val cardView = view as ImageCardView
-        lateinit var simpleInfo: DrmSimpleInfo
+        var simpleInfo: DrmSimpleInfo? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
@@ -22,6 +22,11 @@ class DrmPresenter(@DrawableRes private val drawable: Int) : Presenter() {
             isFocusable = true
             isFocusableInTouchMode = true
             setBackgroundColor(parent.context.getColor(R.color.teal_700))
+
+            cardType = ImageCardView.CARD_TYPE_INFO_UNDER
+            infoVisibility = ImageCardView.CARD_REGION_VISIBLE_ALWAYS
+            setMainImageDimensions(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
+            setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
         }
         return ViewHolder(cardView)
     }
@@ -32,17 +37,18 @@ class DrmPresenter(@DrawableRes private val drawable: Int) : Presenter() {
         viewHolder.cardView.apply {
             titleText = context.getString(R.string.category_drm)
             contentText = info.drmName
-
-            cardType = ImageCardView.CARD_TYPE_INFO_UNDER
-            infoVisibility = ImageCardView.CARD_REGION_VISIBLE_ALWAYS
-
-            setMainImageDimensions(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
             mainImage = AppCompatResources.getDrawable(context, drawable)
-            setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
         }
     }
 
-    override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {}
+    override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {
+        val vh = viewHolder as ViewHolder
+        vh.simpleInfo = null
+        with(vh.cardView) {
+            // Clear image to free up memory and prevent flickering on reuse
+            mainImage = null
+        }
+    }
 
     companion object {
         private const val GRID_ITEM_WIDTH = 300

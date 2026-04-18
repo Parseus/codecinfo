@@ -2,23 +2,28 @@ package com.parseus.codecinfo.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.leanback.app.SearchSupportFragment
 import androidx.leanback.widget.*
+import androidx.lifecycle.lifecycleScope
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Suppress("unused")
 class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchResultProvider,
         OnItemViewClickedListener {
 
     private val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
-    private val handler = Handler(Looper.getMainLooper())
-    private val delayedLoad = SearchRunnable()
+    private var searchJob: Job? = null
 
     override fun getResultsAdapter(): ObjectAdapter = rowsAdapter
 
@@ -39,65 +44,67 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
     }
 
     private fun handleSearch(query: String) {
-        rowsAdapter.clear()
-        if (query.isNotEmpty()) {
-            delayedLoad.searchQuery = query
-            handler.removeCallbacks(delayedLoad)
-            handler.postDelayed(delayedLoad, SEARCH_DELAY_MS)
+        searchJob?.cancel()
+
+        if (query.isEmpty()) {
+            rowsAdapter.clear()
+            return
+        }
+
+        searchJob = viewLifecycleOwner.lifecycleScope.launch {
+            delay(SEARCH_DELAY_MS)
+
+            val rows = withContext(Dispatchers.Default) {
+                buildSearchResultRows(query)
+            }
+
+            rowsAdapter.clear()
+            rowsAdapter.addAll(0, rows)
         }
     }
 
-    fun loadRows(query: String) {
-        val audioCodecList = getSimpleCodecInfoList(requireContext(), true)
-        val filteredAudioCodecList = filterCodecs(audioCodecList, query)
-        if (filteredAudioCodecList.isNotEmpty()) {
-            val audioPresenterHeader = HeaderItem(1, getString(R.string.category_audio))
-            val audioPresentAdapter = ArrayObjectAdapter(CodecPresenter(R.drawable.ic_audio))
+    private fun buildSearchResultRows(query: String): List<ListRow> {
+        val context = requireContext()
+        val results = mutableListOf<ListRow>()
 
-            for (audioCodec in filteredAudioCodecList) {
-                audioPresentAdapter.add(audioCodec)
-            }
-
-            rowsAdapter.add(ListRow(audioPresenterHeader, audioPresentAdapter))
-        }
-
-        val videoCodecList = getSimpleCodecInfoList(requireContext(), false)
-        val filteredVideoCodecList = filterCodecs(videoCodecList, query)
-        if (filteredVideoCodecList.isNotEmpty()) {
-            val videoPresenterHeader = HeaderItem(2, getString(R.string.category_video))
-            val videoPresentAdapter = ArrayObjectAdapter(CodecPresenter(R.drawable.ic_video))
-
-            for (videoCodec in filteredVideoCodecList) {
-                videoPresentAdapter.add(videoCodec)
-            }
-
-            rowsAdapter.add(ListRow(videoPresenterHeader, videoPresentAdapter))
-        }
-
-        val drmInfoList = getSimpleDrmInfoList(requireContext())
-        val filteredDrmList = filterDrm(drmInfoList, query)
-        if (filteredDrmList.isNotEmpty()) {
-            val drmPresenterHeader = HeaderItem(3, getString(R.string.category_drm))
-            val drmPresentAdapter = ArrayObjectAdapter(DrmPresenter(R.drawable.ic_lock))
-
-            for (drmInfo in filteredDrmList) {
-                drmPresentAdapter.add(drmInfo)
-            }
-
-            rowsAdapter.add(ListRow(drmPresenterHeader, drmPresentAdapter))
-        }
-    }
-
-    private fun filterCodecs(infoList: List<CodecSimpleInfo>, query: String): List<CodecSimpleInfo> {
-        return infoList.filter {
+        val audioCodecs = getSimpleCodecInfoList(context, true).filter {
             it.codecId.contains(query, true) || it.codecName.contains(query, true)
         }
-    }
+        createListRow(1, R.string.category_audio, R.drawable.ic_audio, CodecPresenter(R.drawable.ic_audio), audioCodecs)?.let {
+            results.add(it)
+        }
 
-    private fun filterDrm(infoList: List<DrmSimpleInfo>, query: String): List<DrmSimpleInfo> {
-        return infoList.filter {
+        val videoCodecs = getSimpleCodecInfoList(context, false).filter {
+            it.codecId.contains(query, true) || it.codecName.contains(query, true)
+        }
+        createListRow(2, R.string.category_video, R.drawable.ic_video, CodecPresenter(R.drawable.ic_video), videoCodecs)?.let {
+            results.add(it)
+        }
+
+        val drmInfo = getSimpleDrmInfoList(context).filter {
             it.drmName.contains(query, true)
         }
+        createListRow(3, R.string.category_drm, R.drawable.ic_lock, DrmPresenter(R.drawable.ic_lock), drmInfo)?.let {
+            results.add(it)
+        }
+
+        return results
+    }
+
+    private fun <T> createListRow(
+        id: Long,
+        @StringRes titleRes: Int,
+        @DrawableRes iconRes: Int,
+        presenter: Presenter,
+        items: List<T>
+    ): ListRow? {
+        if (items.isEmpty()) return null
+
+        val header = HeaderItem(id, getString(titleRes))
+        val adapter = ArrayObjectAdapter(presenter).apply {
+            addAll(0, items)
+        }
+        return ListRow(header, adapter)
     }
 
     override fun onItemClicked(itemViewHolder: Presenter.ViewHolder?, item: Any?,
@@ -114,15 +121,6 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
                 putExtra("drmUuid", item.drmUuid)
             }
             startActivity(intent)
-        }
-    }
-
-    private inner class SearchRunnable : Runnable {
-
-        lateinit var searchQuery: String
-
-        override fun run() {
-            loadRows(searchQuery)
         }
     }
 

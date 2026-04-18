@@ -20,11 +20,13 @@ class TvShareFragment : GuidedStepSupportFragment() {
 
     override fun onCreateActions(actions: MutableList<GuidedAction>, savedInstanceState: Bundle?) {
         super.onCreateActions(actions, savedInstanceState)
-        val shareItemListAction = GuidedAction.Builder(requireContext())
+
+        val context = requireContext()
+        val shareItemListAction = GuidedAction.Builder(context)
             .title(R.string.codec_drm_list).id(ACTION_SHARE_ITEM_LIST).build()
-        val shareAllInfoAction = GuidedAction.Builder(requireContext())
+        val shareAllInfoAction = GuidedAction.Builder(context)
             .title(R.string.codec_drm_all_info).id(ACTION_SHARE_ALL_INFO).build()
-        val cancelAction = GuidedAction.Builder(requireContext()).title(android.R.string.cancel)
+        val cancelAction = GuidedAction.Builder(context).title(android.R.string.cancel)
             .clickAction(GuidedAction.ACTION_ID_CANCEL).build()
         actions.add(shareItemListAction)
         actions.add(shareAllInfoAction)
@@ -39,20 +41,18 @@ class TvShareFragment : GuidedStepSupportFragment() {
     }
 
     private fun launchShareIntent(actionId: Long) {
-        val textToShare = when (actionId) {
-            ACTION_SHARE_ITEM_LIST -> getCodecAndDrmItemListString(requireContext())
-            ACTION_SHARE_ALL_INFO -> getAllInfoString(requireContext())
-            else -> ""
+        val context = requireContext()
+        val (textToShare, titleResId) = when (actionId) {
+            ACTION_SHARE_ITEM_LIST -> getCodecAndDrmItemListString(context) to R.string.codec_drm_list
+            ACTION_SHARE_ALL_INFO -> getAllInfoString(context) to R.string.codec_drm_all_info
+            else -> return
         }
-        val shareIntent = Intent.createChooser(Intent().apply {
-            action = Intent.ACTION_SEND
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, textToShare)
-            val title = getString(if (actionId == ACTION_SHARE_ITEM_LIST)
-                R.string.codec_drm_list else R.string.codec_drm_all_info)
-            putExtra(Intent.EXTRA_TITLE, title)
-        }, null)
-        startActivity(shareIntent)
+            putExtra(Intent.EXTRA_TITLE, getString(titleResId))
+        }
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)))
     }
 
     companion object {

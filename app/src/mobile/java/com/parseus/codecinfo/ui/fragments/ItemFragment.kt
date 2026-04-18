@@ -66,6 +66,10 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
             searchListenerList.remove(this)
         }
 
+        searchJob?.cancel()
+        searchJob = null
+        binding.simpleCodecListView.adapter = null
+        itemAdapter = null
         _binding = null
 
         super.onDestroyView()

@@ -64,6 +64,8 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
         searchListenerDestroyedListener?.onSearchListenerDestroyed(this)
         searchListenerDestroyedListener = null
         binding.itemDetailsContent.setOnScrollChangeListener(null as NestedScrollView.OnScrollChangeListener?)
+        binding.fullCodecInfoContent.adapter = null
+        binding.knownProblemsList.adapter = null
         _binding = null
         super.onDestroyView()
     }

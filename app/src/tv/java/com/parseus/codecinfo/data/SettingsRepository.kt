@@ -20,8 +20,13 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     }
 )
 
+private var repositoryInstance: SettingsRepository? = null
 val Context.settingsRepository: SettingsRepository
-    get() = SettingsRepository(this)
+    get() {
+        return repositoryInstance ?: synchronized(this) {
+            repositoryInstance ?: SettingsRepository(applicationContext).also { repositoryInstance = it }
+        }
+    }
 
 data class Settings(
     val knownValuesColorProfiles: String,

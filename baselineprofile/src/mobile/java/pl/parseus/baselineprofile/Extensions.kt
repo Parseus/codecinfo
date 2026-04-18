@@ -27,7 +27,7 @@ fun UiAutomatorTestScope.clickThroughCodecList() {
     onElement { viewIdResourceName == fullId("simpleCodecListView") }.apply {
         onElements {
             viewIdResourceName == fullId("simpleCodecRow")
-        }.forEach {
+        }.take(3).forEach {
             it.click()
             device.waitForIdle()
 

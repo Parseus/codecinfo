@@ -46,6 +46,7 @@ class BaselineProfileGenerator {
             uiAutomator {
                 pressHome()
                 startActivityAndWait()
+                waitForAsyncContent()
                 device.waitForIdle()
             }
         }

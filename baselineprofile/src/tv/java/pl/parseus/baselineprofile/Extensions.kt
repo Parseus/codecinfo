@@ -20,7 +20,7 @@ fun UiAutomatorTestScope.clickThroughCodecList() {
             fling(Direction.RIGHT)
             fling(Direction.LEFT)
 
-            onElements { viewIdResourceName == fullId("main_image") }.forEach {
+            onElements { viewIdResourceName == fullId("main_image") }.take(3).forEach {
                 it.click()
                 it.click()
                 device.waitForIdle()

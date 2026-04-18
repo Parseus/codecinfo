@@ -48,6 +48,8 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
     private var searchJob: Job? = null
     private var itemAdapter: RecyclerView.Adapter<*>? = null
 
+    private var isFullyDrawnReporterAdded = false
+
     var searchListenerDestroyedListener: SearchListenerDestroyedListener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -65,6 +67,8 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
             val searchListenerList = (activity as MainActivity).searchListeners
             searchListenerList.remove(this)
         }
+
+        removeFullyDrawnReporter()
 
         searchJob?.cancel()
         searchJob = null
@@ -105,6 +109,8 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
 
         setupRecyclerView()
 
+        addFullyDrawnReporter()
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 loadAndDisplayData()
@@ -131,6 +137,7 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
     private suspend fun loadAndDisplayData() {
         val adapter = itemAdapter
         if (adapter is ListAdapter<*, *> && adapter.currentList.isNotEmpty()) {
+            removeFullyDrawnReporter()
             return
         }
 
@@ -150,10 +157,10 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
         if (!emptyList) {
             when (adapter) {
                 is CodecAdapter -> adapter.submitList(list as List<CodecSimpleInfo>) {
-                    activity?.reportFullyDrawn()
+                    removeFullyDrawnReporter()
                 }
                 is DrmAdapter -> adapter.submitList(list as List<DrmSimpleInfo>) {
-                    activity?.reportFullyDrawn()
+                    removeFullyDrawnReporter()
                 }
             }
         } else {
@@ -165,7 +172,21 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
                 R.string.no_drms_available
             }
             binding.noItemsAvailable.setText(errorId)
-            activity?.reportFullyDrawn()
+            removeFullyDrawnReporter()
+        }
+    }
+
+    private fun addFullyDrawnReporter() {
+        if (!isFullyDrawnReporterAdded) {
+            requireActivity().fullyDrawnReporter.addReporter()
+            isFullyDrawnReporterAdded = true
+        }
+    }
+
+    private fun removeFullyDrawnReporter() {
+        if (isFullyDrawnReporterAdded) {
+            activity?.fullyDrawnReporter?.removeReporter()
+            isFullyDrawnReporterAdded = false
         }
     }
 

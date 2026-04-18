@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityCompat
-import androidx.core.view.doOnPreDraw
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
 import androidx.lifecycle.lifecycleScope
@@ -42,6 +41,8 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().fullyDrawnReporter.addReporter()
 
         setupUI()
         setupAdapter()
@@ -124,9 +125,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         videoPresentAdapter.setItems(videoList.await(), null)
         drmPresentAdapter.setItems(drmList.await(), null)
 
-        view?.doOnPreDraw {
-            requireActivity().reportFullyDrawn()
-        }
+        requireActivity().fullyDrawnReporter.removeReporter()
     }
 
     override fun onResume() {

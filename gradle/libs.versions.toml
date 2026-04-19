@@ -13,7 +13,7 @@ constraintlayout = "2.2.1"
 core = "1.19.0-alpha01"
 core-splashscreen = "1.2.0"
 coroutines = "1.10.2"
-datastore = "1.2.1"
+datastore = "1.3.0-alpha07"
 espresso-core = "3.7.0"
 fragment = "1.8.9"
 hiddenapibypass = "6.1"
@@ -44,7 +44,8 @@ androidx-browser = { group = "androidx.browser", name = "browser", version.ref =
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "core-splashscreen" }
-androidx-datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+androidx-datastore-okio = { module = "androidx.datastore:datastore-core-okio", version.ref = "datastore" }
 androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }

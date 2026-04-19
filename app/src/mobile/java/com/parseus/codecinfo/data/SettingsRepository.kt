@@ -3,30 +3,50 @@ package com.parseus.codecinfo.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.SharedPreferencesMigration
-import androidx.datastore.preferences.core.*
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.preference.PreferenceDataStore
 import com.parseus.codecinfo.ui.settings.DarkTheme
 import com.parseus.codecinfo.utils.getDefaultThemeOption
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import okio.Path.Companion.toOkioPath
+import java.io.IOException
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
-    name = "settings",
-    produceMigrations = { context ->
-        listOf(
-            SharedPreferencesMigration(context, "${context.packageName}_preferences"),
-            SharedPreferencesMigration(context, "rate_bottom_sheet_pref")
-        )
+private val dataStoreLock = Any()
+private var dataStoreInstance: DataStore<Preferences>? = null
+val Context.dataStore: DataStore<Preferences>
+    get() = dataStoreInstance ?: synchronized(dataStoreLock) {
+        dataStoreInstance ?: PreferenceDataStoreFactory.createWithPath(
+            produceFile = { applicationContext.filesDir.resolve("datastore/settings.preferences_pb").toOkioPath() },
+            migrations = listOf(
+                SharedPreferencesMigration(applicationContext, "${applicationContext.packageName}_preferences"),
+                SharedPreferencesMigration(applicationContext, "rate_bottom_sheet_pref")
+            )
+        ).also { dataStoreInstance = it }
     }
-)
 
+private val repositoryLock = Any()
 private var repositoryInstance: SettingsRepository? = null
 val Context.settingsRepository: SettingsRepository
     get() {
-        return repositoryInstance ?: synchronized(this) {
+        return repositoryInstance ?: synchronized(repositoryLock) {
             repositoryInstance ?: SettingsRepository(applicationContext).also { repositoryInstance = it }
         }
     }
@@ -49,13 +69,41 @@ data class Settings(
     val selectedColor: Int?
 )
 
-class SettingsRepository(context: Context) : PreferenceDataStore() {
+class SettingsRepository(private val context: Context) : PreferenceDataStore() {
 
     private val dataStore = context.dataStore
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    val settingsFlow: Flow<Settings> = dataStore.data.map { preferences ->
-        Settings(
-            darkTheme = (preferences[DARK_THEME] ?: DarkTheme.fromValue(getDefaultThemeOption(context))!!.value.toString()).toInt(),
+    private val preferencesStateFlow: StateFlow<Preferences> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) emit(emptyPreferences()) else throw exception
+        }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.Eagerly,
+            initialValue = runBlocking {
+                try { dataStore.data.first() } catch (_: Exception) { emptyPreferences() }
+            }
+        )
+
+    val settingsStateFlow: StateFlow<Settings> = preferencesStateFlow
+        .map { mapSettings(it) }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.Eagerly,
+            initialValue = mapSettings(preferencesStateFlow.value)
+        )
+    val settingsFlow: Flow<Settings> = settingsStateFlow
+
+    fun getSettingsSync(): Settings = settingsStateFlow.value
+
+    private fun mapSettings(preferences: Preferences): Settings {
+        val defaultThemeValue = getDefaultThemeOption(context)
+        val darkTheme = preferences[DARK_THEME]?.toIntOrNull() ?: defaultThemeValue
+        val theme = DarkTheme.fromValue(darkTheme) ?: DarkTheme.fromValue(defaultThemeValue)!!
+
+        return Settings(
+            darkTheme = theme.value,
             dynamicTheme = preferences[DYNAMIC_THEME] ?: false,
             dynamicThemeWallpaperSource = preferences[DYNAMIC_THEME_WALLPAPER_SOURCE] ?: "1",
             immersiveMode = preferences[IMMERSIVE_MODE] ?: true,
@@ -73,15 +121,11 @@ class SettingsRepository(context: Context) : PreferenceDataStore() {
         )
     }
 
-    fun getSettingsSync(): Settings = runBlocking {
-        settingsFlow.first()
-    }
-
     // Rate Bottom Sheet Preferences
-    val installDays: Flow<Long> = dataStore.data.map { it[PREF_INSTALL_DAYS] ?: 0L }
-    val cptLaunchTimes: Flow<Int> = dataStore.data.map { it[PREF_CPT_LAUNCH_TIMES] ?: 0 }
-    val isAgreeShowBottomSheet: Flow<Boolean> = dataStore.data.map { it[PREF_IS_AGREE_SHOW_BOTTOM_SHEET] ?: true }
-    val remindInterval: Flow<Long> = dataStore.data.map { it[PREF_REMIND_INTERVAL] ?: 0L }
+    val installDays: Flow<Long> = preferencesStateFlow.map { it[PREF_INSTALL_DAYS] ?: 0L }
+    val cptLaunchTimes: Flow<Int> = preferencesStateFlow.map { it[PREF_CPT_LAUNCH_TIMES] ?: 0 }
+    val isAgreeShowBottomSheet: Flow<Boolean> = preferencesStateFlow.map { it[PREF_IS_AGREE_SHOW_BOTTOM_SHEET] ?: true }
+    val remindInterval: Flow<Long> = preferencesStateFlow.map { it[PREF_REMIND_INTERVAL] ?: 0L }
 
     suspend fun setInstallDays(days: Long) {
         dataStore.edit { it[PREF_INSTALL_DAYS] = days }
@@ -114,51 +158,44 @@ class SettingsRepository(context: Context) : PreferenceDataStore() {
 
     // PreferenceDataStore implementation
     override fun putString(key: String, value: String?) {
-        runBlocking {
-            dataStore.edit { it[stringPreferencesKey(key)] = value ?: "" }
-        }
+        val prefKey = stringPreferencesKey(key)
+        val newValue = value ?: ""
+        if (preferencesStateFlow.value[prefKey] == newValue) return
+        scope.launch { dataStore.edit { it[prefKey] = newValue } }
     }
 
     override fun getString(key: String, defValue: String?): String? {
-        return runBlocking {
-            dataStore.data.map { it[stringPreferencesKey(key)] }.first() ?: defValue
-        }
+        return preferencesStateFlow.value[stringPreferencesKey(key)] ?: defValue
     }
 
     override fun putBoolean(key: String, value: Boolean) {
-        runBlocking {
-            dataStore.edit { it[booleanPreferencesKey(key)] = value }
-        }
+        val prefKey = booleanPreferencesKey(key)
+        if (preferencesStateFlow.value[prefKey] == value) return
+        scope.launch { dataStore.edit { it[prefKey] = value } }
     }
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean {
-        return runBlocking {
-            dataStore.data.map { it[booleanPreferencesKey(key)] }.first() ?: defValue
-        }
+        return preferencesStateFlow.value[booleanPreferencesKey(key)] ?: defValue
     }
 
     override fun putInt(key: String, value: Int) {
-        runBlocking {
-            dataStore.edit { it[intPreferencesKey(key)] = value }
-        }
+        val prefKey = intPreferencesKey(key)
+        if (preferencesStateFlow.value[prefKey] == value) return
+        scope.launch { dataStore.edit { it[prefKey] = value } }
     }
 
     override fun getInt(key: String, defValue: Int): Int {
-        return runBlocking {
-            dataStore.data.map { it[intPreferencesKey(key)] }.first() ?: defValue
-        }
+        return preferencesStateFlow.value[intPreferencesKey(key)] ?: defValue
     }
 
     override fun putLong(key: String, value: Long) {
-        runBlocking {
-            dataStore.edit { it[longPreferencesKey(key)] = value }
-        }
+        val prefKey = longPreferencesKey(key)
+        if (preferencesStateFlow.value[prefKey] == value) return
+        scope.launch { dataStore.edit { it[prefKey] = value } }
     }
 
     override fun getLong(key: String, defValue: Long): Long {
-        return runBlocking {
-            dataStore.data.map { it[longPreferencesKey(key)] }.first() ?: defValue
-        }
+        return preferencesStateFlow.value[longPreferencesKey(key)] ?: defValue
     }
 
     companion object {

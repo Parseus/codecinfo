@@ -3,27 +3,47 @@ package com.parseus.codecinfo.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.SharedPreferencesMigration
-import androidx.datastore.preferences.core.*
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.preference.PreferenceDataStore
+import okio.Path.Companion.toOkioPath
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.io.IOException
 
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
-    name = "settings",
-    produceMigrations = { context ->
-        listOf(
-            SharedPreferencesMigration(context, "${context.packageName}_preferences")
-        )
+private val dataStoreLock = Any()
+private var dataStoreInstance: DataStore<Preferences>? = null
+val Context.dataStore: DataStore<Preferences>
+    get() = dataStoreInstance ?: synchronized(dataStoreLock) {
+        dataStoreInstance ?: PreferenceDataStoreFactory.createWithPath(
+            produceFile = { applicationContext.filesDir.resolve("datastore/settings.preferences_pb").toOkioPath() },
+            migrations = listOf(
+                SharedPreferencesMigration(applicationContext, "${applicationContext.packageName}_preferences")
+            )
+        ).also { dataStoreInstance = it }
     }
-)
 
+private val repositoryLock = Any()
 private var repositoryInstance: SettingsRepository? = null
 val Context.settingsRepository: SettingsRepository
     get() {
-        return repositoryInstance ?: synchronized(this) {
+        return repositoryInstance ?: synchronized(repositoryLock) {
             repositoryInstance ?: SettingsRepository(applicationContext).also { repositoryInstance = it }
         }
     }
@@ -43,9 +63,33 @@ data class Settings(
 class SettingsRepository(context: Context) : PreferenceDataStore() {
 
     private val dataStore = context.dataStore
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-    val settingsFlow: Flow<Settings> = dataStore.data.map { preferences ->
-        Settings(
+    private val preferencesStateFlow: StateFlow<Preferences> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) emit(emptyPreferences()) else throw exception
+        }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.Eagerly,
+            initialValue = runBlocking {
+                try { dataStore.data.first() } catch (_: Exception) { emptyPreferences() }
+            }
+        )
+
+    val settingsStateFlow: StateFlow<Settings> = preferencesStateFlow
+        .map { mapSettings(it) }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.Eagerly,
+            initialValue = mapSettings(preferencesStateFlow.value)
+        )
+    val settingsFlow: Flow<Settings> = settingsStateFlow
+
+    fun getSettingsSync(): Settings = settingsStateFlow.value
+
+    private fun mapSettings(preferences: Preferences): Settings {
+        return Settings(
             knownValuesColorProfiles = preferences[KNOWN_VALUES_COLOR_PROFILES] ?: "1",
             knownValuesProfileLevels = preferences[KNOWN_VALUES_PROFILE_LEVELS] ?: "1",
             knownResolutions = preferences[KNOWN_RESOLUTIONS] ?: "0",
@@ -58,57 +102,46 @@ class SettingsRepository(context: Context) : PreferenceDataStore() {
         )
     }
 
-    fun getSettingsSync(): Settings = runBlocking {
-        settingsFlow.first()
-    }
-
     // PreferenceDataStore implementation
     override fun putString(key: String, value: String?) {
-        runBlocking {
-            dataStore.edit { it[stringPreferencesKey(key)] = value ?: "" }
-        }
+        val prefKey = stringPreferencesKey(key)
+        val newValue = value ?: ""
+        if (preferencesStateFlow.value[prefKey] == newValue) return
+        scope.launch { dataStore.edit { it[prefKey] = newValue } }
     }
 
     override fun getString(key: String, defValue: String?): String? {
-        return runBlocking {
-            dataStore.data.map { it[stringPreferencesKey(key)] }.first() ?: defValue
-        }
+        return preferencesStateFlow.value[stringPreferencesKey(key)] ?: defValue
     }
 
     override fun putBoolean(key: String, value: Boolean) {
-        runBlocking {
-            dataStore.edit { it[booleanPreferencesKey(key)] = value }
-        }
+        val prefKey = booleanPreferencesKey(key)
+        if (preferencesStateFlow.value[prefKey] == value) return
+        scope.launch { dataStore.edit { it[prefKey] = value } }
     }
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean {
-        return runBlocking {
-            dataStore.data.map { it[booleanPreferencesKey(key)] }.first() ?: defValue
-        }
+        return preferencesStateFlow.value[booleanPreferencesKey(key)] ?: defValue
     }
 
     override fun putInt(key: String, value: Int) {
-        runBlocking {
-            dataStore.edit { it[intPreferencesKey(key)] = value }
-        }
+        val prefKey = intPreferencesKey(key)
+        if (preferencesStateFlow.value[prefKey] == value) return
+        scope.launch { dataStore.edit { it[prefKey] = value } }
     }
 
     override fun getInt(key: String, defValue: Int): Int {
-        return runBlocking {
-            dataStore.data.map { it[intPreferencesKey(key)] }.first() ?: defValue
-        }
+        return preferencesStateFlow.value[intPreferencesKey(key)] ?: defValue
     }
 
     override fun putLong(key: String, value: Long) {
-        runBlocking {
-            dataStore.edit { it[longPreferencesKey(key)] = value }
-        }
+        val prefKey = longPreferencesKey(key)
+        if (preferencesStateFlow.value[prefKey] == value) return
+        scope.launch { dataStore.edit { it[prefKey] = value } }
     }
 
     override fun getLong(key: String, defValue: Long): Long {
-        return runBlocking {
-            dataStore.data.map { it[longPreferencesKey(key)] }.first() ?: defValue
-        }
+        return preferencesStateFlow.value[longPreferencesKey(key)] ?: defValue
     }
 
     companion object {

@@ -24,7 +24,7 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="Platform.V23.Theme.CodecInfo" parent="Theme.Material3Expressive.DynamicColors.DayNight.NoActionBar">
+    <style name="Platform.V23.Theme.CodecInfo" parent="Theme.Material3Expressive.DynamicColors.DayNight.NoActionBar.FocusRings">
         <item name="android:statusBarColor">?attr/colorPrimary</item>
     </style>
     <style name="Platform.Theme.CodecInfo" parent="Platform.V23.Theme.CodecInfo" />
@@ -34,7 +34,7 @@
         <item name="colorOnSurfaceVariant">@color/m3_ref_palette_neutral_variant70</item>
     </style>
 
-    <style name="Theme.CodecInfo.Dialog.MinWidth" parent="Theme.Material3.DayNight.Dialog.MinWidth">
+    <style name="Theme.CodecInfo.Dialog.MinWidth" parent="Theme.Material3Expressive.DayNight.Dialog.MinWidth">
         <item name="android:windowMinWidthMajor">@dimen/abc_dialog_min_width_major</item>
         <item name="android:windowMinWidthMinor">@dimen/abc_dialog_min_width_minor</item>
         <item name="dialogCornerRadius">@dimen/m3_alert_dialog_corner_size</item>

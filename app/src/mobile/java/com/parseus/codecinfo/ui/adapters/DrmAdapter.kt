@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -17,33 +16,67 @@ import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.utils.buildContainerTransform
 import com.parseus.codecinfo.utils.getActivity
 import com.parseus.codecinfo.utils.getColorOnSurfaceVariant
+import com.parseus.codecinfo.utils.getHighlightedText
 import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
 import com.parseus.codecinfo.utils.isInTwoPaneMode
 
 class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmDiffCallback()) {
-    
+
+    private var currentSearchQuery: String? = null
+
+    fun updateSearchQuery(query: String?) {
+        currentSearchQuery = query
+        notifyItemRangeChanged(0, itemCount, query)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrmInfoViewHolder {
         val binding = DrmAdapterRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return DrmInfoViewHolder(binding)
+        val primaryColor = getPrimaryColor(parent.context)
+        val secondaryColor = getSecondaryColor(parent.context)
+        val onSurfaceVariantColor = getColorOnSurfaceVariant(parent.context)
+        return DrmInfoViewHolder(binding, primaryColor, secondaryColor, onSurfaceVariantColor)
+    }
+
+    override fun onBindViewHolder(holder: DrmInfoViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+        } else {
+            val query = payloads[0] as? String
+            holder.updateHighlighting(getItem(position), query ?: "")
+        }
     }
 
     override fun onBindViewHolder(holder: DrmInfoViewHolder, position: Int) {
-        holder.bindDrmInfo(getItem(position), position)
+        holder.bindDrmInfo(getItem(position), position, currentSearchQuery)
     }
 
-    class DrmInfoViewHolder(binding: DrmAdapterRowBinding) : RecyclerView.ViewHolder(binding.root) {
+    class DrmInfoViewHolder(
+        binding: DrmAdapterRowBinding,
+        private val primaryColor: Int,
+        private val secondaryColor: Int,
+        private val onSurfaceVariantColor: Int
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         private val layout = binding.simpleDrmRow
         private val drmId = binding.drmId
         private val drmName = binding.drmName
         private val moreInfo = binding.moreInfo
 
-        fun bindDrmInfo(drmSimpleInfo: DrmSimpleInfo, position: Int) {
-            drmId.setTextColor(getPrimaryColor(drmId.context))
-            drmName.text = drmSimpleInfo.drmName
-            drmName.setTextColor(getSecondaryColor(drmName.context))
-            moreInfo.setTextColor(getColorOnSurfaceVariant(moreInfo.context))
+        fun updateHighlighting(drmSimpleInfo: DrmSimpleInfo, query: String) {
+            drmName.text = getHighlightedText(drmSimpleInfo.drmName, query, primaryColor)
+        }
+
+        fun bindDrmInfo(drmSimpleInfo: DrmSimpleInfo, position: Int, query: String? = null) {
+            if (query != null) {
+                updateHighlighting(drmSimpleInfo, query)
+            } else {
+                drmName.text = drmSimpleInfo.drmName
+            }
+            drmId.setTextColor(primaryColor)
+            drmName.setTextColor(secondaryColor)
+
+            moreInfo.setTextColor(onSurfaceVariantColor)
             if (itemView.context.isInTwoPaneMode()) {
                 moreInfo.visibility = View.GONE
             }
@@ -74,16 +107,7 @@ class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmD
                             fragment.sharedElementEnterTransition = buildContainerTransform(layout, true)
                             fragment.sharedElementReturnTransition = buildContainerTransform(layout, false)
                         }
-                        fragment.searchListenerDestroyedListener = object : SearchListenerDestroyedListener {
-                            override fun onSearchListenerDestroyed(queryTextListener: SearchView.OnQueryTextListener) {
-                                act.searchListeners.remove(queryTextListener)
-                            }
-                        }
                     }
-
-                    val existingFragment = act.searchListeners.find { it is DetailsFragment }
-                    existingFragment?.let { act.searchListeners.remove(it) }
-                    act.searchListeners.add(detailsFragment)
 
                     act.supportFragmentManager.commit {
                         setReorderingAllowed(true)
@@ -95,14 +119,9 @@ class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmD
                             replace(R.id.content_fragment, detailsFragment,
                                 act.getString(R.string.details_fragment_tag))
                             addToBackStack(null)
-
-                            act.supportActionBar!!.apply {
-                                setDisplayHomeAsUpEnabled(true)
-                                setHomeButtonEnabled(true)
-                                setHomeActionContentDescription(R.string.close_details)
-                            }
                         }
                     }
+                    act.hideSearchView()
                 }
             }
         }

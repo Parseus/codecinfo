@@ -11,11 +11,17 @@ import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 
+data class CodecSearchItem(
+    val info: CodecSimpleInfo,
+    val highlightedId: CharSequence,
+    val highlightedName: CharSequence
+)
+
 class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
 
     class ViewHolder(view: View) : Presenter.ViewHolder(view) {
         val cardView = view as ImageCardView
-        var simpleInfo: CodecSimpleInfo? = null
+        var searchItem: CodecSearchItem? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
@@ -33,11 +39,13 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
     }
 
     override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any?) {
-        val info = item as CodecSimpleInfo
-        (viewHolder as ViewHolder).simpleInfo = info
+        val searchItem = item as CodecSearchItem
+        val info = searchItem.info
+        val context = viewHolder.view.context
+        (viewHolder as ViewHolder).searchItem = searchItem
         viewHolder.cardView.apply {
-            titleText = info.codecId
-            contentText = info.codecName
+            titleText = searchItem.highlightedId
+            contentText = searchItem.highlightedName
             mainImage = AppCompatResources.getDrawable(context, drawable)
 
             // Reset badge for every bind to handle recycling
@@ -53,9 +61,21 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
         }
     }
 
+    override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(viewHolder, item, payloads)
+        } else {
+            val searchItem = item as CodecSearchItem
+            (viewHolder as ViewHolder).cardView.apply {
+                titleText = searchItem.highlightedId
+                contentText = searchItem.highlightedName
+            }
+        }
+    }
+
     override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {
         val vh = viewHolder as ViewHolder
-        vh.simpleInfo = null
+        vh.searchItem = null
         with(vh.cardView) {
             // Clear images to free up memory and prevent flickering on reuse
             mainImage = null

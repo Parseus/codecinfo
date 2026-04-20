@@ -10,11 +10,16 @@ import androidx.leanback.widget.Presenter
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 
+data class DrmSearchItem(
+    val info: DrmSimpleInfo,
+    val highlightedName: CharSequence
+)
+
 class DrmPresenter(@DrawableRes private val drawable: Int) : Presenter() {
 
     class ViewHolder(view: View) : Presenter.ViewHolder(view) {
         val cardView = view as ImageCardView
-        var simpleInfo: DrmSimpleInfo? = null
+        var searchItem: DrmSearchItem? = null
     }
 
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
@@ -32,18 +37,31 @@ class DrmPresenter(@DrawableRes private val drawable: Int) : Presenter() {
     }
 
     override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any?) {
-        val info = item as DrmSimpleInfo
-        (viewHolder as ViewHolder).simpleInfo = info
+        val searchItem = item as DrmSearchItem
+        val info = searchItem.info
+        val context = viewHolder.view.context
+        (viewHolder as ViewHolder).searchItem = searchItem
         viewHolder.cardView.apply {
             titleText = context.getString(R.string.category_drm)
-            contentText = info.drmName
+            contentText = searchItem.highlightedName
             mainImage = AppCompatResources.getDrawable(context, drawable)
+        }
+    }
+
+    override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(viewHolder, item, payloads)
+        } else {
+            val searchItem = item as DrmSearchItem
+            (viewHolder as ViewHolder).cardView.apply {
+                contentText = searchItem.highlightedName
+            }
         }
     }
 
     override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {
         val vh = viewHolder as ViewHolder
-        vh.simpleInfo = null
+        vh.searchItem = null
         with(vh.cardView) {
             // Clear image to free up memory and prevent flickering on reuse
             mainImage = null

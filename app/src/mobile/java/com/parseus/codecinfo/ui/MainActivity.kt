@@ -14,11 +14,10 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.view.Window
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
@@ -28,15 +27,24 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsCompat.Type.displayCutout
+import androidx.core.view.WindowInsetsCompat.Type.systemBars
 import androidx.core.view.forEach
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.divider.MaterialDividerItemDecoration
+import com.google.android.material.search.SearchView
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.kieronquinn.monetcompat.app.MonetCompatActivity
@@ -54,7 +62,9 @@ import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.databinding.ActivityMainBinding
 import com.parseus.codecinfo.databinding.DeviceIssuesLayoutBinding
+import com.parseus.codecinfo.ui.adapters.CodecAdapter
 import com.parseus.codecinfo.ui.adapters.DeviceIssuesAdapter
+import com.parseus.codecinfo.ui.adapters.DrmAdapter
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.ui.settings.DarkTheme
 import com.parseus.codecinfo.ui.settings.SettingsContract
@@ -79,16 +89,19 @@ import com.parseus.codecinfo.utils.updateColors
 import com.parseus.codecinfo.utils.updateIconColors
 import com.parseus.codecinfo.utils.updateStatusBarColor
 import com.parseus.codecinfo.utils.updateToolBarColor
+import com.parseus.codecinfo.viewmodels.SearchViewModel
 import dev.kdrag0n.monet.theme.ColorScheme
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
 
-class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
+class MainActivity : MonetCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    internal lateinit var binding: ActivityMainBinding
 
     private var shouldRecreateActivity = false
 
@@ -99,7 +112,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         shouldRecreateActivity = result
     }
 
-    val searchListeners = mutableListOf<SearchView.OnQueryTextListener>()
+    private val viewModel: SearchViewModel by viewModels()
 
     override val recreateMode: Boolean
         get() = !isNativeMonetAvailable()
@@ -109,9 +122,12 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     private val memoryLeakFixBackDispatcher = getMemoryLeakFixBackDispatcher()
     private val homeAsUpBackDispatcher = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
-            supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-            isEnabled = false
-            onBackPressedDispatcher.onBackPressed()
+            if (binding.searchView.isShowing) {
+                hideSearchView()
+            } else {
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+            }
         }
     }
 
@@ -156,11 +172,55 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         }
 
         supportFragmentManager.addOnBackStackChangedListener {
-            memoryLeakFixBackDispatcher.isEnabled = canEnableMemoryLeakFixBackDispatcher()
-            homeAsUpBackDispatcher.isEnabled = !isInTwoPaneMode() && (supportActionBar!!.displayOptions and ActionBar.DISPLAY_HOME_AS_UP == ActionBar.DISPLAY_HOME_AS_UP)
+            updateUIState()
         }
         onBackPressedDispatcher.addCallback(memoryLeakFixBackDispatcher)
         onBackPressedDispatcher.addCallback(homeAsUpBackDispatcher)
+    }
+
+    private fun updateUIState() {
+        if (!::binding.isInitialized) return
+        val isDetailsShown = supportFragmentManager.backStackEntryCount > 0
+        val isTwoPane = isInTwoPaneMode()
+
+        binding.toolbar.updateToolBarColor(this)
+
+        if (isTwoPane) {
+            binding.toolbar.isVisible = isDetailsShown
+            binding.searchBar.isVisible = true
+            binding.searchBar.apply {
+                if (isDetailsShown) {
+                    setNavigationIcon(R.drawable.ic_close)
+                    setNavigationContentDescription(R.string.close_details)
+                    setNavigationOnClickListener {
+                        onBackPressedDispatcher.onBackPressed()
+                    }
+                } else {
+                    setNavigationIcon(R.drawable.ic_search)
+                    setNavigationContentDescription(null)
+                    setNavigationOnClickListener(null)
+                }
+            }
+        } else {
+            binding.toolbar.isVisible = isDetailsShown
+            binding.searchBar.isVisible = !isDetailsShown
+
+            if (isDetailsShown) {
+                binding.toolbar.setNavigationOnClickListener {
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            } else {
+                binding.searchBar.apply {
+                    setNavigationIcon(R.drawable.ic_search)
+                    setNavigationContentDescription(null)
+                    setNavigationOnClickListener(null)
+                }
+            }
+        }
+        binding.searchBar.setHint(R.string.search_hint)
+
+        memoryLeakFixBackDispatcher.isEnabled = canEnableMemoryLeakFixBackDispatcher()
+        homeAsUpBackDispatcher.isEnabled = !isTwoPane && (isDetailsShown || binding.searchView.isShowing)
     }
 
     private fun initializeUI(savedInstanceState: Bundle?) {
@@ -174,13 +234,28 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         val darkTheme = settings.darkTheme
         AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
 
-        setSupportActionBar(binding.toolbar)
-        binding.toolbar.updateToolBarColor(this)
+        binding.searchBar.setHint(R.string.search_hint)
+        binding.searchBar.inflateMenu(R.menu.app_bar_menu)
+        binding.searchBar.setOnMenuItemClickListener {
+            onOptionsItemSelected(it)
+        }
+        updateUIState()
 
-        binding.updateProgressBar?.updateColors(this)
+        binding.updateProgressBar.updateColors(this)
+
+        setupSearch()
 
         binding.appBar.updateBackgroundColor(this)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.appBar) { v, windowInsets ->
+            val insets = windowInsets.getInsets(systemBars() or displayCutout())
+            v.updatePadding(top = insets.top)
+            windowInsets
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.searchView) { _, windowInsets ->
+            windowInsets
+        }
         ViewGroupCompat.installCompatInsetsDispatch(binding.root)
+        binding.root.requestApplyInsets()
         ViewCompat.setOnApplyWindowInsetsListener(binding.contentFragment) { view, windowInsets ->
             var consumed = false
             (view as ViewGroup).forEach { child ->
@@ -203,6 +278,86 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
         if (!BuildConfig.DEBUG) {
             initializeAppRating(this)
             checkForUpdate(this, binding.updateProgressBar)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    private fun setupSearch() {
+        binding.searchView.setupWithSearchBar(binding.searchBar)
+        binding.searchView.apply {
+            editText.setOnEditorActionListener { _, _, _ ->
+                val query = text.toString()
+                viewModel.setSearchQuery(query)
+                false
+            }
+            editText.addTextChangedListener {
+                viewModel.setSearchQuery(it.toString())
+            }
+            addTransitionListener { _, _, newState ->
+                when (newState) {
+                    SearchView.TransitionState.SHOWING -> {
+                        binding.appBar.isInvisible = true
+                        homeAsUpBackDispatcher.isEnabled = true
+                    }
+                    SearchView.TransitionState.HIDING -> {
+                        binding.appBar.isVisible = true
+                        updateUIState()
+                    }
+                    SearchView.TransitionState.HIDDEN -> {
+                        binding.appBar.isVisible = true
+                        setText("")
+                        viewModel.setSearchQuery("")
+                        updateUIState()
+                    }
+                    else -> {}
+                }
+            }
+        }
+
+        val audioSearchAdapter = CodecAdapter()
+        val videoSearchAdapter = CodecAdapter()
+        val drmSearchAdapter = DrmAdapter()
+        val concatAdapter = ConcatAdapter(audioSearchAdapter, videoSearchAdapter, drmSearchAdapter)
+
+        binding.searchResultsRecyclerView.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = concatAdapter
+            addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
+        }
+
+        viewModel.initData(this)
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.searchQuery.collect { query ->
+                        audioSearchAdapter.updateSearchQuery(query)
+                        videoSearchAdapter.updateSearchQuery(query)
+                        drmSearchAdapter.updateSearchQuery(query)
+                    }
+                }
+
+                launch {
+                    viewModel.searchResultState.collect { state ->
+                        if (state.isQueryEmpty) {
+                            audioSearchAdapter.submitList(emptyList())
+                            videoSearchAdapter.submitList(emptyList())
+                            drmSearchAdapter.submitList(emptyList())
+                        } else {
+                            audioSearchAdapter.submitList(state.audioResults)
+                            videoSearchAdapter.submitList(state.videoResults)
+                            drmSearchAdapter.submitList(state.drmResults)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun hideSearchView() {
+        binding.searchView.setText("")
+        if (binding.searchView.isShowing) {
+            binding.searchView.hide()
         }
     }
 
@@ -253,14 +408,7 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
                     replace(R.id.content_fragment, DetailsFragment::class.java,
                             bundle, getString(R.string.details_fragment_tag))
                     addToBackStack(null)
-
-                    supportActionBar!!.apply {
-                        if (displayOptions and ActionBar.DISPLAY_HOME_AS_UP == 0) {
-                            setHomeButtonEnabled(true)
-                            setDisplayHomeAsUpEnabled(true)
-                            setHomeActionContentDescription(R.string.close_details)
-                        }
-                    }
+                    updateUIState()
                 }
             }
         }
@@ -282,7 +430,9 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     private fun handleIntent(intent: Intent) {
         if (intent.action == Intent.ACTION_SEARCH) {
             intent.getStringExtra(SearchManager.QUERY)?.also { query ->
-                onQueryTextChange(query)
+                viewModel.setSearchQuery(query)
+                binding.searchView.setText(query)
+                binding.searchView.show()
             }
         }
     }
@@ -317,7 +467,6 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
 
     override fun onDestroy() {
         clearSavedLists()
-        searchListeners.clear()
         super.onDestroy()
     }
 
@@ -333,22 +482,20 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     }
 
     private fun enableImmersiveMode() {
-        WindowCompat.getInsetsController(window, window.decorView).hide(WindowInsetsCompat.Type.systemBars())
+        WindowCompat.getInsetsController(window, window.decorView).hide(systemBars())
         WindowCompat.setDecorFitsSystemWindows(window, true)
     }
 
     private fun disableImmersiveMode() {
-        WindowCompat.getInsetsController(window, window.decorView).show(WindowInsetsCompat.Type.systemBars())
+        WindowCompat.getInsetsController(window, window.decorView).show(systemBars())
         WindowCompat.setDecorFitsSystemWindows(window, false)
     }
 
     @SuppressLint("InflateParams")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_item_search -> return false
-
             android.R.id.home -> {
-                supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+                binding.searchBar.navigationIcon = null
                 onBackPressedDispatcher.onBackPressed()
             }
 
@@ -401,42 +548,22 @@ class MainActivity : MonetCompatActivity(), SearchView.OnQueryTextListener {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.clear()
-        menuInflater.inflate(R.menu.app_bar_menu, menu)
-
-        if (binding.toolbar.background is ColorDrawable) {
-            menu.updateIconColors(this, (binding.toolbar.background as ColorDrawable).color)
-        } else if (binding.toolbar.background is MaterialShapeDrawable) {
-            val fillColor = (binding.toolbar.background as MaterialShapeDrawable).fillColor?.defaultColor ?: getPrimaryColor(this)
+        val menu = binding.searchBar.menu
+        if (binding.searchBar.background is ColorDrawable) {
+            menu.updateIconColors(this, (binding.searchBar.background as ColorDrawable).color)
+        } else if (binding.searchBar.background is MaterialShapeDrawable) {
+            val fillColor = (binding.searchBar.background as MaterialShapeDrawable).fillColor?.defaultColor ?: getPrimaryColor(this)
             menu.updateIconColors(this, fillColor)
         }
 
-        val searchManager = getSystemService(SEARCH_SERVICE) as SearchManager
-        val searchItem = menu.findItem(R.id.menu_item_search)
-       (searchItem.actionView as SearchView).apply {
-           isSubmitButtonEnabled = true
-           setSearchableInfo(searchManager.getSearchableInfo(componentName))
-           setOnQueryTextListener(this@MainActivity)
-       }
-
-        val knownProblems = DEVICE_PROBLEMS_DB.filter {
+        val affectedByKnownProblems = DEVICE_PROBLEMS_DB.any {
             it.isAffected(this, null)
         }
-        if (knownProblems.isNotEmpty()) {
+        if (affectedByKnownProblems) {
             menu.findItem(R.id.menu_item_warning).isVisible = true
         }
 
         return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onQueryTextChange(newText: String): Boolean {
-        searchListeners.forEach { it.onQueryTextChange(newText) }
-        return true
-    }
-
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        searchListeners.forEach { it.onQueryTextSubmit(query) }
-        return true
     }
 
     private fun launchShareIntent(option: Int, detailsFragment: DetailsFragment?) {

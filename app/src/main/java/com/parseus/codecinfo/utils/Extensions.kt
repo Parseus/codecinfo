@@ -6,13 +6,20 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Typeface
 import android.media.MediaCodecInfo
 import android.os.BatteryManager
 import android.os.Build
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.getSystemService
 import androidx.fragment.app.FragmentActivity
-import java.util.*
+import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
+import com.parseus.codecinfo.data.drm.DrmSimpleInfo
+import java.util.Locale
 
 private const val AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv"
 private const val GOOGLE_ANDROID_TV_INSTALLED = "com.google.android.tv.installed"
@@ -82,5 +89,68 @@ fun MediaCodecInfo.isAudioCodec(): Boolean {
     return supportedTypes.joinToString().contains("audio")
 }
 
+fun CodecSimpleInfo.matches(queryWords: List<String>): Boolean {
+    return queryWords.all { word ->
+        codecId.contains(word, true) || codecName.contains(word, true)
+    }
+}
+
+fun DrmSimpleInfo.matches(queryWords: List<String>): Boolean {
+    return queryWords.all { word ->
+        drmName.contains(word, true) || drmUuid.toString().contains(word, true)
+    }
+}
+
 fun Context.getActivity(): Activity? = this as? Activity
     ?: (this as? ContextWrapper)?.baseContext?.getActivity()
+
+fun getHighlightedText(fullText: String, query: String, highlightColor: Int): CharSequence {
+    if (query.isBlank()) {
+        return fullText
+    }
+
+    val words = query.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+    if (words.isEmpty()) {
+        return fullText
+    }
+
+    val spannable = SpannableStringBuilder(fullText)
+    val matches = mutableListOf<IntRange>()
+
+    for (word in words) {
+        var start = fullText.indexOf(word, ignoreCase = true)
+        while (start != -1) {
+            matches.add(start until (start + word.length))
+            start = fullText.indexOf(word, start + 1, ignoreCase = true)
+        }
+    }
+
+    // Sort and merge overlapping matches
+    if (matches.isNotEmpty()) {
+        matches.sortBy { it.first }
+        val mergedMatches = mutableListOf<IntRange>()
+        var current = matches[0]
+        for (i in 1 until matches.size) {
+            val next = matches[i]
+            if (next.first <= current.last + 1) {
+                current = current.first..maxOf(current.last, next.last)
+            } else {
+                mergedMatches.add(current)
+                current = next
+            }
+        }
+        mergedMatches.add(current)
+
+        for (range in mergedMatches) {
+            val end = minOf(range.last + 1, fullText.length)
+            if (range.first < end) {
+                spannable.setSpan(ForegroundColorSpan(highlightColor), range.first, end,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                spannable.setSpan(StyleSpan(Typeface.BOLD), range.first, end,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+        }
+    }
+
+    return spannable
+}

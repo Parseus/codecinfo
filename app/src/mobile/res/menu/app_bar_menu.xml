@@ -9,11 +9,6 @@
         android:contentDescription="@string/action_warning"
         android:icon="@drawable/ic_warning" />
 
-    <item android:id="@+id/menu_item_search"
-        app:showAsAction="always"
-        android:title="@string/action_search"
-        app:actionViewClass="androidx.appcompat.widget.SearchView" />
-
     <item android:id="@+id/menu_item_share"
         app:showAsAction="ifRoom"
         android:title="@string/action_share"

@@ -12,7 +12,6 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.databinding.FragmentMainBinding
-import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.PagerAdapter
 import com.parseus.codecinfo.utils.updateColors
 
@@ -40,8 +39,7 @@ class MainFragment : Fragment() {
             })
 
             val viewPager = binding.pager!!
-            val pagerAdapter = PagerAdapter(childFragmentManager, viewLifecycleOwner.lifecycle,
-                (activity as? MainActivity)?.searchListeners ?: mutableListOf())
+            val pagerAdapter = PagerAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
             viewPager.adapter = pagerAdapter
 
             TabLayoutMediator(tabs, viewPager) { tab, position ->
@@ -100,17 +98,6 @@ class MainFragment : Fragment() {
             val bundle = Bundle()
             bundle.putInt("infoType", InfoType.currentInfoType.tabPosition)
             arguments = bundle
-            if (this@MainFragment.activity as? MainActivity != null) {
-                val searchListenerList = (this@MainFragment.activity as? MainActivity)!!.searchListeners
-                val existingFragment = searchListenerList.find {
-                    it is ItemFragment && (it.requireArguments().getInt("infoType")
-                        == InfoType.currentInfoType.tabPosition)
-                }
-                if (existingFragment != null) {
-                    searchListenerList.remove(existingFragment)
-                }
-                searchListenerList.add(this)
-            }
         }
     }
 

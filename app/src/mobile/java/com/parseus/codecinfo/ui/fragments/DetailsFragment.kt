@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.SearchView
 import androidx.core.os.BundleCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -26,23 +25,24 @@ import com.parseus.codecinfo.data.drm.isDetailedDrmInfoCached
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
 import com.parseus.codecinfo.ui.CustomLinearLayoutManager
-import com.parseus.codecinfo.ui.adapters.DetailsAdapter
 import com.parseus.codecinfo.ui.adapters.MobileDetailsAdapter
-import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
-import com.parseus.codecinfo.utils.*
+import com.parseus.codecinfo.utils.getPrimaryColor
+import com.parseus.codecinfo.utils.getSurfaceColor
+import com.parseus.codecinfo.utils.isDynamicThemingEnabled
+import com.parseus.codecinfo.utils.isInTwoPaneMode
+import com.parseus.codecinfo.utils.isNativeMonetAvailable
+import com.parseus.codecinfo.utils.updateColors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.UUID
 
-class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
+class DetailsFragment : MonetFragment() {
 
     private var _binding: ItemDetailsFragmentLayoutBinding? = null
     internal val binding get() = _binding!!
-
-    var searchListenerDestroyedListener: SearchListenerDestroyedListener? = null
 
     private lateinit var propertyList: List<DetailsProperty>
 
@@ -61,8 +61,6 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroyView() {
-        searchListenerDestroyedListener?.onSearchListenerDestroyed(this)
-        searchListenerDestroyedListener = null
         binding.itemDetailsContent.setOnScrollChangeListener(null as NestedScrollView.OnScrollChangeListener?)
         binding.fullCodecInfoContent.adapter = null
         binding.knownProblemsList.adapter = null
@@ -152,37 +150,12 @@ class DetailsFragment : MonetFragment(), SearchView.OnQueryTextListener {
         binding.fullCodecInfoName.setTextColor(getPrimaryColor(requireContext()))
 
         val detailsAdapter = MobileDetailsAdapter()
-        detailsAdapter.add(propertyList)
         binding.fullCodecInfoContent.apply {
             layoutManager = CustomLinearLayoutManager(context)
             adapter = detailsAdapter
             isNestedScrollingEnabled = false
         }
-    }
-
-    override fun onQueryTextChange(newText: String): Boolean {
-        if (isVisible) {
-            handleSearch(newText)
-        }
-        return true
-    }
-
-    override fun onQueryTextSubmit(query: String): Boolean {
-        if (isVisible) {
-            handleSearch(query)
-        }
-        return true
-    }
-
-    private fun handleSearch(query: String) {
-        val adapter = binding.fullCodecInfoContent.adapter as DetailsAdapter
-        adapter.replaceAll(filterProperties(query))
-    }
-
-    private fun filterProperties(query: String): List<DetailsProperty> {
-        return propertyList.filter { (_, name, value) ->
-            name.contains(query, true) || value.contains(query, true)
-        }
+        detailsAdapter.replaceAll(propertyList)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

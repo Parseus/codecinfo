@@ -5,7 +5,6 @@
     style="@style/Widget.CodecInfo.ItemLayout"
     android:theme="@style/Widget.CodecInfo.ItemLayout.ChildView"
     android:id="@+id/simpleCodecRow"
-    android:gravity="center_vertical"
     android:layout_width="match_parent"
     android:layout_height="@dimen/codec_adapter_row_height"
     android:paddingLeft="@dimen/list_content_horizontal_padding"
@@ -22,10 +21,10 @@
         android:gravity="center_vertical"
         android:maxLines="1"
         android:textColor="?attr/colorPrimary"
+        app:layout_constraintEnd_toStartOf="@+id/codec_type"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/codec_type"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Codec name"/>
+        tools:text="Codec name" />
 
     <TextView
         style="@style/Widget.Material3.TextView.ListItem.Overline"
@@ -33,9 +32,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/codec_name"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/codec_name"
-        tools:text="Encoder/decoder"/>
+        app:layout_constraintTop_toTopOf="@+id/codec_name"
+        tools:text="Encoder/decoder" />
 
     <TextView
         style="@style/Widget.Material3.TextView.ListItem.LabelText"
@@ -43,17 +43,43 @@
         android:layout_width="0dp"
         android:layout_height="24dp"
         android:gravity="center_vertical"
-        app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
-        android:maxLines="1"
-        android:textColor="?attr/colorSecondary"
-        app:autoSizeMinTextSize="8sp"
         app:autoSizeMaxTextSize="16sp"
+        app:autoSizeMinTextSize="8sp"
         app:autoSizeStepGranularity="1sp"
         app:autoSizeTextType="uniform"
+        app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
+        app:layout_constraintEnd_toStartOf="@+id/icon_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/known_problem_icon"
-        app:layout_constraintTop_toBottomOf="@id/codec_name"
-        tools:text="Codec full name"/>
+        app:layout_constraintTop_toBottomOf="@+id/codec_name"
+        tools:text="Codec full name" />
+
+    <LinearLayout
+        android:id="@+id/icon_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/codec_full_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/codec_full_name">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/known_problem_icon"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:visibility="gone"
+            app:srcCompat="@drawable/mtrl_ic_error"
+            app:tint="?attr/colorError"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/hw_icon"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_marginStart="4dp"
+            android:contentDescription="@string/hardware_acceleration"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/ic_hardware" />
+    </LinearLayout>
 
     <TextView
         style="@style/Widget.Material3.TextView.ListItem.SupportingText"
@@ -62,34 +88,9 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
-        android:text="@string/more_info"
+        app:layout_constraintEnd_toStartOf="@+id/icon_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/known_problem_icon"
-        app:layout_constraintTop_toBottomOf="@id/codec_full_name"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.0"/>
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/hw_icon"
-        android:layout_width="@dimen/icon_size"
-        android:layout_height="@dimen/icon_size"
-        android:layout_marginTop="@dimen/hw_indicator_top_margin"
-        android:contentDescription="@string/hardware_acceleration"
-        android:scaleType="centerInside"
-        app:srcCompat="@drawable/ic_hardware"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/codec_type" />
-
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/known_problem_icon"
-        android:layout_width="@dimen/icon_size"
-        android:layout_height="@dimen/icon_size"
-        android:layout_marginTop="@dimen/hw_indicator_top_margin"
-        android:visibility="gone"
-        app:srcCompat="@drawable/mtrl_ic_error"
-        app:tint="?attr/colorError"
-        app:layout_constraintEnd_toStartOf="@id/hw_icon"
-        app:layout_constraintTop_toBottomOf="@id/codec_type"
-        tools:visibility="visible" />
+        app:layout_constraintTop_toBottomOf="@+id/codec_full_name"
+        android:text="@string/more_info" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

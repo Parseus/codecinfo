@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.DiffUtil
@@ -21,6 +20,7 @@ import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.utils.buildContainerTransform
 import com.parseus.codecinfo.utils.getActivity
 import com.parseus.codecinfo.utils.getColorOnSurfaceVariant
+import com.parseus.codecinfo.utils.getHighlightedText
 import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
 import com.parseus.codecinfo.utils.isInTwoPaneMode
@@ -29,16 +29,40 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
     CodecDiffCallback()
 ) {
 
+    private var currentSearchQuery: String? = null
+
+    fun updateSearchQuery(query: String?) {
+        currentSearchQuery = query
+        notifyItemRangeChanged(0, itemCount, query)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CodecInfoViewHolder {
         val binding = CodecAdapterRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return CodecInfoViewHolder(binding)
+        val primaryColor = getPrimaryColor(parent.context)
+        val secondaryColor = getSecondaryColor(parent.context)
+        val onSurfaceVariantColor = getColorOnSurfaceVariant(parent.context)
+        return CodecInfoViewHolder(binding, primaryColor, secondaryColor, onSurfaceVariantColor)
+    }
+
+    override fun onBindViewHolder(holder: CodecInfoViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+        } else {
+            val query = payloads[0] as? String
+            holder.updateHighlighting(getItem(position), query ?: "")
+        }
     }
 
     override fun onBindViewHolder(holder: CodecInfoViewHolder, position: Int) {
-        holder.bindCodecInfo(getItem(position), position)
+        holder.bindCodecInfo(getItem(position), position, currentSearchQuery)
     }
 
-    class CodecInfoViewHolder(binding: CodecAdapterRowBinding) : RecyclerView.ViewHolder(binding.root) {
+    class CodecInfoViewHolder(
+        binding: CodecAdapterRowBinding,
+        private val primaryColor: Int,
+        private val secondaryColor: Int,
+        private val onSurfaceVariantColor: Int
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         private val layout = binding.simpleCodecRow
         private val knownIssueIcon = binding.knownProblemIcon
@@ -48,13 +72,20 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
         private val moreInfo = binding.moreInfo
         private val hwIcon = binding.hwIcon
 
-        fun bindCodecInfo(codecInfo: CodecSimpleInfo, position: Int) {
-            codecId.text = codecInfo.codecId
-            codecId.setTextColor(getPrimaryColor(codecId.context))
-            codecName.text = codecInfo.codecName
-            codecName.setTextColor(getSecondaryColor(codecName.context))
+        fun updateHighlighting(codecInfo: CodecSimpleInfo, query: String) {
+            codecId.text = getHighlightedText(codecInfo.codecId, query, primaryColor)
+            codecName.text = getHighlightedText(codecInfo.codecName, query, primaryColor)
+        }
 
-            val onSurfaceVariantColor = getColorOnSurfaceVariant(itemView.context)
+        fun bindCodecInfo(codecInfo: CodecSimpleInfo, position: Int, query: String? = null) {
+            if (query != null) {
+                updateHighlighting(codecInfo, query)
+            } else {
+                codecId.text = codecInfo.codecId
+                codecName.text = codecInfo.codecName
+            }
+            codecId.setTextColor(primaryColor)
+            codecName.setTextColor(secondaryColor)
 
             codecType.text = itemView.resources.getString(
                     if (codecInfo.isEncoder) R.string.encoder else R.string.decoder)
@@ -111,16 +142,7 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
                             fragment.sharedElementEnterTransition = buildContainerTransform(layout, true)
                             fragment.sharedElementReturnTransition = buildContainerTransform(layout, false)
                         }
-                        fragment.searchListenerDestroyedListener = object : SearchListenerDestroyedListener {
-                            override fun onSearchListenerDestroyed(queryTextListener: SearchView.OnQueryTextListener) {
-                                act.searchListeners.remove(queryTextListener)
-                            }
-                        }
                     }
-
-                    val existingFragment = act.searchListeners.find { it is DetailsFragment }
-                    existingFragment?.let { act.searchListeners.remove(it) }
-                    act.searchListeners.add(detailsFragment)
 
                     act.supportFragmentManager.commit {
                         setReorderingAllowed(true)
@@ -132,14 +154,9 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
                             replace(R.id.content_fragment, detailsFragment,
                                 act.getString(R.string.details_fragment_tag))
                             addToBackStack(null)
-
-                            act.supportActionBar!!.apply {
-                                setDisplayHomeAsUpEnabled(true)
-                                setHomeButtonEnabled(true)
-                                setHomeActionContentDescription(R.string.close_details)
-                            }
                         }
                     }
+                    act.hideSearchView()
                 }
             }
         }

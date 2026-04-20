@@ -5,9 +5,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.VectorDrawable
 import android.os.Build
 import android.util.TypedValue
 import android.view.Menu
@@ -15,20 +12,14 @@ import android.view.View
 import android.view.Window
 import android.view.WindowInsetsController
 import android.widget.CompoundButton
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
 import androidx.core.view.forEach
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
@@ -42,9 +33,7 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.tabs.TabLayout
 import com.kieronquinn.monetcompat.core.MonetCompat
 import com.kieronquinn.monetcompat.extensions.toArgb
-import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.settingsRepository
-import java.lang.reflect.Field
 import kotlin.math.roundToInt
 
 private const val TAG = "ThemeUtils"
@@ -273,15 +262,6 @@ fun Menu.updateIconColors(context: Context, @ColorInt toolbarColor: Int) {
     } else {
         context.getColor(com.google.android.material.R.color.m3_dark_default_color_primary_text)
     }
-
-    val searchView = findItem(R.id.menu_item_search).actionView as SearchView
-    searchView.findViewById<EditText>(androidx.appcompat.R.id.search_src_text).run {
-        updateCursorDrawable(contentColor)
-        setTextColor(contentColor)
-        setHintTextColor(contentColor)
-    }
-    val searchIcon = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_button)
-    searchIcon.setColorFilter(contentColor)
 
     forEach {
         it.icon?.run { mutate().colorFilter = BlendModeColorFilterCompat
@@ -564,58 +544,6 @@ fun MaterialAlertDialogBuilder.updateBackgroundColor(context: Context): Material
     }
 
     return setBackground(materialShapeDrawable)
-}
-
-@SuppressLint("PrivateApi")
-private fun EditText.updateCursorDrawable(@ColorInt color: Int) {
-    // https://stackoverflow.com/a/59269370
-    if (Build.VERSION.SDK_INT >= 29) {
-        textCursorDrawable = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, intArrayOf(color, color))
-            .apply { setSize(2.spToPx(context).toInt(), textSize.toInt()) }
-    } else {
-        try {
-            val editorField = TextView::class.java.getFieldByName("mEditor")
-            val editor = editorField?.get(this) ?: this
-            val editorClass: Class<*> = if (editorField != null) editor.javaClass else TextView::class.java
-            val cursorRes = TextView::class.java.getFieldByName("mCursorDrawableRes")?.get(this) as? Int ?: return
-
-            val tintedCursorDrawable = AppCompatResources.getDrawable(context, cursorRes)?.tinted(color) ?: return
-
-            val cursorField = if (Build.VERSION.SDK_INT >= 28) {
-                editorClass.getFieldByName("mDrawableForCursor")
-            } else {
-                null
-            }
-            if (cursorField != null) {
-                cursorField.set(editor, tintedCursorDrawable)
-            } else {
-                editorClass.getFieldByName("mCursorDrawable", "mDrawableForCursor")
-                    ?.set(editor, arrayOf(tintedCursorDrawable, tintedCursorDrawable))
-            }
-        } catch (t: Throwable) {
-            t.printStackTrace()
-        }
-    }
-}
-
-private fun Class<*>.getFieldByName(vararg name: String): Field? {
-    name.forEach {
-        try {
-            return getDeclaredField(it).apply { isAccessible = true }
-        } catch (_: Throwable) {}
-    }
-    return null
-}
-
-private fun Drawable.tinted(@ColorInt color: Int): Drawable = when (this) {
-    is VectorDrawableCompat -> this.apply { setTintList(ColorStateList.valueOf(color)) }
-    is VectorDrawable -> this.apply { setTintList(ColorStateList.valueOf(color)) }
-    else -> this.apply { setTint(color) }
-}
-
-fun Number.spToPx(context: Context? = null): Float {
-    val res = context?.resources ?: android.content.res.Resources.getSystem()
-    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this.toFloat(), res.displayMetrics)
 }
 
 private fun adjustColorAlpha(@ColorInt color: Int, factor: Float): Int {

@@ -2,9 +2,10 @@ package com.parseus.codecinfo.ui.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EdgeEffect
-import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -25,10 +26,8 @@ import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.databinding.TabContentLayoutBinding
 import com.parseus.codecinfo.ui.CustomLinearLayoutManager
-import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.CodecAdapter
 import com.parseus.codecinfo.ui.adapters.DrmAdapter
-import com.parseus.codecinfo.ui.adapters.SearchListenerDestroyedListener
 import com.parseus.codecinfo.utils.getSecondaryColor
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
 import com.parseus.codecinfo.utils.isNativeMonetAvailable
@@ -38,7 +37,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
+class ItemFragment : MonetFragment() {
 
     private var _binding: TabContentLayoutBinding? = null
     private val binding get() = _binding!!
@@ -50,8 +49,6 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
 
     private var isFullyDrawnReporterAdded = false
 
-    var searchListenerDestroyedListener: SearchListenerDestroyedListener? = null
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
 
@@ -60,14 +57,6 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroyView() {
-        searchListenerDestroyedListener?.onSearchListenerDestroyed(this)
-        searchListenerDestroyedListener = null
-
-        if (activity as? MainActivity != null) {
-            val searchListenerList = (activity as MainActivity).searchListeners
-            searchListenerList.remove(this)
-        }
-
         removeFullyDrawnReporter()
 
         searchJob?.cancel()
@@ -84,13 +73,6 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
         super.onViewCreated(view, savedInstanceState)
 
         infoType = InfoType.fromInt(requireArguments().getInt("infoType"))
-
-        if (activity as? MainActivity != null) {
-            val searchListenerList = (activity as MainActivity).searchListeners
-            if (!searchListenerList.contains(this)) {
-                searchListenerList.add(this)
-            }
-        }
 
         if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
             view.applyMonetRecursively()
@@ -113,7 +95,7 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                loadAndDisplayData()
+                launch { loadAndDisplayData() }
             }
         }
     }
@@ -187,62 +169,6 @@ class ItemFragment : MonetFragment(), SearchView.OnQueryTextListener {
         if (isFullyDrawnReporterAdded) {
             activity?.fullyDrawnReporter?.removeReporter()
             isFullyDrawnReporterAdded = false
-        }
-    }
-
-    override fun onQueryTextChange(newText: String): Boolean {
-        if (isVisible) {
-            handleSearch(newText)
-        }
-        return true
-    }
-
-    override fun onQueryTextSubmit(query: String): Boolean {
-        if (isVisible) {
-            handleSearch(query)
-        }
-        return true
-    }
-
-    @SuppressLint("NewApi")
-    @Suppress("UNCHECKED_CAST")
-    private fun handleSearch(query: String) {
-        if (emptyList) return
-
-        searchJob?.cancel()
-        searchJob = viewLifecycleOwner.lifecycleScope.launch {
-            val filteredList = withContext(Dispatchers.Default) {
-                when (itemAdapter) {
-                    is CodecAdapter -> {
-                        val fullList = getSimpleCodecInfoList(requireContext(), infoType == InfoType.Audio)
-                        filterCodecs(fullList, query)
-                    }
-                    is DrmAdapter -> {
-                        val fullList = getSimpleDrmInfoList(requireContext())
-                        filterDrm(fullList, query)
-                    }
-                    else -> null
-                }
-            }
-
-            filteredList?.let {
-                when (val adapter = itemAdapter) {
-                    is CodecAdapter -> adapter.submitList(it as List<CodecSimpleInfo>)
-                    is DrmAdapter -> adapter.submitList(it as List<DrmSimpleInfo>)
-                }
-            }
-        }
-    }
-
-    private fun filterCodecs(infoList: List<CodecSimpleInfo>, query: String): List<CodecSimpleInfo> {
-        return infoList.filter {
-            it.codecId.contains(query, true) || it.codecName.contains(query, true)
-        }
-    }
-
-    private fun filterDrm(infoList: List<DrmSimpleInfo>, query: String): List<DrmSimpleInfo> {
-        return infoList.filter {
-            it.drmName.contains(query, true)
         }
     }
 

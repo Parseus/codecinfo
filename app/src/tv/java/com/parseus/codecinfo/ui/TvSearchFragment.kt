@@ -5,13 +5,22 @@ import android.os.Bundle
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.leanback.app.SearchSupportFragment
-import androidx.leanback.widget.*
+import androidx.leanback.widget.ArrayObjectAdapter
+import androidx.leanback.widget.DiffCallback
+import androidx.leanback.widget.HeaderItem
+import androidx.leanback.widget.ListRow
+import androidx.leanback.widget.ListRowPresenter
+import androidx.leanback.widget.ObjectAdapter
+import androidx.leanback.widget.OnItemViewClickedListener
+import androidx.leanback.widget.Presenter
+import androidx.leanback.widget.Row
+import androidx.leanback.widget.RowPresenter
 import androidx.lifecycle.lifecycleScope
 import com.parseus.codecinfo.R
-import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
-import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
+import com.parseus.codecinfo.utils.getHighlightedText
+import com.parseus.codecinfo.utils.matches
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -58,31 +67,49 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
                 buildSearchResultRows(query)
             }
 
-            rowsAdapter.clear()
-            rowsAdapter.addAll(0, rows)
+            rowsAdapter.setItems(rows, object : DiffCallback<ListRow>() {
+                override fun areItemsTheSame(oldItem: ListRow, newItem: ListRow): Boolean {
+                    return oldItem.headerItem.id == newItem.headerItem.id
+                }
+
+                override fun areContentsTheSame(oldItem: ListRow, newItem: ListRow): Boolean {
+                    return oldItem.headerItem.name == newItem.headerItem.name
+                            && oldItem.adapter.size() == newItem.adapter.size()
+                }
+            })
         }
     }
 
     private fun buildSearchResultRows(query: String): List<ListRow> {
         val context = requireContext()
         val results = mutableListOf<ListRow>()
+        val queryWords = query.trim().split(Regex("\\s+"))
+        val primaryColor = context.getColor(R.color.teal_200)
 
         val audioCodecs = getSimpleCodecInfoList(context, true).filter {
-            it.codecId.contains(query, true) || it.codecName.contains(query, true)
+            it.matches(queryWords)
+        }.map {
+            CodecSearchItem(it, getHighlightedText(it.codecId, query, primaryColor),
+                getHighlightedText(it.codecName, query, primaryColor))
         }
         createListRow(1, R.string.category_audio, R.drawable.ic_audio, CodecPresenter(R.drawable.ic_audio), audioCodecs)?.let {
             results.add(it)
         }
 
         val videoCodecs = getSimpleCodecInfoList(context, false).filter {
-            it.codecId.contains(query, true) || it.codecName.contains(query, true)
+            it.matches(queryWords)
+        }.map {
+            CodecSearchItem(it, getHighlightedText(it.codecId, query, primaryColor),
+                getHighlightedText(it.codecName, query, primaryColor))
         }
         createListRow(2, R.string.category_video, R.drawable.ic_video, CodecPresenter(R.drawable.ic_video), videoCodecs)?.let {
             results.add(it)
         }
 
         val drmInfo = getSimpleDrmInfoList(context).filter {
-            it.drmName.contains(query, true)
+            it.matches(queryWords)
+        }.map {
+            DrmSearchItem(it, getHighlightedText(it.drmName, query, primaryColor))
         }
         createListRow(3, R.string.category_drm, R.drawable.ic_lock, DrmPresenter(R.drawable.ic_lock), drmInfo)?.let {
             results.add(it)
@@ -109,23 +136,25 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
 
     override fun onItemClicked(itemViewHolder: Presenter.ViewHolder?, item: Any?,
                                rowViewHolder: RowPresenter.ViewHolder?, row: Row?) {
-        if (item is CodecSimpleInfo) {
+        if (item is CodecSearchItem) {
+            val info = item.info
             val intent = Intent(requireActivity(), TvCodecDetailsActivity::class.java).apply {
-                putExtra("codecId", item.codecId)
-                putExtra("codecName", item.codecName)
+                putExtra("codecId", info.codecId)
+                putExtra("codecName", info.codecName)
             }
             startActivity(intent)
-        } else if (item is DrmSimpleInfo) {
+        } else if (item is DrmSearchItem) {
+            val info = item.info
             val intent = Intent(requireActivity(), TvCodecDetailsActivity::class.java).apply {
-                putExtra("drmName", item.drmName)
-                putExtra("drmUuid", item.drmUuid)
+                putExtra("drmName", info.drmName)
+                putExtra("drmUuid", info.drmUuid)
             }
             startActivity(intent)
         }
     }
 
     companion object {
-        private const val SEARCH_DELAY_MS = 300L
+        private const val SEARCH_DELAY_MS = 200L
     }
 
 }

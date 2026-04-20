@@ -2,9 +2,48 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        style="@style/Widget.CodecInfo.AppBarLayout.PrimarySurface"
+        android:id="@+id/appBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:visibility="gone"
+            app:navigationIcon="@drawable/ic_close"
+            app:title="@string/app_name"
+            style="@style/Widget.CodecInfo.Toolbar.PrimarySurface"/>
+
+        <com.google.android.material.search.SearchBar
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/search_hint" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/updateProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="4dp"
+            android:max="100"
+            android:visibility="gone"
+            app:indicatorColor="?attr/colorSecondary"
+            app:trackColor="?attr/colorSecondaryContainer"
+            tools:progress="50"
+            tools:visibility="visible"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/separatorGuideline"
@@ -12,25 +51,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="@dimen/separator_guideline_percent" />
-
-    <com.google.android.material.appbar.AppBarLayout
-        style="@style/Widget.CodecInfo.AppBarLayout.PrimarySurface"
-        android:id="@+id/appBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="@string/app_name"
-            app:layout_scrollFlags="scroll|enterAlways"
-            style="@style/Widget.CodecInfo.Toolbar.PrimarySurface"/>
-
-    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/content_fragment"
@@ -48,8 +68,6 @@
         android:id="@+id/separator"
         android:layout_width="1dp"
         android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_centerHorizontal="true"
         android:importantForAccessibility="no"
         app:layout_constraintTop_toBottomOf="@id/appBar"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -64,7 +82,24 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/separatorGuideline"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:layout="@layout/item_details_fragment_layout">
-    </androidx.fragment.app.FragmentContainerView>
+        tools:layout="@layout/item_details_fragment_layout" />
+
+    <com.google.android.material.search.SearchView
+        android:id="@+id/search_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:hint="@string/action_search"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_results_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    </com.google.android.material.search.SearchView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

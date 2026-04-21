@@ -89,6 +89,7 @@ import com.parseus.codecinfo.utils.updateColors
 import com.parseus.codecinfo.utils.updateIconColors
 import com.parseus.codecinfo.utils.updateStatusBarColor
 import com.parseus.codecinfo.utils.updateToolBarColor
+import com.parseus.codecinfo.viewmodels.ItemsViewModel
 import com.parseus.codecinfo.viewmodels.SearchViewModel
 import dev.kdrag0n.monet.theme.ColorScheme
 import kotlinx.coroutines.Dispatchers
@@ -112,7 +113,8 @@ class MainActivity : MonetCompatActivity() {
         shouldRecreateActivity = result
     }
 
-    private val viewModel: SearchViewModel by viewModels()
+    private val searchViewModel: SearchViewModel by viewModels()
+    private val itemsViewModel: ItemsViewModel by viewModels()
 
     override val recreateMode: Boolean
         get() = !isNativeMonetAvailable()
@@ -243,6 +245,8 @@ class MainActivity : MonetCompatActivity() {
 
         binding.updateProgressBar.updateColors(this)
 
+        itemsViewModel.loadData(this)
+
         setupSearch()
 
         binding.appBar.updateBackgroundColor(this)
@@ -287,11 +291,11 @@ class MainActivity : MonetCompatActivity() {
         binding.searchView.apply {
             editText.setOnEditorActionListener { _, _, _ ->
                 val query = text.toString()
-                viewModel.setSearchQuery(query)
+                searchViewModel.setSearchQuery(query)
                 false
             }
             editText.addTextChangedListener {
-                viewModel.setSearchQuery(it.toString())
+                searchViewModel.setSearchQuery(it.toString())
             }
             addTransitionListener { _, _, newState ->
                 when (newState) {
@@ -306,7 +310,7 @@ class MainActivity : MonetCompatActivity() {
                     SearchView.TransitionState.HIDDEN -> {
                         binding.appBar.isVisible = true
                         setText("")
-                        viewModel.setSearchQuery("")
+                        searchViewModel.setSearchQuery("")
                         updateUIState()
                     }
                     else -> {}
@@ -325,12 +329,12 @@ class MainActivity : MonetCompatActivity() {
             addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
         }
 
-        viewModel.initData(this)
+        searchViewModel.initData(this)
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.searchQuery.collect { query ->
+                    searchViewModel.searchQuery.collect { query ->
                         audioSearchAdapter.updateSearchQuery(query)
                         videoSearchAdapter.updateSearchQuery(query)
                         drmSearchAdapter.updateSearchQuery(query)
@@ -338,7 +342,7 @@ class MainActivity : MonetCompatActivity() {
                 }
 
                 launch {
-                    viewModel.searchResultState.collect { state ->
+                    searchViewModel.searchResultState.collect { state ->
                         if (state.isQueryEmpty) {
                             audioSearchAdapter.submitList(emptyList())
                             videoSearchAdapter.submitList(emptyList())
@@ -430,7 +434,7 @@ class MainActivity : MonetCompatActivity() {
     private fun handleIntent(intent: Intent) {
         if (intent.action == Intent.ACTION_SEARCH) {
             intent.getStringExtra(SearchManager.QUERY)?.also { query ->
-                viewModel.setSearchQuery(query)
+                searchViewModel.setSearchQuery(query)
                 binding.searchView.setText(query)
                 binding.searchView.show()
             }

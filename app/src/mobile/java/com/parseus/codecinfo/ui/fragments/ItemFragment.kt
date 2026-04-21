@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -21,9 +22,7 @@ import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
-import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
-import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.databinding.TabContentLayoutBinding
 import com.parseus.codecinfo.ui.CustomLinearLayoutManager
 import com.parseus.codecinfo.ui.adapters.CodecAdapter
@@ -32,10 +31,9 @@ import com.parseus.codecinfo.utils.getSecondaryColor
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
 import com.parseus.codecinfo.utils.isNativeMonetAvailable
 import com.parseus.codecinfo.utils.updateColors
-import kotlinx.coroutines.Dispatchers
+import com.parseus.codecinfo.viewmodels.ItemsViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ItemFragment : MonetFragment() {
 
@@ -46,6 +44,8 @@ class ItemFragment : MonetFragment() {
     private lateinit var infoType: InfoType
     private var searchJob: Job? = null
     private var itemAdapter: RecyclerView.Adapter<*>? = null
+
+    private val viewModel: ItemsViewModel by activityViewModels()
 
     private var isFullyDrawnReporterAdded = false
 
@@ -93,9 +93,41 @@ class ItemFragment : MonetFragment() {
 
         addFullyDrawnReporter()
 
+        val currentList = when (infoType) {
+            InfoType.Audio -> viewModel.allAudioState.value
+            InfoType.Video -> viewModel.allVideoState.value
+            InfoType.DRM -> viewModel.allDrmsState.value
+        }
+
+        if (currentList != null) {
+            binding.loadingProgress.isVisible = false
+            displayData(currentList)
+        } else {
+            binding.loadingProgress.isVisible = true
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { loadAndDisplayData() }
+                when (infoType) {
+                    InfoType.Audio -> {
+                        viewModel.updateAudioList(requireContext())
+                        viewModel.allAudioState.collect {
+                            it?.let { displayData(it) }
+                        }
+                    }
+                    InfoType.Video -> {
+                        viewModel.updateVideoList(requireContext())
+                        viewModel.allVideoState.collect {
+                            it?.let { displayData(it) }
+                        }
+                    }
+                    InfoType.DRM -> {
+                        viewModel.updateDrmList(requireContext())
+                        viewModel.allDrmsState.collect {
+                            it?.let { displayData(it) }
+                        }
+                    }
+                }
             }
         }
     }
@@ -116,21 +148,11 @@ class ItemFragment : MonetFragment() {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private suspend fun loadAndDisplayData() {
+    private fun displayData(list: List<Any>) {
         val adapter = itemAdapter
         if (adapter is ListAdapter<*, *> && adapter.currentList.isNotEmpty()) {
             removeFullyDrawnReporter()
             return
-        }
-
-        binding.loadingProgress.isVisible = true
-
-        val list = withContext(Dispatchers.IO) {
-            if (infoType != InfoType.DRM) {
-                getSimpleCodecInfoList(requireContext(), infoType == InfoType.Audio)
-            } else {
-                getSimpleDrmInfoList(requireContext())
-            }
         }
 
         emptyList = list.isEmpty()

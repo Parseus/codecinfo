@@ -21,18 +21,25 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
+import androidx.core.text.PrecomputedTextCompat
 import androidx.core.text.parseAsHtml
 import androidx.core.view.isVisible
+import androidx.core.view.setPadding
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textview.MaterialTextView
 import com.kieronquinn.monetcompat.extensions.applyMonet
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.AboutAppFragmentBinding
 import com.parseus.codecinfo.ui.ImprovedBulletSpan
 import com.parseus.codecinfo.ui.externalLinks.ExternalLinksViewModel
 import com.parseus.codecinfo.utils.SHOW_RATE_APP
+import com.parseus.codecinfo.utils.getAttributeDimension
+import com.parseus.codecinfo.utils.getAttributeResourceId
+import com.parseus.codecinfo.utils.getColorOnSurfaceVariant
 import com.parseus.codecinfo.utils.getOnPrimaryColor
 import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
@@ -119,35 +126,53 @@ class AboutFragment : Fragment() {
     }
 
     private fun showChangelog() {
-        context?.let {
+        context?.let { ctx ->
+            binding.showChangelog.isEnabled = false
+
             viewLifecycleOwner.lifecycleScope.launch {
-                val spannableBuilder = withContext(Dispatchers.Default) {
-                    val htmlText: String
-                    it.assets.open("changelog.html").source().buffer().use { buffer ->
-                        htmlText = buffer.readUtf8()
-                    }
-                    SpannableStringBuilder(htmlText.parseAsHtml()).apply {
-                        val bulletSpans = getSpans(0, length, BulletSpan::class.java)
-                        bulletSpans.forEach { span ->
-                            val start = getSpanStart(span)
-                            val end = getSpanEnd(span)
-                            removeSpan(span)
-                            setSpan(ImprovedBulletSpan(), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+                try {
+                    val spannableBuilder = withContext(Dispatchers.IO) {
+                        val htmlText = ctx.assets.open("changelog.html").source().buffer().use { buffer ->
+                            buffer.readUtf8()
+                        }
+                        SpannableStringBuilder(htmlText.parseAsHtml()).apply {
+                            val bulletSpans = getSpans(0, length, BulletSpan::class.java)
+                            bulletSpans.forEach { span ->
+                                val start = getSpanStart(span)
+                                val end = getSpanEnd(span)
+                                removeSpan(span)
+                                setSpan(ImprovedBulletSpan(), start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+                            }
                         }
                     }
-                }
 
-                if (!isAdded) return@launch
+                    if (!isAdded || activity?.isFinishing == true) return@launch
 
-                val dialogBuilder = MaterialAlertDialogBuilder(it)
-                    .setTitle(R.string.about_changelog)
-                    .setMessage(spannableBuilder)
-                val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context)
-                    .setPositiveButton(android.R.string.ok, null).show()
-                if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
-                    dialog.applyMonet()
+                    val textView = MaterialTextView(ctx).apply {
+                        val padding = context.getAttributeDimension(androidx.appcompat.R.attr.dialogPreferredPadding)
+                        setPadding(padding)
+                        setTextAppearance(context.getAttributeResourceId(com.google.android.material.R.attr.textAppearanceBodyMedium))
+                        setTextColor(getColorOnSurfaceVariant(context))
+                        setTextFuture(
+                            PrecomputedTextCompat.getTextFuture(
+                                spannableBuilder, textMetricsParamsCompat, null
+                            ))
+                    }
+                    val scrollView = NestedScrollView(ctx).apply {
+                        addView(textView)
+                    }
+                    val dialogBuilder = MaterialAlertDialogBuilder(ctx)
+                        .setTitle(R.string.about_changelog)
+                        .setView(scrollView)
+                    val dialog = dialogBuilder.updateBackgroundColor(dialogBuilder.context)
+                        .setPositiveButton(android.R.string.ok, null).show()
+                    if (isDynamicThemingEnabled(ctx) && !isNativeMonetAvailable()) {
+                        dialog.applyMonet()
+                    }
+                    dialog.updateButtonColors(dialogBuilder.context)
+                } finally {
+                    _binding?.showChangelog?.isEnabled = true
                 }
-                dialog.updateButtonColors(dialogBuilder.context)
             }
         }
     }

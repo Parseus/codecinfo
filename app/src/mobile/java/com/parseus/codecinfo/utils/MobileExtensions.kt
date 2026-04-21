@@ -19,12 +19,16 @@ fun Context.isInTwoPaneMode(): Boolean {
     return resources.getBoolean(R.bool.twoPaneMode)
 }
 
-fun Context.getAttributeColor(@AttrRes attrColor: Int,
-                              typedValue: TypedValue = TypedValue(),
-                              resolveRefs: Boolean = true
-): Int {
-    theme.resolveAttribute(attrColor, typedValue, resolveRefs)
-    return typedValue.data
+fun Context.getAttributeDimension(@AttrRes attrResId: Int): Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute(attrResId, typedValue, true)
+    return TypedValue.complexToDimensionPixelSize(typedValue.data, resources.displayMetrics)
+}
+
+fun Context.getAttributeResourceId(@AttrRes attrResId: Int): Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute(attrResId, typedValue, true)
+    return typedValue.resourceId
 }
 
 fun Context.isNightMode(): Boolean {

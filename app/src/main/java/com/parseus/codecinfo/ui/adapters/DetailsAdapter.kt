@@ -3,6 +3,8 @@ package com.parseus.codecinfo.ui.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.text.PrecomputedTextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,13 +14,6 @@ import com.parseus.codecinfo.databinding.ItemDetailsAdapterRowBinding
 open class DetailsAdapter : ListAdapter<DetailsProperty, DetailsAdapter.DetailsViewHolder>(
     DetailsDiffCallback()
 ) {
-
-    fun add(infoList: List<DetailsProperty>) {
-        val currentItems = currentList.toMutableList()
-        currentItems.addAll(infoList)
-        currentItems.sortBy { it.id }
-        submitList(currentItems)
-    }
 
     fun replaceAll(infoList: List<DetailsProperty>) {
         submitList(infoList.sortedBy { it.id })
@@ -39,12 +34,15 @@ open class DetailsAdapter : ListAdapter<DetailsProperty, DetailsAdapter.DetailsV
     open class DetailsViewHolder(binding: ItemDetailsAdapterRowBinding) : RecyclerView.ViewHolder(binding.root) {
 
         protected val codecName = binding.codecProperty
-        protected val codecInfo = binding.codecValue
+        protected val codecInfo = binding.codecValue as AppCompatTextView
 
         @CallSuper
         open fun bindDetails(name: String, info: String) {
             codecName.text = name
-            codecInfo.text = info
+            codecInfo.setTextFuture(
+                PrecomputedTextCompat.getTextFuture(info,
+                    codecInfo.textMetricsParamsCompat, null)
+            )
         }
 
     }

@@ -14,8 +14,7 @@ class MobileDetailsAdapter : DetailsAdapter() {
     }
 
     class MobileDetailsViewHolder(binding: ItemDetailsAdapterRowBinding) : DetailsViewHolder(binding) {
-        override fun bindDetails(name: String, info: String) {
-            super.bindDetails(name, info)
+        init {
             codecName.setTextColor(getSecondaryColor(codecName.context))
             codecInfo.setTextColor(getColorOnSurfaceVariant(codecInfo.context))
         }

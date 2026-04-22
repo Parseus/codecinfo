@@ -11,17 +11,22 @@ import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
 import com.parseus.codecinfo.data.codecinfo.detailedCodecInfos
+import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.codecinfo.videoCodecList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
+import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.detailedDrmInfo
 import com.parseus.codecinfo.data.drm.drmList
+import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.ui.settings.SettingsContract
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Suppress("unused")
@@ -38,6 +43,8 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
     }
 
     private lateinit var adapter: ArrayObjectAdapter
+
+    private var preCacheJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -77,10 +84,10 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         val otherPresenterHeader = HeaderItem(4, getString(R.string.category_other))
         val otherPresenterAdapter = ArrayObjectAdapter(OtherActionsPresenter())
 
-        val knownProblems = DEVICE_PROBLEMS_DB.filter {
+        val affectedByKnownProblems = DEVICE_PROBLEMS_DB.any {
             it.isAffected(requireContext(), null)
         }
-        if (knownProblems.isNotEmpty()) {
+        if (affectedByKnownProblems) {
             otherPresenterAdapter.add(
                 OtherActionDescriptor(
                     ACTION_DEVICE_ISSUES_ID,
@@ -117,15 +124,40 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
     private suspend fun loadData() = coroutineScope {
         val context = context ?: return@coroutineScope
 
-        val audioList = async(Dispatchers.IO) { getSimpleCodecInfoList(context, true) }
-        val videoList = async(Dispatchers.IO) { getSimpleCodecInfoList(context, false) }
-        val drmList = async(Dispatchers.IO) { getSimpleDrmInfoList(context) }
+        val audioDeferred = async(Dispatchers.IO) { getSimpleCodecInfoList(context, true) }
+        val videoDeferred = async(Dispatchers.IO) { getSimpleCodecInfoList(context, false) }
+        val drmDeferred = async(Dispatchers.IO) { getSimpleDrmInfoList(context) }
 
-        audioPresentAdapter.setItems(audioList.await(), null)
-        videoPresentAdapter.setItems(videoList.await(), null)
-        drmPresentAdapter.setItems(drmList.await(), null)
+        val audioList = audioDeferred.await()
+        val videoList = videoDeferred.await()
+        val drmsList = drmDeferred.await()
+
+        audioPresentAdapter.setItems(audioList, null)
+        videoPresentAdapter.setItems(videoList, null)
+        drmPresentAdapter.setItems(drmsList, null)
 
         requireActivity().fullyDrawnReporter.removeReporter()
+
+        preCacheDetails(audioList, videoList, drmsList)
+    }
+
+    private fun preCacheDetails(audio: List<CodecSimpleInfo>, video: List<CodecSimpleInfo>, drms: List<DrmSimpleInfo>) {
+        val context = context ?: return
+        preCacheJob?.cancel()
+        preCacheJob = viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            for (info in audio) {
+                getDetailedCodecInfo(context, info.codecId, info.codecName)
+                delay(PRECACHE_DELAY)
+            }
+            for (info in video) {
+                getDetailedCodecInfo(context, info.codecId, info.codecName)
+                delay(PRECACHE_DELAY)
+            }
+            for (info in drms) {
+                getDetailedDrmInfo(context, info.drmUuid, DrmVendor.getFromUuid(info.drmUuid))
+                delay(PRECACHE_DELAY)
+            }
+        }
     }
 
     override fun onResume() {
@@ -176,6 +208,10 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
     }
 
     companion object {
+        // Typically TV devices feature an underpowered hardware, so I'm not confident
+        // that mobile's 50 ms delay would be enough here.
+        private const val PRECACHE_DELAY = 100L
+
         private const val ACTION_SETTINGS_ID = 1000
         private const val ACTION_ABOUT_ID = 1001
         private const val ACTION_DEVICE_ISSUES_ID = 1002

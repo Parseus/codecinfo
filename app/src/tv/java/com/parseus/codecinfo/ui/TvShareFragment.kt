@@ -6,9 +6,13 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.leanback.app.GuidedStepSupportFragment
 import androidx.leanback.widget.GuidanceStylist
 import androidx.leanback.widget.GuidedAction
+import androidx.lifecycle.lifecycleScope
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.utils.getAllInfoString
 import com.parseus.codecinfo.utils.getCodecAndDrmItemListString
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class TvShareFragment : GuidedStepSupportFragment() {
 
@@ -42,17 +46,23 @@ class TvShareFragment : GuidedStepSupportFragment() {
 
     private fun launchShareIntent(actionId: Long) {
         val context = requireContext()
-        val (textToShare, titleResId) = when (actionId) {
-            ACTION_SHARE_ITEM_LIST -> getCodecAndDrmItemListString(context) to R.string.codec_drm_list
-            ACTION_SHARE_ALL_INFO -> getAllInfoString(context) to R.string.codec_drm_all_info
-            else -> return
+        viewLifecycleOwner.lifecycleScope.launch {
+            val (textToShare, titleResId) = withContext(Dispatchers.IO) {
+                when (actionId) {
+                    ACTION_SHARE_ITEM_LIST -> getCodecAndDrmItemListString(context) to R.string.codec_drm_list
+                    ACTION_SHARE_ALL_INFO -> getAllInfoString(context) to R.string.codec_drm_all_info
+                    else -> "" to 0
+                }
+            }
+            if (titleResId == 0) return@launch
+
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, textToShare)
+                putExtra(Intent.EXTRA_TITLE, getString(titleResId))
+            }
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)))
         }
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, textToShare)
-            putExtra(Intent.EXTRA_TITLE, getString(titleResId))
-        }
-        startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)))
     }
 
     companion object {

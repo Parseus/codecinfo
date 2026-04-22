@@ -23,6 +23,8 @@ import com.parseus.codecinfo.utils.getHighlightedText
 import com.parseus.codecinfo.utils.matches
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -80,13 +82,17 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
         }
     }
 
-    private fun buildSearchResultRows(query: String): List<ListRow> {
+    private suspend fun buildSearchResultRows(query: String): List<ListRow> = coroutineScope {
         val context = requireContext()
         val results = mutableListOf<ListRow>()
         val queryWords = query.trim().split(Regex("\\s+"))
         val primaryColor = context.getColor(R.color.teal_200)
 
-        val audioCodecs = getSimpleCodecInfoList(context, true).filter {
+        val audioDeferred = async(Dispatchers.IO) { getSimpleCodecInfoList(context, true) }
+        val videoDeferred = async(Dispatchers.IO) { getSimpleCodecInfoList(context, false) }
+        val drmDeferred = async(Dispatchers.IO) { getSimpleDrmInfoList(context) }
+
+        val audioCodecs = audioDeferred.await().filter {
             it.matches(queryWords)
         }.map {
             CodecSearchItem(it, getHighlightedText(it.codecId, query, primaryColor),
@@ -96,7 +102,7 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
             results.add(it)
         }
 
-        val videoCodecs = getSimpleCodecInfoList(context, false).filter {
+        val videoCodecs = videoDeferred.await().filter {
             it.matches(queryWords)
         }.map {
             CodecSearchItem(it, getHighlightedText(it.codecId, query, primaryColor),
@@ -106,7 +112,7 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
             results.add(it)
         }
 
-        val drmInfo = getSimpleDrmInfoList(context).filter {
+        val drmInfo = drmDeferred.await().filter {
             it.matches(queryWords)
         }.map {
             DrmSearchItem(it, getHighlightedText(it.drmName, query, primaryColor))
@@ -115,7 +121,7 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
             results.add(it)
         }
 
-        return results
+        results
     }
 
     private fun <T> createListRow(

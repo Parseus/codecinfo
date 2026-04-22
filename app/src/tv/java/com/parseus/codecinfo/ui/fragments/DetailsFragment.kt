@@ -137,7 +137,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
         binding.fullCodecInfoName.text = codecName ?: drmName
 
         val detailsAdapter = DetailsAdapter()
-        detailsAdapter.add(propertyList)
+        detailsAdapter.replaceAll(propertyList)
         binding.fullCodecInfoContent.apply {
             layoutManager = CustomLinearLayoutManager(context)
             adapter = detailsAdapter

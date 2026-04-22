@@ -4,11 +4,16 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
+import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
+import com.parseus.codecinfo.data.drm.DrmVendor
+import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +30,8 @@ class ItemsViewModel : ViewModel() {
     private val _allDrmsState = MutableStateFlow<List<DrmSimpleInfo>?>(null)
     val allDrmsState: StateFlow<List<DrmSimpleInfo>?> = _allDrmsState.asStateFlow()
 
+    private var preCacheJob: Job? = null
+
     fun loadData(context: Context) {
         if (_allAudioState.value != null) return
         viewModelScope.launch(Dispatchers.IO) {
@@ -35,6 +42,30 @@ class ItemsViewModel : ViewModel() {
             _allAudioState.value = audioDeferred.await()
             _allVideoState.value = videoDeferred.await()
             _allDrmsState.value = drmDeferred.await()
+
+            preCacheDetails(context)
+        }
+    }
+
+    private fun preCacheDetails(context: Context) {
+        preCacheJob?.cancel()
+        preCacheJob = viewModelScope.launch(Dispatchers.IO) {
+            val audio = _allAudioState.value ?: emptyList()
+            val video = _allVideoState.value ?: emptyList()
+            val drms = _allDrmsState.value ?: emptyList()
+
+            for (info in audio) {
+                getDetailedCodecInfo(context, info.codecId, info.codecName)
+                delay(PRECACHE_DELAY)
+            }
+            for (info in video) {
+                getDetailedCodecInfo(context, info.codecId, info.codecName)
+                delay(PRECACHE_DELAY)
+            }
+            for (info in drms) {
+                getDetailedDrmInfo(context, info.drmUuid, DrmVendor.getFromUuid(info.drmUuid))
+                delay(PRECACHE_DELAY)
+            }
         }
     }
 
@@ -58,4 +89,11 @@ class ItemsViewModel : ViewModel() {
             _allDrmsState.value = getSimpleDrmInfoList(context)
         }
     }
+
+    companion object {
+        // Precaching all details could potentially cause CPU spikes on lower-end devices,
+        // so a small delay like that should (at least partially) avoid them.
+        private const val PRECACHE_DELAY = 50L
+    }
+
 }

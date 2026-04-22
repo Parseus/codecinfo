@@ -256,14 +256,18 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
 
 fun isDetailedCodecInfoCached(codecId: String, codecName: String): Boolean {
     val combinedCodecName = "$codecId/$codecName"
-    return detailedCodecInfos[combinedCodecName] != null
+    synchronized(detailedCodecInfos) {
+        return detailedCodecInfos[combinedCodecName] != null
+    }
 }
 
 fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): List<DetailsProperty> {
     val combinedCodecName = "$codecId/$codecName"
-    if (detailedCodecInfos[combinedCodecName] != null) {
-        return detailedCodecInfos[combinedCodecName]!!.also {
-            saveToLogcat(context, codecId, codecName, it)
+    synchronized(detailedCodecInfos) {
+        if (detailedCodecInfos[combinedCodecName] != null) {
+            return detailedCodecInfos[combinedCodecName]!!.also {
+                saveToLogcat(context, codecId, codecName, it)
+            }
         }
     }
 
@@ -417,7 +421,9 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
         propertyList.add(DetailsProperty(propertyList.size.toLong(), profileString, it))
     }
 
-    detailedCodecInfos[combinedCodecName] = propertyList
+    synchronized(detailedCodecInfos) {
+        detailedCodecInfos[combinedCodecName] = propertyList
+    }
 
     return propertyList.also {
         saveToLogcat(context, codecId, codecName, it)

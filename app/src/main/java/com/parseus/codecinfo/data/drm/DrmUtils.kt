@@ -57,12 +57,18 @@ fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
     return sortedList
 }
 
-fun isDetailedDrmInfoCached(uuid: UUID) = detailedDrmInfo[uuid] != null
+fun isDetailedDrmInfoCached(uuid: UUID): Boolean {
+    synchronized(detailedDrmInfo) {
+        return detailedDrmInfo[uuid] != null
+    }
+}
 
 fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): List<DetailsProperty> {
-    if (detailedDrmInfo[uuid] != null) {
-        return detailedDrmInfo[uuid]!!.also {
-            saveToLogcat(context, uuid, drmVendor, it)
+    synchronized(detailedDrmInfo) {
+        if (detailedDrmInfo[uuid] != null) {
+            return detailedDrmInfo[uuid]!!.also {
+                saveToLogcat(context, uuid, drmVendor, it)
+            }
         }
     }
 
@@ -134,7 +140,9 @@ fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): Lis
 
     mediaDrm.closeDrmInstance()
 
-    detailedDrmInfo[uuid] = drmPropertyList
+    synchronized(detailedDrmInfo) {
+        detailedDrmInfo[uuid] = drmPropertyList
+    }
 
     return drmPropertyList.also {
         saveToLogcat(context, uuid, drmVendor, it)

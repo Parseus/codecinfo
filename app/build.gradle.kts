@@ -159,7 +159,6 @@ dependencies {
     "mobileImplementation"(libs.androidx.palette)
     "mobileImplementation"(libs.androidx.window)
     "mobileImplementation"(libs.monetcompat)
-    "mobileImplementation"(libs.licenser)
     "mobileImplementation"(libs.material)
 
     nonFreeMobileImplementation(libs.app.update)

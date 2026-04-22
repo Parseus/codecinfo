@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/licenseRecyclerView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@null"
+    android:clipToPadding="false"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    tools:listitem="@layout/license_group_item"/>

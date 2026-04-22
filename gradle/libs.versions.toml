@@ -21,7 +21,6 @@ junit = "1.3.0"
 leakcanary = "2.14"
 leanback = "1.2.0"
 leanback-preference = "1.2.0"
-licenser = "2.0.0"
 material = "1.14.0-beta01"
 monetcompat = "0.4.1"
 okio = "3.17.0"
@@ -64,7 +63,6 @@ coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", vers
 hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
-licenser = { module = "com.github.marcoscgdev:Licenser", version.ref = "licenser" }
 monetcompat = { module = "com.github.KieronQuinn:MonetCompat", version.ref = "monetcompat" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 plumber-android = { module = "com.squareup.leakcanary:plumber-android", version.ref = "leakcanary" }

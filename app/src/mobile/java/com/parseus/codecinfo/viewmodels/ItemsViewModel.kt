@@ -8,6 +8,7 @@ import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,9 +28,13 @@ class ItemsViewModel : ViewModel() {
     fun loadData(context: Context) {
         if (_allAudioState.value != null) return
         viewModelScope.launch(Dispatchers.IO) {
-            _allAudioState.value = getSimpleCodecInfoList(context, true)
-            _allVideoState.value = getSimpleCodecInfoList(context, false)
-            _allDrmsState.value = getSimpleDrmInfoList(context)
+            val audioDeferred = async { getSimpleCodecInfoList(context, true) }
+            val videoDeferred = async { getSimpleCodecInfoList(context, false) }
+            val drmDeferred = async { getSimpleDrmInfoList(context) }
+
+            _allAudioState.value = audioDeferred.await()
+            _allVideoState.value = videoDeferred.await()
+            _allDrmsState.value = drmDeferred.await()
         }
     }
 

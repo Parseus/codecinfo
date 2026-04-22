@@ -590,19 +590,21 @@ class MainActivity : MonetCompatActivity() {
             return
         }
 
-        val textToShare = when (option) {
-            0 -> getItemListString(this)
-            1 -> getAllInfoString(this)
-            2 -> if (isCodecShared) {
-                getSelectedCodecInfoString(this, codecId!!, codecName!!)
-            } else {
-                //noinspection NewApi
-                getSelectedDrmInfoString(this, drmName!!, drmUuid!!)
-            }
-            else -> ""
-        }
-
         lifecycleScope.launch {
+            val textToShare = withContext(Dispatchers.IO) {
+                when (option) {
+                    0 -> getItemListString(this@MainActivity)
+                    1 -> getAllInfoString(this@MainActivity)
+                    2 -> if (isCodecShared) {
+                        getSelectedCodecInfoString(this@MainActivity, codecId!!, codecName!!)
+                    } else {
+                        //noinspection NewApi
+                        getSelectedDrmInfoString(this@MainActivity, drmName!!, drmUuid!!)
+                    }
+                    else -> ""
+                }
+            }
+
             val shareIntent = Intent.createChooser(Intent().apply {
                 action = Intent.ACTION_SEND
                 type = "text/plain"

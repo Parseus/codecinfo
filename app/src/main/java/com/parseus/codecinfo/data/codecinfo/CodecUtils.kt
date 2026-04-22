@@ -127,6 +127,7 @@ private val knownVendorLowLatencyOptions = listOf(
     "vendor.low-latency.enable"
 )
 
+private val codecListLock = Any()
 private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()
 
 val audioCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
@@ -135,43 +136,49 @@ val videoCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
 val detailedCodecInfos: MutableMap<String, List<DetailsProperty>> = mutableMapOf()
 
 fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<CodecSimpleInfo> {
-    if (isAudio && audioCodecList.isNotEmpty()) {
-        return audioCodecList
-    } else if (!isAudio && videoCodecList.isNotEmpty()) {
-        return videoCodecList
-    }
-
-    if (mediaCodecInfos.isEmpty()) {
-        mediaCodecInfos = try {
-            MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
-        } catch (_: Exception) {
-            // Some devices (like Xiaomi Redmi Note 4) seem to
-            // throw an exception when trying to list codecs.
-            // Return an empty list to inform the user abput it.
-            return mutableListOf()
+    synchronized(codecListLock) {
+        if (isAudio && audioCodecList.isNotEmpty()) {
+            return audioCodecList
+        } else if (!isAudio && videoCodecList.isNotEmpty()) {
+            return videoCodecList
         }
     }
 
-    if (SDK_INT == 23 && mediaCodecInfos.find { it.name.endsWith("secure") } == null) {
-        // Some devices may not list secure decoders on API 23 with a newer way of querying codecs.
-        // In that case try the old way.
-        try {
-            @Suppress("DEPRECATION")
-            val oldCodecInfos = Array(MediaCodecList.getCodecCount())
-                { i -> MediaCodecList.getCodecInfoAt(i) }.filter { it.name.endsWith("secure") }
-            mediaCodecInfos += oldCodecInfos
-        } catch (_: Exception) {}
-    }
+    if (mediaCodecInfos.isEmpty()) {
+        synchronized(codecListLock) {
+            if (mediaCodecInfos.isEmpty()) {
+                mediaCodecInfos = try {
+                    MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos
+                } catch (_: Exception) {
+                    // Some devices (like Xiaomi Redmi Note 4) seem to
+                    // throw an exception when trying to list codecs.
+                    // Return an empty list to inform the user abput it.
+                    return mutableListOf()
+                }
 
-    if (SDK_INT <= 25 && Build.DEVICE == "R9"
-        && mediaCodecInfos.find { it.name == GOOGLE_RAW_DECODER } == null
-        && mediaCodecInfos.find { it.name == MEDIATEK_RAW_DECODER } != null) {
-        // Oppo R9 does not list a generic raw audio decoder, yet it can be instantiated by name.
-        try {
-            val rawMediaCodec = MediaCodec.createByCodecName(GOOGLE_RAW_DECODER)
-            //noinspection NewApi
-            mediaCodecInfos += rawMediaCodec.codecInfo
-        } catch (_: Exception) {}
+                if (SDK_INT == 23 && mediaCodecInfos.find { it.name.endsWith("secure") } == null) {
+                    // Some devices may not list secure decoders on API 23 with a newer way of querying codecs.
+                    // In that case try the old way.
+                    try {
+                        @Suppress("DEPRECATION")
+                        val oldCodecInfos = Array(MediaCodecList.getCodecCount())
+                        { i -> MediaCodecList.getCodecInfoAt(i) }.filter { it.name.endsWith("secure") }
+                        mediaCodecInfos += oldCodecInfos
+                    } catch (_: Exception) {}
+                }
+
+                if (SDK_INT <= 25 && Build.DEVICE == "R9"
+                    && mediaCodecInfos.find { it.name == GOOGLE_RAW_DECODER } == null
+                    && mediaCodecInfos.find { it.name == MEDIATEK_RAW_DECODER } != null) {
+                    // Oppo R9 does not list a generic raw audio decoder, yet it can be instantiated by name.
+                    try {
+                        val rawMediaCodec = MediaCodec.createByCodecName(GOOGLE_RAW_DECODER)
+                        //noinspection NewApi
+                        mediaCodecInfos += rawMediaCodec.codecInfo
+                    } catch (_: Exception) {}
+                }
+            }
+        }
     }
 
     val settings = context.settingsRepository.getSettingsSync()
@@ -236,10 +243,12 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         codecSimpleInfoList = codecSimpleInfoList.sortedWith(comparator).distinct() as ArrayList<CodecSimpleInfo>
     }
 
-    if (isAudio) {
-        audioCodecList.addAll(codecSimpleInfoList)
-    } else {
-        videoCodecList.addAll(codecSimpleInfoList)
+    synchronized(codecListLock) {
+        if (isAudio) {
+            if (audioCodecList.isEmpty()) audioCodecList.addAll(codecSimpleInfoList)
+        } else {
+            if (videoCodecList.isEmpty()) videoCodecList.addAll(codecSimpleInfoList)
+        }
     }
 
     return codecSimpleInfoList

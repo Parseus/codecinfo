@@ -9,6 +9,7 @@ import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.utils.matches
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -37,9 +38,13 @@ class SearchViewModel : ViewModel() {
         if (allAudio.isNotEmpty()) return
 
         viewModelScope.launch(Dispatchers.IO) {
-            allAudio = getSimpleCodecInfoList(context, true)
-            allVideo = getSimpleCodecInfoList(context, false)
-            allDrms = getSimpleDrmInfoList(context)
+            val audioDeferred = async { getSimpleCodecInfoList(context, true) }
+            val videoDeferred = async { getSimpleCodecInfoList(context, false) }
+            val drmDeferred = async { getSimpleDrmInfoList(context) }
+
+            allAudio = audioDeferred.await()
+            allVideo = videoDeferred.await()
+            allDrms = drmDeferred.await()
 
             _searchQuery
                 .map { query ->

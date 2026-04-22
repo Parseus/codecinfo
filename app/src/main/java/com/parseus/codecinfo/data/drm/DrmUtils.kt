@@ -13,9 +13,13 @@ import java.util.*
 val drmList: MutableList<DrmSimpleInfo> = arrayListOf()
 val detailedDrmInfo: MutableMap<UUID, List<DetailsProperty>> = mutableMapOf()
 
+private val drmListLock = Any()
+
 fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
-    if (drmList.isNotEmpty()) {
-        return drmList
+    synchronized(drmListLock) {
+        if (drmList.isNotEmpty()) {
+            return drmList
+        }
     }
 
     val list = mutableListOf<DrmSimpleInfo>()
@@ -44,8 +48,11 @@ fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
 
     val sortedList = list.sortedBy { it.drmName }
 
-    drmList.clear()
-    drmList.addAll(sortedList)
+    synchronized(drmListLock) {
+        if (drmList.isEmpty()) {
+            drmList.addAll(sortedList)
+        }
+    }
 
     return sortedList
 }

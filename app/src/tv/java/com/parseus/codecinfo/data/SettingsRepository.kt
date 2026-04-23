@@ -2,9 +2,11 @@ package com.parseus.codecinfo.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.okio.OkioStorage
 import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.PreferencesSerializer
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
@@ -12,6 +14,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.preference.PreferenceDataStore
+import okio.FileSystem
 import okio.Path.Companion.toOkioPath
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,8 +34,12 @@ private val dataStoreLock = Any()
 private var dataStoreInstance: DataStore<Preferences>? = null
 val Context.dataStore: DataStore<Preferences>
     get() = dataStoreInstance ?: synchronized(dataStoreLock) {
-        dataStoreInstance ?: PreferenceDataStoreFactory.createWithPath(
-            produceFile = { applicationContext.filesDir.resolve("datastore/settings.preferences_pb").toOkioPath() },
+        dataStoreInstance ?: PreferenceDataStoreFactory.create(
+            storage = OkioStorage(
+                fileSystem = FileSystem.SYSTEM,
+                serializer = PreferencesSerializer,
+                producePath = { applicationContext.filesDir.resolve("datastore/settings.preferences_pb").toOkioPath() }
+            ),
             migrations = listOf(
                 SharedPreferencesMigration(applicationContext, "${applicationContext.packageName}_preferences")
             )

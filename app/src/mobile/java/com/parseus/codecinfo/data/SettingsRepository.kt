@@ -172,7 +172,21 @@ class SettingsRepository(private val context: Context) : PreferenceDataStore() {
     }
 
     override fun getString(key: String, defValue: String?): String? {
-        return preferencesStateFlow.value[stringPreferencesKey(key)] ?: defValue
+        val value = preferencesStateFlow.value[stringPreferencesKey(key)]
+        if (value != null) return value
+        if (defValue != null) return defValue
+
+        return when (key) {
+            DARK_THEME.name -> getDefaultThemeOption(context).toString()
+            DYNAMIC_THEME_WALLPAPER_SOURCE.name -> "1"
+            KNOWN_VALUES_COLOR_PROFILES.name -> "1"
+            KNOWN_VALUES_PROFILE_LEVELS.name -> "1"
+            KNOWN_RESOLUTIONS.name -> "0"
+            OPEN_EXTERNAL_LINKS.name -> "0"
+            FILTER_TYPE.name -> "2"
+            SORT_TYPE.name -> "0"
+            else -> null
+        }
     }
 
     override fun putBoolean(key: String, value: Boolean) {
@@ -182,7 +196,18 @@ class SettingsRepository(private val context: Context) : PreferenceDataStore() {
     }
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean {
-        return preferencesStateFlow.value[booleanPreferencesKey(key)] ?: defValue
+        val value = preferencesStateFlow.value[booleanPreferencesKey(key)]
+        if (value != null) return value
+
+        return when (key) {
+            DYNAMIC_THEME.name -> false
+            IMMERSIVE_MODE.name -> true
+            SHOW_HW_ICON.name -> true
+            SAVE_DETAILS_TO_LOGCAT.name -> false
+            SHOW_ALIASES.name -> false
+            SHOW_HW_CODECS_ONLY.name -> false
+            else -> defValue
+        }
     }
 
     override fun putInt(key: String, value: Int) {

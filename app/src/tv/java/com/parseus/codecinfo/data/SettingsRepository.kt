@@ -118,7 +118,18 @@ class SettingsRepository(context: Context) : PreferenceDataStore() {
     }
 
     override fun getString(key: String, defValue: String?): String? {
-        return preferencesStateFlow.value[stringPreferencesKey(key)] ?: defValue
+        val value = preferencesStateFlow.value[stringPreferencesKey(key)]
+        if (value != null) return value
+        if (defValue != null) return defValue
+
+        return when (key) {
+            KNOWN_VALUES_COLOR_PROFILES.name -> "1"
+            KNOWN_VALUES_PROFILE_LEVELS.name -> "1"
+            KNOWN_RESOLUTIONS.name -> "0"
+            FILTER_TYPE.name -> "2"
+            SORT_TYPE.name -> "0"
+            else -> null
+        }
     }
 
     override fun putBoolean(key: String, value: Boolean) {
@@ -128,7 +139,16 @@ class SettingsRepository(context: Context) : PreferenceDataStore() {
     }
 
     override fun getBoolean(key: String, defValue: Boolean): Boolean {
-        return preferencesStateFlow.value[booleanPreferencesKey(key)] ?: defValue
+        val value = preferencesStateFlow.value[booleanPreferencesKey(key)]
+        if (value != null) return value
+
+        return when (key) {
+            SHOW_HW_ICON.name -> true
+            SAVE_DETAILS_TO_LOGCAT.name -> false
+            SHOW_ALIASES.name -> false
+            SHOW_HW_CODECS_ONLY.name -> false
+            else -> defValue
+        }
     }
 
     override fun putInt(key: String, value: Int) {

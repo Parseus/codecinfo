@@ -4,6 +4,7 @@ import com.parseus.codecinfo.BuildConfig
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 
+@Suppress("KotlinConstantConditions")
 @OptIn(ExperimentalSerializationApi::class)
 val jsonInstance = Json {
     ignoreUnknownKeys = true

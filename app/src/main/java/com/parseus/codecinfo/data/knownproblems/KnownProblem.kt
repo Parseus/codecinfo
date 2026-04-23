@@ -11,6 +11,13 @@ var KNOWN_PROBLEMS_DB: List<KnownProblem> = emptyList()
 var DEVICE_PROBLEMS_DB: List<KnownProblem> = emptyList()
 var DATABASES_INITIALIZED = false
 
+private var sdkVersion: Int = -1
+private var device: String? = null
+private var model: String? = null
+private var hardware: String? = null
+private var socModel: String? = null
+private var manufacturer: String? = null
+
 @Serializable
 data class KnownProblem(
     val id: Long,
@@ -31,29 +38,35 @@ data class KnownProblem(
             return false
         }
 
-        val sdkVersion = Build.VERSION.SDK_INT
+        if (sdkVersion == -1) {
+            sdkVersion = Build.VERSION.SDK_INT
+            device = Build.DEVICE
+            model = Build.MODEL
+            hardware = Build.HARDWARE
+            socModel = if (Build.VERSION.SDK_INT >= 31) Build.SOC_MODEL else null
+            manufacturer = Build.MANUFACTURER
+        }
 
-        val hardwareAffected = hardwares?.any { matches(Build.HARDWARE, it.op, it.value) } ?: false
+        val hardwareAffected = hardwares?.any { matches(hardware!!, it.op, it.value) } ?: false
         if (hardwareAffected && versions == null) return true
 
-        val manufacturer = Build.MANUFACTURER
         val deviceAffected = devices?.any {
-            matches(Build.DEVICE, it.op, it.value) &&
-                    (it.manufacturer == null || manufacturer.equals(it.manufacturer, true))
+            matches(device!!, it.op, it.value) &&
+                    (it.manufacturer == null || manufacturer!!.equals(it.manufacturer, true))
         } ?: false
         if (deviceAffected && versions == null) return true
 
         val modelAffected = models?.any {
-            matches(Build.MODEL, it.op, it.value) &&
-                    (it.manufacturer == null || manufacturer.equals(it.manufacturer, true))
+            matches(model!!, it.op, it.value) &&
+                    (it.manufacturer == null || manufacturer!!.equals(it.manufacturer, true))
         } ?: false
         if (modelAffected && versions == null) return true
 
-        val manufacturerAffected = manufacturers?.any { matches(manufacturer, it.op, it.value) } ?: false
+        val manufacturerAffected = manufacturers?.any { matches(manufacturer!!, it.op, it.value) } ?: false
         if (manufacturerAffected && versions == null) return true
 
         val socModelAffected = if (sdkVersion >= 31) {
-            socModels?.any { matches(Build.SOC_MODEL, it.op, it.value) } ?: false
+            socModels?.any { matches(socModel!!, it.op, it.value) } ?: false
         } else false
         if (socModelAffected && versions == null) return true
 

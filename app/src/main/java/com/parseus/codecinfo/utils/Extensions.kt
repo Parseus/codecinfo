@@ -36,8 +36,12 @@ fun FragmentActivity.canEnableMemoryLeakFixBackDispatcher() = Build.VERSION.SDK_
         && (supportFragmentManager.primaryNavigationFragment?.childFragmentManager?.backStackEntryCount ?: 0) == 0
         && supportFragmentManager.backStackEntryCount == 0
 
+private var isTvResult: Boolean? = null
+
 @Suppress("DEPRECATION")
 fun Context.isTv(): Boolean {
+    isTvResult?.let { return it }
+
     // https://developer.android.com/training/tv/start/hardware.html#runtime-check
     var isTv = getSystemService<UiModeManager>()!!.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
             || packageManager.hasSystemFeature(AMAZON_FEATURE_FIRE_TV)
@@ -56,6 +60,7 @@ fun Context.isTv(): Boolean {
 
     isTv = isTv or packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
 
+    isTvResult = isTv
     return isTv
 }
 

@@ -137,6 +137,8 @@ dependencies {
     implementation(libs.androidx.datastore.okio)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.fragment)
+    implementation(libs.androidx.lifecycle.livedata)
+    implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.preference)
     implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.recyclerview)

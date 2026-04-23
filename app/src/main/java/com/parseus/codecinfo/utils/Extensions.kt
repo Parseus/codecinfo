@@ -91,7 +91,7 @@ fun String.containsAny(vararg keywords: String): Boolean {
 }
 
 fun MediaCodecInfo.isAudioCodec(): Boolean {
-    return supportedTypes.joinToString().contains("audio")
+    return supportedTypes.any { it.contains("audio", true) }
 }
 
 fun CodecSimpleInfo.matches(queryWords: List<String>): Boolean {

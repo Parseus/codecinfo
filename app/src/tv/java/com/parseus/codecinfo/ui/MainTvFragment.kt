@@ -24,10 +24,10 @@ import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.ui.settings.SettingsContract
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Suppress("unused")
 class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
@@ -124,21 +124,36 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
     private suspend fun loadData() = coroutineScope {
         val context = context ?: return@coroutineScope
 
-        val audioDeferred = async(Dispatchers.IO) { getSimpleCodecInfoList(context, true) }
-        val videoDeferred = async(Dispatchers.IO) { getSimpleCodecInfoList(context, false) }
-        val drmDeferred = async(Dispatchers.IO) { getSimpleDrmInfoList(context) }
+        val audioJob = launch(Dispatchers.IO) {
+            val audioList = getSimpleCodecInfoList(context, true)
+            withContext(Dispatchers.Main) {
+                audioPresentAdapter.setItems(audioList, null)
+            }
+        }
+        val videoJob = launch(Dispatchers.IO) {
+            val videoList = getSimpleCodecInfoList(context, false)
+            withContext(Dispatchers.Main) {
+                videoPresentAdapter.setItems(videoList, null)
+            }
+        }
+        val drmJob = launch(Dispatchers.IO) {
+            val drmsList = getSimpleDrmInfoList(context)
+            withContext(Dispatchers.Main) {
+                drmPresentAdapter.setItems(drmsList, null)
+            }
+        }
 
-        val audioList = audioDeferred.await()
-        val videoList = videoDeferred.await()
-        val drmsList = drmDeferred.await()
-
-        audioPresentAdapter.setItems(audioList, null)
-        videoPresentAdapter.setItems(videoList, null)
-        drmPresentAdapter.setItems(drmsList, null)
+        audioJob.join()
+        videoJob.join()
+        drmJob.join()
 
         requireActivity().fullyDrawnReporter.removeReporter()
 
-        preCacheDetails(audioList, videoList, drmsList)
+        preCacheDetails(
+            audioPresentAdapter.unmodifiableList<CodecSimpleInfo>(),
+            videoPresentAdapter.unmodifiableList<CodecSimpleInfo>(),
+            drmPresentAdapter.unmodifiableList<DrmSimpleInfo>()
+        )
     }
 
     private fun preCacheDetails(audio: List<CodecSimpleInfo>, video: List<CodecSimpleInfo>, drms: List<DrmSimpleInfo>) {

@@ -129,6 +129,7 @@ private val knownVendorLowLatencyOptions = listOf(
 
 private val codecListLock = Any()
 private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()
+private var mediaCodecInfoMap: Map<String, MediaCodecInfo> = emptyMap()
 
 val audioCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
 val videoCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
@@ -177,6 +178,8 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
                         mediaCodecInfos += rawMediaCodec.codecInfo
                     } catch (_: Exception) {}
                 }
+
+                mediaCodecInfoMap = mediaCodecInfos.associateBy { it.name }
             }
         }
     }
@@ -185,7 +188,8 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
     val showHwCodecsOnly = settings.showHwCodecsOnly
     val showAliases = settings.showAliases
     val filteringOption = settings.filterType.toInt()
-    var codecSimpleInfoList = ArrayList<CodecSimpleInfo>()
+    val audioList = ArrayList<CodecSimpleInfo>()
+    val videoList = ArrayList<CodecSimpleInfo>()
 
     for ((codecIndex, mediaCodecInfo) in mediaCodecInfos.withIndex()) {
         if (showHwCodecsOnly && !isHardwareAccelerated(mediaCodecInfo)) {
@@ -202,6 +206,8 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
             }
         }
 
+        val isAudioCodec = mediaCodecInfo.isAudioCodec()
+
         mediaCodecInfo.supportedTypes.forEachIndexed{ index,  codecId ->
             try {
                 mediaCodecInfo.getCapabilitiesForType(codecId)
@@ -216,17 +222,15 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
                 return@forEachIndexed
             }
 
-            val isAudioCodec = mediaCodecInfo.isAudioCodec()
-
-            if (isAudio == isAudioCodec) {
-                val codecSimpleInfo = CodecSimpleInfo((codecIndex * 100 + index).toLong(), codecId, mediaCodecInfo.name,
-                        isAudioCodec, mediaCodecInfo.isEncoder, isHardwareAccelerated(mediaCodecInfo))
-                if (codecSimpleInfoList.find {
-                    it.codecId == codecSimpleInfo.codecId
-                            && it.codecName == codecSimpleInfo.codecName
-                } == null) {
-                    codecSimpleInfoList.add(codecSimpleInfo)
-                }
+            val codecSimpleInfo = CodecSimpleInfo((codecIndex * 100 + index).toLong(), codecId, mediaCodecInfo.name,
+                    isAudioCodec, mediaCodecInfo.isEncoder, isHardwareAccelerated(mediaCodecInfo))
+            
+            val targetList = if (isAudioCodec) audioList else videoList
+            if (targetList.find {
+                it.codecId == codecSimpleInfo.codecId
+                        && it.codecName == codecSimpleInfo.codecName
+            } == null) {
+                targetList.add(codecSimpleInfo)
             }
         }
     }
@@ -239,19 +243,15 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
         else -> compareByDescending<CodecSimpleInfo> { it.codecName }.thenBy { it.codecId }
     }
 
-    if (codecSimpleInfoList.isNotEmpty()) {
-        codecSimpleInfoList = codecSimpleInfoList.sortedWith(comparator).distinct() as ArrayList<CodecSimpleInfo>
-    }
+    val sortedAudioList = if (audioList.isNotEmpty()) audioList.sortedWith(comparator).distinct() else emptyList()
+    val sortedVideoList = if (videoList.isNotEmpty()) videoList.sortedWith(comparator).distinct() else emptyList()
 
     synchronized(codecListLock) {
-        if (isAudio) {
-            if (audioCodecList.isEmpty()) audioCodecList.addAll(codecSimpleInfoList)
-        } else {
-            if (videoCodecList.isEmpty()) videoCodecList.addAll(codecSimpleInfoList)
-        }
+        if (audioCodecList.isEmpty()) audioCodecList.addAll(sortedAudioList)
+        if (videoCodecList.isEmpty()) videoCodecList.addAll(sortedVideoList)
     }
 
-    return codecSimpleInfoList
+    return (if (isAudio) sortedAudioList else sortedVideoList).toMutableList()
 }
 
 fun isDetailedCodecInfoCached(codecId: String, codecName: String): Boolean {
@@ -271,7 +271,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
         }
     }
 
-    val mediaCodecInfo = mediaCodecInfos.find { it.name == codecName } ?: return emptyList()
+    val mediaCodecInfo = mediaCodecInfoMap[codecName] ?: return emptyList()
 
     // Google uses the same decoder for both DP and non-DP content for MPEG-4,
     // but in the first case codec capabilities can't be queried properly,
@@ -299,8 +299,31 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
     propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.software_only),
             isSoftwareOnly(mediaCodecInfo).toString()))
 
+    var codec: MediaCodec? = null
+
     if (SDK_INT >= 30) {
-        addLowLatencyFeatureIfSupported(context, codecName, isEncoder, capabilities, propertyList)
+        if (!isEncoder && capabilities.isFeatureSupported(FEATURE_LowLatency)) {
+            propertyList.addFeature(context, capabilities, FEATURE_LowLatency, R.string.low_latency_decoder)
+        } else if (SDK_INT >= 31) {
+            try {
+                codec = MediaCodec.createByCodecName(codecName)
+                val vendorLowLatencyKey = codec.supportedVendorParameters.find { it in knownVendorLowLatencyOptions }
+                val featureString = if (vendorLowLatencyKey != null) {
+                    val supportStringResId = if (isEncoder)
+                        R.string.feature_low_latency_vendor_supported_encoder
+                    else
+                        R.string.feature_low_latency_vendor_supported_decoder
+                    context.getString(supportStringResId, vendorLowLatencyKey)
+                } else {
+                    false.toString()
+                }
+                val lowLatencyResId = if (isEncoder)
+                    R.string.low_latency_encoder
+                else
+                    R.string.low_latency_decoder
+                propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(lowLatencyResId), featureString))
+            } catch (_: Exception) {}
+        }
     }
 
     propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.codec_provider),
@@ -399,16 +422,17 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
 
     if (SDK_INT >= 31) {
         try {
-            val codec = MediaCodec.createByCodecName(codecName)
-            val vendorParams = codec.supportedVendorParameters
+            val vendorCodec = codec ?: MediaCodec.createByCodecName(codecName)
+            val vendorParams = vendorCodec.supportedVendorParameters
             if (vendorParams.isNotEmpty()) {
                 propertyList.add(
                     DetailsProperty(propertyList.size.toLong(),
                     context.getString(R.string.vendor_parameters), vendorParams.joinToString("\n")))
             }
-            codec.release()
         } catch (_: Throwable) {}
     }
+
+    codec?.release()
 
     val profileString = if (codecId.contains("mp4a-latm") || codecId.contains("wma")
         || codecId.contains("iamf")) {
@@ -430,39 +454,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
     }
 }
 
-@RequiresApi(30)
-private fun addLowLatencyFeatureIfSupported(context: Context,
-                                            codecName: String,
-                                            isEncoder: Boolean,
-                                            capabilities: MediaCodecInfo.CodecCapabilities,
-                                            propertyList: MutableList<DetailsProperty>) {
-    if (!isEncoder && capabilities.isFeatureSupported(FEATURE_LowLatency)) {
-        propertyList.addFeature(context, capabilities, FEATURE_LowLatency, R.string.low_latency_decoder)
-    } else if (SDK_INT >= 31) {
-        var codec: MediaCodec? = null
-        try {
-            codec = MediaCodec.createByCodecName(codecName)
-            val vendorLowLatencyKey = codec.supportedVendorParameters.find { it in knownVendorLowLatencyOptions }
-            val featureString = if (vendorLowLatencyKey != null) {
-                val supportStringResId = if (isEncoder)
-                    R.string.feature_low_latency_vendor_supported_encoder
-                else
-                    R.string.feature_low_latency_vendor_supported_decoder
-                context.getString(supportStringResId, vendorLowLatencyKey)
-            } else {
-                false.toString()
-            }
-            val lowLatencyResId = if (isEncoder)
-                R.string.low_latency_encoder
-            else
-                R.string.low_latency_decoder
-            propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(lowLatencyResId), featureString))
-        } catch (_: Exception) {}
-        finally {
-            codec?.release()
-        }
-    }
-}
+
 
 @SuppressLint("SwitchIntDef")
 @RequiresApi(36)
@@ -918,31 +910,32 @@ private fun isSizeSupported(videoCapabilities: MediaCodecInfo.VideoCapabilities,
 @SuppressLint("NewApi")
 private fun getProfileLevels(context: Context, codecId: String, codecName: String,
                              capabilities: MediaCodecInfo.CodecCapabilities): String? {
-    var profileLevels = capabilities.profileLevels.asList()
-    val stringBuilder = StringBuilder()
-    var profile: String?
-    var level: String? = ""
-
-    val settings = context.settingsRepository.getSettingsSync()
-
-    // On Android <=6.0, some devices do not advertise VP9 profile level support.
-    // In this case, estimate the level from MediaCodecInfo.VideoCapabilities instead.
-    if (SDK_INT == 23 && codecId.endsWith("vp9") && profileLevels.isEmpty()) {
-        val vp9Level = getMaxVP9ProfileLevel(capabilities)
-        // Assume all platforms before N only support VP9 profile 0.
-        profile = VP9Profiles.VP9Profile0.name
-        level = VP9Levels.from(vp9Level)!!
-        stringBuilder.append(getFormattedProfileLevelString(settings, context,
-                profile, VP9Profiles.VP9Profile0.value, level, vp9Level))
-
-        return stringBuilder.toString()
-    } else if (profileLevels.isEmpty()) {
+    val profileLevels = capabilities.profileLevels
+    if (profileLevels.isEmpty()) {
+        if (SDK_INT == 23 && codecId.endsWith("vp9")) {
+            val vp9Level = getMaxVP9ProfileLevel(capabilities)
+            val profile = VP9Profiles.VP9Profile0.name
+            val level = VP9Levels.from(vp9Level)!!
+            val settings = context.settingsRepository.getSettingsSync()
+            return getFormattedProfileLevelString(settings, context,
+                profile, VP9Profiles.VP9Profile0.value, level, vp9Level).trimEnd()
+        }
         return null
     }
 
-    val comparator: Comparator<MediaCodecInfo.CodecProfileLevel> = compareBy { it.profile }
-    profileLevels = profileLevels.sortedWith(comparator)
-    profileLevels.reversed().distinctBy { it.profile }.reversed().forEach {
+    val settings = context.settingsRepository.getSettingsSync()
+    val stringBuilder = StringBuilder()
+    
+    val sortedProfiles = profileLevels.sortedBy { it.profile }
+    val uniqueProfiles = mutableSetOf<Int>()
+    
+    // Process unique profiles in reverse to keep the highest level for each profile
+    for (it in sortedProfiles.reversed()) {
+        if (!uniqueProfiles.add(it.profile)) continue
+        
+        var profile: String?
+        var level: String? = ""
+
         when {
             codecId.contains("mp4a-latm") -> {
                 profile = AACProfiles.from(it.profile)
@@ -991,7 +984,7 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
             }
             codecId.contains("hevc") || codecId.contains("heic") || codecId.contains("heif") -> {
                 if (needsHevc10BitProfileExcluded(codecId, it.profile)) {
-                    return@forEach
+                    continue
                 }
                 profile = HEVCProfiles.from(it.profile)
                 level = HEVCLevels.from(it.level)
@@ -1067,11 +1060,13 @@ private fun getProfileLevels(context: Context, codecId: String, codecName: Strin
             }
         }
 
-        stringBuilder.append(getFormattedProfileLevelString(settings, context,
+        stringBuilder.insert(0, getFormattedProfileLevelString(settings, context,
                 profile, it.profile, level, it.level))
     }
 
-    stringBuilder.setLength(stringBuilder.length - 1) // Remove the last \n
+    if (stringBuilder.isNotEmpty()) {
+        stringBuilder.setLength(stringBuilder.length - 1) // Remove the last \n
+    }
     return stringBuilder.toString()
 }
 

@@ -12,7 +12,6 @@ import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,14 +33,20 @@ class ItemsViewModel : ViewModel() {
 
     fun loadData(context: Context) {
         if (_allAudioState.value != null) return
-        viewModelScope.launch(Dispatchers.IO) {
-            val audioDeferred = async { getSimpleCodecInfoList(context, true) }
-            val videoDeferred = async { getSimpleCodecInfoList(context, false) }
-            val drmDeferred = async { getSimpleDrmInfoList(context) }
+        viewModelScope.launch {
+            val audioJob = launch(Dispatchers.IO) {
+                _allAudioState.value = getSimpleCodecInfoList(context, true)
+            }
+            val videoJob = launch(Dispatchers.IO) {
+                _allVideoState.value = getSimpleCodecInfoList(context, false)
+            }
+            val drmJob = launch(Dispatchers.IO) {
+                _allDrmsState.value = getSimpleDrmInfoList(context)
+            }
 
-            _allAudioState.value = audioDeferred.await()
-            _allVideoState.value = videoDeferred.await()
-            _allDrmsState.value = drmDeferred.await()
+            audioJob.join()
+            videoJob.join()
+            drmJob.join()
 
             preCacheDetails(context)
         }

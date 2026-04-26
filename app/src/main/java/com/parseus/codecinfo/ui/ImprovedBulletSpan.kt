@@ -17,6 +17,7 @@
 package com.parseus.codecinfo.ui
 
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.text.Layout
@@ -28,7 +29,7 @@ import androidx.core.graphics.withTranslation
 
 /**
  * Copy of [android.text.style.BulletSpan] from SDK for Android 9.0
- * with removed internal code and converted to Kotlin.
+ * with removed internal code, additional improvements and converted to Kotlin.
  */
 class ImprovedBulletSpan(
     @Px val bulletRadius: Int = STANDARD_BULLET_RADIUS,
@@ -59,22 +60,18 @@ class ImprovedBulletSpan(
     ) {
         if (text is Spanned && text.getSpanStart(this) == start) {
             val style = paint.style
-            var oldColor = 0
-
-            if (wantColor) {
-                oldColor = paint.color
+            val oldColor = if (wantColor) {
+                val colorToReturn = paint.color
                 paint.color = color
+                colorToReturn
+            } else {
+                Color.BLACK
             }
 
             paint.style = Paint.Style.FILL
 
-            val yPosition = if (layout != null) {
-                val line = layout.getLineForOffset(start)
-                layout.getLineBaseline(line).toFloat() - bulletRadius * 2f
-            } else {
-                (top + bottom) / 2f
-            }
-
+            val fontMetrics = paint.fontMetrics
+            val yPosition = baseline + (fontMetrics.ascent + fontMetrics.descent) / 2f
             val xPosition = (x + dir * bulletRadius).toFloat()
 
             if (canvas.isHardwareAccelerated) {
@@ -100,6 +97,6 @@ class ImprovedBulletSpan(
     }
 
     override fun toString(): String {
-        return "BulletSpan{bulletRadius=$bulletRadius, gapWidth=$gapWidth, color=${"%08X".format(color)}"
+        return "BulletSpan{bulletRadius=$bulletRadius, gapWidth=$gapWidth, color=${"%08X".format(color)}}"
     }
 }

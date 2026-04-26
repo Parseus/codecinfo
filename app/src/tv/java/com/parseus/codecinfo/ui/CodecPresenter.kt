@@ -1,5 +1,7 @@
 package com.parseus.codecinfo.ui
 
+import android.os.Build
+import android.view.PointerIcon
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -34,6 +36,10 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
             infoVisibility = ImageCardView.CARD_REGION_VISIBLE_ALWAYS
             setMainImageDimensions(GRID_ITEM_WIDTH, GRID_ITEM_HEIGHT)
             setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE)
+
+            if (Build.VERSION.SDK_INT >= 24) {
+                pointerIcon = PointerIcon.getSystemIcon(context, PointerIcon.TYPE_HAND)
+            }
         }
         return ViewHolder(cardView)
     }

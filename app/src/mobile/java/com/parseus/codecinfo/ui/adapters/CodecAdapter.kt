@@ -1,10 +1,14 @@
 package com.parseus.codecinfo.ui.adapters
 
+import android.content.ClipData
+import android.content.ClipDescription
 import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.PointerIcon
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
 import androidx.recyclerview.widget.DiffUtil
@@ -159,6 +163,17 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
                     act.hideSearchView()
                 }
             }
+
+            if (Build.VERSION.SDK_INT >= 24) {
+                layout.setOnLongClickListener { v ->
+                    val textToDrag = codecInfo.codecName
+                    val item = ClipData.Item(textToDrag)
+                    val dragData = ClipData(textToDrag, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
+                    v.startDragAndDrop(dragData, View.DragShadowBuilder(v), null, View.DRAG_FLAG_GLOBAL)
+                }
+                layout.pointerIcon = PointerIcon.getSystemIcon(layout.context, PointerIcon.TYPE_HAND)
+            }
+            layout.tag = codecInfo.codecName
         }
 
     }

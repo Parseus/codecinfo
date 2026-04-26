@@ -1,7 +1,12 @@
 package com.parseus.codecinfo.ui.adapters
 
+import android.content.ClipData
+import android.content.ClipDescription
+import android.os.Build
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.view.PointerIcon
 import androidx.annotation.CallSuper
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.PrecomputedTextCompat
@@ -43,6 +48,17 @@ open class DetailsAdapter : ListAdapter<DetailsProperty, DetailsAdapter.DetailsV
                 PrecomputedTextCompat.getTextFuture(info,
                     codecInfo.textMetricsParamsCompat, null)
             )
+
+            if (Build.VERSION.SDK_INT >= 24) {
+                itemView.setOnLongClickListener { v ->
+                    val textToDrag = "$name: $info"
+                    val item = ClipData.Item(textToDrag)
+                    val dragData = ClipData(textToDrag, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
+                    v.startDragAndDrop(dragData, View.DragShadowBuilder(v), null, View.DRAG_FLAG_GLOBAL)
+                }
+                itemView.pointerIcon = PointerIcon.getSystemIcon(itemView.context, PointerIcon.TYPE_HAND)
+            }
+            itemView.tag = "$name: $info"
         }
 
     }

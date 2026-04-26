@@ -158,6 +158,7 @@ dependencies {
     "mobileImplementation"(libs.androidx.browser)
     "mobileImplementation"(libs.androidx.constraintlayout)
     "mobileImplementation"(libs.androidx.core.splashscreen)
+    "mobileImplementation"(libs.androidx.draganddrop)
     "mobileImplementation"(libs.androidx.palette)
     "mobileImplementation"(libs.androidx.window)
     "mobileImplementation"(libs.monetcompat)

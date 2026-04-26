@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-sdk tools:overrideLibrary="androidx.draganddrop" />
+
     <!--
         MonetCompat declares this, because WallpaperManager.getDrawable() (used to feed the Palette
         on Android <= 8.0) allegedly requires this, even though it seems to work without it, anyway.

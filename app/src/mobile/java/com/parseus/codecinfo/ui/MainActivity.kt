@@ -34,6 +34,7 @@ import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
+import androidx.draganddrop.DropHelper
 import androidx.fragment.app.commit
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -297,6 +298,17 @@ class MainActivity : MonetCompatActivity() {
             editText.addTextChangedListener {
                 searchViewModel.setSearchQuery(it.toString())
             }
+
+            val dropMimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN, ClipDescription.MIMETYPE_TEXT_HTML)
+            DropHelper.configureView(this@MainActivity, binding.searchBar, dropMimeTypes) { _, payload ->
+                handleDroppedText(payload.clip.getItemAt(0).text?.toString())
+                null
+            }
+            DropHelper.configureView(this@MainActivity, editText, dropMimeTypes) { _, payload ->
+                handleDroppedText(payload.clip.getItemAt(0).text?.toString())
+                null
+            }
+
             addTransitionListener { _, _, newState ->
                 when (newState) {
                     SearchView.TransitionState.SHOWING -> {
@@ -362,6 +374,19 @@ class MainActivity : MonetCompatActivity() {
         binding.searchView.setText("")
         if (binding.searchView.isShowing) {
             binding.searchView.hide()
+        }
+    }
+
+    private fun handleDroppedText(text: String?) {
+        if (text != null) {
+            val cleanedText = text.replace(Regex("[^\\p{L}\\p{N}\\p{P}\\p{Z}]"), "").trim()
+            if (cleanedText.isNotEmpty()) {
+                if (!binding.searchView.isShowing) {
+                    binding.searchView.show()
+                }
+                binding.searchView.setText(cleanedText)
+                searchViewModel.setSearchQuery(cleanedText)
+            }
         }
     }
 

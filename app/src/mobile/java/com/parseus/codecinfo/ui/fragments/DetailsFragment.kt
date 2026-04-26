@@ -1,9 +1,11 @@
 package com.parseus.codecinfo.ui.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.content.ClipData
+import android.content.ClipDescription
+import android.os.Build
+import android.view.*
+import android.widget.TextView
 import androidx.core.os.BundleCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -148,6 +150,17 @@ class DetailsFragment : MonetFragment() {
     private fun showFullDetails() {
         binding.fullCodecInfoName.text = codecName ?: drmName
         binding.fullCodecInfoName.setTextColor(getPrimaryColor(requireContext()))
+
+        if (Build.VERSION.SDK_INT >= 24) {
+            binding.fullCodecInfoName.setOnLongClickListener { v ->
+                val textToDrag = (v as TextView).text
+                val item = ClipData.Item(textToDrag)
+                val dragData = ClipData(textToDrag, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
+                v.startDragAndDrop(dragData, View.DragShadowBuilder(v), null, View.DRAG_FLAG_GLOBAL)
+            }
+            binding.fullCodecInfoName.pointerIcon =
+                PointerIcon.getSystemIcon(requireContext(), PointerIcon.TYPE_HAND)
+        }
 
         val detailsAdapter = MobileDetailsAdapter()
         binding.fullCodecInfoContent.apply {

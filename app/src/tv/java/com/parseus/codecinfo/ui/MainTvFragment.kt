@@ -127,7 +127,12 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
             )
         )
 
-        adapter.add(ListRow(otherPresenterHeader, otherPresenterAdapter))
+        val listRow = ListRow(otherPresenterHeader, otherPresenterAdapter)
+        if (adapter.size() > 3) {
+            adapter.replace(3, listRow)
+        } else {
+            adapter.add(listRow)
+        }
     }
 
     private suspend fun loadData() = coroutineScope {
@@ -136,19 +141,40 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         val audioJob = launch(Dispatchers.IO) {
             val audioList = getSimpleCodecInfoList(context, true)
             withContext(Dispatchers.Main) {
-                audioPresentAdapter.setItems(audioList, null)
+                audioPresentAdapter.setItems(audioList, object : DiffCallback<CodecSimpleInfo>() {
+                    override fun areItemsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
+                        return oldItem.codecId == newItem.codecId && oldItem.codecName == newItem.codecName
+                    }
+                    override fun areContentsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
+                        return oldItem == newItem
+                    }
+                })
             }
         }
         val videoJob = launch(Dispatchers.IO) {
             val videoList = getSimpleCodecInfoList(context, false)
             withContext(Dispatchers.Main) {
-                videoPresentAdapter.setItems(videoList, null)
+                videoPresentAdapter.setItems(videoList, object : DiffCallback<CodecSimpleInfo>() {
+                    override fun areItemsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
+                        return oldItem.codecId == newItem.codecId && oldItem.codecName == newItem.codecName
+                    }
+                    override fun areContentsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
+                        return oldItem == newItem
+                    }
+                })
             }
         }
         val drmJob = launch(Dispatchers.IO) {
             val drmsList = getSimpleDrmInfoList(context)
             withContext(Dispatchers.Main) {
-                drmPresentAdapter.setItems(drmsList, null)
+                drmPresentAdapter.setItems(drmsList, object : DiffCallback<DrmSimpleInfo>() {
+                    override fun areItemsTheSame(oldItem: DrmSimpleInfo, newItem: DrmSimpleInfo): Boolean {
+                        return oldItem.drmUuid == newItem.drmUuid && oldItem.drmName == newItem.drmName
+                    }
+                    override fun areContentsTheSame(oldItem: DrmSimpleInfo, newItem: DrmSimpleInfo): Boolean {
+                        return oldItem == newItem
+                    }
+                })
             }
         }
 

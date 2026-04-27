@@ -112,19 +112,28 @@ class ItemFragment : MonetFragment() {
                     InfoType.Audio -> {
                         viewModel.updateAudioList(requireContext())
                         viewModel.allAudioState.collect {
-                            it?.let { displayData(it) }
+                            it?.let {
+                                (itemAdapter as? ListAdapter<*, *>)?.submitList(null)
+                                displayData(it)
+                            }
                         }
                     }
                     InfoType.Video -> {
                         viewModel.updateVideoList(requireContext())
                         viewModel.allVideoState.collect {
-                            it?.let { displayData(it) }
+                            it?.let {
+                                (itemAdapter as? ListAdapter<*, *>)?.submitList(null)
+                                displayData(it)
+                            }
                         }
                     }
                     InfoType.DRM -> {
                         viewModel.updateDrmList(requireContext())
                         viewModel.allDrmsState.collect {
-                            it?.let { displayData(it) }
+                            it?.let {
+                                (itemAdapter as? ListAdapter<*, *>)?.submitList(null)
+                                displayData(it)
+                            }
                         }
                     }
                 }
@@ -150,15 +159,12 @@ class ItemFragment : MonetFragment() {
     @Suppress("UNCHECKED_CAST")
     private fun displayData(list: List<Any>) {
         val adapter = itemAdapter
-        if (adapter is ListAdapter<*, *> && adapter.currentList.isNotEmpty()) {
-            removeFullyDrawnReporter()
-            return
-        }
-
         emptyList = list.isEmpty()
         binding.loadingProgress.isVisible = false
 
         if (!emptyList) {
+            binding.simpleCodecListView.isVisible = true
+            binding.noItemsAvailable.isVisible = false
             when (adapter) {
                 is CodecAdapter -> adapter.submitList(list as List<CodecSimpleInfo>) {
                     removeFullyDrawnReporter()
@@ -177,6 +183,20 @@ class ItemFragment : MonetFragment() {
             }
             binding.noItemsAvailable.setText(errorId)
             removeFullyDrawnReporter()
+        }
+    }
+
+    fun updateView() {
+        if (!::infoType.isInitialized) return
+
+        val currentList = when (infoType) {
+            InfoType.Audio -> viewModel.allAudioState.value
+            InfoType.Video -> viewModel.allVideoState.value
+            InfoType.DRM -> viewModel.allDrmsState.value
+        }
+        currentList?.let {
+            (itemAdapter as? ListAdapter<*, *>)?.submitList(null)
+            displayData(it)
         }
     }
 

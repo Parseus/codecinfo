@@ -15,6 +15,15 @@ val detailedDrmInfo: MutableMap<UUID, List<DetailsProperty>> = mutableMapOf()
 
 private val drmListLock = Any()
 
+fun clearDrmCaches() {
+    synchronized(drmListLock) {
+        drmList.clear()
+    }
+    synchronized(detailedDrmInfo) {
+        detailedDrmInfo.clear()
+    }
+}
+
 fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
     synchronized(drmListLock) {
         if (drmList.isNotEmpty()) {

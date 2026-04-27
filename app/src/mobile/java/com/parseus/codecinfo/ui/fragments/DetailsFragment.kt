@@ -12,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -36,6 +37,7 @@ import com.parseus.codecinfo.utils.isDynamicThemingEnabled
 import com.parseus.codecinfo.utils.isInTwoPaneMode
 import com.parseus.codecinfo.utils.isNativeMonetAvailable
 import com.parseus.codecinfo.utils.updateColors
+import com.parseus.codecinfo.viewmodels.ItemsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,6 +55,8 @@ class DetailsFragment : MonetFragment() {
 
     var drmName: String? = null
     var drmUuid: UUID? = null
+
+    private val viewModel: ItemsViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
@@ -121,30 +125,40 @@ class DetailsFragment : MonetFragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                binding.loadingProgress.isVisible = true
-
-                propertyList = if (codecId != null && codecName != null && isDetailedCodecInfoCached(codecId!!, codecName!!)) {
-                    getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
-                } else if (drmName != null && drmUuid != null && isDetailedDrmInfoCached(drmUuid!!)) {
-                    getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
-                } else {
-                    withContext(Dispatchers.IO) {
-                        when {
-                            codecId != null && codecName != null ->
-                                getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
-
-                            drmName != null && drmUuid != null ->
-                                getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
-
-                            else -> emptyList()
-                        }
+                launch {
+                    viewModel.refreshDetailsTrigger.collect {
+                        loadDetails()
                     }
                 }
 
-                binding.loadingProgress.isVisible = false
-                showFullDetails()
+                loadDetails()
             }
         }
+    }
+
+    private suspend fun loadDetails() {
+        binding.loadingProgress.isVisible = true
+
+        propertyList = if (codecId != null && codecName != null && isDetailedCodecInfoCached(codecId!!, codecName!!)) {
+            getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+        } else if (drmName != null && drmUuid != null && isDetailedDrmInfoCached(drmUuid!!)) {
+            getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
+        } else {
+            withContext(Dispatchers.IO) {
+                when {
+                    codecId != null && codecName != null ->
+                        getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+
+                    drmName != null && drmUuid != null ->
+                        getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
+
+                    else -> emptyList()
+                }
+            }
+        }
+
+        binding.loadingProgress.isVisible = false
+        showFullDetails()
     }
 
     private fun showFullDetails() {

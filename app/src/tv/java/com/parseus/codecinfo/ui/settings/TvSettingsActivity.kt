@@ -36,6 +36,13 @@ class TvSettingsActivity : FragmentActivity() {
             putExtra(HW_ONLY_CODECS_CHANGED, hwOnlyCodecsChanged)
         })
         super.finish()
+
+        aliasesChanged = false
+        filterTypeChanged = false
+        sortingChanged = false
+        hwIconChanged = false
+        saveDetailsToLogcatChanged = false
+        hwOnlyCodecsChanged = false
     }
 
     companion object {

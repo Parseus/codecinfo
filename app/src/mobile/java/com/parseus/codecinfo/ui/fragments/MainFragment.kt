@@ -7,19 +7,27 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.launch
 import com.google.android.material.tabs.TabLayoutMediator
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.databinding.FragmentMainBinding
 import com.parseus.codecinfo.ui.adapters.PagerAdapter
 import com.parseus.codecinfo.utils.updateColors
+import com.parseus.codecinfo.viewmodels.ItemsViewModel
 
 @Suppress("unused")
 class MainFragment : Fragment() {
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: ItemsViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMainBinding.inflate(inflater)
@@ -50,6 +58,21 @@ class MainFragment : Fragment() {
             }.attach()
 
             tabs.updateColors(requireContext())
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.refreshDetailsTrigger.collect {
+                    binding.pager?.let { pager ->
+                        for (i in 0 until (pager.adapter?.itemCount ?: 0)) {
+                            val fragment = childFragmentManager.findFragmentByTag("f$i")
+                            if (fragment is ItemFragment) {
+                                fragment.updateView()
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         binding.navigationRail?.let { navigationRail ->

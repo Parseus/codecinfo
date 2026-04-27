@@ -159,6 +159,15 @@ class SettingsActivity : MonetCompatActivity() {
             putExtra(HW_ONLY_CODECS_CHANGED, hwOnlyCodecsChanged)
         })
         super.finish()
+
+        aliasesChanged = false
+        filterTypeChanged = false
+        sortingChanged = false
+        immersiveChanged = false
+        dynamicThemeChanged = false
+        hwIconChanged = false
+        saveDetailsToLogcatChanged = false
+        hwOnlyCodecsChanged = false
     }
 
     override fun onProvideAssistContent(outContent: AssistContent) {

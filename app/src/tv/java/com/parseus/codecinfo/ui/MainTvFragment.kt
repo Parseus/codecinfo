@@ -3,7 +3,6 @@ package com.parseus.codecinfo.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.core.app.ActivityCompat
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
 import androidx.lifecycle.lifecycleScope
@@ -36,10 +35,13 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
     private val videoPresentAdapter = ArrayObjectAdapter(CodecPresenter(R.drawable.ic_video))
     private val drmPresentAdapter = ArrayObjectAdapter(DrmPresenter(R.drawable.ic_lock))
 
-    private var shouldRecreateActivity = false
-
     private val settingsContract = registerForActivityResult(SettingsContract()) { result ->
-        shouldRecreateActivity = result
+        if (result.shouldReloadLists() || result.saveDetailsToLogcatChanged) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                clearSavedLists()
+                loadData()
+            }
+        }
     }
 
     private lateinit var adapter: ArrayObjectAdapter
@@ -157,9 +159,9 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         requireActivity().fullyDrawnReporter.removeReporter()
 
         preCacheDetails(
-            audioPresentAdapter.unmodifiableList<CodecSimpleInfo>(),
-            videoPresentAdapter.unmodifiableList<CodecSimpleInfo>(),
-            drmPresentAdapter.unmodifiableList<DrmSimpleInfo>()
+            audioPresentAdapter.unmodifiableList(),
+            videoPresentAdapter.unmodifiableList(),
+            drmPresentAdapter.unmodifiableList()
         )
     }
 
@@ -184,13 +186,6 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
 
     override fun onResume() {
         super.onResume()
-
-        if (shouldRecreateActivity) {
-            shouldRecreateActivity = false
-            clearSavedLists()
-            ActivityCompat.recreate(requireActivity())
-            return
-        }
     }
 
     private fun clearSavedLists() {

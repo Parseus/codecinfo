@@ -4,18 +4,23 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
+import com.parseus.codecinfo.data.codecinfo.clearCodecCaches
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.DrmVendor
+import com.parseus.codecinfo.data.drm.clearDrmCaches
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
 class ItemsViewModel : ViewModel() {
@@ -29,11 +34,45 @@ class ItemsViewModel : ViewModel() {
     private val _allDrmsState = MutableStateFlow<List<DrmSimpleInfo>?>(null)
     val allDrmsState: StateFlow<List<DrmSimpleInfo>?> = _allDrmsState.asStateFlow()
 
+    private val _refreshDetailsTrigger = MutableSharedFlow<Unit>()
+    val refreshDetailsTrigger: SharedFlow<Unit> = _refreshDetailsTrigger.asSharedFlow()
+
     private var preCacheJob: Job? = null
 
     fun loadData(context: Context) {
         if (_allAudioState.value != null) return
         viewModelScope.launch {
+            val audioJob = launch(Dispatchers.IO) {
+                _allAudioState.value = getSimpleCodecInfoList(context, true)
+            }
+            val videoJob = launch(Dispatchers.IO) {
+                _allVideoState.value = getSimpleCodecInfoList(context, false)
+            }
+            val drmJob = launch(Dispatchers.IO) {
+                _allDrmsState.value = getSimpleDrmInfoList(context)
+            }
+
+            audioJob.join()
+            videoJob.join()
+            drmJob.join()
+
+            preCacheDetails(context)
+        }
+    }
+
+    fun refreshData(context: Context) {
+        viewModelScope.launch {
+            preCacheJob?.cancel()
+            clearCodecCaches()
+            clearDrmCaches()
+
+            _allAudioState.value = null
+            _allVideoState.value = null
+            _allDrmsState.value = null
+
+            _refreshDetailsTrigger.emit(Unit)
+
+            // Force immediate reload instead of waiting for next loadData call
             val audioJob = launch(Dispatchers.IO) {
                 _allAudioState.value = getSimpleCodecInfoList(context, true)
             }

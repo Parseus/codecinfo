@@ -111,13 +111,24 @@ class MainActivity : MonetCompatActivity() {
 
     internal lateinit var binding: ActivityMainBinding
 
-    private var shouldRecreateActivity = false
-
     private val useImmersiveMode: Boolean
         get() = settingsRepository.getSettingsSync().immersiveMode
 
     private val settingsContract = registerForActivityResult(SettingsContract()) { result ->
-        shouldRecreateActivity = result
+        if (result.dynamicThemeChanged) {
+            ActivityCompat.recreate(this)
+        } else {
+            if (result.immersiveChanged) {
+                if (useImmersiveMode) {
+                    enableImmersiveMode()
+                } else {
+                    disableImmersiveMode()
+                }
+            }
+            if (result.shouldReloadLists() || result.saveDetailsToLogcatChanged) {
+                itemsViewModel.refreshData(this)
+            }
+        }
     }
 
     private val searchViewModel: SearchViewModel by viewModels()
@@ -562,11 +573,6 @@ class MainActivity : MonetCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        if (shouldRecreateActivity) {
-            ActivityCompat.recreate(this)
-            return
-        }
-
         @Suppress("KotlinConstantConditions")
         if (!BuildConfig.DEBUG) {
             handleAppUpdateOnResume(this)
@@ -576,7 +582,6 @@ class MainActivity : MonetCompatActivity() {
     override fun recreate() {
         super.recreate()
         clearSavedLists()
-        shouldRecreateActivity = false
     }
 
     private fun clearSavedLists() {

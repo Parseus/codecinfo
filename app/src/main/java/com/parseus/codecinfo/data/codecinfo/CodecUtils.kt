@@ -136,6 +136,14 @@ val videoCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
 
 val detailedCodecInfos: MutableMap<String, List<DetailsProperty>> = mutableMapOf()
 
+fun clearCodecCaches() {
+    synchronized(codecListLock) {
+        audioCodecList.clear()
+        videoCodecList.clear()
+        detailedCodecInfos.clear()
+    }
+}
+
 fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<CodecSimpleInfo> {
     synchronized(codecListLock) {
         if (isAudio && audioCodecList.isNotEmpty()) {

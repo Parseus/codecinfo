@@ -13,10 +13,12 @@
         android:paddingTop="@dimen/list_content_horizontal_padding"
         android:paddingLeft="@dimen/list_content_horizontal_padding"
         android:paddingRight="@dimen/list_content_horizontal_padding"
+        android:accessibilityHeading="true"
         android:maxLines="1"
         android:text="@string/known_issue_warning"
         android:textColor="@color/purple_200"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"/>
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+        tools:ignore="UnusedAttribute" />
 
     <include
         android:id="@+id/device_issues_list"

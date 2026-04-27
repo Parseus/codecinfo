@@ -49,6 +49,7 @@ class OtherActionsPresenter : Presenter() {
         viewHolder.cardView.apply {
             titleText = context.getString(descriptor.nameResId)
             mainImage = AppCompatResources.getDrawable(context, descriptor.drawableId)
+            contentDescription = titleText
         }
     }
 

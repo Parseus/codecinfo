@@ -58,7 +58,9 @@ open class DetailsAdapter : ListAdapter<DetailsProperty, DetailsAdapter.DetailsV
                 }
                 itemView.pointerIcon = PointerIcon.getSystemIcon(itemView.context, PointerIcon.TYPE_HAND)
             }
+
             itemView.tag = "$name: $info"
+            itemView.contentDescription = "$name: $info"
         }
 
     }

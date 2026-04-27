@@ -21,10 +21,12 @@
             android:paddingTop="@dimen/list_content_horizontal_padding"
             android:paddingLeft="@dimen/list_content_horizontal_padding"
             android:paddingRight="@dimen/list_content_horizontal_padding"
+            android:accessibilityHeading="true"
             android:maxLines="1"
             android:textColor="@color/purple_200"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
-            tools:text="Item full name"/>
+            tools:text="Item full name"
+            tools:ignore="UnusedAttribute" />
 
         <ImageButton
             android:id="@+id/share"

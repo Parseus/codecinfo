@@ -81,9 +81,11 @@ class AboutFragment : Fragment() {
                 } else {
                     requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0)
                 }
-                appVersion.text = getString(R.string.app_version, packageInfo.versionName)
+                val version = packageInfo.versionName
+                appVersion.text = getString(R.string.app_version, version)
+                versionInfoContainer.contentDescription = getString(R.string.about_version_content_description, version)
             } catch (_: Exception) {
-                appVersion.isVisible = false
+                versionInfoContainer.isVisible = false
             }
             showLicenses.setOnClickListener { showLicensesDialog(requireActivity() as AppCompatActivity) }
             goToGithub.setOnClickListener { goToAppsGitHubPage() }

@@ -52,15 +52,27 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
         viewHolder.cardView.apply {
             titleText = searchItem?.highlightedId ?: info.codecId
             contentText = searchItem?.highlightedName ?: info.codecName
-            contentDescription = "$titleText: $contentText"
             mainImage = AppCompatResources.getDrawable(context, drawable)
+
+            val isHardwareAccelerated = info.isHardwareAccelereated
+            val hasKnownIssues = KNOWN_PROBLEMS_DB.any { it.isAffected(context, info.codecName) }
+
+            contentDescription = buildString {
+                append("$titleText: $contentText")
+                if (isHardwareAccelerated) {
+                    append(". ${context.getString(R.string.hardware_acceleration)}.")
+                }
+                if (hasKnownIssues) {
+                    append(". ${context.getString(R.string.known_issue_detected)}")
+                }
+            }
 
             // Reset badge for every bind to handle recycling
             badgeImage = when {
-                KNOWN_PROBLEMS_DB.any { it.isAffected(context, info.codecName) } -> {
+                hasKnownIssues -> {
                     AppCompatResources.getDrawable(context, R.drawable.ic_error)
                 }
-                info.isHardwareAccelereated -> {
+                isHardwareAccelerated -> {
                     AppCompatResources.getDrawable(context, R.drawable.ic_hardware)
                 }
                 else -> null
@@ -77,7 +89,19 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
             (viewHolder as ViewHolder).cardView.apply {
                 titleText = searchItem?.highlightedId ?: info.codecId
                 contentText = searchItem?.highlightedName ?: info.codecName
-                contentDescription = "$titleText: $contentText"
+
+                val isHardwareAccelerated = info.isHardwareAccelereated
+                val hasKnownIssues = KNOWN_PROBLEMS_DB.any { it.isAffected(context, info.codecName) }
+
+                contentDescription = buildString {
+                    append("$titleText: $contentText")
+                    if (isHardwareAccelerated) {
+                        append(". ${context.getString(R.string.hardware_acceleration)}.")
+                    }
+                    if (hasKnownIssues) {
+                        append(". ${context.getString(R.string.known_issue_detected)}")
+                    }
+                }
             }
         }
     }

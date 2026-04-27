@@ -115,12 +115,23 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
             val codecMediaTypeString = layout.context.getString(
                     if (codecInfo.isAudio) R.string.category_audio else R.string.category_video)
 
-            layout.contentDescription = if (knownIssueIcon.isVisible) {
-                layout.context.getString(R.string.codec_row_with_issue_content_description,
+            layout.contentDescription = when {
+                hwIcon.isVisible && knownIssueIcon.isVisible -> {
+                    layout.context.getString(R.string.codec_row_hw_accelerated_with_issue_content_description,
                         codecMediaTypeString, position, codecTypeString, codecName, codecId)
-            } else {
-                layout.context.getString(R.string.codec_row_content_description,
+                }
+                hwIcon.isVisible -> {
+                    layout.context.getString(R.string.codec_row_hw_accelerated_content_description,
                         codecMediaTypeString, position, codecTypeString, codecName, codecId)
+                }
+                knownIssueIcon.isVisible -> {
+                    layout.context.getString(R.string.codec_row_with_issue_content_description,
+                        codecMediaTypeString, position, codecTypeString, codecName, codecId)
+                }
+                else -> {
+                    layout.context.getString(R.string.codec_row_content_description,
+                        codecMediaTypeString, position, codecTypeString, codecName, codecId)
+                }
             }
 
             layout.transitionName = "$codecId/$codecName"

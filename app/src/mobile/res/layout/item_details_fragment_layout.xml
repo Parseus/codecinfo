@@ -15,6 +15,7 @@
         android:paddingRight="@dimen/list_content_horizontal_padding"
         android:layout_gravity="top"
         android:gravity="center"
+        android:accessibilityHeading="true"
         android:maxLines="1"
         android:textColor="?attr/colorPrimary"
         android:textAppearance="?attr/textAppearanceHeadlineSmall"
@@ -23,7 +24,7 @@
         app:autoSizeStepGranularity="1px"
         app:autoSizeTextType="uniform"
         tools:text="Item full name"
-        tools:ignore="SelectableText" />
+        tools:ignore="SelectableText,UnusedAttribute" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/item_details_content"

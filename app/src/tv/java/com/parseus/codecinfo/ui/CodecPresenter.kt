@@ -45,13 +45,14 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
     }
 
     override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any?) {
-        val searchItem = item as CodecSearchItem
-        val info = searchItem.info
         val context = viewHolder.view.context
+        val info = if (item is CodecSearchItem) item.info else item as CodecSimpleInfo
+        val searchItem = item as? CodecSearchItem
         (viewHolder as ViewHolder).searchItem = searchItem
         viewHolder.cardView.apply {
-            titleText = searchItem.highlightedId
-            contentText = searchItem.highlightedName
+            titleText = searchItem?.highlightedId ?: info.codecId
+            contentText = searchItem?.highlightedName ?: info.codecName
+            contentDescription = "$titleText: $contentText"
             mainImage = AppCompatResources.getDrawable(context, drawable)
 
             // Reset badge for every bind to handle recycling
@@ -71,10 +72,12 @@ class CodecPresenter(@DrawableRes private val drawable: Int) : Presenter() {
         if (payloads.isEmpty()) {
             super.onBindViewHolder(viewHolder, item, payloads)
         } else {
-            val searchItem = item as CodecSearchItem
+            val info = if (item is CodecSearchItem) item.info else item as CodecSimpleInfo
+            val searchItem = item as? CodecSearchItem
             (viewHolder as ViewHolder).cardView.apply {
-                titleText = searchItem.highlightedId
-                contentText = searchItem.highlightedName
+                titleText = searchItem?.highlightedId ?: info.codecId
+                contentText = searchItem?.highlightedName ?: info.codecName
+                contentDescription = "$titleText: $contentText"
             }
         }
     }

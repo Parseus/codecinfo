@@ -43,12 +43,14 @@ class DrmPresenter(@DrawableRes private val drawable: Int) : Presenter() {
     }
 
     override fun onBindViewHolder(viewHolder: Presenter.ViewHolder, item: Any?) {
-        val searchItem = item as DrmSearchItem
         val context = viewHolder.view.context
+        val info = if (item is DrmSearchItem) item.info else item as DrmSimpleInfo
+        val searchItem = item as? DrmSearchItem
         (viewHolder as ViewHolder).searchItem = searchItem
         viewHolder.cardView.apply {
             titleText = context.getString(R.string.category_drm)
-            contentText = searchItem.highlightedName
+            contentText = searchItem?.highlightedName ?: info.drmName
+            contentDescription = "$titleText: $contentText"
             mainImage = AppCompatResources.getDrawable(context, drawable)
         }
     }
@@ -57,9 +59,11 @@ class DrmPresenter(@DrawableRes private val drawable: Int) : Presenter() {
         if (payloads.isEmpty()) {
             super.onBindViewHolder(viewHolder, item, payloads)
         } else {
-            val searchItem = item as DrmSearchItem
+            val info = if (item is DrmSearchItem) item.info else item as DrmSimpleInfo
+            val searchItem = item as? DrmSearchItem
             (viewHolder as ViewHolder).cardView.apply {
-                contentText = searchItem.highlightedName
+                contentText = searchItem?.highlightedName ?: info.drmName
+                contentDescription = "${context.getString(R.string.category_drm)}: $contentText"
             }
         }
     }
@@ -70,6 +74,7 @@ class DrmPresenter(@DrawableRes private val drawable: Int) : Presenter() {
         with(vh.cardView) {
             // Clear image to free up memory and prevent flickering on reuse
             mainImage = null
+            badgeImage = null
         }
     }
 

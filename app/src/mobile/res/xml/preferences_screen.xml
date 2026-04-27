@@ -115,6 +115,11 @@
             app:title="Send feedback" />
 
         <Preference
+            app:icon="@drawable/ic_keyboard"
+            app:key="keyboard_shortcuts"
+            app:title="@string/keyboard_shortcuts" />
+
+        <Preference
             app:icon="@drawable/ic_info"
             app:key="help"
             app:title="About Codec Info…"/>

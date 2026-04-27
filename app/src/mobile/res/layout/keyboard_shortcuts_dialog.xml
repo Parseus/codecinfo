@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="24dp">
+
+    <!-- Search -->
+    <TextView
+        android:id="@+id/key_ctrl_f"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/keyboard_key_ctrl_f"
+        android:textAppearance="?attr/textAppearanceLabelLarge"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/desc_search"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="@string/keyboard_shortcut_search"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="@id/key_ctrl_f"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier"
+        app:layout_constraintTop_toTopOf="@id/key_ctrl_f" />
+
+    <!-- Share -->
+    <TextView
+        android:id="@+id/key_ctrl_s"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/keyboard_key_ctrl_s"
+        android:textAppearance="?attr/textAppearanceLabelLarge"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/key_ctrl_f" />
+
+    <TextView
+        android:id="@+id/desc_share"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/keyboard_shortcut_share"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="@id/key_ctrl_s"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/desc_search"
+        app:layout_constraintTop_toTopOf="@id/key_ctrl_s" />
+
+    <!-- Settings -->
+    <TextView
+        android:id="@+id/key_ctrl_comma"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/keyboard_key_ctrl_comma"
+        android:textAppearance="?attr/textAppearanceLabelLarge"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/key_ctrl_s" />
+
+    <TextView
+        android:id="@+id/desc_settings"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/keyboard_shortcut_settings"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="@id/key_ctrl_comma"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/desc_search"
+        app:layout_constraintTop_toTopOf="@id/key_ctrl_comma" />
+
+    <!-- Copy -->
+    <TextView
+        android:id="@+id/key_ctrl_c"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/keyboard_key_ctrl_c"
+        android:textAppearance="?attr/textAppearanceLabelLarge"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/key_ctrl_comma" />
+
+    <TextView
+        android:id="@+id/desc_copy"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/keyboard_shortcut_copy"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="@id/key_ctrl_c"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/desc_search"
+        app:layout_constraintTop_toTopOf="@id/key_ctrl_c" />
+
+    <!-- Paste -->
+    <TextView
+        android:id="@+id/key_ctrl_v"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/keyboard_key_ctrl_v"
+        android:textAppearance="?attr/textAppearanceLabelLarge"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/key_ctrl_c" />
+
+    <TextView
+        android:id="@+id/desc_paste"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/keyboard_shortcut_paste"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="@id/key_ctrl_v"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/desc_search"
+        app:layout_constraintTop_toTopOf="@id/key_ctrl_v" />
+
+    <!-- Close -->
+    <TextView
+        android:id="@+id/key_esc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/keyboard_key_esc"
+        android:textAppearance="?attr/textAppearanceLabelLarge"
+        android:textColor="?attr/colorSecondary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/key_ctrl_v" />
+
+    <TextView
+        android:id="@+id/desc_close"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/keyboard_shortcut_close"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintBottom_toBottomOf="@id/key_esc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/desc_search"
+        app:layout_constraintTop_toTopOf="@id/key_esc" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="key_ctrl_f,key_ctrl_s,key_ctrl_comma,key_ctrl_c,key_ctrl_v,key_esc" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

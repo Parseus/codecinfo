@@ -15,6 +15,11 @@
         android:contentDescription="@string/action_share"
         android:icon="@drawable/ic_share" />
 
+    <item android:id="@+id/menu_item_keyboard_shortcuts"
+        app:showAsAction="ifRoom"
+        android:title="@string/keyboard_shortcuts"
+        android:icon="@drawable/ic_keyboard" />
+
     <item android:id="@+id/menu_item_settings"
         app:showAsAction="ifRoom"
         android:title="@string/action_settings"

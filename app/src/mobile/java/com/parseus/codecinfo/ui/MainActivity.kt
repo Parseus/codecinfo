@@ -3,12 +3,17 @@ package com.parseus.codecinfo.ui
 import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.content.ClipData
+import android.content.ClipDescription
+import android.content.ClipboardManager
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.KeyboardShortcutGroup
+import android.view.KeyboardShortcutInfo
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
@@ -72,6 +77,7 @@ import com.parseus.codecinfo.ui.settings.SettingsContract
 import com.parseus.codecinfo.utils.canEnableMemoryLeakFixBackDispatcher
 import com.parseus.codecinfo.utils.checkForUpdate
 import com.parseus.codecinfo.utils.createInAppUpdateResultLauncher
+import com.parseus.codecinfo.utils.copyToClipboard
 import com.parseus.codecinfo.utils.disableApiBlacklistOnPie
 import com.parseus.codecinfo.utils.getAllInfoString
 import com.parseus.codecinfo.utils.getItemListString
@@ -179,6 +185,93 @@ class MainActivity : MonetCompatActivity() {
         }
         onBackPressedDispatcher.addCallback(memoryLeakFixBackDispatcher)
         onBackPressedDispatcher.addCallback(homeAsUpBackDispatcher)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (event.isCtrlPressed) {
+            when (keyCode) {
+                KeyEvent.KEYCODE_F -> {
+                    binding.searchView.show()
+                    return true
+                }
+                KeyEvent.KEYCODE_S -> {
+                    onOptionsItemSelected(binding.searchBar.menu.findItem(R.id.menu_item_share))
+                    return true
+                }
+                KeyEvent.KEYCODE_COMMA -> {
+                    settingsContract.launch(null)
+                    return true
+                }
+                KeyEvent.KEYCODE_C -> {
+                    copyCurrentSelection()
+                    return true
+                }
+                KeyEvent.KEYCODE_V -> {
+                    val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                    handleDroppedText(clipboard.primaryClip?.getItemAt(0)?.text?.toString())
+                    return true
+                }
+            }
+        }
+        if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+            if (binding.searchView.isShowing) {
+                hideSearchView()
+                return true
+            } else if (supportFragmentManager.backStackEntryCount > 0) {
+                onBackPressedDispatcher.onBackPressed()
+                return true
+            }
+        }
+        return super.onKeyUp(keyCode, event)
+    }
+
+    @RequiresApi(24)
+    override fun onProvideKeyboardShortcuts(
+        data: MutableList<KeyboardShortcutGroup>,
+        menu: Menu?,
+        deviceId: Int
+    ) {
+        val group = KeyboardShortcutGroup(getString(R.string.keyboard_shortcuts)).apply {
+            addItem(KeyboardShortcutInfo(getString(R.string.keyboard_shortcut_search), KeyEvent.KEYCODE_F, KeyEvent.META_CTRL_ON))
+            addItem(KeyboardShortcutInfo(getString(R.string.keyboard_shortcut_share), KeyEvent.KEYCODE_S, KeyEvent.META_CTRL_ON))
+            addItem(KeyboardShortcutInfo(getString(R.string.keyboard_shortcut_settings), KeyEvent.KEYCODE_COMMA, KeyEvent.META_CTRL_ON))
+            addItem(KeyboardShortcutInfo(getString(R.string.keyboard_shortcut_copy), KeyEvent.KEYCODE_C, KeyEvent.META_CTRL_ON))
+            addItem(KeyboardShortcutInfo(getString(R.string.keyboard_shortcut_paste), KeyEvent.KEYCODE_V, KeyEvent.META_CTRL_ON))
+            addItem(KeyboardShortcutInfo(getString(R.string.keyboard_shortcut_close), KeyEvent.KEYCODE_ESCAPE, 0))
+        }
+        data.add(group)
+    }
+
+    fun showKeyboardShortcutsDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.keyboard_shortcuts_dialog, null)
+        val dialogBuilder = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.keyboard_shortcuts)
+            .setView(dialogView)
+            .setPositiveButton(android.R.string.ok, null)
+        val dialog = dialogBuilder.updateBackgroundColor(this).create()
+        dialog.show()
+        if (isDynamicThemingEnabled(this) && !isNativeMonetAvailable()) {
+            dialog.applyMonet()
+        }
+        dialog.updateButtonColors(this)
+    }
+
+    private fun copyCurrentSelection() {
+        val focusedView = window.currentFocus
+        val textToCopy = focusedView?.tag?.toString()
+
+        if (textToCopy != null) {
+            copyToClipboard(getString(R.string.app_name), textToCopy, binding.root)
+        } else {
+            val detailsFragment = supportFragmentManager
+                .findFragmentByTag(getString(R.string.details_fragment_tag)) as? DetailsFragment
+            if (detailsFragment != null && detailsFragment.isVisible) {
+                val name = detailsFragment.codecName ?: detailsFragment.drmName
+                if (name != null) {
+                    copyToClipboard(getString(R.string.app_name), name, binding.root)
+                }
+            }
+        }
     }
 
     private fun updateUIState() {
@@ -567,6 +660,11 @@ class MainActivity : MonetCompatActivity() {
                 }
                 dialog.updateButtonColors(dialogBuilder.context)
 
+                return true
+            }
+
+            R.id.menu_item_keyboard_shortcuts -> {
+                showKeyboardShortcutsDialog()
                 return true
             }
 

@@ -315,6 +315,11 @@ class SettingsActivity : MonetCompatActivity() {
                     true
                 }
 
+                "keyboard_shortcuts" -> {
+                    showKeyboardShortcutsDialog()
+                    true
+                }
+
                 "help" -> {
                     if (activity != null) {
                         parentFragmentManager.commit {
@@ -401,6 +406,20 @@ class SettingsActivity : MonetCompatActivity() {
                 this.entryValues = entryValues.toTypedArray()
                 setDefaultValue(getDefaultThemeOption(requireContext()).toString())
             }
+        }
+
+        private fun showKeyboardShortcutsDialog() {
+            val dialogView = layoutInflater.inflate(R.layout.keyboard_shortcuts_dialog, null)
+            val dialogBuilder = MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.keyboard_shortcuts)
+                .setView(dialogView)
+                .setPositiveButton(android.R.string.ok, null)
+            val dialog = dialogBuilder.updateBackgroundColor(requireContext()).create()
+            dialog.show()
+            if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
+                dialog.applyMonet()
+            }
+            dialog.updateButtonColors(requireContext())
         }
 
     }

@@ -105,6 +105,13 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         )
         otherPresenterAdapter.add(
             OtherActionDescriptor(
+                ACTION_KEYBOARD_SHORTCUTS_ID,
+                R.drawable.ic_keyboard,
+                R.string.keyboard_shortcuts
+            )
+        )
+        otherPresenterAdapter.add(
+            OtherActionDescriptor(
                 ACTION_SETTINGS_ID,
                 R.drawable.ic_settings,
                 R.string.action_settings
@@ -217,6 +224,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
                     ACTION_ABOUT_ID -> startActivity(Intent(requireActivity(), TvAboutActivity::class.java))
                     ACTION_DEVICE_ISSUES_ID -> startActivity(Intent(requireActivity(), TvDeviceIssuesActivity::class.java))
                     ACTION_SHARE_ID -> startActivity(Intent(requireActivity(), TvShareActivity::class.java))
+                    ACTION_KEYBOARD_SHORTCUTS_ID -> startActivity(Intent(requireActivity(), TvKeyboardShortcutsActivity::class.java))
                 }
             }
         }
@@ -231,6 +239,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         private const val ACTION_ABOUT_ID = 1001
         private const val ACTION_DEVICE_ISSUES_ID = 1002
         private const val ACTION_SHARE_ID = 1003
+        private const val ACTION_KEYBOARD_SHORTCUTS_ID = 1004
     }
 
 }

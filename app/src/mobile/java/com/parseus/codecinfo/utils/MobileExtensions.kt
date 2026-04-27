@@ -5,7 +5,9 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.TypedValue
+import android.view.View
 import androidx.annotation.AttrRes
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
@@ -38,6 +40,16 @@ fun Context.isNightMode(): Boolean {
         DarkTheme.Light -> false
         DarkTheme.Dark -> true
         else -> getSystemService<UiModeManager>()?.nightMode == UiModeManager.MODE_NIGHT_YES
+    }
+}
+
+fun Context.copyToClipboard(label: String, text: String, view: View? = null) {
+    val clipboard = getSystemService<ClipboardManager>()
+    val clip = ClipData.newPlainText(label, text)
+    clipboard?.setPrimaryClip(clip)
+
+    if (Build.VERSION.SDK_INT < 33 && view != null) {
+        Snackbar.make(view, R.string.copied_to_clipboard, Snackbar.LENGTH_SHORT).show()
     }
 }
 

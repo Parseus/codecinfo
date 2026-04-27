@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Browser
 import androidx.annotation.RequiresApi
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsCallback
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
@@ -159,7 +160,12 @@ class ExternalLinksHelper(private val context: Context, lifecycle: Lifecycle) : 
     }
 
     private fun launchInCustomTabs(context: Context, uri: Uri): Boolean {
-        val customTabsIntent = CustomTabsIntent.Builder(session).build()
+        val colorSchemeParams = CustomTabColorSchemeParams.Builder()
+            .setToolbarColor(getPrimaryColor(context)).build()
+        val customTabsIntent = CustomTabsIntent.Builder(session)
+            .setShowTitle(true)
+            .setShareState(CustomTabsIntent.SHARE_STATE_ON)
+            .setDefaultColorSchemeParams(colorSchemeParams).build()
         customTabsIntent.intent.putExtra(Browser.EXTRA_HEADERS, Bundle().apply {
             putString("Content-Security-Policy", HARDENED_CONTENT_SECURITY_POLICY)
             putString("Feature-Policy", HARDENED_FEATURE_POLICY)

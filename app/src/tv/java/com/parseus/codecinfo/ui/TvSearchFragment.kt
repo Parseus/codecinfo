@@ -42,6 +42,10 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
         super.onCreate(savedInstanceState)
         setSearchResultProvider(this)
         setOnItemViewClickedListener(this)
+
+        requireActivity().intent?.getStringExtra("query")?.let {
+            setSearchQuery(it, true)
+        }
     }
 
     override fun onQueryTextChange(newQuery: String): Boolean {

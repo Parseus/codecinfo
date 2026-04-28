@@ -341,7 +341,9 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
     propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.max_instances),
         capabilities.maxSupportedInstances.toString()))
 
-    if (SDK_INT >= 36) {
+    if (SDK_INT >= 37) {
+        // getSecurityModel() returns a hardcoded value on API 36,
+        // so there is no point in checking it on Android 16.
         addSecurityModel(context, mediaCodecInfo, propertyList)
     }
 
@@ -465,7 +467,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
 
 
 @SuppressLint("SwitchIntDef")
-@RequiresApi(36)
+@RequiresApi(37)
 private fun addSecurityModel(context: Context, codecInfo: MediaCodecInfo,
                              propertyList: MutableList<DetailsProperty>) {
     val securityModelString = when (val securityModel = codecInfo.securityModel) {

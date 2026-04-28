@@ -7,19 +7,11 @@
     <string name="choose_share">Choose info to share</string>
     <string name="codec_details_selected">Selected codec details</string>
 
-    <string name="feedback_email" translatable="false">parseus.dev@gmail.com</string>
-    <string name="email_subject">Feedback</string>
-    <string name="choose_email">Send feedback via…</string>
-    <string name="no_email_apps">No apps can perform this action. Unable to copy the email address to the clipboard.</string>
-    <string name="no_email_apps_clipboard">No apps can perform this action. Email address was copied to the clipboard.</string>
-
     <string name="about_version_header">Version</string>
     <string name="about_version_content_description">Version: %s</string>
     <string name="about_github">Visit the app\'s GitHub page</string>
     <string name="about_support">Support</string>
     <string name="about_rate_app">Rate application</string>
-    <string name="about_report_bugs">Report bugs</string>
-    <string name="about_send_feedback">Send feedback</string>
 
     <string name="app_theme_light">Light</string>
     <string name="app_theme_dark">Dark</string>

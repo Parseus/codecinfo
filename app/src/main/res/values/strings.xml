@@ -178,9 +178,17 @@
     <string name="keyboard_key_ctrl_v" translatable="false">Ctrl + V</string>
     <string name="keyboard_key_ctrl_comma" translatable="false">Ctrl + ,</string>
     <string name="keyboard_key_esc" translatable="false">Esc</string>
+
+    <string name="feedback_email" translatable="false">parseus.dev@gmail.com</string>
+    <string name="email_subject">Feedback</string>
+    <string name="choose_email">Send feedback via…</string>
     <string name="no_apps_for_action">No apps can perform this action.</string>
+    <string name="no_email_apps">No apps can perform this action. Unable to copy the email address to the clipboard.</string>
+    <string name="no_email_apps_clipboard">No apps can perform this action. Email address was copied to the clipboard.</string>
 
     <string name="about_licenses">Licenses</string>
     <string name="about_license_notice_title">Notices for libraries:</string>
     <string name="about_changelog">What\'s new</string>
+    <string name="about_report_bugs">Report bugs</string>
+    <string name="about_send_feedback">Send feedback</string>
 </resources>

@@ -62,11 +62,15 @@ fun Fragment.sendFeedbackEmail() {
     }
     if (intent.resolveActivity(requireActivity().packageManager) != null) {
         startActivity(Intent.createChooser(intent, getString(R.string.choose_email)))
-    } else {
-        val clipboard = requireContext().getSystemService<ClipboardManager>()
-        clipboard?.setPrimaryClip(ClipData.newPlainText("email", feedbackEmail))
+    } else if (isAdded) {
+        try {
+            requireContext().copyToClipboard("email", feedbackEmail)
 
-        Snackbar.make(requireActivity().findViewById(android.R.id.content),
-            R.string.no_email_apps_clipboard, Snackbar.LENGTH_LONG).show()
+            Snackbar.make(requireActivity().findViewById(android.R.id.content),
+                R.string.no_email_apps_clipboard, Snackbar.LENGTH_LONG).show()
+        } catch (_: Exception) {
+            Snackbar.make(requireActivity().findViewById(android.R.id.content),
+                R.string.no_email_apps, Snackbar.LENGTH_LONG).show()
+        }
     }
 }

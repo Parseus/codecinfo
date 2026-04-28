@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.UiModeManager
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Typeface
@@ -20,6 +21,12 @@ import androidx.fragment.app.FragmentActivity
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import java.util.Locale
+
+val externalAppIntentFlags: Int
+    get() {
+        val flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+        return flags or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
+    }
 
 private const val AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv"
 private const val GOOGLE_ANDROID_TV_INSTALLED = "com.google.android.tv.installed"

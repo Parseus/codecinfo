@@ -38,6 +38,11 @@ class TvAboutFragment : GuidedStepSupportFragment() {
             .icon(R.drawable.ic_changelog)
             .build())
         actions.add(GuidedAction.Builder(requireContext())
+            .id(ACTION_LICENSES_ID)
+            .title(R.string.about_licenses)
+            .icon(R.drawable.ic_licenses)
+            .build())
+        actions.add(GuidedAction.Builder(requireContext())
             .id(ACTION_OK_ID)
             .title(android.R.string.ok)
             .build())
@@ -51,12 +56,19 @@ class TvAboutFragment : GuidedStepSupportFragment() {
                     addToBackStack(null)
                 }
             }
+            ACTION_LICENSES_ID -> {
+                parentFragmentManager.commit {
+                    replace(android.R.id.content, TvLicensesFragment())
+                    addToBackStack(null)
+                }
+            }
             ACTION_OK_ID -> finishGuidedStepSupportFragments()
         }
     }
     companion object {
 
         private const val ACTION_CHANGELOG_ID = 1L
+        private const val ACTION_LICENSES_ID = 2L
         private const val ACTION_OK_ID = 5L
     }
 

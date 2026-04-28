@@ -9,12 +9,6 @@ import com.google.android.material.transition.MaterialContainerTransform
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.ui.settings.DarkTheme
 
-val externalAppIntentFlags: Int
-    get() {
-        val flags = Intent.FLAG_ACTIVITY_NO_HISTORY or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-        return flags or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
-    }
-
 @SuppressLint("PrivateApi")
 fun getSystemProperty(property: String): String? {
     return try {

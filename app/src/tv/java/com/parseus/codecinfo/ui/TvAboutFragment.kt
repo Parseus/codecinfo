@@ -32,13 +32,32 @@ class TvAboutFragment : GuidedStepSupportFragment() {
 
     override fun onCreateActions(actions: MutableList<GuidedAction>, savedInstanceState: Bundle?) {
         super.onCreateActions(actions, savedInstanceState)
-        val okAction = GuidedAction.Builder(requireContext()).title(android.R.string.ok).build()
-        actions.add(okAction)
+        actions.add(GuidedAction.Builder(requireContext())
+            .id(ACTION_CHANGELOG_ID)
+            .title(R.string.about_changelog)
+            .icon(R.drawable.ic_changelog)
+            .build())
+        actions.add(GuidedAction.Builder(requireContext())
+            .id(ACTION_OK_ID)
+            .title(android.R.string.ok)
+            .build())
     }
 
     override fun onGuidedActionClicked(action: GuidedAction) {
-        super.onGuidedActionClicked(action)
-        finishGuidedStepSupportFragments()
+        when (action.id) {
+            ACTION_CHANGELOG_ID -> {
+                parentFragmentManager.commit {
+                    replace(android.R.id.content, TvChangelogFragment())
+                    addToBackStack(null)
+                }
+            }
+            ACTION_OK_ID -> finishGuidedStepSupportFragments()
+        }
+    }
+    companion object {
+
+        private const val ACTION_CHANGELOG_ID = 1L
+        private const val ACTION_OK_ID = 5L
     }
 
 }

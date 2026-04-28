@@ -179,4 +179,5 @@
     <string name="keyboard_key_ctrl_comma" translatable="false">Ctrl + ,</string>
     <string name="keyboard_key_esc" translatable="false">Esc</string>
 
+    <string name="about_changelog">What\'s new</string>
 </resources>

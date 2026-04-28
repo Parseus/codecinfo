@@ -12,6 +12,7 @@ import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.clearDrmCaches
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
+import com.parseus.codecinfo.utils.isTv
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -38,6 +39,9 @@ class ItemsViewModel : ViewModel() {
     val refreshDetailsTrigger: SharedFlow<Unit> = _refreshDetailsTrigger.asSharedFlow()
 
     private var preCacheJob: Job? = null
+
+    private fun getPreCacheDelay(context: Context) =
+        if (context.isTv()) PRECACHE_DELAY_TV else PRECACHE_DELAY
 
     fun loadData(context: Context) {
         if (_allAudioState.value != null) return
@@ -100,15 +104,15 @@ class ItemsViewModel : ViewModel() {
 
             for (info in audio) {
                 getDetailedCodecInfo(context, info.codecId, info.codecName)
-                delay(PRECACHE_DELAY)
+                delay(getPreCacheDelay(context))
             }
             for (info in video) {
                 getDetailedCodecInfo(context, info.codecId, info.codecName)
-                delay(PRECACHE_DELAY)
+                delay(getPreCacheDelay(context))
             }
             for (info in drms) {
                 getDetailedDrmInfo(context, info.drmUuid, DrmVendor.getFromUuid(info.drmUuid))
-                delay(PRECACHE_DELAY)
+                delay(getPreCacheDelay(context))
             }
         }
     }
@@ -138,6 +142,9 @@ class ItemsViewModel : ViewModel() {
         // Precaching all details could potentially cause CPU spikes on lower-end devices,
         // so a small delay like that should (at least partially) avoid them.
         private const val PRECACHE_DELAY = 50L
+        // Typically TV devices feature an underpowered hardware, so I'm not confident
+        // that mobile's 50 ms delay would be enough here.
+        private const val PRECACHE_DELAY_TV = 100L
     }
 
 }

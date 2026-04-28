@@ -3,30 +3,24 @@ package com.parseus.codecinfo.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
 import com.parseus.codecinfo.data.codecinfo.detailedCodecInfos
-import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
-import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.codecinfo.videoCodecList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
-import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.detailedDrmInfo
 import com.parseus.codecinfo.data.drm.drmList
-import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
-import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
 import com.parseus.codecinfo.ui.settings.SettingsContract
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
+import com.parseus.codecinfo.viewmodels.ItemsViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Suppress("unused")
 class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
@@ -35,18 +29,16 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
     private val videoPresentAdapter = ArrayObjectAdapter(CodecPresenter(R.drawable.ic_video))
     private val drmPresentAdapter = ArrayObjectAdapter(DrmPresenter(R.drawable.ic_lock))
 
+    private val viewModel: ItemsViewModel by activityViewModels()
+
     private val settingsContract = registerForActivityResult(SettingsContract()) { result ->
         if (result.shouldReloadLists() || result.saveDetailsToLogcatChanged) {
-            viewLifecycleOwner.lifecycleScope.launch {
-                clearSavedLists()
-                loadData()
-            }
+            clearSavedLists()
+            viewModel.refreshData(requireContext())
         }
     }
 
     private lateinit var adapter: ArrayObjectAdapter
-
-    private var preCacheJob: Job? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,8 +48,63 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         setupUI()
         setupAdapter()
 
+        viewModel.loadData(requireContext())
+
         viewLifecycleOwner.lifecycleScope.launch {
-            loadData()
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.allAudioState.collect {
+                        it?.let {
+                            audioPresentAdapter.setItems(it, object : DiffCallback<CodecSimpleInfo>() {
+                                override fun areItemsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
+                                    return oldItem.codecId == newItem.codecId && oldItem.codecName == newItem.codecName
+                                }
+                                override fun areContentsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
+                                    return oldItem == newItem
+                                }
+                            })
+                            checkIfFullyDrawn()
+                        }
+                    }
+                }
+                launch {
+                    viewModel.allVideoState.collect {
+                        it?.let {
+                            videoPresentAdapter.setItems(it, object : DiffCallback<CodecSimpleInfo>() {
+                                override fun areItemsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
+                                    return oldItem.codecId == newItem.codecId && oldItem.codecName == newItem.codecName
+                                }
+                                override fun areContentsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
+                                    return oldItem == newItem
+                                }
+                            })
+                            checkIfFullyDrawn()
+                        }
+                    }
+                }
+                launch {
+                    viewModel.allDrmsState.collect {
+                        it?.let {
+                            drmPresentAdapter.setItems(it, object : DiffCallback<DrmSimpleInfo>() {
+                                override fun areItemsTheSame(oldItem: DrmSimpleInfo, newItem: DrmSimpleInfo): Boolean {
+                                    return oldItem.drmUuid == newItem.drmUuid && oldItem.drmName == newItem.drmName
+                                }
+                                override fun areContentsTheSame(oldItem: DrmSimpleInfo, newItem: DrmSimpleInfo): Boolean {
+                                    return oldItem == newItem
+                                }
+                            })
+                            checkIfFullyDrawn()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun checkIfFullyDrawn() {
+        if (viewModel.allAudioState.value != null && viewModel.allVideoState.value != null
+            && viewModel.allDrmsState.value != null) {
+            requireActivity().fullyDrawnReporter.removeReporter()
         }
     }
 
@@ -135,81 +182,6 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         }
     }
 
-    private suspend fun loadData() = coroutineScope {
-        val context = context ?: return@coroutineScope
-
-        val audioJob = launch(Dispatchers.IO) {
-            val audioList = getSimpleCodecInfoList(context, true)
-            withContext(Dispatchers.Main) {
-                audioPresentAdapter.setItems(audioList, object : DiffCallback<CodecSimpleInfo>() {
-                    override fun areItemsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
-                        return oldItem.codecId == newItem.codecId && oldItem.codecName == newItem.codecName
-                    }
-                    override fun areContentsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
-                        return oldItem == newItem
-                    }
-                })
-            }
-        }
-        val videoJob = launch(Dispatchers.IO) {
-            val videoList = getSimpleCodecInfoList(context, false)
-            withContext(Dispatchers.Main) {
-                videoPresentAdapter.setItems(videoList, object : DiffCallback<CodecSimpleInfo>() {
-                    override fun areItemsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
-                        return oldItem.codecId == newItem.codecId && oldItem.codecName == newItem.codecName
-                    }
-                    override fun areContentsTheSame(oldItem: CodecSimpleInfo, newItem: CodecSimpleInfo): Boolean {
-                        return oldItem == newItem
-                    }
-                })
-            }
-        }
-        val drmJob = launch(Dispatchers.IO) {
-            val drmsList = getSimpleDrmInfoList(context)
-            withContext(Dispatchers.Main) {
-                drmPresentAdapter.setItems(drmsList, object : DiffCallback<DrmSimpleInfo>() {
-                    override fun areItemsTheSame(oldItem: DrmSimpleInfo, newItem: DrmSimpleInfo): Boolean {
-                        return oldItem.drmUuid == newItem.drmUuid && oldItem.drmName == newItem.drmName
-                    }
-                    override fun areContentsTheSame(oldItem: DrmSimpleInfo, newItem: DrmSimpleInfo): Boolean {
-                        return oldItem == newItem
-                    }
-                })
-            }
-        }
-
-        audioJob.join()
-        videoJob.join()
-        drmJob.join()
-
-        requireActivity().fullyDrawnReporter.removeReporter()
-
-        preCacheDetails(
-            audioPresentAdapter.unmodifiableList(),
-            videoPresentAdapter.unmodifiableList(),
-            drmPresentAdapter.unmodifiableList()
-        )
-    }
-
-    private fun preCacheDetails(audio: List<CodecSimpleInfo>, video: List<CodecSimpleInfo>, drms: List<DrmSimpleInfo>) {
-        val context = context ?: return
-        preCacheJob?.cancel()
-        preCacheJob = viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-            for (info in audio) {
-                getDetailedCodecInfo(context, info.codecId, info.codecName)
-                delay(PRECACHE_DELAY)
-            }
-            for (info in video) {
-                getDetailedCodecInfo(context, info.codecId, info.codecName)
-                delay(PRECACHE_DELAY)
-            }
-            for (info in drms) {
-                getDetailedDrmInfo(context, info.drmUuid, DrmVendor.getFromUuid(info.drmUuid))
-                delay(PRECACHE_DELAY)
-            }
-        }
-    }
-
     override fun onResume() {
         super.onResume()
     }
@@ -252,10 +224,6 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
     }
 
     companion object {
-        // Typically TV devices feature an underpowered hardware, so I'm not confident
-        // that mobile's 50 ms delay would be enough here.
-        private const val PRECACHE_DELAY = 100L
-
         private const val ACTION_SETTINGS_ID = 1000
         private const val ACTION_ABOUT_ID = 1001
         private const val ACTION_DEVICE_ISSUES_ID = 1002

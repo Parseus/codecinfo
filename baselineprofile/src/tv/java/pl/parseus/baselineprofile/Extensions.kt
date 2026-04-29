@@ -24,7 +24,7 @@ fun UiAutomatorTestScope.clickThroughCodecList() {
                 it.click()
                 it.click()
                 device.waitForIdle()
-                onElementOrNull { viewIdResourceName == fullId("full_codec_info_content") }
+                onElementOrNull { viewIdResourceName == fullId("item_details_recycler_view") }
                     ?.fling(Direction.DOWN)
 
                 device.pressBack()

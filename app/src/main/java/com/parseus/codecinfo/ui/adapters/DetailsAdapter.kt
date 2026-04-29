@@ -3,37 +3,103 @@ package com.parseus.codecinfo.ui.adapters
 import android.content.ClipData
 import android.content.ClipDescription
 import android.os.Build
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.PointerIcon
+import android.widget.TextView
 import androidx.annotation.CallSuper
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.text.HtmlCompat
 import androidx.core.text.PrecomputedTextCompat
+import androidx.core.text.method.LinkMovementMethodCompat
+import androidx.core.text.util.LinkifyCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.parseus.codecinfo.data.DetailsProperty
+import com.parseus.codecinfo.R
+import com.parseus.codecinfo.data.knownproblems.KnownProblem
+import com.parseus.codecinfo.databinding.ExpandableItemContentBinding
+import com.parseus.codecinfo.databinding.ExpandableItemHeaderBinding
 import com.parseus.codecinfo.databinding.ItemDetailsAdapterRowBinding
+import com.parseus.codecinfo.ui.ImprovedBulletSpan
 
-open class DetailsAdapter : ListAdapter<DetailsProperty, DetailsAdapter.DetailsViewHolder>(
+open class DetailsAdapter(private val onHeaderClick: (Int) -> Unit = {}) : ListAdapter<DetailItem, RecyclerView.ViewHolder>(
     DetailsDiffCallback()
 ) {
 
-    fun replaceAll(infoList: List<DetailsProperty>) {
-        submitList(infoList.sortedBy { it.id })
+    companion object {
+        const val TYPE_HEADER = 0
+        const val TYPE_KNOWN_PROBLEM = 1
+        const val TYPE_PROPERTY = 2
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetailsViewHolder {
-        val binding = ItemDetailsAdapterRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return DetailsViewHolder(binding)
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is DetailItem.Header -> TYPE_HEADER
+            is DetailItem.KnownProblemItem -> TYPE_KNOWN_PROBLEM
+            is DetailItem.PropertyItem -> TYPE_PROPERTY
+        }
     }
 
-    override fun onBindViewHolder(holder: DetailsViewHolder, position: Int) {
-        val property = getItem(position)
-        val name = property.name
-        val info = property.value
-        holder.bindDetails(name, info)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (viewType) {
+            TYPE_HEADER -> HeaderViewHolder(ExpandableItemHeaderBinding.inflate(inflater, parent, false), onHeaderClick)
+            TYPE_KNOWN_PROBLEM -> KnownProblemViewHolder(ExpandableItemContentBinding.inflate(inflater, parent, false))
+            TYPE_PROPERTY -> DetailsViewHolder(ItemDetailsAdapterRowBinding.inflate(inflater, parent, false))
+            else -> throw IllegalArgumentException("Unknown view type $viewType")
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = getItem(position)
+        when (holder) {
+            is HeaderViewHolder -> holder.bind((item as DetailItem.Header).isExpanded)
+            is KnownProblemViewHolder -> holder.bind((item as DetailItem.KnownProblemItem).problem, position)
+            is DetailsViewHolder -> {
+                val property = (item as DetailItem.PropertyItem).property
+                holder.bindDetails(property.name, property.value)
+            }
+        }
+    }
+
+    class HeaderViewHolder(private val binding: ExpandableItemHeaderBinding, private val onHeaderClick: (Int) -> Unit) : RecyclerView.ViewHolder(binding.root) {
+        val expandIcon = binding.expandIcon
+
+        fun bind(isExpanded: Boolean) {
+            binding.expandIcon.rotation = if (isExpanded) 0f else 180f
+            itemView.setOnClickListener { onHeaderClick(bindingAdapterPosition) }
+        }
+    }
+
+    class KnownProblemViewHolder(private val binding: ExpandableItemContentBinding) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.knownIssueItemSources.movementMethod = LinkMovementMethodCompat.getInstance()
+        }
+
+        fun bind(knownProblem: KnownProblem, position: Int) {
+            val text = HtmlCompat.fromHtml(knownProblem.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            binding.root.contentDescription = binding.root.context.getString(
+                R.string.known_issue_content_description, position, text,
+                knownProblem.urls.joinToString())
+            binding.knownIssueItemDesc.text = text
+            val spannableBuilder = SpannableStringBuilder()
+            with (spannableBuilder) {
+                knownProblem.urls.forEach {
+                    val start = length
+                    append(it)
+                    setSpan(ImprovedBulletSpan(), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
+            }
+            binding.knownIssueItemSources.run {
+                setText(spannableBuilder, TextView.BufferType.SPANNABLE)
+                LinkifyCompat.addLinks(this, Linkify.WEB_URLS)
+            }
+        }
     }
 
     open class DetailsViewHolder(binding: ItemDetailsAdapterRowBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -65,9 +131,9 @@ open class DetailsAdapter : ListAdapter<DetailsProperty, DetailsAdapter.DetailsV
 
     }
 
-    private class DetailsDiffCallback : DiffUtil.ItemCallback<DetailsProperty>() {
-        override fun areItemsTheSame(oldItem: DetailsProperty, newItem: DetailsProperty) = oldItem.id == newItem.id
-        override fun areContentsTheSame(oldItem: DetailsProperty, newItem: DetailsProperty) = oldItem == newItem
+    private class DetailsDiffCallback : DiffUtil.ItemCallback<DetailItem>() {
+        override fun areItemsTheSame(oldItem: DetailItem, newItem: DetailItem) = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: DetailItem, newItem: DetailItem) = oldItem == newItem
     }
 
 }

@@ -11,14 +11,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
-import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.material.divider.MaterialDividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import com.kieronquinn.monetcompat.app.MonetFragment
 import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
+import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
 import com.parseus.codecinfo.data.codecinfo.isDetailedCodecInfoCached
@@ -26,10 +26,12 @@ import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.isDetailedDrmInfoCached
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
+import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
 import com.parseus.codecinfo.ui.CustomLinearLayoutManager
+import com.parseus.codecinfo.ui.adapters.DetailItem
+import com.parseus.codecinfo.ui.adapters.DetailsItemDecoration
 import com.parseus.codecinfo.ui.adapters.MobileDetailsAdapter
-import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
 import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSurfaceColor
@@ -49,6 +51,9 @@ class DetailsFragment : MonetFragment() {
     internal val binding get() = _binding!!
 
     private lateinit var propertyList: List<DetailsProperty>
+    private var knownProblems: List<KnownProblem> = emptyList()
+    private var isKnownProblemsExpanded = true
+    private lateinit var detailsAdapter: MobileDetailsAdapter
 
     var codecId: String? = null
     var codecName: String? = null
@@ -67,9 +72,7 @@ class DetailsFragment : MonetFragment() {
     }
 
     override fun onDestroyView() {
-        binding.itemDetailsContent.setOnScrollChangeListener(null as NestedScrollView.OnScrollChangeListener?)
-        binding.fullCodecInfoContent.adapter = null
-        binding.knownProblemsList.adapter = null
+        binding.itemDetailsRecyclerView.adapter = null
         _binding = null
         super.onDestroyView()
     }
@@ -103,24 +106,25 @@ class DetailsFragment : MonetFragment() {
             drmUuid = BundleCompat.getSerializable(it, "drmUuid", UUID::class.java)
         }
 
-        binding.itemDetailsContent.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener {
-                _, _, scrollY, _, _ -> binding.fullCodecInfoName.isHeaderLifted = scrollY > 0
+        binding.itemDetailsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                binding.fullCodecInfoName.isHeaderLifted = recyclerView.computeVerticalScrollOffset() > 0
+            }
         })
 
-        if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
-            val knownProblems = KNOWN_PROBLEMS_DB.filter {
-                it.isAffected(requireContext(), codecName!!)
+        detailsAdapter = MobileDetailsAdapter { position ->
+            val item = detailsAdapter.currentList[position]
+            if (item is DetailItem.Header) {
+                isKnownProblemsExpanded = !isKnownProblemsExpanded
+                updateFullDetailsList()
             }
-            if (knownProblems.isNotEmpty()) {
-                binding.knownProblemsList.apply {
-                    layoutManager = CustomLinearLayoutManager(context)
-                    isNestedScrollingEnabled = false
-                    addItemDecoration(MaterialDividerItemDecoration(context, MaterialDividerItemDecoration.VERTICAL))
-                    itemAnimator = ExpandableItemAnimator()
-                    isVisible = true
-                    adapter = ExpandableItemAdapter(knownProblems)
-                }
-            }
+        }
+
+        binding.itemDetailsRecyclerView.apply {
+            layoutManager = CustomLinearLayoutManager(context)
+            adapter = detailsAdapter
+            addItemDecoration(DetailsItemDecoration(context))
+            itemAnimator = ExpandableItemAnimator()
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -157,6 +161,14 @@ class DetailsFragment : MonetFragment() {
             }
         }
 
+        knownProblems = if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
+            KNOWN_PROBLEMS_DB.filter {
+                it.isAffected(requireContext(), codecName!!)
+            }
+        } else {
+            emptyList()
+        }
+
         binding.loadingProgress.isVisible = false
         showFullDetails()
     }
@@ -176,13 +188,23 @@ class DetailsFragment : MonetFragment() {
                 PointerIcon.getSystemIcon(requireContext(), PointerIcon.TYPE_HAND)
         }
 
-        val detailsAdapter = MobileDetailsAdapter()
-        binding.fullCodecInfoContent.apply {
-            layoutManager = CustomLinearLayoutManager(context)
-            adapter = detailsAdapter
-            isNestedScrollingEnabled = false
+        updateFullDetailsList()
+    }
+
+    private fun updateFullDetailsList() {
+        val fullList = mutableListOf<DetailItem>()
+        if (knownProblems.isNotEmpty()) {
+            fullList.add(DetailItem.Header(0L, R.string.known_issue_warning, isKnownProblemsExpanded))
+            if (isKnownProblemsExpanded) {
+                knownProblems.forEach {
+                    fullList.add(DetailItem.KnownProblemItem(it))
+                }
+            }
         }
-        detailsAdapter.replaceAll(propertyList)
+        propertyList.forEach {
+            fullList.add(DetailItem.PropertyItem(it))
+        }
+        detailsAdapter.submitList(fullList)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

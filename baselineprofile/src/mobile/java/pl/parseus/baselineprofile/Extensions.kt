@@ -31,7 +31,7 @@ fun UiAutomatorTestScope.clickThroughCodecList() {
             it.click()
             device.waitForIdle()
 
-            val detailsList = onElement { viewIdResourceName == fullId("full_codec_info_content") }
+            val detailsList = onElement { viewIdResourceName == fullId("item_details_recycler_view") }
             detailsList.setGestureMargin(device.displayWidth / 5)
             detailsList.fling(Direction.DOWN)
 
@@ -56,7 +56,7 @@ fun UiAutomatorTestScope.clickThroughDrmList() {
 
             // Other DRMs don't have enough info to be scrollable, might as well save a bit of time.
             onElementOrNull { textAsString() == "Widevine CDM" }?.let {
-                val detailsList = onElement { viewIdResourceName == fullId("full_codec_info_content") }
+                val detailsList = onElement { viewIdResourceName == fullId("item_details_recycler_view") }
                 detailsList.setGestureMargin(device.displayWidth / 5)
                 detailsList.fling(Direction.DOWN)
             }

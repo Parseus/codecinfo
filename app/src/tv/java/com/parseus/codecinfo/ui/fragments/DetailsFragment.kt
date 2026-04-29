@@ -21,10 +21,12 @@ import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.isDetailedDrmInfoCached
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
+import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
 import com.parseus.codecinfo.ui.CustomLinearLayoutManager
+import com.parseus.codecinfo.ui.adapters.DetailItem
+import com.parseus.codecinfo.ui.adapters.DetailsItemDecoration
 import com.parseus.codecinfo.ui.adapters.DetailsAdapter
-import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
 import com.parseus.codecinfo.utils.getSelectedCodecInfoString
 import com.parseus.codecinfo.utils.getSelectedDrmInfoString
@@ -39,6 +41,9 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     private val binding get() = _binding!!
 
     private lateinit var propertyList: List<DetailsProperty>
+    private var knownProblems: List<KnownProblem> = emptyList()
+    private var isKnownProblemsExpanded = true
+    private lateinit var detailsAdapter: DetailsAdapter
 
     private var codecId: String? = null
     private var codecName: String? = null
@@ -73,8 +78,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroyView() {
-        binding.fullCodecInfoContent.adapter = null
-        binding.knownProblemsList.adapter = null
+        binding.itemDetailsRecyclerView.adapter = null
         _binding = null
         super.onDestroyView()
     }
@@ -89,20 +93,16 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
             drmUuid = IntentCompat.getSerializableExtra(it, "drmUuid", UUID::class.java)
         }
 
-        if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
-            val knownProblems = KNOWN_PROBLEMS_DB.filter {
-                it.isAffected(requireContext(), codecName!!)
-            }
-            if (knownProblems.isNotEmpty()) {
-                binding.knownProblemsList.apply {
-                    layoutManager = CustomLinearLayoutManager(context)
-                    isNestedScrollingEnabled = false
-                    addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-                    itemAnimator = ExpandableItemAnimator()
-                    isVisible = true
-                    adapter = ExpandableItemAdapter(knownProblems)
-                }
-            }
+        detailsAdapter = DetailsAdapter { _ ->
+            isKnownProblemsExpanded = !isKnownProblemsExpanded
+            updateFullDetailsList()
+        }
+
+        binding.itemDetailsRecyclerView.apply {
+            layoutManager = CustomLinearLayoutManager(context)
+            adapter = detailsAdapter
+            addItemDecoration(DetailsItemDecoration(context))
+            itemAnimator = ExpandableItemAnimator()
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -127,6 +127,14 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
                     }
                 }
 
+                knownProblems = if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
+                    KNOWN_PROBLEMS_DB.filter {
+                        it.isAffected(requireContext(), codecName!!)
+                    }
+                } else {
+                    emptyList()
+                }
+
                 binding.loadingProgress.isVisible = false
                 getFullDetails()
             }
@@ -135,14 +143,27 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private fun getFullDetails() {
         binding.fullCodecInfoName.text = codecName ?: drmName
+        updateFullDetailsList()
+    }
 
-        val detailsAdapter = DetailsAdapter()
-        detailsAdapter.replaceAll(propertyList)
-        binding.fullCodecInfoContent.apply {
-            layoutManager = CustomLinearLayoutManager(context)
-            adapter = detailsAdapter
-            isNestedScrollingEnabled = false
+    private fun updateFullDetailsList(filteredProperties: List<DetailsProperty>? = null) {
+        val fullList = mutableListOf<DetailItem>()
+        val currentProperties = filteredProperties ?: propertyList
+        
+        // Hide known problems if searching
+        if (knownProblems.isNotEmpty() && (filteredProperties == null || filteredProperties.size == propertyList.size)) {
+            fullList.add(DetailItem.Header(0L, R.string.known_issue_warning, isKnownProblemsExpanded))
+            if (isKnownProblemsExpanded) {
+                knownProblems.forEach {
+                    fullList.add(DetailItem.KnownProblemItem(it))
+                }
+            }
         }
+        
+        currentProperties.forEach {
+            fullList.add(DetailItem.PropertyItem(it))
+        }
+        detailsAdapter.submitList(fullList)
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
@@ -160,8 +181,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     private fun handleSearch(query: String) {
-        val adapter = binding.fullCodecInfoContent.adapter as DetailsAdapter
-        adapter.replaceAll(filterProperties(query))
+        updateFullDetailsList(filterProperties(query))
     }
 
     private fun filterProperties(query: String): List<DetailsProperty> {

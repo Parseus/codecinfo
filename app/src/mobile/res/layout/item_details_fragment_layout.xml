@@ -26,37 +26,14 @@
         tools:text="Item full name"
         tools:ignore="SelectableText,UnusedAttribute" />
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/item_details_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/item_details_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="48dp"
         android:scrollbars="vertical"
-        android:fadeScrollbars="false">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/known_problems_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                tools:listitem="@layout/expandable_item_header"
-                tools:itemCount="1"/>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/full_codec_info_content"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="5dp"
-                tools:listitem="@layout/item_details_adapter_row"/>
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
+        android:fadeScrollbars="false"
+        tools:listitem="@layout/item_details_adapter_row" />
 
     <com.google.android.material.loadingindicator.LoadingIndicator
         android:id="@+id/loadingProgress"

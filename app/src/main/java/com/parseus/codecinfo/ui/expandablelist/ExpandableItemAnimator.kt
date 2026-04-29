@@ -7,6 +7,7 @@ import android.annotation.SuppressLint
 import android.view.View
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
+import com.parseus.codecinfo.ui.adapters.DetailsAdapter
 
 class ExpandableItemAnimator : DefaultItemAnimator() {
 
@@ -14,7 +15,7 @@ class ExpandableItemAnimator : DefaultItemAnimator() {
                                             viewHolder: RecyclerView.ViewHolder,
                                             changeFlags: Int,
                                             payloads: MutableList<Any>): ItemHolderInfo {
-        return if (viewHolder is ExpandableItemAdapter.ViewHolder.HeaderViewHolder) {
+        return if (viewHolder is DetailsAdapter.HeaderViewHolder) {
             HeaderItemInfo().also { it.setFrom(viewHolder) }
         } else {
             super.recordPreLayoutInformation(state, viewHolder, changeFlags, payloads)
@@ -23,7 +24,7 @@ class ExpandableItemAnimator : DefaultItemAnimator() {
 
     override fun recordPostLayoutInformation(state: RecyclerView.State,
                                              viewHolder: RecyclerView.ViewHolder): ItemHolderInfo {
-        return if (viewHolder is ExpandableItemAdapter.ViewHolder.HeaderViewHolder) {
+        return if (viewHolder is DetailsAdapter.HeaderViewHolder) {
             HeaderItemInfo().also { it.setFrom(viewHolder) }
         } else {
             super.recordPostLayoutInformation(state, viewHolder)
@@ -36,7 +37,7 @@ class ExpandableItemAnimator : DefaultItemAnimator() {
                                preInfo: ItemHolderInfo,
                                postInfo: ItemHolderInfo): Boolean {
         if (preInfo is HeaderItemInfo && postInfo is HeaderItemInfo
-                && newHolder is ExpandableItemAdapter.ViewHolder.HeaderViewHolder) {
+                && newHolder is DetailsAdapter.HeaderViewHolder) {
             ObjectAnimator.ofFloat(newHolder.expandIcon, View.ROTATION,
                 preInfo.arrowRotation, postInfo.arrowRotation).also {
                     it.addListener(object : AnimatorListenerAdapter() {
@@ -65,7 +66,7 @@ class HeaderItemInfo : RecyclerView.ItemAnimator.ItemHolderInfo() {
     internal var arrowRotation = 0f
 
     override fun setFrom(holder: RecyclerView.ViewHolder): RecyclerView.ItemAnimator.ItemHolderInfo {
-        if (holder is ExpandableItemAdapter.ViewHolder.HeaderViewHolder) {
+        if (holder is DetailsAdapter.HeaderViewHolder) {
             arrowRotation = holder.expandIcon.rotation
         }
         return super.setFrom(holder)

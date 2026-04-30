@@ -6,7 +6,7 @@
     android:gravity="center_vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="10dp"
+    android:paddingBottom="@dimen/details_row_bottom_padding"
     android:paddingLeft="@dimen/list_content_horizontal_padding"
     android:paddingRight="@dimen/list_content_horizontal_padding"
     tools:ignore="SelectableText">

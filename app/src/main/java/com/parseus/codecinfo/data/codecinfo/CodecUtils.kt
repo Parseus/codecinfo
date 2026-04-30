@@ -387,11 +387,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
                 } else {
                     context.getString(R.string.unknown_or_not_supported)
                 }
-                propertyList.add(DetailsProperty(
-                    propertyList.size.toLong(),
-                    context.getString(R.string.supported_layering_schemas),
-                    schemasString
-                ))
+                propertyList.addMultiLineProperty(context.getString(R.string.supported_layering_schemas), schemasString)
             }
         }
     }
@@ -422,8 +418,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             bitrateModesString += "\n${context.getString(R.string.cbr_fd)}: " +
                     "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR_FD)}"
         }
-        propertyList.add(DetailsProperty(propertyList.size.toLong(),
-                context.getString(R.string.bitrate_modes), bitrateModesString))
+        propertyList.addMultiLineProperty(context.getString(R.string.bitrate_modes), bitrateModesString)
 
         val defaultMediaFormat = capabilities.defaultFormat
         handleComplexityRange(encoderCapabilities, defaultMediaFormat, context, propertyList)
@@ -435,9 +430,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             val vendorCodec = codec ?: MediaCodec.createByCodecName(codecName)
             val vendorParams = vendorCodec.supportedVendorParameters
             if (vendorParams.isNotEmpty()) {
-                propertyList.add(
-                    DetailsProperty(propertyList.size.toLong(),
-                    context.getString(R.string.vendor_parameters), vendorParams.joinToString("\n")))
+                propertyList.addMultiLineProperty(context.getString(R.string.vendor_parameters), vendorParams.joinToString("\n"))
             }
         } catch (_: Throwable) {}
     }
@@ -451,9 +444,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
         context.getString(R.string.profile_levels)
     }
 
-    getProfileLevels(context, codecId, codecName, capabilities)?.let {
-        propertyList.add(DetailsProperty(propertyList.size.toLong(), profileString, it))
-    }
+    propertyList.addMultiLineProperty(profileString, getProfileLevels(context, codecId, codecName, capabilities))
 
     synchronized(detailedCodecInfos) {
         detailedCodecInfos[combinedCodecName] = propertyList
@@ -586,8 +577,7 @@ private fun getAudioCapabilities(context: Context, codecId: String, codecName: S
         }
     }
 
-    propertyList.add(DetailsProperty(propertyList.size.toLong(),
-            context.getString(R.string.bitrate_range), bitrateRangeString))
+    propertyList.addMultiLineProperty(context.getString(R.string.bitrate_range), bitrateRangeString)
 
     val sampleRates = audioCapabilities.supportedSampleRateRanges
     val sampleRatesString = when {
@@ -749,15 +739,13 @@ private fun getVideoCapabilities(context: Context, codecId: String, codecName: S
 
     val frameRatePerResolutions = getFrameRatePerResolutions(context, codecId, videoCapabilities)
     if (frameRatePerResolutions.isNotEmpty()) {
-        propertyList.add(DetailsProperty(propertyList.size.toLong(),
-                context.getString(R.string.max_frame_rate_per_resolution), frameRatePerResolutions))
+        propertyList.addMultiLineProperty(context.getString(R.string.max_frame_rate_per_resolution), frameRatePerResolutions)
     }
 
     if (SDK_INT >= 29) {
         videoCapabilities.supportedPerformancePoints?.let {
             if (it.isNotEmpty()) {
-                propertyList.add(DetailsProperty(propertyList.size.toLong(),
-                    context.getString(R.string.performance_points), it.joinToString("\n")))
+                propertyList.addMultiLineProperty(context.getString(R.string.performance_points), it.joinToString("\n"))
             }
         }
     }
@@ -797,11 +785,13 @@ private fun addColorFormats(capabilities: MediaCodecInfo.CodecCapabilities, code
         getFormattedColorProfileString(settings, colorFormatName, format)
     }.toSortedSet()
 
-    propertyList.add(DetailsProperty(
-        id = propertyList.size.toLong(),
-        name = context.getString(R.string.color_profiles),
-        value = colorFormatStrings.joinToString("\n")
-    ))
+    colorFormatStrings.forEachIndexed { index, colorFormat ->
+        propertyList.add(DetailsProperty(
+            id = propertyList.size.toLong(),
+            name = if (index == 0) context.getString(R.string.color_profiles) else "",
+            value = colorFormat
+        ))
+    }
 }
 
 private fun getFormattedColorProfileString(settings: Settings, colorFormat: String, colorFormatInt: Int): String {
@@ -1229,6 +1219,14 @@ private fun needsHevc10BitProfileExcluded(codecId: String, profile: Int): Boolea
 }
 
 private fun needsMaxResolutionFixForMPEG4(codecId: String) = "video/mp4v-es" == codecId && Build.MODEL in incorrectMpeg4ResolutionModelList
+
+private fun MutableList<DetailsProperty>.addMultiLineProperty(name: String, value: String?) {
+    if (value.isNullOrBlank()) return
+    val lines = value.split("\n").filter { it.isNotBlank() }
+    lines.forEachIndexed { index, line ->
+        add(DetailsProperty(size.toLong(), if (index == 0) name else "", line))
+    }
+}
 
 private fun saveToLogcat(context: Context, codecId: String, codecName: String, detailsList: List<DetailsProperty>) {
     val settings = context.settingsRepository.getSettingsSync()

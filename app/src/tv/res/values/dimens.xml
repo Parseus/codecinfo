@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="icon_size">96dp</dimen>
+
+    <dimen name="details_row_bottom_padding">@dimen/list_content_horizontal_padding</dimen>
+    <dimen name="details_row_continuation_margin">8dp</dimen>
 </resources>

@@ -15,7 +15,9 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.TypedValue
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.AttrRes
 import androidx.core.content.getSystemService
 import androidx.fragment.app.FragmentActivity
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
@@ -69,6 +71,12 @@ fun Context.isTv(): Boolean {
 
     isTvResult = isTv
     return isTv
+}
+
+fun Context.getAttributeColor(@AttrRes attrColor: Int): Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute(attrColor, typedValue, true)
+    return typedValue.data
 }
 
 fun Int.toKiloHertz(): Float {

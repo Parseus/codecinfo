@@ -209,7 +209,10 @@ private fun MutableList<DetailsProperty>.addStringProperties(context: Context,
         try {
             val propertyValue = mediaDrm.getPropertyString(value)
             if (propertyValue.isNotEmpty()) {
-                add(DetailsProperty(size.toLong(), context.getString(key), propertyValue))
+                val lines = propertyValue.split("\n").filter { it.isNotBlank() }
+                lines.forEachIndexed { index, line ->
+                    add(DetailsProperty(size.toLong(), if (index == 0) context.getString(key) else "", line))
+                }
             }
         } catch (_: Throwable) {}
     }

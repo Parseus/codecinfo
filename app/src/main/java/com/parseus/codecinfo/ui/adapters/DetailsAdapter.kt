@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.PointerIcon
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.CallSuper
 import androidx.appcompat.widget.AppCompatTextView
@@ -17,6 +18,9 @@ import androidx.core.text.HtmlCompat
 import androidx.core.text.PrecomputedTextCompat
 import androidx.core.text.method.LinkMovementMethodCompat
 import androidx.core.text.util.LinkifyCompat
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -62,7 +66,9 @@ open class DetailsAdapter(private val onHeaderClick: (Int) -> Unit = {}) : ListA
             is KnownProblemViewHolder -> holder.bind((item as DetailItem.KnownProblemItem).problem, position)
             is DetailsViewHolder -> {
                 val property = (item as DetailItem.PropertyItem).property
-                holder.bindDetails(property.name, property.value)
+                val nextItem = if (position + 1 < itemCount) getItem(position + 1) else null
+                val isFollowedByContinuation = nextItem is DetailItem.PropertyItem && nextItem.property.name.isEmpty()
+                holder.bindDetails(property.name, property.value, isFollowedByContinuation)
             }
         }
     }
@@ -108,8 +114,26 @@ open class DetailsAdapter(private val onHeaderClick: (Int) -> Unit = {}) : ListA
         protected val codecInfo = binding.codecValue as AppCompatTextView
 
         @CallSuper
-        open fun bindDetails(name: String, info: String) {
-            codecName.text = name
+        open fun bindDetails(name: String, info: String, isMultiLineProperty: Boolean) {
+            val resources = itemView.resources
+
+            if (name.isEmpty()) {
+                codecName.isVisible = false
+            } else {
+                codecName.isVisible = true
+                codecName.text = name
+            }
+
+            val bottomPadding = if (isMultiLineProperty) 0 else resources.getDimensionPixelSize(R.dimen.details_row_bottom_padding)
+            itemView.updatePadding(bottom = bottomPadding)
+            codecInfo.updateLayoutParams<LinearLayout.LayoutParams> {
+                topMargin = if (name.isEmpty()) {
+                    -resources.getDimensionPixelSize(R.dimen.details_row_continuation_margin)
+                } else {
+                    0
+                }
+            }
+
             codecInfo.setTextFuture(
                 PrecomputedTextCompat.getTextFuture(info,
                     codecInfo.textMetricsParamsCompat, null)

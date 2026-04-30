@@ -33,12 +33,6 @@ fun Context.getAttributeResourceId(@AttrRes attrResId: Int): Int {
     return typedValue.resourceId
 }
 
-fun Context.getAttributeColor(@AttrRes attrColor: Int): Int {
-    val typedValue = TypedValue()
-    theme.resolveAttribute(attrColor, typedValue, true)
-    return typedValue.data
-}
-
 fun Context.isNightMode(): Boolean {
     val settings = settingsRepository.getSettingsSync()
     val appTheme = DarkTheme.fromValue(settings.darkTheme)

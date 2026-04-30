@@ -9,6 +9,7 @@ import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.utils.matches
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
@@ -34,34 +35,38 @@ class SearchViewModel : ViewModel() {
     private var allVideo: List<CodecSimpleInfo> = emptyList()
     private var allDrms: List<DrmSimpleInfo> = emptyList()
 
+    private var initJob: Job? = null
+
     fun initData(context: Context) {
-        if (allAudio.isNotEmpty()) return
+        if (allAudio.isNotEmpty() || initJob?.isActive == true) return
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val audioDeferred = async { getSimpleCodecInfoList(context, true) }
-            val videoDeferred = async { getSimpleCodecInfoList(context, false) }
-            val drmDeferred = async { getSimpleDrmInfoList(context) }
+        initJob = viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val audioDeferred = async { getSimpleCodecInfoList(context, true) }
+                val videoDeferred = async { getSimpleCodecInfoList(context, false) }
+                val drmDeferred = async { getSimpleDrmInfoList(context) }
 
-            allAudio = audioDeferred.await()
-            allVideo = videoDeferred.await()
-            allDrms = drmDeferred.await()
+                allAudio = audioDeferred.await()
+                allVideo = videoDeferred.await()
+                allDrms = drmDeferred.await()
 
-            _searchQuery
-                .map { query ->
-                    if (query.isBlank()) {
-                        SearchResultState(isQueryEmpty = true)
-                    } else {
-                        val queryWords = query.trim().split(Regex("\\s+"))
-                        val filteredAudio = allAudio.filter { it.matches(queryWords) }
-                        val filteredVideo = allVideo.filter { it.matches(queryWords) }
-                        val filteredDrms = allDrms.filter { it.matches(queryWords) }
-                        SearchResultState(filteredAudio, filteredVideo, filteredDrms, false)
+                _searchQuery
+                    .map { query ->
+                        if (query.isBlank()) {
+                            SearchResultState(isQueryEmpty = true)
+                        } else {
+                            val queryWords = query.trim().split(Regex("\\s+"))
+                            val filteredAudio = allAudio.filter { it.matches(queryWords) }
+                            val filteredVideo = allVideo.filter { it.matches(queryWords) }
+                            val filteredDrms = allDrms.filter { it.matches(queryWords) }
+                            SearchResultState(filteredAudio, filteredVideo, filteredDrms, false)
+                        }
                     }
-                }
-                .flowOn(Dispatchers.Default)
-                .collect { state ->
-                    _searchResultState.value = state
-                }
+                    .flowOn(Dispatchers.Default)
+                    .collect { state ->
+                        _searchResultState.value = state
+                    }
+            } catch (_: Exception) {}
         }
     }
 

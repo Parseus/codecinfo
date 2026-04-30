@@ -1,22 +1,43 @@
 package com.parseus.codecinfo.ui.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Rect
+import android.util.TypedValue
 import android.view.View
 import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import com.parseus.codecinfo.utils.getAttributeColor
 
+@SuppressLint("DiscouragedApi")
 class DetailsItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
 
     private val paint = Paint()
     private val thickness: Int
 
+    // Since the TV flavor doesn't have MDC-Android,
+    // dynamically fall back to system attributes or defaults.
     init {
-        paint.color = context.getAttributeColor(com.google.android.material.R.attr.colorOutlineVariant)
-        thickness = context.resources.getDimensionPixelSize(com.google.android.material.R.dimen.material_divider_thickness)
+        val colorOutlineVariantResId = context.resources.getIdentifier("colorOutlineVariant", "attr", context.packageName)
+        paint.color = if (colorOutlineVariantResId != 0) {
+            context.getAttributeColor(colorOutlineVariantResId)
+        } else {
+            val typedValue = TypedValue()
+            if (context.theme.resolveAttribute(android.R.attr.listDivider, typedValue, true)) {
+                typedValue.data
+            } else {
+                0x1FFFFFFF
+            }
+        }
+
+        val thicknessResId = context.resources.getIdentifier("material_divider_thickness", "dimen", context.packageName)
+        thickness = if (thicknessResId != 0) {
+            context.resources.getDimensionPixelSize(thicknessResId)
+        } else {
+            context.resources.displayMetrics.density.toInt()
+        }
     }
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {

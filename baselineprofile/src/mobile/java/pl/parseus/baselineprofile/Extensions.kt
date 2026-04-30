@@ -5,7 +5,6 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.UiAutomatorTestScope
 import androidx.test.uiautomator.Until
-import androidx.test.uiautomator.onElements
 import androidx.test.uiautomator.textAsString
 
 fun UiAutomatorTestScope.waitForAsyncContent() {
@@ -23,10 +22,8 @@ fun UiAutomatorTestScope.clickThroughCodecList() {
     val metrics = InstrumentationRegistry.getInstrumentation().context.resources.displayMetrics
     val dpWidth = metrics.widthPixels / metrics.density
 
-    onElement { viewIdResourceName == fullId("simpleCodecListView") }.apply {
-        onElements {
-            viewIdResourceName == fullId("simpleCodecRow")
-        }.take(3).forEach {
+    for (i in 0 until 3) {
+        onElements { viewIdResourceName == fullId("simpleCodecRow") }.getOrNull(i)?.let {
             it.click()
             device.waitForIdle()
 
@@ -39,6 +36,7 @@ fun UiAutomatorTestScope.clickThroughCodecList() {
             // Remember not to press back on a dual-pane layout.
             if (dpWidth < 800) {
                 device.pressBack()
+                device.waitForIdle()
             }
         }
     }
@@ -48,10 +46,9 @@ fun UiAutomatorTestScope.clickThroughDrmList() {
     val metrics = InstrumentationRegistry.getInstrumentation().context.resources.displayMetrics
     val dpWidth = metrics.widthPixels / metrics.density
 
-    onElement { viewIdResourceName == fullId("simpleCodecListView") }.apply {
-        onElements {
-            viewIdResourceName == fullId("simpleDrmRow")
-        }.forEach {
+    val count = onElements { viewIdResourceName == fullId("simpleDrmRow") }.size
+    for (i in 0 until count) {
+        onElements { viewIdResourceName == fullId("simpleDrmRow") }.getOrNull(i)?.let {
             it.click()
             device.waitForIdle()
 
@@ -65,6 +62,7 @@ fun UiAutomatorTestScope.clickThroughDrmList() {
             // Remember not to press back on a dual-pane layout.
             if (dpWidth < 800) {
                 device.pressBack()
+                device.waitForIdle()
             }
         }
     }

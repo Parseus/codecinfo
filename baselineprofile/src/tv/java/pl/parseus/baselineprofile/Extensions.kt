@@ -17,20 +17,23 @@ fun UiAutomatorTestScope.switchToTab(text: String) {
 }
 
 fun UiAutomatorTestScope.clickThroughCodecList() {
-    val rowsList = onElements { viewIdResourceName == fullId("row_content") }
-    for (i in 0 until minOf(rowsList.size, 3)) {
-        with (rowsList[i]) {
-            fling(Direction.RIGHT)
-            fling(Direction.LEFT)
+    val rowCount = onElements { viewIdResourceName == fullId("row_content") }.size
+    for (i in 0 until minOf(rowCount, 3)) {
+        onElements { viewIdResourceName == fullId("row_content") }.getOrNull(i)?.let { row ->
+            row.fling(Direction.RIGHT)
+            row.fling(Direction.LEFT)
 
-            onElements { viewIdResourceName == fullId("main_image") }.take(3).forEach {
-                it.click()
-                it.click()
-                device.waitForIdle()
-                onElementOrNull { viewIdResourceName == fullId("item_details_recycler_view") }
-                    ?.fling(Direction.DOWN)
+            for (j in 0 until 3) {
+                onElements { viewIdResourceName == fullId("main_image") }.getOrNull(j)?.let { item ->
+                    item.click()
+                    item.click()
+                    device.waitForIdle()
+                    onElementOrNull { viewIdResourceName == fullId("item_details_recycler_view") }
+                        ?.fling(Direction.DOWN)
 
-                device.pressBack()
+                    device.pressBack()
+                    device.waitForIdle()
+                }
             }
         }
     }
@@ -38,15 +41,18 @@ fun UiAutomatorTestScope.clickThroughCodecList() {
 
 fun UiAutomatorTestScope.clickThroughDrmList() {
     // Already in DRM tab via testHeaderNavigation
-    val rowsList = onElements { viewIdResourceName == fullId("row_content") }
-    if (rowsList.isNotEmpty()) {
-        with(rowsList.last()) {
-             onElements { viewIdResourceName == fullId("main_image") }.forEach {
-                it.click()
+    val rowCount = onElements { viewIdResourceName == fullId("row_content") }.size
+    if (rowCount > 0) {
+        val lastRowIndex = rowCount - 1
+        val itemCount = onElements { viewIdResourceName == fullId("main_image") }.size
+        for (i in 0 until itemCount) {
+            onElements { viewIdResourceName == fullId("main_image") }.getOrNull(i)?.let { item ->
+                item.click()
                 device.waitForIdle()
                 onElementOrNull { viewIdResourceName == fullId("item_details_recycler_view") }
                     ?.fling(Direction.DOWN)
                 device.pressBack()
+                device.waitForIdle()
             }
         }
     }

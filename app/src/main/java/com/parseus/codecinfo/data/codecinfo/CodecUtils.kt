@@ -308,143 +308,155 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             isSoftwareOnly(mediaCodecInfo).toString()))
 
     var codec: MediaCodec? = null
-
-    if (SDK_INT >= 30) {
-        if (!isEncoder && capabilities.isFeatureSupported(FEATURE_LowLatency)) {
-            propertyList.addFeature(context, capabilities, FEATURE_LowLatency, R.string.low_latency_decoder)
-        } else if (SDK_INT >= 31) {
+    fun getOrInitCodec(): MediaCodec? {
+        if (codec == null) {
             try {
                 codec = MediaCodec.createByCodecName(codecName)
-                val vendorLowLatencyKey = codec.supportedVendorParameters.find { it in knownVendorLowLatencyOptions }
-                val featureString = if (vendorLowLatencyKey != null) {
-                    val supportStringResId = if (isEncoder)
-                        R.string.feature_low_latency_vendor_supported_encoder
-                    else
-                        R.string.feature_low_latency_vendor_supported_decoder
-                    context.getString(supportStringResId, vendorLowLatencyKey)
-                } else {
-                    false.toString()
-                }
-                val lowLatencyResId = if (isEncoder)
-                    R.string.low_latency_encoder
-                else
-                    R.string.low_latency_decoder
-                propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(lowLatencyResId), featureString))
             } catch (_: Exception) {}
         }
+        return codec
     }
 
-    propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.codec_provider),
-            context.getString(if (isVendor(mediaCodecInfo))
-                R.string.codec_provider_oem else R.string.codec_provider_android)))
-
-    propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.max_instances),
-        capabilities.maxSupportedInstances.toString()))
-
-    if (SDK_INT >= 37) {
-        // getSecurityModel() returns a hardcoded value on API 36,
-        // so there is no point in checking it on Android 16.
-        addSecurityModel(context, mediaCodecInfo, propertyList)
-    }
-
-    if (isAudio) {
-        getAudioCapabilities(context, codecId, codecName, capabilities, propertyList)
-    } else {
-        getVideoCapabilities(context, codecId, codecName, capabilities, propertyList)
-
-        if (!isEncoder) {
-            propertyList.addFeature(context, capabilities, FEATURE_AdaptivePlayback, R.string.adaptive_playback)
-
-            if (SDK_INT >= 26) {
-                propertyList.addFeature(context, capabilities, FEATURE_PartialFrame, R.string.partial_frames)
-            }
-
-            propertyList.addFeature(context, capabilities, FEATURE_SecurePlayback, R.string.secure_playback)
-
-            if (SDK_INT >= 35) {
-                propertyList.addFeature(context, capabilities, FEATURE_DetachedSurface, R.string.detached_surface)
-                propertyList.addFeature(context, capabilities, FEATURE_DynamicColorAspects, R.string.dynamic_color_aspects)
-            }
-        } else {
-            if (SDK_INT >= 24) {
-                propertyList.addFeature(context, capabilities, FEATURE_IntraRefresh, R.string.intra_refresh)
-            }
-            if (SDK_INT >= 31) {
-                propertyList.addFeature(context, capabilities, FEATURE_QpBounds, R.string.qp_bounds)
-            }
-            if (SDK_INT >= 33) {
-                propertyList.addFeature(context, capabilities, FEATURE_EncodingStatistics, R.string.encoding_statistics)
-                propertyList.addFeature(context, capabilities, FEATURE_HdrEditing, R.string.hdr_editing)
-            }
-            if (SDK_INT >= 35) {
-                propertyList.addFeature(context, capabilities, FEATURE_HlgEditing, R.string.hlg_editing)
-                propertyList.addFeature(context, capabilities, FEATURE_Roi, R.string.roi_encoding)
-            }
-            if (SDK_INT >= 37) {
-                val schemas = capabilities.encoderCapabilities!!.supportedLayeringSchemas
-                val schemasString = if (schemas.isNotEmpty()) {
-                    schemas.joinToString("\n")
-                } else {
-                    context.getString(R.string.unknown_or_not_supported)
+    try {
+        if (SDK_INT >= 30) {
+            if (!isEncoder && capabilities.isFeatureSupported(FEATURE_LowLatency)) {
+                propertyList.addFeature(context, capabilities, FEATURE_LowLatency, R.string.low_latency_decoder)
+            } else if (SDK_INT >= 31) {
+                val activeCodec = getOrInitCodec()
+                if (activeCodec != null) {
+                    val vendorLowLatencyKey = activeCodec.supportedVendorParameters.find { it in knownVendorLowLatencyOptions }
+                    val featureString = if (vendorLowLatencyKey != null) {
+                        val supportStringResId = if (isEncoder)
+                            R.string.feature_low_latency_vendor_supported_encoder
+                        else
+                            R.string.feature_low_latency_vendor_supported_decoder
+                        context.getString(supportStringResId, vendorLowLatencyKey)
+                    } else {
+                        false.toString()
+                    }
+                    val lowLatencyResId = if (isEncoder)
+                        R.string.low_latency_encoder
+                    else
+                        R.string.low_latency_decoder
+                    propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(lowLatencyResId), featureString))
                 }
-                propertyList.addMultiLineProperty(context.getString(R.string.supported_layering_schemas), schemasString)
             }
         }
-    }
 
-    if (SDK_INT >= 29) {
-        propertyList.addFeature(context, capabilities, FEATURE_DynamicTimestamp, R.string.dynamic_timestamp)
-        propertyList.addFeature(context, capabilities, FEATURE_MultipleFrames, R.string.multiple_access_units)
-    }
+        propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.codec_provider),
+                context.getString(if (isVendor(mediaCodecInfo))
+                    R.string.codec_provider_oem else R.string.codec_provider_android)))
 
-    if (!isEncoder) {
-        propertyList.addFeature(context, capabilities, FEATURE_TunneledPlayback, R.string.tunneled_playback)
+        propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.max_instances),
+            capabilities.maxSupportedInstances.toString()))
+
+        if (SDK_INT >= 37) {
+            // getSecurityModel() returns a hardcoded value on API 36,
+            // so there is no point in checking it on Android 16.
+            addSecurityModel(context, mediaCodecInfo, propertyList)
+        }
+
+        if (isAudio) {
+            getAudioCapabilities(context, codecId, codecName, capabilities, propertyList)
+        } else {
+            getVideoCapabilities(context, codecId, codecName, capabilities, propertyList)
+
+            if (!isEncoder) {
+                propertyList.addFeature(context, capabilities, FEATURE_AdaptivePlayback, R.string.adaptive_playback)
+
+                if (SDK_INT >= 26) {
+                    propertyList.addFeature(context, capabilities, FEATURE_PartialFrame, R.string.partial_frames)
+                }
+
+                propertyList.addFeature(context, capabilities, FEATURE_SecurePlayback, R.string.secure_playback)
+
+                if (SDK_INT >= 35) {
+                    propertyList.addFeature(context, capabilities, FEATURE_DetachedSurface, R.string.detached_surface)
+                    propertyList.addFeature(context, capabilities, FEATURE_DynamicColorAspects, R.string.dynamic_color_aspects)
+                }
+            } else {
+                if (SDK_INT >= 24) {
+                    propertyList.addFeature(context, capabilities, FEATURE_IntraRefresh, R.string.intra_refresh)
+                }
+                if (SDK_INT >= 31) {
+                    propertyList.addFeature(context, capabilities, FEATURE_QpBounds, R.string.qp_bounds)
+                }
+                if (SDK_INT >= 33) {
+                    propertyList.addFeature(context, capabilities, FEATURE_EncodingStatistics, R.string.encoding_statistics)
+                    propertyList.addFeature(context, capabilities, FEATURE_HdrEditing, R.string.hdr_editing)
+                }
+                if (SDK_INT >= 35) {
+                    propertyList.addFeature(context, capabilities, FEATURE_HlgEditing, R.string.hlg_editing)
+                    propertyList.addFeature(context, capabilities, FEATURE_Roi, R.string.roi_encoding)
+                }
+                if (SDK_INT >= 37) {
+                    val schemas = capabilities.encoderCapabilities!!.supportedLayeringSchemas
+                    val schemasString = if (schemas.isNotEmpty()) {
+                        schemas.joinToString("\n")
+                    } else {
+                        context.getString(R.string.unknown_or_not_supported)
+                    }
+                    propertyList.addMultiLineProperty(context.getString(R.string.supported_layering_schemas), schemasString)
+                }
+            }
+        }
 
         if (SDK_INT >= 29) {
-            propertyList.addFeature(context, capabilities, FEATURE_FrameParsing, R.string.partial_access_units)
+            propertyList.addFeature(context, capabilities, FEATURE_DynamicTimestamp, R.string.dynamic_timestamp)
+            propertyList.addFeature(context, capabilities, FEATURE_MultipleFrames, R.string.multiple_access_units)
         }
-    }
 
-    if (isEncoder) {
-        val encoderCapabilities = capabilities.encoderCapabilities!!
-        var bitrateModesString =
-                "${context.getString(R.string.cbr)}: " +
-                        "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR)}" +
-                        "\n${context.getString(R.string.cq)}: " +
-                        "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CQ)}" +
-                        "\n${context.getString(R.string.vbr)}: " +
-                        "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)}"
-        if (SDK_INT >= 31) {
-            bitrateModesString += "\n${context.getString(R.string.cbr_fd)}: " +
-                    "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR_FD)}"
-        }
-        propertyList.addMultiLineProperty(context.getString(R.string.bitrate_modes), bitrateModesString)
+        if (!isEncoder) {
+            propertyList.addFeature(context, capabilities, FEATURE_TunneledPlayback, R.string.tunneled_playback)
 
-        val defaultMediaFormat = capabilities.defaultFormat
-        handleComplexityRange(encoderCapabilities, defaultMediaFormat, context, propertyList)
-        handleQualityRange(encoderCapabilities, defaultMediaFormat, propertyList, context)
-    }
-
-    if (SDK_INT >= 31) {
-        try {
-            val vendorCodec = codec ?: MediaCodec.createByCodecName(codecName)
-            val vendorParams = vendorCodec.supportedVendorParameters
-            if (vendorParams.isNotEmpty()) {
-                propertyList.addMultiLineProperty(context.getString(R.string.vendor_parameters), vendorParams.joinToString("\n"))
+            if (SDK_INT >= 29) {
+                propertyList.addFeature(context, capabilities, FEATURE_FrameParsing, R.string.partial_access_units)
             }
-        } catch (_: Throwable) {}
+        }
+
+        if (isEncoder) {
+            val encoderCapabilities = capabilities.encoderCapabilities!!
+            var bitrateModesString =
+                    "${context.getString(R.string.cbr)}: " +
+                            "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR)}" +
+                            "\n${context.getString(R.string.cq)}: " +
+                            "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CQ)}" +
+                            "\n${context.getString(R.string.vbr)}: " +
+                            "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_VBR)}"
+            if (SDK_INT >= 31) {
+                bitrateModesString += "\n${context.getString(R.string.cbr_fd)}: " +
+                        "${encoderCapabilities.isBitrateModeSupported(MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR_FD)}"
+            }
+            propertyList.addMultiLineProperty(context.getString(R.string.bitrate_modes), bitrateModesString)
+
+            val defaultMediaFormat = capabilities.defaultFormat
+            handleComplexityRange(encoderCapabilities, defaultMediaFormat, context, propertyList)
+            handleQualityRange(encoderCapabilities, defaultMediaFormat, propertyList, context)
+        }
+
+        if (SDK_INT >= 31) {
+            val vendorCodec = getOrInitCodec()
+            if (vendorCodec != null) {
+                val vendorParams = vendorCodec.supportedVendorParameters
+                if (vendorParams.isNotEmpty()) {
+                    propertyList.addMultiLineProperty(context.getString(R.string.vendor_parameters), vendorParams.joinToString("\n"))
+                }
+            }
+        }
+
+        val profileString = if (codecId.contains("mp4a-latm") || codecId.contains("wma")
+            || codecId.contains("iamf")) {
+            context.getString(R.string.profiles)
+        } else {
+            context.getString(R.string.profile_levels)
+        }
+
+        propertyList.addMultiLineProperty(profileString, getProfileLevels(context, codecId, codecName, capabilities))
+
+    } catch (_: Exception) {
+    } finally {
+        codec?.release()
     }
-
-    codec?.release()
-
-    val profileString = if (codecId.contains("mp4a-latm") || codecId.contains("wma")
-        || codecId.contains("iamf")) {
-        context.getString(R.string.profiles)
-    } else {
-        context.getString(R.string.profile_levels)
-    }
-
-    propertyList.addMultiLineProperty(profileString, getProfileLevels(context, codecId, codecName, capabilities))
 
     synchronized(detailedCodecInfos) {
         detailedCodecInfos[combinedCodecName] = propertyList

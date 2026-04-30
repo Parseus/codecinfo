@@ -16,12 +16,14 @@ import com.parseus.codecinfo.utils.isTv
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.yield
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class ItemsViewModel : ViewModel() {
@@ -102,16 +104,29 @@ class ItemsViewModel : ViewModel() {
             val video = _allVideoState.value ?: emptyList()
             val drms = _allDrmsState.value ?: emptyList()
 
-            for (info in audio) {
+            val highPriorityMimeTypes = listOf("avc", "hevc", "av01", "vp9", "aac", "mp3")
+
+            val prioritizedCodecs = (audio + video).sortedWith(
+                compareByDescending<CodecSimpleInfo> { it.isHardwareAccelereated }
+                .thenByDescending { info ->
+                    highPriorityMimeTypes.any { info.codecId.contains(it, ignoreCase = true) }
+                }
+            )
+
+            val prioritizedDrms = drms.sortedByDescending {
+                it.drmName.contains("Widevine", true) || it.drmName.contains("Clearkey", true)
+            }
+
+            for (info in prioritizedCodecs) {
+                if (!isActive) break
                 getDetailedCodecInfo(context, info.codecId, info.codecName)
+                yield()
                 delay(getPreCacheDelay(context))
             }
-            for (info in video) {
-                getDetailedCodecInfo(context, info.codecId, info.codecName)
-                delay(getPreCacheDelay(context))
-            }
-            for (info in drms) {
+            for (info in prioritizedDrms) {
+                if (!isActive) break
                 getDetailedDrmInfo(context, info.drmUuid, DrmVendor.getFromUuid(info.drmUuid))
+                yield()
                 delay(getPreCacheDelay(context))
             }
         }

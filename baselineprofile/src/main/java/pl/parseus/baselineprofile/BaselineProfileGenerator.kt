@@ -4,7 +4,6 @@ import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.uiautomator.Direction
-import androidx.test.uiautomator.uiAutomator
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,26 +21,24 @@ class BaselineProfileGenerator {
             packageName = APP_PACKAGE_NAME,
             includeInStartupProfile = false
         ) {
-            uiAutomator {
-                pressHome()
-                startActivityAndWait()
+            pressHome()
+            startActivityAndWait()
 
-                waitForAsyncContent()
+            waitForAsyncContent()
 
-                switchToTab("Audio")
-                scrollMainList()
-                clickThroughCodecList()
-                swipeToTab(Direction.LEFT) // Swipe to Video
-                scrollMainList()
-                clickThroughCodecList()
-                swipeToTab(Direction.LEFT) // Swipe to DRM
-                scrollMainList()
-                clickThroughDrmList()
+            switchToTab("Audio")
+            scrollMainList()
+            clickThroughCodecList()
+            swipeToTab(Direction.LEFT) // Swipe to Video
+            scrollMainList()
+            clickThroughCodecList()
+            swipeToTab(Direction.LEFT) // Swipe to DRM
+            scrollMainList()
+            clickThroughDrmList()
 
-                testSearch()
-                testHeaderNavigation()
-                testSettingsRefresh()
-            }
+            testSearch()
+            testHeaderNavigation()
+            testSettingsRefresh()
         }
     }
 
@@ -51,12 +48,10 @@ class BaselineProfileGenerator {
             packageName = APP_PACKAGE_NAME,
             includeInStartupProfile = true
         ) {
-            uiAutomator {
-                pressHome()
-                startActivityAndWait()
-                waitForAsyncContent()
-                device.waitForIdle()
-            }
+            pressHome()
+            startActivityAndWait()
+            waitForAsyncContent()
+            device.waitForIdle()
         }
     }
 

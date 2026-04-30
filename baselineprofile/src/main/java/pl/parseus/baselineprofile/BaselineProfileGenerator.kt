@@ -3,6 +3,7 @@ package pl.parseus.baselineprofile
 import androidx.benchmark.macro.junit4.BaselineProfileRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.uiAutomator
 import org.junit.Rule
 import org.junit.Test
@@ -28,11 +29,18 @@ class BaselineProfileGenerator {
                 waitForAsyncContent()
 
                 switchToTab("Audio")
+                scrollMainList()
                 clickThroughCodecList()
-                switchToTab("Video")
+                swipeToTab(Direction.LEFT) // Swipe to Video
+                scrollMainList()
                 clickThroughCodecList()
-                switchToTab("DRM")
+                swipeToTab(Direction.LEFT) // Swipe to DRM
+                scrollMainList()
                 clickThroughDrmList()
+
+                testSearch()
+                testHeaderNavigation()
+                testSettingsRefresh()
             }
         }
     }

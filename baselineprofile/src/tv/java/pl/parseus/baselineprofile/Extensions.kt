@@ -41,7 +41,7 @@ fun UiAutomatorTestScope.clickThroughDrmList() {
     val rowsList = onElements { viewIdResourceName == fullId("row_content") }
     if (rowsList.isNotEmpty()) {
         with(rowsList.last()) {
-             onElements { viewIdResourceName == fullId("main_image") }.take(2).forEach {
+             onElements { viewIdResourceName == fullId("main_image") }.forEach {
                 it.click()
                 device.waitForIdle()
                 onElementOrNull { viewIdResourceName == fullId("item_details_recycler_view") }

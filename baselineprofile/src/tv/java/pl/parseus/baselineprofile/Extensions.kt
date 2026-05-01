@@ -3,8 +3,10 @@ package pl.parseus.baselineprofile
 import android.view.KeyEvent
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.Direction
+import androidx.test.uiautomator.StaleObjectException
 import androidx.test.uiautomator.UiAutomatorTestScope
 import androidx.test.uiautomator.Until
+import androidx.test.uiautomator.onElementOrNull
 import androidx.test.uiautomator.onElements
 
 fun UiAutomatorTestScope.waitForAsyncContent() {
@@ -99,7 +101,23 @@ fun UiAutomatorTestScope.swipeToTab(direction: Direction) {
     // Not used on TV
 }
 
-@Suppress("UnusedReceiverParameter")
 fun UiAutomatorTestScope.testSettingsRefresh() {
-    // Not used on TV
+    // Navigate to the 'Other' row
+    repeat(4) { device.pressKeyCode(KeyEvent.KEYCODE_DPAD_DOWN) }
+    device.waitForIdle()
+
+    // Find and click Settings
+    onElementOrNull { contentDescription == "Settings" }?.click()
+    device.waitForIdle()
+
+    // Toggle "Show HW Codecs Only"
+    try {
+        onElementOrNull { text?.contains("hardware", true) == true }?.click()
+    } catch (_: StaleObjectException) {
+        onElementOrNull { text?.contains("hardware", true) == true }?.click()
+    }
+    device.waitForIdle()
+
+    device.pressBack()
+    device.waitForIdle()
 }

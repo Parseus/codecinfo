@@ -39,6 +39,10 @@ class BaselineProfileGenerator {
             testSearch()
             testHeaderNavigation()
             testSettingsRefresh()
+
+            device.waitForIdle()
+            // Wait a bit to ensure profiles are flushed correctly.
+            Thread.sleep(500)
         }
     }
 
@@ -52,6 +56,8 @@ class BaselineProfileGenerator {
             startActivityAndWait()
             waitForAsyncContent()
             device.waitForIdle()
+            // Wait a bit to ensure profiles are flushed correctly.
+            Thread.sleep(500)
         }
     }
 

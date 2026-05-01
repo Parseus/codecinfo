@@ -28,7 +28,9 @@ import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.ui.externalLinks.FallbackWebBrowserDialog
 
-class ExternalLinksHelper(private val context: Context, lifecycle: Lifecycle) : DefaultLifecycleObserver {
+class ExternalLinksHelper(context: Context, lifecycle: Lifecycle) : DefaultLifecycleObserver {
+
+    private val appContext = context.applicationContext
 
     private enum class OpenInMethod(val value: Int) {
         CustomTabs(0),
@@ -87,19 +89,19 @@ class ExternalLinksHelper(private val context: Context, lifecycle: Lifecycle) : 
         return supportedPackages.firstOrNull()
     }
 
-    override fun onPause(owner: LifecycleOwner) {
+    override fun onStop(owner: LifecycleOwner) {
         customTabsConnection?.let {
-            context.unbindService(it)
+            appContext.unbindService(it)
             customTabsClient = null
             customTabsConnection = null
             customTabsSession = null
         }
     }
 
-    override fun onResume(owner: LifecycleOwner) {
+    override fun onStart(owner: LifecycleOwner) {
         if (customTabsClient != null) return
 
-        val packageName = getPackageNameToUse(context) ?: return
+        val packageName = getPackageNameToUse(appContext) ?: return
         customTabsConnection = object : CustomTabsServiceConnection() {
             override fun onCustomTabsServiceConnected(name: ComponentName, client: CustomTabsClient) {
                 customTabsClient = client.also { it.warmup(0L) }
@@ -110,7 +112,11 @@ class ExternalLinksHelper(private val context: Context, lifecycle: Lifecycle) : 
                 customTabsSession = null
             }
         }
-        CustomTabsClient.bindCustomTabsService(context, packageName, customTabsConnection!!)
+        CustomTabsClient.bindCustomTabsService(appContext, packageName, customTabsConnection!!)
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        owner.lifecycle.removeObserver(this)
     }
 
     fun launchInBrowser(activity: FragmentActivity, uri: Uri) {
@@ -121,7 +127,7 @@ class ExternalLinksHelper(private val context: Context, lifecycle: Lifecycle) : 
         }
 
         if (!nativeAppLaunched) {
-            val settings = context.settingsRepository.getSettingsSync()
+            val settings = appContext.settingsRepository.getSettingsSync()
             var openInMethod = OpenInMethod.from(settings.openExternalLinks.toInt())
             if (openInMethod == OpenInMethod.WebView && uri.toString().contains("developer.android.com")) {
                 // Android documentation doesn't load in WebView for some reason, so load it externally.

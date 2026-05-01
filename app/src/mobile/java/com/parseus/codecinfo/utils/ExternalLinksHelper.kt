@@ -166,12 +166,28 @@ class ExternalLinksHelper(context: Context, lifecycle: Lifecycle) : DefaultLifec
     }
 
     private fun launchInCustomTabs(context: Context, uri: Uri): Boolean {
-        val colorSchemeParams = CustomTabColorSchemeParams.Builder()
+        val lightColorSchemeParams = CustomTabColorSchemeParams.Builder()
             .setToolbarColor(getPrimaryColor(context)).build()
+        val darkColorSchemeParams = CustomTabColorSchemeParams.Builder()
+            .setToolbarColor(getSurfaceColor(context)).build()
+        val heightPercent = if (context.resources.configuration.smallestScreenWidthDp >= 600) {
+            0.9
+        } else {
+            0.75
+        }
+        val initialHeight = (context.resources.displayMetrics.heightPixels * heightPercent).toInt()
+
         val customTabsIntent = CustomTabsIntent.Builder(session)
             .setShowTitle(true)
             .setShareState(CustomTabsIntent.SHARE_STATE_ON)
-            .setDefaultColorSchemeParams(colorSchemeParams).build()
+            .setInitialActivityHeightPx(initialHeight)
+            .setToolbarCornerRadiusDp(16)   // max value allowed by the API
+            .setColorScheme(CustomTabsIntent.COLOR_SCHEME_SYSTEM)
+            .setDefaultColorSchemeParams(lightColorSchemeParams)
+            .setColorSchemeParams(CustomTabsIntent.COLOR_SCHEME_DARK, darkColorSchemeParams)
+            .setStartAnimations(context, R.anim.slide_in_right, R.anim.stay_still)
+            .setExitAnimations(context, R.anim.stay_still, R.anim.slide_out_right)
+            .build()
         customTabsIntent.intent.putExtra(Browser.EXTRA_HEADERS, Bundle().apply {
             putString("Content-Security-Policy", HARDENED_CONTENT_SECURITY_POLICY)
             putString("Feature-Policy", HARDENED_FEATURE_POLICY)

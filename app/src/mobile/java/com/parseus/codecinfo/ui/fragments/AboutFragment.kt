@@ -73,6 +73,9 @@ class AboutFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        externalLinksViewModel.prefetchExternalLink.value = GITHUB_PAGE.toUri()
+        externalLinksViewModel.prefetchExternalLink.value = ISSUE_PAGE.toUri()
+
         with (binding) {
             showChangelog.setOnClickListener { showChangelog() }
             try {

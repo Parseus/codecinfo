@@ -17,10 +17,9 @@ enum class LicenseType(private val licenseText: String) {
     fun getSpannable(): Spanned {
         return cachedSpannable ?: SpannableStringBuilder(licenseText).apply {
             if (this@LicenseType == APACHE2) {
-                val url = "https://www.apache.org/licenses/LICENSE-2.0"
-                val start = indexOf(url)
+                val start = indexOf(APACHE2_URL)
                 if (start != -1) {
-                    setSpan(URLSpan(url), start, start + url.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    setSpan(URLSpan(APACHE2_URL), start, start + APACHE2_URL.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
             }
         }.also { cachedSpannable = it }
@@ -46,6 +45,8 @@ data class Library(val name: String, val url: String, val license: LicenseType) 
         }.also { cachedName = it }
     }
 }
+
+const val APACHE2_URL = "https://www.apache.org/licenses/LICENSE-2.0"
 
 private const val APACHE2_LICENSE = """Licensed under the Apache License, Version 2.0 (the "License").
 

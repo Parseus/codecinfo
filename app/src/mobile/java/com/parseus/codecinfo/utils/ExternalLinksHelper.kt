@@ -119,6 +119,10 @@ class ExternalLinksHelper(context: Context, lifecycle: Lifecycle) : DefaultLifec
         owner.lifecycle.removeObserver(this)
     }
 
+    fun prefetchUrl(uri: Uri) {
+        session?.mayLaunchUrl(uri, null, null)
+    }
+
     fun launchInBrowser(activity: FragmentActivity, uri: Uri) {
         val nativeAppLaunched = if (Build.VERSION.SDK_INT >= 30) {
             launchNativeApi30(activity, uri)

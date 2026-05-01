@@ -77,6 +77,11 @@ class SettingsActivity : MonetCompatActivity() {
                 externalLinksHelper.launchInBrowser(this, it)
             }
         }
+        externalLinksViewModel.prefetchExternalLink.observe(this) {
+            if (it != null) {
+                externalLinksHelper.prefetchUrl(it)
+            }
+        }
 
         val emphasizedInterpolator = MotionUtils.resolveThemeInterpolator(
             this,

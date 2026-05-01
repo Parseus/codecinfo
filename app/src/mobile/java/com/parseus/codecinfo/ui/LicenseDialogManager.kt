@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.kieronquinn.monetcompat.extensions.applyMonet
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.data.APACHE2_URL
 import com.parseus.codecinfo.data.Library
 import com.parseus.codecinfo.data.LicenseType
 import com.parseus.codecinfo.databinding.LicenseDialogLayoutBinding
@@ -52,6 +53,12 @@ class LicenseDialogManager(private val activity: FragmentActivity) {
     }
 
     fun show() {
+        externalLinksViewModel.prefetchExternalLink.value = APACHE2_URL.toUri()
+
+        libraries.firstOrNull()?.let {
+            externalLinksViewModel.prefetchExternalLink.value = it.url.toUri()
+        }
+
         val groupedLibraries = libraries.groupBy { it.license }
         adapter.submitList(groupedLibraries.map { (license, libs) ->
             LicenseGroup(license, libs)

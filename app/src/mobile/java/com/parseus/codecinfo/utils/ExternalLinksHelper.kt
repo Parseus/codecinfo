@@ -195,7 +195,6 @@ class ExternalLinksHelper(context: Context, lifecycle: Lifecycle) : DefaultLifec
                 }
             }.build()
         customTabsIntent.intent.putExtra(Browser.EXTRA_HEADERS, Bundle().apply {
-            putString("Content-Security-Policy", HARDENED_CONTENT_SECURITY_POLICY)
             putString("Permissions-Policy", HARDENED_FEATURE_POLICY)
             putString("X-Content-Type-Options", "nosniff")
         })
@@ -264,16 +263,6 @@ class ExternalLinksHelper(context: Context, lifecycle: Lifecycle) : DefaultLifec
     }
 
     companion object {
-
-        const val HARDENED_CONTENT_SECURITY_POLICY =
-            "default-src 'none'; " +
-            "form-action 'none'; " +
-            "connect-src 'none'; " +
-            "img-src blob: 'self'; " +
-            "script-src 'self'; " +
-            "style-src 'self'; " +
-            "frame-ancestors 'none'; " +
-            "base-uri 'none'"
         const val HARDENED_FEATURE_POLICY =
             "accelerometer=(), " +
             "ambient-light-sensor=(), " +

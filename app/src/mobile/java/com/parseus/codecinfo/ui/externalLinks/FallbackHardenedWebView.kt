@@ -69,12 +69,13 @@ class FallbackHardenedWebView : HardenedWebView {
             val url = URL(request.url.toString())
 
             return try {
-                val urlConnection = (url.openConnection() as HttpURLConnection).apply {
-                    setRequestProperty("Content-Security-Policy", ExternalLinksHelper.HARDENED_CONTENT_SECURITY_POLICY)
-                    setRequestProperty("Permissions-Policy", ExternalLinksHelper.HARDENED_FEATURE_POLICY)
-                    setRequestProperty("X-Content-Type-Options", "nosniff")
+                val urlConnection = url.openConnection() as HttpURLConnection
+                WebResourceResponse("text/html", "utf-8", urlConnection.getInputStream()).also {
+                    it.responseHeaders = mapOf(
+                        "Permissions-Policy" to ExternalLinksHelper.HARDENED_FEATURE_POLICY,
+                        "X-Content-Type-Options" to "nosniff"
+                    )
                 }
-                WebResourceResponse("text/html", "utf-8", urlConnection.getInputStream())
             } catch (_: Exception) {
                 super.shouldInterceptRequest(view, request)
             }

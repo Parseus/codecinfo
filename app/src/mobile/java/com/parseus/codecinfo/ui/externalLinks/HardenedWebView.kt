@@ -22,6 +22,7 @@ open class HardenedWebView : WebView {
             allowUniversalAccessFromFileURLs = false
             cacheMode = WebSettings.LOAD_NO_CACHE
             saveFormData = false
+            mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
 
             loadWithOverviewMode = true
             useWideViewPort = true

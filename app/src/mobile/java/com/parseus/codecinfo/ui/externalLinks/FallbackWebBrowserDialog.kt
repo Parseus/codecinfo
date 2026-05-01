@@ -36,6 +36,14 @@ class FallbackWebBrowserDialog : DialogFragment() {
     private var _binding: FallbackWebBrowserDialogBinding? = null
     private val binding get() = _binding!!
 
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT
+        )
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FallbackWebBrowserDialogBinding.inflate(inflater, container, false)
         return binding.root
@@ -88,7 +96,6 @@ class FallbackWebBrowserDialog : DialogFragment() {
             it.window?.run {
                 requestFeature(Window.FEATURE_NO_TITLE)
                 setFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED, WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED)
-                setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
                 setWindowBackground(this)
             }
         }

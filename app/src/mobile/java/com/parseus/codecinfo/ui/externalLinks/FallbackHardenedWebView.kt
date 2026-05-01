@@ -71,7 +71,7 @@ class FallbackHardenedWebView : HardenedWebView {
             return try {
                 val urlConnection = (url.openConnection() as HttpURLConnection).apply {
                     setRequestProperty("Content-Security-Policy", ExternalLinksHelper.HARDENED_CONTENT_SECURITY_POLICY)
-                    setRequestProperty("Feature-Policy", ExternalLinksHelper.HARDENED_FEATURE_POLICY)
+                    setRequestProperty("Permissions-Policy", ExternalLinksHelper.HARDENED_FEATURE_POLICY)
                     setRequestProperty("X-Content-Type-Options", "nosniff")
                 }
                 WebResourceResponse("text/html", "utf-8", urlConnection.getInputStream())

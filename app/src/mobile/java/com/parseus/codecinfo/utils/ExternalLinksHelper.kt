@@ -194,7 +194,7 @@ class ExternalLinksHelper(context: Context, lifecycle: Lifecycle) : DefaultLifec
             .build()
         customTabsIntent.intent.putExtra(Browser.EXTRA_HEADERS, Bundle().apply {
             putString("Content-Security-Policy", HARDENED_CONTENT_SECURITY_POLICY)
-            putString("Feature-Policy", HARDENED_FEATURE_POLICY)
+            putString("Permissions-Policy", HARDENED_FEATURE_POLICY)
             putString("X-Content-Type-Options", "nosniff")
         })
         return try {

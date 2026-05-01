@@ -59,15 +59,16 @@ class SettingsActivity : MonetCompatActivity() {
     private lateinit var externalLinksHelper: ExternalLinksHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val startingFromAlias = intent?.component?.className?.startsWith("alias.SettingsActivity") == true
+        if (startingFromAlias) {
+            delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        }
+
         setTheme(R.style.Theme_CodecInfo_Settings)
         postponeEnterTransition()
         super.onCreate(savedInstanceState)
 
         WindowCompat.enableEdgeToEdge(window)
-        val startingFromAlias = intent?.component?.className?.startsWith("alias.SettingsActivity") == true
-        if (startingFromAlias) {
-            delegate.localNightMode = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        }
 
         externalLinksHelper = ExternalLinksHelper(this, lifecycle)
         externalLinksViewModel.launchExternalLink.observe(this) {

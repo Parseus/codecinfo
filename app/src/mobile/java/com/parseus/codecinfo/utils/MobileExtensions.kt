@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.util.TypedValue
 import android.view.View
@@ -34,13 +35,7 @@ fun Context.getAttributeResourceId(@AttrRes attrResId: Int): Int {
 }
 
 fun Context.isNightMode(): Boolean {
-    val settings = settingsRepository.getSettingsSync()
-    val appTheme = DarkTheme.fromValue(settings.darkTheme)
-    return when (appTheme) {
-        DarkTheme.Light -> false
-        DarkTheme.Dark -> true
-        else -> getSystemService<UiModeManager>()?.nightMode == UiModeManager.MODE_NIGHT_YES
-    }
+    return (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 }
 
 fun Context.copyToClipboard(label: String, text: String, view: View? = null) {

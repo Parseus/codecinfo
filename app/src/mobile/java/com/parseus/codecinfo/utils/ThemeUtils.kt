@@ -291,32 +291,35 @@ fun MaterialToolbar.updateToolBarColor(context: Context) {
         }
         setBackgroundColor(backgroundColor)
 
-        if (!isNativeMonetAvailable()) {
+        val contentColor = if (!isNativeMonetAvailable()) {
             val monet = MonetCompat.getInstance()
-            val contentColor = if (isColorLight(backgroundColor)) {
+            if (isColorLight(backgroundColor)) {
                 monet.getMonetColors().accent3[900]!!.toArgb()
             } else {
                 monet.getMonetColors().accent3[10]!!.toArgb()
             }
-            setTitleTextColor(contentColor)
-            setNavigationIconTint(contentColor)
         } else {
-            val contentColor = if (isColorLight(backgroundColor)) {
+            if (isColorLight(backgroundColor)) {
                 getColorOnSurface(context)
             } else {
                 context.getColor(android.R.color.system_accent1_0)
             }
-            setTitleTextColor(contentColor)
-            setNavigationIconTint(contentColor)
-            setTitleTextColor(context.getColor(com.google.android.material.R.color.m3_dark_default_color_primary_text))
         }
+        setTitleTextColor(contentColor)
+        setNavigationIconTint(contentColor)
     } else {
+        val backgroundColor: Int
+        val contentColor = context.getColor(com.google.android.material.R.color.m3_dark_default_color_primary_text)
+
         if (context.isNightMode()) {
-            setBackgroundColor(MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, TAG))
+            backgroundColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, TAG)
         } else {
-            setBackgroundColor(MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, TAG))
+            backgroundColor = MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, TAG)
         }
-        setTitleTextColor(context.getColor(com.google.android.material.R.color.m3_dark_default_color_primary_text))
+
+        setBackgroundColor(backgroundColor)
+        setTitleTextColor(contentColor)
+        setNavigationIconTint(contentColor)
     }
 }
 

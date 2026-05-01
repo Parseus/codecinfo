@@ -39,12 +39,13 @@ class SearchViewModel : ViewModel() {
 
     fun initData(context: Context) {
         if (allAudio.isNotEmpty() || initJob?.isActive == true) return
+        val appContext = context.applicationContext
 
         initJob = viewModelScope.launch(Dispatchers.IO) {
             try {
-                val audioDeferred = async { getSimpleCodecInfoList(context, true) }
-                val videoDeferred = async { getSimpleCodecInfoList(context, false) }
-                val drmDeferred = async { getSimpleDrmInfoList(context) }
+                val audioDeferred = async { getSimpleCodecInfoList(appContext, true) }
+                val videoDeferred = async { getSimpleCodecInfoList(appContext, false) }
+                val drmDeferred = async { getSimpleDrmInfoList(appContext) }
 
                 allAudio = audioDeferred.await()
                 allVideo = videoDeferred.await()

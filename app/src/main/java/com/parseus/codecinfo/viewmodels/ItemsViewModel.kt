@@ -47,26 +47,28 @@ class ItemsViewModel : ViewModel() {
 
     fun loadData(context: Context) {
         if (_allAudioState.value != null) return
+        val appContext = context.applicationContext
         viewModelScope.launch {
             val audioJob = launch(Dispatchers.IO) {
-                _allAudioState.value = getSimpleCodecInfoList(context, true)
+                _allAudioState.value = getSimpleCodecInfoList(appContext, true)
             }
             val videoJob = launch(Dispatchers.IO) {
-                _allVideoState.value = getSimpleCodecInfoList(context, false)
+                _allVideoState.value = getSimpleCodecInfoList(appContext, false)
             }
             val drmJob = launch(Dispatchers.IO) {
-                _allDrmsState.value = getSimpleDrmInfoList(context)
+                _allDrmsState.value = getSimpleDrmInfoList(appContext)
             }
 
             audioJob.join()
             videoJob.join()
             drmJob.join()
 
-            preCacheDetails(context)
+            preCacheDetails(appContext)
         }
     }
 
     fun refreshData(context: Context) {
+        val appContext = context.applicationContext
         viewModelScope.launch {
             preCacheJob?.cancel()
             clearCodecCaches()
@@ -80,25 +82,26 @@ class ItemsViewModel : ViewModel() {
 
             // Force immediate reload instead of waiting for next loadData call
             val audioJob = launch(Dispatchers.IO) {
-                _allAudioState.value = getSimpleCodecInfoList(context, true)
+                _allAudioState.value = getSimpleCodecInfoList(appContext, true)
             }
             val videoJob = launch(Dispatchers.IO) {
-                _allVideoState.value = getSimpleCodecInfoList(context, false)
+                _allVideoState.value = getSimpleCodecInfoList(appContext, false)
             }
             val drmJob = launch(Dispatchers.IO) {
-                _allDrmsState.value = getSimpleDrmInfoList(context)
+                _allDrmsState.value = getSimpleDrmInfoList(appContext)
             }
 
             audioJob.join()
             videoJob.join()
             drmJob.join()
 
-            preCacheDetails(context)
+            preCacheDetails(appContext)
         }
     }
 
     private fun preCacheDetails(context: Context) {
         preCacheJob?.cancel()
+        val appContext = context.applicationContext
         preCacheJob = viewModelScope.launch(Dispatchers.IO) {
             val audio = _allAudioState.value ?: emptyList()
             val video = _allVideoState.value ?: emptyList()
@@ -119,37 +122,40 @@ class ItemsViewModel : ViewModel() {
 
             for (info in prioritizedCodecs) {
                 if (!isActive) break
-                getDetailedCodecInfo(context, info.codecId, info.codecName)
+                getDetailedCodecInfo(appContext, info.codecId, info.codecName)
                 yield()
-                delay(getPreCacheDelay(context))
+                delay(getPreCacheDelay(appContext))
             }
             for (info in prioritizedDrms) {
                 if (!isActive) break
-                getDetailedDrmInfo(context, info.drmUuid, DrmVendor.getFromUuid(info.drmUuid))
+                getDetailedDrmInfo(appContext, info.drmUuid, DrmVendor.getFromUuid(info.drmUuid))
                 yield()
-                delay(getPreCacheDelay(context))
+                delay(getPreCacheDelay(appContext))
             }
         }
     }
 
     fun updateAudioList(context: Context) {
         if (_allAudioState.value != null) return
+        val appContext = context.applicationContext
         viewModelScope.launch(Dispatchers.IO) {
-            _allAudioState.value = getSimpleCodecInfoList(context, true)
+            _allAudioState.value = getSimpleCodecInfoList(appContext, true)
         }
     }
 
     fun updateVideoList(context: Context) {
         if (_allVideoState.value != null) return
+        val appContext = context.applicationContext
         viewModelScope.launch(Dispatchers.IO) {
-            _allVideoState.value = getSimpleCodecInfoList(context, false)
+            _allVideoState.value = getSimpleCodecInfoList(appContext, false)
         }
     }
 
     fun updateDrmList(context: Context) {
         if (_allDrmsState.value != null) return
+        val appContext = context.applicationContext
         viewModelScope.launch(Dispatchers.IO) {
-            _allDrmsState.value = getSimpleDrmInfoList(context)
+            _allDrmsState.value = getSimpleDrmInfoList(appContext)
         }
     }
 

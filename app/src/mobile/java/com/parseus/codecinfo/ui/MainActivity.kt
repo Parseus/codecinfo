@@ -17,13 +17,13 @@ import android.view.KeyboardShortcutInfo
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
-import android.view.Window
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -52,7 +52,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.search.SearchView
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.kieronquinn.monetcompat.app.MonetCompatActivity
 import com.kieronquinn.monetcompat.core.MonetCompat
 import com.kieronquinn.monetcompat.extensions.applyMonet
@@ -86,6 +85,7 @@ import com.parseus.codecinfo.utils.getMemoryLeakFixBackDispatcher
 import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSelectedCodecInfoString
 import com.parseus.codecinfo.utils.getSelectedDrmInfoString
+import com.parseus.codecinfo.utils.getSurfaceColor
 import com.parseus.codecinfo.utils.handleAppUpdateOnResume
 import com.parseus.codecinfo.utils.initializeAppRating
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
@@ -107,6 +107,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
+import androidx.core.graphics.drawable.toDrawable
 
 class MainActivity : MonetCompatActivity() {
 
@@ -157,23 +158,23 @@ class MainActivity : MonetCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_CodecInfo)
+
+        val surfaceColor = getSurfaceColor(this)
+        window.setBackgroundDrawable(surfaceColor.toDrawable())
+
+        var isUiReady = false
+        installSplashScreen().setKeepOnScreenCondition { !isUiReady }
+
         disableApiBlacklistOnPie()
 
-        val reenter = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
-            excludeTarget(android.R.id.statusBarBackground, true)
-            excludeTarget(android.R.id.navigationBarBackground, true)
-        }
-        val exit = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
-            excludeTarget(android.R.id.statusBarBackground, true)
-            excludeTarget(android.R.id.navigationBarBackground, true)
-        }
         window.apply {
-            requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-            reenterTransition = reenter
-            exitTransition = exit
+            reenterTransition = null
+            exitTransition = null
+            allowEnterTransitionOverlap = true
+            allowReturnTransitionOverlap = true
         }
 
-        installSplashScreen()
         WindowCompat.enableEdgeToEdge(window)
 
         super.onCreate(savedInstanceState)
@@ -183,12 +184,14 @@ class MainActivity : MonetCompatActivity() {
                 repeatOnLifecycle(Lifecycle.State.CREATED) {
                     monet.awaitMonetReady()
                     initializeUI(savedInstanceState)
+                    isUiReady = true
                     window.updateStatusBarColor(this@MainActivity)
                 }
             }
         } else {
             monet.removeMonetColorsChangedListener(this)
             initializeUI(savedInstanceState)
+            isUiReady = true
             window.updateStatusBarColor(this)
         }
 
@@ -675,7 +678,10 @@ class MainActivity : MonetCompatActivity() {
                 return true
             }
 
-            R.id.menu_item_settings -> settingsContract.launch(null)
+            R.id.menu_item_settings -> {
+                val activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(this)
+                settingsContract.launch(null, activityOptions)
+            }
         }
 
         return super.onOptionsItemSelected(item)

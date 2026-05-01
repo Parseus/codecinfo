@@ -7,6 +7,7 @@ import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.view.animation.AnimationUtils
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -41,6 +42,7 @@ import kotlinx.coroutines.withContext
 import androidx.core.view.ViewGroupCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.updatePadding
+import com.google.android.material.motion.MotionUtils
 import com.parseus.codecinfo.ui.externalLinks.ExternalLinksViewModel
 import kotlin.getValue
 
@@ -57,7 +59,10 @@ class SettingsActivity : MonetCompatActivity() {
     private lateinit var externalLinksHelper: ExternalLinksHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_CodecInfo)
+        setTheme(R.style.Theme_CodecInfo_Settings)
+        postponeEnterTransition()
+        super.onCreate(savedInstanceState)
+
         WindowCompat.enableEdgeToEdge(window)
         val startingFromAlias = intent?.component?.className?.startsWith("alias.SettingsActivity") == true
         if (startingFromAlias) {
@@ -71,20 +76,27 @@ class SettingsActivity : MonetCompatActivity() {
             }
         }
 
-        super.onCreate(savedInstanceState)
-
-        val enter = MaterialSharedAxis(MaterialSharedAxis.Z, true).apply {
+        val emphasizedInterpolator = MotionUtils.resolveThemeInterpolator(
+            this,
+            com.google.android.material.R.attr.motionEasingEmphasizedInterpolator,
+            AnimationUtils.loadInterpolator(this, androidx.appcompat.R.interpolator.fast_out_slow_in)
+        )
+        val enter = MaterialSharedAxis(MaterialSharedAxis.X, true).apply {
+            duration = 500
+            interpolator = emphasizedInterpolator
             excludeTarget(android.R.id.statusBarBackground, true)
             excludeTarget(android.R.id.navigationBarBackground, true)
         }
-        val exit = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
+        val returnTrans = MaterialSharedAxis(MaterialSharedAxis.X, false).apply {
+            duration = 500
+            interpolator = emphasizedInterpolator
             excludeTarget(android.R.id.statusBarBackground, true)
             excludeTarget(android.R.id.navigationBarBackground, true)
         }
         window.apply {
-            requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
             enterTransition = enter
-            exitTransition = exit
+            returnTransition = returnTrans
+            allowEnterTransitionOverlap = true
             allowReturnTransitionOverlap = true
         }
 
@@ -93,22 +105,21 @@ class SettingsActivity : MonetCompatActivity() {
                 repeatOnLifecycle(Lifecycle.State.CREATED) {
                     monet.awaitMonetReady()
                     initializeUI(savedInstanceState)
+                    binding.root.setBackgroundColor(getSurfaceColor(this@SettingsActivity))
+                    startPostponedEnterTransition()
                 }
             }
         } else {
             initializeUI(savedInstanceState)
+            startPostponedEnterTransition()
         }
 
         onBackPressedDispatcher.addCallback(this) {
             if (supportFragmentManager.findFragmentByTag("about_fragment") != null) {
                 goBackToMainFragment()
-            } else if (canEnableMemoryLeakFixBackDispatcher()) {
-                // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
-                finishAfterTransition()
             } else {
-                isEnabled = false
-                onBackPressedDispatcher.onBackPressed()
-                isEnabled = true
+                // Needed both for a memory leak fix on Android 10 and to ensure proper transitions.
+                finishAfterTransition()
             }
         }
     }

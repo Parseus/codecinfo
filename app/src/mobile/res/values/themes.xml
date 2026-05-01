@@ -5,6 +5,9 @@
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
 
         <item name="postSplashScreenTheme">@style/Theme.CodecInfo</item>
+
+        <item name="android:windowTransitionBackgroundFadeDuration">0</item>
+        <item name="android:windowActivityTransitions">false</item>
     </style>
 
     <style name="Theme.CodecInfo" parent="Base.Theme.CodecInfo">
@@ -14,6 +17,12 @@
         <item name="colorSecondaryContainer">@color/teal_100</item>
         <item name="colorOnSecondary">@color/white</item>
         <item name="colorError">@color/red_600</item>
+    </style>
+
+    <style name="Theme.CodecInfo.Settings" parent="Theme.CodecInfo">
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowBackground">@color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
     <style name="Base.Theme.CodecInfo" parent="Platform.Theme.CodecInfo">
@@ -26,7 +35,11 @@
     </style>
 
     <style name="Platform.V23.Theme.CodecInfo" parent="Theme.Material3Expressive.DynamicColors.DayNight.NoActionBar.FocusRings">
+        <item name="android:backgroundDimEnabled">false</item>
         <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowBackground">?attr/colorSurface</item>
+        <item name="android:windowTransitionBackgroundFadeDuration">0</item>
     </style>
     <style name="Platform.Theme.CodecInfo" parent="Platform.V23.Theme.CodecInfo" />
     

@@ -22,8 +22,6 @@ import com.google.android.play.core.review.ReviewManagerFactory
 import com.mikhaellopez.ratebottomsheet.RateBottomSheet
 import com.mikhaellopez.ratebottomsheet.RateBottomSheetManager
 import com.parseus.codecinfo.R
-import com.parseus.codecinfo.data.Library
-import com.parseus.codecinfo.data.LicenseType
 import com.parseus.codecinfo.data.VARIANT_LIBRARIES
 import com.parseus.codecinfo.ui.LicenseDialogManager
 
@@ -32,9 +30,9 @@ const val SHOW_RATE_APP = true
 private const val MAX_FLEXIBLE_UPDATE_PRIORITY = 3
 private const val MIN_IMMEDIATE_UPDATE_PRIORITY = 4
 
-private lateinit var appUpdateManager: AppUpdateManager
-private lateinit var updateListener: InstallStateUpdatedListener
-private lateinit var inAppUpdateResultLauncher: ActivityResultLauncher<IntentSenderRequest>
+private var appUpdateManager: AppUpdateManager? = null
+private var updateListener: InstallStateUpdatedListener? = null
+private var inAppUpdateResultLauncher: ActivityResultLauncher<IntentSenderRequest>? = null
 
 enum class UpdateType {
     Flexible, Immediate, Unknown
@@ -80,13 +78,15 @@ fun checkForUpdate(activity: Activity, progressBar: LinearProgressIndicator?) {
     if (getInstallSourceFromPackageManager(activity) != InstallSource.PlayStore) return
 
     appUpdateManager = AppUpdateManagerFactory.create(activity)
-    appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+    appUpdateManager?.appUpdateInfo?.addOnSuccessListener { info ->
         if (info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
             if (info.updatePriority() >= MIN_IMMEDIATE_UPDATE_PRIORITY
                 && info.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)) {
                 appUpdateType = UpdateType.Immediate
-                appUpdateManager.startUpdateFlowForResult(info, inAppUpdateResultLauncher,
-                    AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE))
+                inAppUpdateResultLauncher?.let {
+                    appUpdateManager?.startUpdateFlowForResult(info, it,
+                        AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE))
+                }
             } else if (info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
                 && info.updatePriority() <= MAX_FLEXIBLE_UPDATE_PRIORITY) {
                 appUpdateType = UpdateType.Flexible
@@ -108,9 +108,11 @@ fun checkForUpdate(activity: Activity, progressBar: LinearProgressIndicator?) {
                         }
                     }
                 }
-                appUpdateManager.registerListener(updateListener)
-                appUpdateManager.startUpdateFlowForResult(info, inAppUpdateResultLauncher,
-                    AppUpdateOptions.defaultOptions(AppUpdateType.FLEXIBLE))
+                updateListener?.let { appUpdateManager?.registerListener(it) }
+                inAppUpdateResultLauncher?.let {
+                    appUpdateManager?.startUpdateFlowForResult(info, it,
+                        AppUpdateOptions.defaultOptions(AppUpdateType.FLEXIBLE))
+                }
             }
         }
     }
@@ -118,7 +120,7 @@ fun checkForUpdate(activity: Activity, progressBar: LinearProgressIndicator?) {
 
 fun handleAppUpdateOnActivityResult(activity: Activity, resultCode: Int) {
     if (resultCode == Activity.RESULT_CANCELED) {
-        appUpdateManager.unregisterListener(updateListener)
+        updateListener?.let { appUpdateManager?.unregisterListener(it) }
     } else if (resultCode == ActivityResult.RESULT_IN_APP_UPDATE_FAILED) {
         Snackbar.make(activity.findViewById(android.R.id.content),
             R.string.update_failed, Snackbar.LENGTH_LONG).show()
@@ -134,18 +136,18 @@ fun handleAppUpdateOnResume(activity: Activity) {
 }
 
 private fun handleFlexibleUpdateOnResume(activity: Activity) {
-    appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+    appUpdateManager?.appUpdateInfo?.addOnSuccessListener { info ->
         if (info.installStatus() == InstallStatus.DOWNLOADED) {
-            appUpdateManager.unregisterListener(updateListener)
+            updateListener?.let { appUpdateManager?.unregisterListener(it) }
             showSnackbarForDownloadedUpdate(activity)
         }
     }
 }
 
 private fun handleImmediateUpdateOnResume(activity: Activity) {
-    appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+    appUpdateManager?.appUpdateInfo?.addOnSuccessListener { info ->
         if (info.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
-            appUpdateManager.startUpdateFlow(info, activity, AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE))
+            appUpdateManager?.startUpdateFlow(info, activity, AppUpdateOptions.defaultOptions(AppUpdateType.IMMEDIATE))
         }
     }
 }
@@ -153,7 +155,7 @@ private fun handleImmediateUpdateOnResume(activity: Activity) {
 private fun showSnackbarForDownloadedUpdate(activity: Activity) {
     Snackbar.make(activity.findViewById(android.R.id.content),
         R.string.update_flexible_complete, Snackbar.LENGTH_INDEFINITE).apply {
-        setAction(R.string.update_flexible_restart) { appUpdateManager.completeUpdate() }
+        setAction(R.string.update_flexible_restart) { appUpdateManager?.completeUpdate() }
         show()
     }
 }
@@ -190,4 +192,11 @@ fun showLicensesDialog(activity: AppCompatActivity) {
     val manager = LicenseDialogManager(activity)
     VARIANT_LIBRARIES.forEach { manager.setLibrary(it) }
     manager.show()
+}
+
+fun cleanInAppUpdateReferences() {
+    updateListener?.let { appUpdateManager?.unregisterListener(it) }
+    appUpdateManager = null
+    updateListener = null
+    inAppUpdateResultLauncher = null
 }

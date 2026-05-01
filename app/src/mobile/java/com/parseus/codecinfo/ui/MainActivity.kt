@@ -79,6 +79,7 @@ import com.parseus.codecinfo.utils.checkForUpdate
 import com.parseus.codecinfo.utils.createInAppUpdateResultLauncher
 import com.parseus.codecinfo.utils.copyToClipboard
 import com.parseus.codecinfo.utils.disableApiBlacklistOnPie
+import com.parseus.codecinfo.utils.cleanInAppUpdateReferences
 import com.parseus.codecinfo.utils.getAllInfoString
 import com.parseus.codecinfo.utils.getItemListString
 import com.parseus.codecinfo.utils.getMemoryLeakFixBackDispatcher
@@ -594,6 +595,7 @@ class MainActivity : MonetCompatActivity() {
 
     override fun onDestroy() {
         clearSavedLists()
+        cleanInAppUpdateReferences()
         super.onDestroy()
     }
 

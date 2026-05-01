@@ -14,8 +14,9 @@ fun createInAppUpdateResultLauncher(activity: AppCompatActivity) {}
 fun initializeAppRating(activity: AppCompatActivity) {}
 fun launchStoreIntent(activity: android.app.Activity) {}
 fun checkForUpdate(activity: android.app.Activity, progressBar: LinearProgressIndicator?) {}
-fun handleAppUpdateOnActivityResult(activity: android.app.Activity, requestCode: Int, resultCode: Int) {}
+fun handleAppUpdateOnActivityResult(activity: android.app.Activity, resultCode: Int) {}
 fun handleAppUpdateOnResume(activity: android.app.Activity) {}
+fun cleanInAppUpdateReferences() {}
 
 fun showLicensesDialog(activity: AppCompatActivity) {
     val manager = LicenseDialogManager(activity)

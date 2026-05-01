@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.app.SharedElementCallback
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -596,7 +597,14 @@ class MainActivity : MonetCompatActivity() {
         detailedDrmInfo.clear()
     }
 
+    @Suppress("USELESS_CAST")
     override fun onDestroy() {
+        window.exitTransition = null
+        window.reenterTransition = null
+
+        setExitSharedElementCallback(null as? SharedElementCallback)
+        setEnterSharedElementCallback(null as? SharedElementCallback)
+
         clearSavedLists()
         cleanInAppUpdateReferences()
         super.onDestroy()

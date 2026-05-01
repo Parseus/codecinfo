@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
+import androidx.core.app.SharedElementCallback
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.commit
@@ -157,6 +158,17 @@ class SettingsActivity : MonetCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(!isChromebook(this))
         supportActionBar!!.title = getString(R.string.action_settings)
         supportFragmentManager.popBackStack()
+    }
+
+    @Suppress("USELESS_CAST")
+    override fun onDestroy() {
+        window.exitTransition = null
+        window.reenterTransition = null
+
+        setExitSharedElementCallback(null as? SharedElementCallback)
+        setEnterSharedElementCallback(null as? SharedElementCallback)
+
+        super.onDestroy()
     }
 
     override fun finish() {

@@ -17,9 +17,9 @@
 package com.parseus.codecinfo.ui
 
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.os.Build
 import android.text.Layout
 import android.text.Spanned
 import android.text.style.LeadingMarginSpan
@@ -39,7 +39,6 @@ class ImprovedBulletSpan(
 ) : LeadingMarginSpan {
 
     companion object {
-        // Bullet is slightly bigger to avoid aliasing artifacts on mdpi devices.
         private const val STANDARD_BULLET_RADIUS = 4
         private const val STANDARD_GAP_WIDTH = 10
         private const val STANDARD_COLOR = 0
@@ -60,12 +59,10 @@ class ImprovedBulletSpan(
     ) {
         if (text is Spanned && text.getSpanStart(this) == start) {
             val style = paint.style
-            val oldColor = if (wantColor) {
-                val colorToReturn = paint.color
+            val oldColor = paint.color
+
+            if (wantColor) {
                 paint.color = color
-                colorToReturn
-            } else {
-                Color.BLACK
             }
 
             paint.style = Paint.Style.FILL
@@ -74,7 +71,9 @@ class ImprovedBulletSpan(
             val yPosition = baseline + (fontMetrics.ascent + fontMetrics.descent) / 2f
             val xPosition = (x + dir * bulletRadius).toFloat()
 
-            if (canvas.isHardwareAccelerated) {
+            // Android 10 has improved antialiasing for drawCircle(),
+            // so that workaround is not needed on more modern API levels.
+            if (Build.VERSION.SDK_INT < 29 && canvas.isHardwareAccelerated) {
                 if (bulletPath == null) {
                     bulletPath = Path().apply {
                         addCircle(0.0f, 0.0f, bulletRadius.toFloat(), Path.Direction.CW)

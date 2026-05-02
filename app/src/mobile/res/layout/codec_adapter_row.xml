@@ -67,6 +67,7 @@
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
             android:visibility="gone"
+            android:contentDescription="@string/known_issue_detected"
             app:srcCompat="@drawable/mtrl_ic_error"
             app:tint="?attr/colorError"
             tools:visibility="visible" />

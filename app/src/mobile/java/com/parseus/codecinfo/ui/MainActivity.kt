@@ -327,7 +327,7 @@ class MainActivity : MonetCompatActivity() {
                     }
                 } else {
                     setNavigationIcon(R.drawable.ic_search)
-                    setNavigationContentDescription(null)
+                    setNavigationContentDescription(R.string.action_search)
                     setNavigationOnClickListener(null)
                 }
             }
@@ -342,7 +342,7 @@ class MainActivity : MonetCompatActivity() {
             } else {
                 binding.searchBar.apply {
                     setNavigationIcon(R.drawable.ic_search)
-                    setNavigationContentDescription(null)
+                    setNavigationContentDescription(R.string.action_search)
                     setNavigationOnClickListener(null)
                 }
             }

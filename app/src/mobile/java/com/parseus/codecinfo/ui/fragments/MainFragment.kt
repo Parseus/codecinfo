@@ -11,13 +11,17 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.transition.Transition
+import androidx.transition.TransitionManager
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.transition.MaterialSharedAxis
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.InfoType
 import com.parseus.codecinfo.databinding.FragmentMainBinding
 import com.parseus.codecinfo.ui.adapters.PagerAdapter
+import com.parseus.codecinfo.utils.isInTwoPaneMode
 import com.parseus.codecinfo.utils.updateColors
 import com.parseus.codecinfo.viewmodels.ItemsViewModel
 
@@ -27,9 +31,16 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
+    private var tabLayoutMediator: TabLayoutMediator? = null
+
     private val viewModel: ItemsViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        if (!requireContext().isInTwoPaneMode()) {
+            exitTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+            reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        }
+
         _binding = FragmentMainBinding.inflate(inflater)
         return binding.root
     }
@@ -50,12 +61,12 @@ class MainFragment : Fragment() {
             val pagerAdapter = PagerAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
             viewPager.adapter = pagerAdapter
 
-            TabLayoutMediator(tabs, viewPager) { tab, position ->
+            tabLayoutMediator = TabLayoutMediator(tabs, viewPager) { tab, position ->
                 val infoType = InfoType.fromInt(position)
                 tab.contentDescription = getString(infoType.tabTextResId)
                 tab.icon = AppCompatResources.getDrawable(requireContext(), infoType.tabIconResId)
                 tab.text = getString(infoType.tabTextResId)
-            }.attach()
+            }.apply { attach() }
 
             tabs.updateColors(requireContext())
         }
@@ -125,7 +136,20 @@ class MainFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        val container = (view?.parent as? ViewGroup)
+            ?: activity?.findViewById(R.id.content_fragment)
+        container?.let { TransitionManager.endTransitions(it) }
+        view?.let {
+            (exitTransition as? Transition)?.removeTarget(it)
+            (reenterTransition as? Transition)?.removeTarget(it)
+        }
+        exitTransition = null
+        reenterTransition = null
+
         super.onDestroyView()
+
+        tabLayoutMediator?.detach()
+        tabLayoutMediator = null
         _binding = null
     }
 

@@ -332,7 +332,7 @@ class MainActivity : MonetCompatActivity() {
         binding.searchBar.setHint(R.string.search_hint)
 
         memoryLeakFixBackDispatcher.isEnabled = canEnableMemoryLeakFixBackDispatcher()
-        homeAsUpBackDispatcher.isEnabled = !isTwoPane && (isDetailsShown || binding.searchView.isShowing)
+        homeAsUpBackDispatcher.isEnabled = binding.searchView.isShowing
     }
 
     private fun initializeUI(savedInstanceState: Bundle?) {

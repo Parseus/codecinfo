@@ -16,6 +16,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Transition
+import androidx.transition.TransitionManager
+import com.google.android.material.transition.MaterialSharedAxis
 import com.kieronquinn.monetcompat.app.MonetFragment
 import com.kieronquinn.monetcompat.extensions.views.applyMonetRecursively
 import com.parseus.codecinfo.R
@@ -66,12 +69,25 @@ class DetailsFragment : MonetFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         super.onCreateView(inflater, container, savedInstanceState)
 
+        if (!requireContext().isInTwoPaneMode()) {
+            enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
+            returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+        }
+
         _binding = ItemDetailsFragmentLayoutBinding.inflate(inflater, container, false)
 
         return binding.root
     }
 
     override fun onDestroyView() {
+        val container = (view?.parent as? ViewGroup)
+            ?: activity?.findViewById(R.id.content_fragment)
+        container?.let { TransitionManager.endTransitions(it) }
+        view?.let {
+            (exitTransition as? Transition)?.removeTarget(it)
+            (reenterTransition as? Transition)?.removeTarget(it)
+        }
+
         binding.itemDetailsRecyclerView.adapter = null
         _binding = null
         super.onDestroyView()

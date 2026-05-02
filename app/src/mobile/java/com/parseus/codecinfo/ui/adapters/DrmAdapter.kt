@@ -17,7 +17,6 @@ import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.databinding.DrmAdapterRowBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
-import com.parseus.codecinfo.utils.buildContainerTransform
 import com.parseus.codecinfo.utils.getActivity
 import com.parseus.codecinfo.utils.getColorOnSurfaceVariant
 import com.parseus.codecinfo.utils.getHighlightedText
@@ -87,7 +86,6 @@ class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmD
             layout.contentDescription = layout.context.getString(R.string.drm_row_content_description,
                     position, drmName)
 
-            layout.transitionName = "$drmName"
             layout.setOnClickListener {
                 val context = layout.context
                 val activity = context.getActivity() as? MainActivity
@@ -106,11 +104,6 @@ class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmD
                             putString("drmName", drmSimpleInfo.drmName)
                             putSerializable("drmUuid", drmSimpleInfo.drmUuid)
                         }
-
-                        if (!act.isInTwoPaneMode()) {
-                            fragment.sharedElementEnterTransition = buildContainerTransform(layout, true)
-                            fragment.sharedElementReturnTransition = buildContainerTransform(layout, false)
-                        }
                     }
 
                     act.supportFragmentManager.commit {
@@ -119,7 +112,6 @@ class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmD
                             replace(R.id.itemDetailsFragment, detailsFragment,
                                 act.getString(R.string.details_fragment_tag))
                         } else {
-                            addSharedElement(layout, layout.transitionName!!)
                             replace(R.id.content_fragment, detailsFragment,
                                 act.getString(R.string.details_fragment_tag))
                             addToBackStack(null)

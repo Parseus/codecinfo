@@ -2,11 +2,7 @@ package com.parseus.codecinfo.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.os.Build
-import android.view.View
-import com.google.android.material.transition.MaterialContainerTransform
-import com.parseus.codecinfo.R
 import com.parseus.codecinfo.ui.settings.DarkTheme
 
 @SuppressLint("PrivateApi")
@@ -44,12 +40,4 @@ fun getDefaultThemeOption(context: Context) = when {
     Build.VERSION.SDK_INT >= 28 -> DarkTheme.SystemDefault.value
     !isBatterySaverDisallowed(context) -> DarkTheme.BatterySaver.value
     else -> DarkTheme.Light.value
-}
-
-fun buildContainerTransform(view: View, entering: Boolean): MaterialContainerTransform {
-    val colorSurface = getSurfaceColor(view.context)
-    return MaterialContainerTransform().also {
-        it.setAllContainerColors(colorSurface)
-        it.drawingViewId = if (entering) R.id.end_root else R.id.start_root
-    }
 }

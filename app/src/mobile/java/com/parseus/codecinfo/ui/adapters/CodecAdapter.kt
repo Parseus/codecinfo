@@ -21,7 +21,6 @@ import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.databinding.CodecAdapterRowBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
-import com.parseus.codecinfo.utils.buildContainerTransform
 import com.parseus.codecinfo.utils.getActivity
 import com.parseus.codecinfo.utils.getColorOnSurfaceVariant
 import com.parseus.codecinfo.utils.getHighlightedText
@@ -134,7 +133,6 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
                 }
             }
 
-            layout.transitionName = "$codecId/$codecName"
             layout.setOnClickListener {
                 val context = layout.context
                 val activity = context.getActivity() as? MainActivity
@@ -153,10 +151,6 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
                             putString("codecId", codecInfo.codecId)
                             putString("codecName", codecInfo.codecName)
                         }
-                        if (!act.isInTwoPaneMode()) {
-                            fragment.sharedElementEnterTransition = buildContainerTransform(layout, true)
-                            fragment.sharedElementReturnTransition = buildContainerTransform(layout, false)
-                        }
                     }
 
                     act.supportFragmentManager.commit {
@@ -165,7 +159,6 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
                             replace(R.id.itemDetailsFragment, detailsFragment,
                                 act.getString(R.string.details_fragment_tag))
                         } else {
-                            addSharedElement(layout, layout.transitionName!!)
                             replace(R.id.content_fragment, detailsFragment,
                                 act.getString(R.string.details_fragment_tag))
                             addToBackStack(null)

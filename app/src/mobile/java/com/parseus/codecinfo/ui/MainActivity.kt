@@ -25,6 +25,7 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.app.SharedElementCallback
@@ -554,62 +555,110 @@ class MainActivity : MonetCompatActivity() {
                 WindowInfoTracker.getOrCreate(this@MainActivity)
                     .windowLayoutInfo(this@MainActivity)
                     .collect { newLayoutInfo ->
-                        val separatorGuideline = binding.separatorGuideline ?: return@collect
+                        if (binding.verticalSeparatorGuideline == null) return@collect
+
                         val foldingFeature = newLayoutInfo.displayFeatures
                             .filterIsInstance<FoldingFeature>()
-                            .firstOrNull { it.orientation == FoldingFeature.Orientation.VERTICAL }
+                            .firstOrNull()
+
+                        val constraintSet = ConstraintSet()
+                        constraintSet.clone(binding.root)
 
                         if (foldingFeature != null) {
-                            val isRtl = resources.configuration.orientation == View.LAYOUT_DIRECTION_RTL
-                            val windowMetrics = WindowMetricsCalculator.getOrCreate()
-                                .computeCurrentWindowMetrics(this@MainActivity)
-                            val windowWidth = windowMetrics.bounds.width()
+                            val isVertical = foldingFeature.orientation == FoldingFeature.Orientation.VERTICAL
                             val location = IntArray(2)
                             binding.root.getLocationInWindow(location)
-                            val xOffset = location[0]
 
-                            val guidePosition = if (isRtl) {
-                                windowWidth - (foldingFeature.bounds.right - xOffset)
+                            if (isVertical) {
+                                val xOffset = location[0]
+                                val guidePosition = if (resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+                                    val windowWidth = WindowMetricsCalculator.getOrCreate()
+                                        .computeCurrentWindowMetrics(this@MainActivity).bounds.width()
+                                    windowWidth - (foldingFeature.bounds.right - xOffset)
+                                } else {
+                                    foldingFeature.bounds.left - xOffset
+                                }
+
+                                // Update Vertical Guideline position
+                                constraintSet.setGuidelineBegin(R.id.verticalSeparatorGuideline, guidePosition)
+                                constraintSet.setGuidelinePercent(R.id.horizontalSeparatorGuideline, -1f)
+
+                                // Re-apply side-by-side constraints
+                                constraintSet.connect(R.id.content_fragment, ConstraintSet.END, R.id.verticalSeparatorGuideline, ConstraintSet.START)
+                                constraintSet.connect(R.id.content_fragment, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+
+                                constraintSet.connect(R.id.itemDetailsFragment, ConstraintSet.START, R.id.verticalSeparatorGuideline, ConstraintSet.END)
+                                constraintSet.connect(R.id.itemDetailsFragment, ConstraintSet.TOP, R.id.appBar, ConstraintSet.BOTTOM)
+                                constraintSet.connect(R.id.itemDetailsFragment, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                                constraintSet.connect(R.id.itemDetailsFragment, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+
+                                // Apply safety margins/hinge width
+                                val hingeWidth = foldingFeature.bounds.width()
+                                val safetyPadding = if (foldingFeature.isSeparating) (16 * resources.displayMetrics.density).toInt() else 0
+                                constraintSet.setMargin(R.id.itemDetailsFragment, ConstraintSet.START, hingeWidth + safetyPadding)
+                                constraintSet.setMargin(R.id.content_fragment, ConstraintSet.END, safetyPadding)
+
+                                // Reset horizontal margins
+                                constraintSet.setMargin(R.id.itemDetailsFragment, ConstraintSet.TOP, 0)
+                                constraintSet.setMargin(R.id.content_fragment, ConstraintSet.BOTTOM, 0)
+
+                                // Hide a manual divider on devices with a physical hinge
+                                // (e.g. Surface Duo).
+                                constraintSet.setVisibility(R.id.separator,
+                                    if (foldingFeature.isSeparating) View.GONE else View.VISIBLE)
                             } else {
-                                foldingFeature.bounds.left - xOffset
-                            }
+                                val yOffset = location[1]
+                                val guidePosition = foldingFeature.bounds.top - yOffset
 
-                            // Position the guideline at the fold/hinge
-                            separatorGuideline.setGuidelinePercent(-1f)
-                            separatorGuideline.setGuidelineBegin(guidePosition)
+                                // Update Horizontal Guideline position
+                                constraintSet.setGuidelineBegin(R.id.horizontalSeparatorGuideline, guidePosition)
+                                constraintSet.setGuidelinePercent(R.id.verticalSeparatorGuideline, -1f)
 
-                            val physicalHingeWidth = foldingFeature.bounds.width()
-                            val safetyPadding = if (foldingFeature.isSeparating && physicalHingeWidth == 0) {
-                                // Add roughly 16dp of safety margin for the crease
-                                (16 * resources.displayMetrics.density).toInt()
-                            } else {
-                                0
-                            }
+                                // Stack vertically: List on top, Details on bottom
+                                constraintSet.connect(R.id.content_fragment, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+                                constraintSet.connect(R.id.content_fragment, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                                constraintSet.connect(R.id.content_fragment, ConstraintSet.BOTTOM, R.id.horizontalSeparatorGuideline, ConstraintSet.TOP)
 
-                            binding.itemDetailsFragment?.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                                marginStart = physicalHingeWidth + safetyPadding
-                                marginEnd = 0
-                            }
-                            binding.contentFragment.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                                marginEnd = safetyPadding
-                            }
+                                constraintSet.connect(R.id.itemDetailsFragment, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+                                constraintSet.connect(R.id.itemDetailsFragment, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                                constraintSet.connect(R.id.itemDetailsFragment, ConstraintSet.TOP, R.id.horizontalSeparatorGuideline, ConstraintSet.BOTTOM)
+                                constraintSet.connect(R.id.itemDetailsFragment, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
 
-                            // Hide a manual divider on devices with a physical hinge
-                            // (e.g. Surface Duo).
-                            binding.separator?.isVisible = !foldingFeature.isSeparating
+                                // Apply safety margins for the horizontal crease
+                                val safetyPadding = if (foldingFeature.isSeparating) (16 * resources.displayMetrics.density).toInt() else 0
+                                constraintSet.setMargin(R.id.itemDetailsFragment, ConstraintSet.TOP, foldingFeature.bounds.height() + safetyPadding)
+                                constraintSet.setMargin(R.id.content_fragment, ConstraintSet.BOTTOM, safetyPadding)
+
+                                // Reset vertical margins
+                                constraintSet.setMargin(R.id.itemDetailsFragment, ConstraintSet.START, 0)
+                                constraintSet.setMargin(R.id.content_fragment, ConstraintSet.END, 0)
+
+                                // ALWAYS hide the vertical separator in tabletop mode
+                                constraintSet.setVisibility(R.id.separator,View.GONE)
+                            }
                         } else {
-                            // Reset to default percentage if no vertical fold is present
+                            // Reset to default side-by-side tablet mode
                             val defaultPercent = ResourcesCompat.getFloat(resources, R.dimen.separator_guideline_percent)
-                            separatorGuideline.setGuidelineBegin(-1)
-                            separatorGuideline.setGuidelinePercent(defaultPercent)
-                            binding.itemDetailsFragment?.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                                marginStart = 0
-                            }
-                            binding.contentFragment.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                                marginEnd = 0
-                            }
-                            binding.separator?.isVisible = true
+                            constraintSet.setGuidelinePercent(R.id.verticalSeparatorGuideline, defaultPercent)
+                            constraintSet.setGuidelinePercent(R.id.horizontalSeparatorGuideline, -1f)
+
+                            constraintSet.connect(R.id.content_fragment, ConstraintSet.END, R.id.verticalSeparatorGuideline, ConstraintSet.START)
+                            constraintSet.connect(R.id.content_fragment, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+
+                            constraintSet.connect(R.id.itemDetailsFragment, ConstraintSet.START, R.id.verticalSeparatorGuideline, ConstraintSet.END)
+                            constraintSet.connect(R.id.itemDetailsFragment, ConstraintSet.TOP, R.id.appBar, ConstraintSet.BOTTOM)
+                            constraintSet.connect(R.id.itemDetailsFragment, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                            constraintSet.connect(R.id.itemDetailsFragment, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+
+                            constraintSet.setMargin(R.id.itemDetailsFragment, ConstraintSet.START, 0)
+                            constraintSet.setMargin(R.id.itemDetailsFragment, ConstraintSet.TOP, 0)
+                            constraintSet.setMargin(R.id.content_fragment, ConstraintSet.END, 0)
+                            constraintSet.setMargin(R.id.content_fragment, ConstraintSet.BOTTOM, 0)
+
+                            constraintSet.setVisibility(R.id.separator, View.VISIBLE)
                         }
+
+                        constraintSet.applyTo(binding.root)
                     }
             }
         }

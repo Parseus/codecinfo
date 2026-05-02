@@ -6,22 +6,17 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.net.toUri
-import androidx.core.text.PrecomputedTextCompat
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.OnItemViewClickedListener
 import androidx.leanback.widget.Presenter
 import androidx.leanback.widget.Row
 import androidx.leanback.widget.RowPresenter
-import androidx.lifecycle.lifecycleScope
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.Library
 import com.parseus.codecinfo.data.TV_LIBRARIES
 import com.parseus.codecinfo.databinding.ItemDetailsAdapterRowBinding
 import com.parseus.codecinfo.utils.ToastCompat
 import com.parseus.codecinfo.utils.externalAppIntentFlags
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class TvLicensesFragment : BaseVerticalGridSupportFragment(), OnItemViewClickedListener {
 
@@ -49,7 +44,7 @@ class TvLicensesFragment : BaseVerticalGridSupportFragment(), OnItemViewClickedL
         }
     }
 
-    private inner class LibraryPresenter : Presenter() {
+    private class LibraryPresenter : Presenter() {
         override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {
             val binding = ItemDetailsAdapterRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             return ViewHolder(binding.root)
@@ -59,13 +54,7 @@ class TvLicensesFragment : BaseVerticalGridSupportFragment(), OnItemViewClickedL
             val library = item as Library
             val binding = ItemDetailsAdapterRowBinding.bind(viewHolder.view)
             binding.codecProperty.text = library.name
-
-            lifecycleScope.launch {
-                val precomputedText = withContext(Dispatchers.Default) {
-                    PrecomputedTextCompat.create(library.url, binding.codecValue.textMetricsParamsCompat)
-                }
-                binding.codecValue.setPrecomputedText(precomputedText)
-            }
+            binding.codecValue.text = library.url
         }
 
         override fun onUnbindViewHolder(viewHolder: ViewHolder) {}

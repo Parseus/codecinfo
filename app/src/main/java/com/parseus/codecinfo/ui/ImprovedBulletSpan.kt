@@ -67,8 +67,7 @@ class ImprovedBulletSpan(
 
             paint.style = Paint.Style.FILL
 
-            val fontMetrics = paint.fontMetrics
-            val yPosition = baseline + (fontMetrics.ascent + fontMetrics.descent) / 2f
+            val yPosition = baseline + (paint.ascent() + paint.descent()) / 2f
             val xPosition = (x + dir * bulletRadius).toFloat()
 
             // Android 10 has improved antialiasing for drawCircle(),

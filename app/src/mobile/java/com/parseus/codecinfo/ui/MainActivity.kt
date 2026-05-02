@@ -17,6 +17,7 @@ import android.view.KeyboardShortcutInfo
 import android.view.Menu
 import android.view.MenuItem
 import android.view.PointerIcon
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.activity.OnBackPressedCallback
@@ -42,6 +43,7 @@ import androidx.core.view.WindowInsetsCompat.Type.systemBars
 import androidx.core.view.forEach
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import androidx.draganddrop.DropHelper
@@ -53,6 +55,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
+import androidx.window.layout.WindowMetricsCalculator
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.search.SearchView
@@ -557,8 +560,39 @@ class MainActivity : MonetCompatActivity() {
                             .firstOrNull { it.orientation == FoldingFeature.Orientation.VERTICAL }
 
                         if (foldingFeature != null) {
+                            val isRtl = resources.configuration.orientation == View.LAYOUT_DIRECTION_RTL
+                            val windowMetrics = WindowMetricsCalculator.getOrCreate()
+                                .computeCurrentWindowMetrics(this@MainActivity)
+                            val windowWidth = windowMetrics.bounds.width()
+                            val location = IntArray(2)
+                            binding.root.getLocationInWindow(location)
+                            val xOffset = location[0]
+
+                            val guidePosition = if (isRtl) {
+                                windowWidth - (foldingFeature.bounds.right - xOffset)
+                            } else {
+                                foldingFeature.bounds.left - xOffset
+                            }
+
                             // Position the guideline at the fold/hinge
-                            separatorGuideline.setGuidelineBegin(foldingFeature.bounds.left)
+                            separatorGuideline.setGuidelinePercent(-1f)
+                            separatorGuideline.setGuidelineBegin(guidePosition)
+
+                            val physicalHingeWidth = foldingFeature.bounds.width()
+                            val safetyPadding = if (foldingFeature.isSeparating && physicalHingeWidth == 0) {
+                                // Add roughly 16dp of safety margin for the crease
+                                (16 * resources.displayMetrics.density).toInt()
+                            } else {
+                                0
+                            }
+
+                            binding.itemDetailsFragment?.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                                marginStart = physicalHingeWidth + safetyPadding
+                                marginEnd = 0
+                            }
+                            binding.contentFragment.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                                marginEnd = safetyPadding
+                            }
 
                             // Hide a manual divider on devices with a physical hinge
                             // (e.g. Surface Duo).
@@ -566,7 +600,14 @@ class MainActivity : MonetCompatActivity() {
                         } else {
                             // Reset to default percentage if no vertical fold is present
                             val defaultPercent = ResourcesCompat.getFloat(resources, R.dimen.separator_guideline_percent)
+                            separatorGuideline.setGuidelineBegin(-1)
                             separatorGuideline.setGuidelinePercent(defaultPercent)
+                            binding.itemDetailsFragment?.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                                marginStart = 0
+                            }
+                            binding.contentFragment.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                                marginEnd = 0
+                            }
                             binding.separator?.isVisible = true
                         }
                     }

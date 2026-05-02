@@ -144,6 +144,7 @@ class ItemFragment : MonetFragment() {
     private fun setupRecyclerView() {
         itemAdapter = if (infoType != InfoType.DRM) CodecAdapter() else DrmAdapter()
         binding.simpleCodecListView.apply {
+            setHasFixedSize(true)
             layoutManager = CustomLinearLayoutManager(context)
             adapter = itemAdapter
             isNestedScrollingEnabled = false

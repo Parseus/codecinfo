@@ -28,6 +28,8 @@ import androidx.core.app.SharedElementCallback
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewGroupCompat
@@ -71,15 +73,17 @@ import com.parseus.codecinfo.databinding.DeviceIssuesLayoutBinding
 import com.parseus.codecinfo.ui.adapters.CodecAdapter
 import com.parseus.codecinfo.ui.adapters.DeviceIssuesAdapter
 import com.parseus.codecinfo.ui.adapters.DrmAdapter
+import com.parseus.codecinfo.ui.externalLinks.ExternalLinksViewModel
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.ui.settings.DarkTheme
 import com.parseus.codecinfo.ui.settings.SettingsContract
+import com.parseus.codecinfo.utils.ExternalLinksHelper
 import com.parseus.codecinfo.utils.canEnableMemoryLeakFixBackDispatcher
 import com.parseus.codecinfo.utils.checkForUpdate
-import com.parseus.codecinfo.utils.createInAppUpdateResultLauncher
-import com.parseus.codecinfo.utils.copyToClipboard
-import com.parseus.codecinfo.utils.disableApiBlacklistOnPie
 import com.parseus.codecinfo.utils.cleanInAppUpdateReferences
+import com.parseus.codecinfo.utils.copyToClipboard
+import com.parseus.codecinfo.utils.createInAppUpdateResultLauncher
+import com.parseus.codecinfo.utils.disableApiBlacklistOnPie
 import com.parseus.codecinfo.utils.getAllInfoString
 import com.parseus.codecinfo.utils.getItemListString
 import com.parseus.codecinfo.utils.getMemoryLeakFixBackDispatcher
@@ -108,11 +112,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
-import androidx.core.graphics.drawable.toDrawable
 
 class MainActivity : MonetCompatActivity() {
 
     internal lateinit var binding: ActivityMainBinding
+
+    private val externalLinksViewModel: ExternalLinksViewModel by viewModels()
+    private lateinit var externalLinksHelper: ExternalLinksHelper
 
     private val useImmersiveMode: Boolean
         get() = settingsRepository.getSettingsSync().immersiveMode
@@ -179,6 +185,13 @@ class MainActivity : MonetCompatActivity() {
         WindowCompat.enableEdgeToEdge(window)
 
         super.onCreate(savedInstanceState)
+
+        externalLinksHelper = ExternalLinksHelper(this, lifecycle)
+        externalLinksViewModel.prefetchExternalLink.observe(this) {
+            if (it != null) {
+                externalLinksHelper.prefetchUrl(it)
+            }
+        }
 
         if (!isNativeMonetAvailable()) {
             lifecycleScope.launch {
@@ -356,6 +369,17 @@ class MainActivity : MonetCompatActivity() {
         binding.updateProgressBar.updateColors(this)
 
         itemsViewModel.loadData(this)
+
+        lifecycleScope.launch {
+            val affectedProblems = withContext(Dispatchers.IO) {
+                DEVICE_PROBLEMS_DB.filter { it.isAffected(this@MainActivity, null) }
+            }
+            affectedProblems.forEach { problem ->
+                problem.urls.forEach { url ->
+                    externalLinksViewModel.prefetchExternalLink.value = url.toUri()
+                }
+            }
+        }
 
         setupSearch()
 

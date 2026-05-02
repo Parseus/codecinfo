@@ -6,6 +6,7 @@ import android.content.ClipDescription
 import android.os.Build
 import android.view.*
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.core.os.BundleCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -36,6 +37,7 @@ import com.parseus.codecinfo.ui.adapters.DetailItem
 import com.parseus.codecinfo.ui.adapters.DetailsItemDecoration
 import com.parseus.codecinfo.ui.adapters.MobileDetailsAdapter
 import com.parseus.codecinfo.ui.expandablelist.ExpandableItemAnimator
+import com.parseus.codecinfo.ui.externalLinks.ExternalLinksViewModel
 import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSurfaceColor
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
@@ -57,6 +59,8 @@ class DetailsFragment : MonetFragment() {
     private var knownProblems: List<KnownProblem> = emptyList()
     private var isKnownProblemsExpanded = true
     private lateinit var detailsAdapter: MobileDetailsAdapter
+
+    private val externalLinksViewModel: ExternalLinksViewModel by activityViewModels()
 
     var codecId: String? = null
     var codecName: String? = null
@@ -183,6 +187,11 @@ class DetailsFragment : MonetFragment() {
             }
         } else {
             emptyList()
+        }
+        knownProblems.forEach { problem ->
+            problem.urls.forEach {
+                externalLinksViewModel.prefetchExternalLink.value = it.toUri()
+            }
         }
 
         binding.loadingProgress.isVisible = false

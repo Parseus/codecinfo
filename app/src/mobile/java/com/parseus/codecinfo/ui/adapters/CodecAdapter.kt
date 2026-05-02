@@ -68,7 +68,7 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
         holder.bindCodecInfo(getItem(position), position, currentSearchQuery)
     }
 
-    class CodecInfoViewHolder(
+    inner class CodecInfoViewHolder(
         binding: CodecAdapterRowBinding,
         private val primaryColor: Int,
         private val secondaryColor: Int,
@@ -86,6 +86,95 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
         init {
             if (Build.VERSION.SDK_INT >= 24) {
                 layout.pointerIcon = PointerIcon.getSystemIcon(layout.context, PointerIcon.TYPE_HAND)
+
+                layout.setOnLongClickListener { v ->
+                    val textToDrag = v.tag as? String ?: return@setOnLongClickListener false
+                    val item = ClipData.Item(textToDrag)
+                    val dragData = ClipData(textToDrag, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
+                    v.startDragAndDrop(dragData, View.DragShadowBuilder(v), null, View.DRAG_FLAG_GLOBAL)
+                }
+            }
+
+            layout.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val codecInfo = getItem(position)
+                    val context = layout.context
+                    val activity = context.getActivity() as? MainActivity
+                    activity?.let { act ->
+                        // Do not create the same fragment again.
+                        act.supportFragmentManager
+                            .findFragmentByTag(act.getString(R.string.details_fragment_tag))?.let {
+                                (it as DetailsFragment)
+                                if (codecInfo.codecId == it.codecId && codecInfo.codecName == it.codecName) {
+                                    return@setOnClickListener
+                                }
+                            }
+
+                        val detailsFragment = DetailsFragment().also { fragment ->
+                            fragment.arguments = Bundle().apply {
+                                putString("codecId", codecInfo.codecId)
+                                putString("codecName", codecInfo.codecName)
+                            }
+                        }
+
+                        act.supportFragmentManager.commit {
+                            setReorderingAllowed(true)
+                            if (act.isInTwoPaneMode()) {
+                                replace(R.id.itemDetailsFragment, detailsFragment,
+                                    act.getString(R.string.details_fragment_tag))
+                            } else {
+                                replace(R.id.content_fragment, detailsFragment,
+                                    act.getString(R.string.details_fragment_tag))
+                                addToBackStack(null)
+                            }
+                        }
+                        act.hideSearchView()
+                    }
+                }
+            }
+
+            layout.setOnContextClickListener { v ->
+                val position = bindingAdapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val codecInfo = getItem(position)
+                    val popup = PopupMenu(v.context, v)
+                    popup.menu.add(Menu.NONE, 0, 0, R.string.context_menu_copy_codec_name)
+                    popup.menu.add(Menu.NONE, 1, 1, R.string.context_menu_copy_codec_details)
+                    popup.menu.add(Menu.NONE, 2, 2, R.string.action_share)
+
+                    popup.setOnMenuItemClickListener { item ->
+                        val activity = v.context.getActivity() as? MainActivity
+                        when (item.itemId) {
+                            0 -> {
+                                v.context.copyToClipboard(v.context.getString(R.string.app_name), codecInfo.codecName, v)
+                                true
+                            }
+                            1 -> {
+                                activity?.lifecycleScope?.launch {
+                                    val details = withContext(Dispatchers.IO) {
+                                        getSelectedCodecInfoString(v.context, codecInfo.codecId, codecInfo.codecName)
+                                    }
+                                    v.context.copyToClipboard(v.context.getString(R.string.app_name), details, v)
+                                }
+                                true
+                            }
+                            2 -> {
+                                activity?.lifecycleScope?.launch {
+                                    val textToShare = withContext(Dispatchers.IO) {
+                                        getSelectedCodecInfoString(v.context, codecInfo.codecId, codecInfo.codecName)
+                                    }
+                                    val title = "${v.context.getString(R.string.codec_details)}: ${codecInfo.codecName}"
+                                    activity.shareSingleItem(textToShare, title)
+                                }
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                    popup.show()
+                }
+                true
             }
         }
 
@@ -148,89 +237,7 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
                 }
             }
 
-            layout.setOnClickListener {
-                val context = layout.context
-                val activity = context.getActivity() as? MainActivity
-                activity?.let { act ->
-                    // Do not create the same fragment again.
-                    act.supportFragmentManager
-                        .findFragmentByTag(act.getString(R.string.details_fragment_tag))?.let {
-                            (it as DetailsFragment)
-                            if (codecInfo.codecId == it.codecId && codecInfo.codecName == it.codecName) {
-                                return@setOnClickListener
-                            }
-                        }
-
-                    val detailsFragment = DetailsFragment().also { fragment ->
-                        fragment.arguments = Bundle().apply {
-                            putString("codecId", codecInfo.codecId)
-                            putString("codecName", codecInfo.codecName)
-                        }
-                    }
-
-                    act.supportFragmentManager.commit {
-                        setReorderingAllowed(true)
-                        if (act.isInTwoPaneMode()) {
-                            replace(R.id.itemDetailsFragment, detailsFragment,
-                                act.getString(R.string.details_fragment_tag))
-                        } else {
-                            replace(R.id.content_fragment, detailsFragment,
-                                act.getString(R.string.details_fragment_tag))
-                            addToBackStack(null)
-                        }
-                    }
-                    act.hideSearchView()
-                }
-            }
-
-            if (Build.VERSION.SDK_INT >= 24) {
-                layout.setOnLongClickListener { v ->
-                    val textToDrag = codecInfo.codecName
-                    val item = ClipData.Item(textToDrag)
-                    val dragData = ClipData(textToDrag, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
-                    v.startDragAndDrop(dragData, View.DragShadowBuilder(v), null, View.DRAG_FLAG_GLOBAL)
-                }
-            }
             layout.tag = codecInfo.codecName
-
-            layout.setOnContextClickListener { v ->
-                val popup = PopupMenu(v.context, v)
-                popup.menu.add(Menu.NONE, 0, 0, R.string.context_menu_copy_codec_name)
-                popup.menu.add(Menu.NONE, 1, 1, R.string.context_menu_copy_codec_details)
-                popup.menu.add(Menu.NONE, 2, 2, R.string.action_share)
-
-                popup.setOnMenuItemClickListener { item ->
-                    val activity = v.context.getActivity() as? MainActivity
-                    when (item.itemId) {
-                        0 -> {
-                            v.context.copyToClipboard(v.context.getString(R.string.app_name), codecInfo.codecName, v)
-                            true
-                        }
-                        1 -> {
-                            activity?.lifecycleScope?.launch {
-                                val details = withContext(Dispatchers.IO) {
-                                    getSelectedCodecInfoString(v.context, codecInfo.codecId, codecInfo.codecName)
-                                }
-                                v.context.copyToClipboard(v.context.getString(R.string.app_name), details, v)
-                            }
-                            true
-                        }
-                        2 -> {
-                            activity?.lifecycleScope?.launch {
-                                val textToShare = withContext(Dispatchers.IO) {
-                                    getSelectedCodecInfoString(v.context, codecInfo.codecId, codecInfo.codecName)
-                                }
-                                val title = "${v.context.getString(R.string.codec_details)}: ${codecInfo.codecName}"
-                                activity.shareSingleItem(textToShare, title)
-                            }
-                            true
-                        }
-                        else -> false
-                    }
-                }
-                popup.show()
-                true
-            }
         }
 
     }

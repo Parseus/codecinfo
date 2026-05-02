@@ -119,9 +119,27 @@ open class DetailsAdapter(private val onHeaderClick: (Int) -> Unit = {}) : ListA
         protected val codecName = binding.codecProperty
         protected val codecInfo = binding.codecValue as AppCompatTextView
 
+        protected var currentName = ""
+        protected var currentInfo = ""
+
+        init {
+            if (Build.VERSION.SDK_INT >= 24) {
+                itemView.setOnLongClickListener { v ->
+                    val textToDrag = "$currentName: $currentInfo"
+                    val item = ClipData.Item(textToDrag)
+                    val dragData = ClipData(textToDrag, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
+                    v.startDragAndDrop(dragData, View.DragShadowBuilder(v), null, View.DRAG_FLAG_GLOBAL)
+                }
+                itemView.pointerIcon = PointerIcon.getSystemIcon(itemView.context, PointerIcon.TYPE_HAND)
+            }
+        }
+
         @CallSuper
         open fun bindDetails(name: String, info: String, isMultiLineProperty: Boolean) {
             val resources = itemView.resources
+
+            currentName = name
+            currentInfo = info
 
             if (name.isEmpty()) {
                 codecName.isVisible = false
@@ -144,16 +162,6 @@ open class DetailsAdapter(private val onHeaderClick: (Int) -> Unit = {}) : ListA
                 PrecomputedTextCompat.getTextFuture(info,
                     codecInfo.textMetricsParamsCompat, null)
             )
-
-            if (Build.VERSION.SDK_INT >= 24) {
-                itemView.setOnLongClickListener { v ->
-                    val textToDrag = "$name: $info"
-                    val item = ClipData.Item(textToDrag)
-                    val dragData = ClipData(textToDrag, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
-                    v.startDragAndDrop(dragData, View.DragShadowBuilder(v), null, View.DRAG_FLAG_GLOBAL)
-                }
-                itemView.pointerIcon = PointerIcon.getSystemIcon(itemView.context, PointerIcon.TYPE_HAND)
-            }
 
             itemView.tag = "$name: $info"
             itemView.contentDescription = "$name: $info"

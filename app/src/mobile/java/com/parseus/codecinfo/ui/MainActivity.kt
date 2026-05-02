@@ -218,33 +218,35 @@ class MainActivity : MonetCompatActivity() {
         onBackPressedDispatcher.addCallback(homeAsUpBackDispatcher)
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        if (event.isCtrlPressed) {
-            when (keyCode) {
-                KeyEvent.KEYCODE_F -> {
-                    binding.searchView.show()
-                    return true
-                }
-                KeyEvent.KEYCODE_S -> {
-                    onOptionsItemSelected(binding.searchBar.menu.findItem(R.id.menu_item_share))
-                    return true
-                }
-                KeyEvent.KEYCODE_COMMA -> {
-                    settingsContract.launch(null)
-                    return true
-                }
-                KeyEvent.KEYCODE_C -> {
-                    copyCurrentSelection()
-                    return true
-                }
-                KeyEvent.KEYCODE_V -> {
-                    val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                    handleDroppedText(clipboard.primaryClip?.getItemAt(0)?.text?.toString())
-                    return true
-                }
+    override fun onKeyShortcut(keyCode: Int, event: KeyEvent): Boolean {
+        when (keyCode) {
+            KeyEvent.KEYCODE_F -> {
+                binding.searchView.show()
+                return true
+            }
+            KeyEvent.KEYCODE_S -> {
+                onOptionsItemSelected(binding.searchBar.menu.findItem(R.id.menu_item_share))
+                return true
+            }
+            KeyEvent.KEYCODE_COMMA -> {
+                settingsContract.launch(null)
+                return true
+            }
+            KeyEvent.KEYCODE_C -> {
+                copyCurrentSelection()
+                return true
+            }
+            KeyEvent.KEYCODE_V -> {
+                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                handleDroppedText(clipboard.primaryClip?.getItemAt(0)?.text?.toString())
+                return true
             }
         }
-        if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+        return super.onKeyShortcut(keyCode, event)
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_ESCAPE && event.repeatCount == 0) {
             if (binding.searchView.isShowing) {
                 hideSearchView()
                 return true
@@ -253,7 +255,7 @@ class MainActivity : MonetCompatActivity() {
                 return true
             }
         }
-        return super.onKeyUp(keyCode, event)
+        return super.onKeyDown(keyCode, event)
     }
 
     @RequiresApi(24)

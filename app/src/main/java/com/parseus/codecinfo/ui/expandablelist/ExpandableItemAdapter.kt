@@ -1,9 +1,11 @@
 package com.parseus.codecinfo.ui.expandablelist
 
+import android.os.Build
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.util.Linkify.WEB_URLS
 import android.view.LayoutInflater
+import android.view.PointerIcon
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -100,6 +102,12 @@ class ExpandableItemAdapter(private val knownProblemsList: List<KnownProblem>)
         }
 
         class HeaderViewHolder(private val binding: ExpandableItemHeaderBinding) : ViewHolder(binding) {
+
+            init {
+                if (Build.VERSION.SDK_INT >= 24) {
+                    itemView.pointerIcon = PointerIcon.getSystemIcon(itemView.context, PointerIcon.TYPE_HAND)
+                }
+            }
 
             val expandIcon = binding.expandIcon
 

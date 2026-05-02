@@ -75,6 +75,12 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
         private val moreInfo = binding.moreInfo
         private val hwIcon = binding.hwIcon
 
+        init {
+            if (Build.VERSION.SDK_INT >= 24) {
+                layout.pointerIcon = PointerIcon.getSystemIcon(layout.context, PointerIcon.TYPE_HAND)
+            }
+        }
+
         fun updateHighlighting(codecInfo: CodecSimpleInfo, query: String) {
             codecId.text = getHighlightedText(codecInfo.codecId, query, primaryColor)
             codecName.text = getHighlightedText(codecInfo.codecName, query, primaryColor)
@@ -175,7 +181,6 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
                     val dragData = ClipData(textToDrag, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
                     v.startDragAndDrop(dragData, View.DragShadowBuilder(v), null, View.DRAG_FLAG_GLOBAL)
                 }
-                layout.pointerIcon = PointerIcon.getSystemIcon(layout.context, PointerIcon.TYPE_HAND)
             }
             layout.tag = codecInfo.codecName
         }

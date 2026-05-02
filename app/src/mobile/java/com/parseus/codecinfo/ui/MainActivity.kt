@@ -16,7 +16,9 @@ import android.view.KeyboardShortcutGroup
 import android.view.KeyboardShortcutInfo
 import android.view.Menu
 import android.view.MenuItem
+import android.view.PointerIcon
 import android.view.ViewGroup
+import android.widget.ImageButton
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -350,6 +352,13 @@ class MainActivity : MonetCompatActivity() {
 
     private fun initializeUI(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
+
+        if (Build.VERSION.SDK_INT >= 24) {
+            val handIcon = PointerIcon.getSystemIcon(this, PointerIcon.TYPE_HAND)
+            // Target only interactive buttons in the bars
+            binding.toolbar.forEach { if (it is ImageButton) it.pointerIcon = handIcon }
+            binding.searchBar.forEach { if (it is ImageButton) it.pointerIcon = handIcon }
+        }
 
         setupFoldableSupport()
 

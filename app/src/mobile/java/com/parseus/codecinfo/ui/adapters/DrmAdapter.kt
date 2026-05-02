@@ -66,6 +66,12 @@ class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmD
         private val drmName = binding.drmName
         private val moreInfo = binding.moreInfo
 
+        init {
+            if (Build.VERSION.SDK_INT >= 24) {
+                layout.pointerIcon = PointerIcon.getSystemIcon(layout.context, PointerIcon.TYPE_HAND)
+            }
+        }
+
         fun updateHighlighting(drmSimpleInfo: DrmSimpleInfo, query: String) {
             drmName.text = getHighlightedText(drmSimpleInfo.drmName, query, primaryColor)
         }
@@ -128,7 +134,6 @@ class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmD
                     val dragData = ClipData(textToDrag, arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
                     v.startDragAndDrop(dragData, View.DragShadowBuilder(v), null, View.DRAG_FLAG_GLOBAL)
                 }
-                layout.pointerIcon = PointerIcon.getSystemIcon(layout.context, PointerIcon.TYPE_HAND)
             }
             layout.tag = drmSimpleInfo.drmName
         }

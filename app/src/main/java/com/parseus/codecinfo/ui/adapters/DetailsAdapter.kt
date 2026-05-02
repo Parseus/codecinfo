@@ -76,6 +76,12 @@ open class DetailsAdapter(private val onHeaderClick: (Int) -> Unit = {}) : ListA
     class HeaderViewHolder(private val binding: ExpandableItemHeaderBinding, private val onHeaderClick: (Int) -> Unit) : RecyclerView.ViewHolder(binding.root) {
         val expandIcon = binding.expandIcon
 
+        init {
+            if (Build.VERSION.SDK_INT >= 24) {
+                itemView.pointerIcon = PointerIcon.getSystemIcon(itemView.context, PointerIcon.TYPE_HAND)
+            }
+        }
+
         fun bind(isExpanded: Boolean) {
             binding.expandIcon.rotation = if (isExpanded) 0f else 180f
             itemView.setOnClickListener { onHeaderClick(bindingAdapterPosition) }

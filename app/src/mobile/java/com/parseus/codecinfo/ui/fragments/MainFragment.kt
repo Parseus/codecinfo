@@ -89,7 +89,9 @@ class MainFragment : Fragment() {
         binding.navigationRail?.let { navigationRail ->
             updateNavigationRail(resources.configuration)
 
-            addFragmentToViewHierarchy()
+            if (savedInstanceState == null) {
+                addFragmentToViewHierarchy()
+            }
 
             navigationRail.setOnItemSelectedListener { item ->
                 when (item.itemId) {

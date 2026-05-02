@@ -437,10 +437,20 @@ class MainActivity : MonetCompatActivity() {
             editText.setOnEditorActionListener { _, _, _ ->
                 val query = text.toString()
                 searchViewModel.setSearchQuery(query)
+                editText.clearFocus()
                 false
             }
             editText.addTextChangedListener {
                 searchViewModel.setSearchQuery(it.toString())
+            }
+            editText.setOnKeyListener { _, keyCode, event ->
+                if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                    if ((binding.searchResultsRecyclerView.adapter?.itemCount ?: 0) > 0) {
+                        binding.searchResultsRecyclerView.requestFocus()
+                        return@setOnKeyListener true
+                    }
+                }
+                false
             }
 
             val dropMimeTypes = arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN, ClipDescription.MIMETYPE_TEXT_HTML)

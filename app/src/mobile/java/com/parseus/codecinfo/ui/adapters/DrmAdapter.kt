@@ -194,7 +194,7 @@ class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmD
                 moreInfo.visibility = View.GONE
             }
             layout.contentDescription = layout.context.getString(R.string.drm_row_content_description,
-                    position, drmName)
+                    position, drmName.text)
 
             layout.tag = drmSimpleInfo.drmName
         }

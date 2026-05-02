@@ -221,19 +221,19 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
             layout.contentDescription = when {
                 hwIcon.isVisible && knownIssueIcon.isVisible -> {
                     layout.context.getString(R.string.codec_row_hw_accelerated_with_issue_content_description,
-                        codecMediaTypeString, position, codecTypeString, codecName, codecId)
+                        codecMediaTypeString, position, codecTypeString, codecName.text, codecId.text)
                 }
                 hwIcon.isVisible -> {
                     layout.context.getString(R.string.codec_row_hw_accelerated_content_description,
-                        codecMediaTypeString, position, codecTypeString, codecName, codecId)
+                        codecMediaTypeString, position, codecTypeString, codecName.text, codecId.text)
                 }
                 knownIssueIcon.isVisible -> {
                     layout.context.getString(R.string.codec_row_with_issue_content_description,
-                        codecMediaTypeString, position, codecTypeString, codecName, codecId)
+                        codecMediaTypeString, position, codecTypeString, codecName.text, codecId.text)
                 }
                 else -> {
                     layout.context.getString(R.string.codec_row_content_description,
-                        codecMediaTypeString, position, codecTypeString, codecName, codecId)
+                        codecMediaTypeString, position, codecTypeString, codecName.text, codecId.text)
                 }
             }
 

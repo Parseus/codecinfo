@@ -1,6 +1,5 @@
 package com.parseus.codecinfo.utils
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.content.res.ColorStateList
@@ -8,9 +7,7 @@ import android.graphics.Color
 import android.os.Build
 import android.util.TypedValue
 import android.view.Menu
-import android.view.View
 import android.view.Window
-import android.view.WindowInsetsController
 import android.widget.CompoundButton
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
@@ -379,8 +376,6 @@ fun TabLayout.updateColors(context: Context) {
     setBackgroundColor(getSurfaceColor(context))
 }
 
-@Suppress("DEPRECATION")
-@SuppressLint("NewApi")
 fun Window.updateStatusBarColor(context: Context) {
     val isDynamicTheming = isDynamicThemingEnabled(context)
     val color = if (isDynamicTheming) {
@@ -397,24 +392,13 @@ fun Window.updateStatusBarColor(context: Context) {
         }
     }
 
-    if (Build.VERSION.SDK_INT >= 35) {
-        WindowCompat.getInsetsController(this, decorView).isAppearanceLightStatusBars = isColorLight(color)
-        return
+    if (Build.VERSION.SDK_INT < 35) {
+        @Suppress("DEPRECATION")
+        statusBarColor = color
     }
 
-    statusBarColor = color
-
-    if (isDynamicTheming) {
-        val lightStatusBar = isColorLight(color)
-        if (Build.VERSION.SDK_INT >= 31) {
-            insetsController?.setSystemBarsAppearance(if (lightStatusBar)
-                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS else 0,
-                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS)
-        } else {
-            val statusBarFlag = if (lightStatusBar) View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR else 0
-            decorView.systemUiVisibility =
-                (decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()) or statusBarFlag
-        }
+    if (isDynamicTheming || Build.VERSION.SDK_INT >= 35) {
+        WindowCompat.getInsetsController(this, decorView).isAppearanceLightStatusBars = isColorLight(color)
     }
 }
 

@@ -165,10 +165,6 @@ fun getSurfaceColor(context: Context): Int {
     }
 }
 
-fun getSurfaceContainerHighColor(context: Context): Int {
-    return MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurfaceContainerHigh, TAG)
-}
-
 fun getColorOnSurface(context: Context): Int {
     return if (isDynamicThemingEnabled(context)) {
         if (isNativeMonetAvailable()) {
@@ -308,13 +304,11 @@ fun MaterialToolbar.updateToolBarColor(context: Context) {
         setTitleTextColor(contentColor)
         setNavigationIconTint(contentColor)
     } else {
-        val backgroundColor: Int
         val contentColor = context.getColor(com.google.android.material.R.color.m3_dark_default_color_primary_text)
-
-        if (context.isNightMode()) {
-            backgroundColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, TAG)
+        val backgroundColor: Int = if (context.isNightMode()) {
+            MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurface, TAG)
         } else {
-            backgroundColor = MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, TAG)
+            MaterialColors.getColor(context, androidx.appcompat.R.attr.colorPrimary, TAG)
         }
 
         setBackgroundColor(backgroundColor)

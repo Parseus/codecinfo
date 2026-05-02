@@ -6,11 +6,14 @@ import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.PointerIcon
 import android.view.View
 import android.view.ViewGroup
-import android.view.PointerIcon
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -21,12 +24,17 @@ import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.databinding.CodecAdapterRowBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
+import com.parseus.codecinfo.utils.copyToClipboard
 import com.parseus.codecinfo.utils.getActivity
 import com.parseus.codecinfo.utils.getColorOnSurfaceVariant
 import com.parseus.codecinfo.utils.getHighlightedText
 import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
+import com.parseus.codecinfo.utils.getSelectedCodecInfoString
 import com.parseus.codecinfo.utils.isInTwoPaneMode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHolder>(
     CodecDiffCallback()
@@ -183,6 +191,45 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
                 }
             }
             layout.tag = codecInfo.codecName
+
+            layout.setOnContextClickListener { v ->
+                val popup = PopupMenu(v.context, v)
+                popup.menu.add(Menu.NONE, 0, 0, R.string.context_menu_copy_codec_name)
+                popup.menu.add(Menu.NONE, 1, 1, R.string.context_menu_copy_codec_details)
+                popup.menu.add(Menu.NONE, 2, 2, R.string.action_share)
+
+                popup.setOnMenuItemClickListener { item ->
+                    val activity = v.context.getActivity() as? MainActivity
+                    when (item.itemId) {
+                        0 -> {
+                            v.context.copyToClipboard(v.context.getString(R.string.app_name), codecInfo.codecName, v)
+                            true
+                        }
+                        1 -> {
+                            activity?.lifecycleScope?.launch {
+                                val details = withContext(Dispatchers.IO) {
+                                    getSelectedCodecInfoString(v.context, codecInfo.codecId, codecInfo.codecName)
+                                }
+                                v.context.copyToClipboard(v.context.getString(R.string.app_name), details, v)
+                            }
+                            true
+                        }
+                        2 -> {
+                            activity?.lifecycleScope?.launch {
+                                val textToShare = withContext(Dispatchers.IO) {
+                                    getSelectedCodecInfoString(v.context, codecInfo.codecId, codecInfo.codecName)
+                                }
+                                val title = "${v.context.getString(R.string.codec_details)}: ${codecInfo.codecName}"
+                                activity.shareSingleItem(textToShare, title)
+                            }
+                            true
+                        }
+                        else -> false
+                    }
+                }
+                popup.show()
+                true
+            }
         }
 
     }

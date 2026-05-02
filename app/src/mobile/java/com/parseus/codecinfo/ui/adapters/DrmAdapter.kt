@@ -5,10 +5,13 @@ import android.content.ClipDescription
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.PointerIcon
 import android.view.View
 import android.view.ViewGroup
-import android.view.PointerIcon
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.commit
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -17,12 +20,17 @@ import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.databinding.DrmAdapterRowBinding
 import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
+import com.parseus.codecinfo.utils.copyToClipboard
 import com.parseus.codecinfo.utils.getActivity
 import com.parseus.codecinfo.utils.getColorOnSurfaceVariant
 import com.parseus.codecinfo.utils.getHighlightedText
 import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
+import com.parseus.codecinfo.utils.getSelectedDrmInfoString
 import com.parseus.codecinfo.utils.isInTwoPaneMode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmDiffCallback()) {
 
@@ -136,6 +144,45 @@ class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmD
                 }
             }
             layout.tag = drmSimpleInfo.drmName
+
+            layout.setOnContextClickListener { v ->
+                val popup = PopupMenu(v.context, v)
+                popup.menu.add(Menu.NONE, 0, 0, R.string.context_menu_copy_drm_name)
+                popup.menu.add(Menu.NONE, 1, 1, R.string.context_menu_copy_drm_details)
+                popup.menu.add(Menu.NONE, 2, 2, R.string.action_share)
+
+                popup.setOnMenuItemClickListener { item ->
+                    val activity = v.context.getActivity() as? MainActivity
+                    when (item.itemId) {
+                        0 -> {
+                            v.context.copyToClipboard(v.context.getString(R.string.app_name), drmSimpleInfo.drmName, v)
+                            true
+                        }
+                        1 -> {
+                            activity?.lifecycleScope?.launch {
+                                val details = withContext(Dispatchers.IO) {
+                                    getSelectedDrmInfoString(v.context, drmSimpleInfo.drmName, drmSimpleInfo.drmUuid)
+                                }
+                                v.context.copyToClipboard(v.context.getString(R.string.app_name), details, v)
+                            }
+                            true
+                        }
+                        2 -> {
+                            activity?.lifecycleScope?.launch {
+                                val textToShare = withContext(Dispatchers.IO) {
+                                    getSelectedDrmInfoString(v.context, drmSimpleInfo.drmName, drmSimpleInfo.drmUuid)
+                                }
+                                val title = "${v.context.getString(R.string.drm_details)}: ${drmSimpleInfo.drmName}"
+                                activity.shareSingleItem(textToShare, title)
+                            }
+                            true
+                        }
+                        else -> false
+                    }
+                }
+                popup.show()
+                true
+            }
         }
 
     }

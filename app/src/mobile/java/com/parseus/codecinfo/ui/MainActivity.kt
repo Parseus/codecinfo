@@ -857,6 +857,24 @@ class MainActivity : MonetCompatActivity() {
         } catch (_: Exception) { null }
     }
 
+    fun shareSingleItem(textToShare: String, title: String) {
+        lifecycleScope.launch {
+            val shareIntent = Intent.createChooser(Intent().apply {
+                action = Intent.ACTION_SEND
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, textToShare)
+                putExtra(Intent.EXTRA_TITLE, title)
+                if (Build.VERSION.SDK_INT >= 29) {
+                    storeInfoIconForShare()?.let {
+                        clipData = it
+                        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    }
+                }
+            }, null)
+            startActivity(shareIntent)
+        }
+    }
+
     companion object {
         private const val INFO_ICON_FILE_NAME_PREFIX = "info_icon_"
     }

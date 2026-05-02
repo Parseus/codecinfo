@@ -18,6 +18,11 @@
     <string name="app_theme_battery_saver">Set by Battery Saver</string>
     <string name="app_theme_system_default">System default</string>
 
+    <string name="context_menu_copy_codec_name">Copy codec name</string>
+    <string name="context_menu_copy_codec_details">Copy codec details</string>
+    <string name="context_menu_copy_drm_name">Copy DRM name</string>
+    <string name="context_menu_copy_drm_details">Copy DRM details</string>
+
     <string name="dynamic_theme_wallpaper_color_picker">Wallpaper Color Picker</string>
     <string name="dynamic_theme_color_picker_unavailable">Unavailable for the current wallpaper or your current settings.</string>
 

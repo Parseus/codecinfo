@@ -40,8 +40,9 @@ class TvShareFragment : GuidedStepSupportFragment() {
     override fun onGuidedActionClicked(action: GuidedAction) {
         if (action.id == ACTION_SHARE_ITEM_LIST || action.id == ACTION_SHARE_ALL_INFO) {
             launchShareIntent(action.id)
+        } else {
+            finishGuidedStepSupportFragments()
         }
-        finishGuidedStepSupportFragments()
     }
 
     private fun launchShareIntent(actionId: Long) {
@@ -62,6 +63,7 @@ class TvShareFragment : GuidedStepSupportFragment() {
                 putExtra(Intent.EXTRA_TITLE, getString(titleResId))
             }
             startActivity(Intent.createChooser(shareIntent, getString(R.string.action_share)))
+            finishGuidedStepSupportFragments()
         }
     }
 

@@ -80,6 +80,7 @@ import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.ui.settings.DarkTheme
 import com.parseus.codecinfo.ui.settings.SettingsContract
 import com.parseus.codecinfo.utils.ExternalLinksHelper
+import com.parseus.codecinfo.utils.TextSizeCache
 import com.parseus.codecinfo.utils.canEnableMemoryLeakFixBackDispatcher
 import com.parseus.codecinfo.utils.checkForUpdate
 import com.parseus.codecinfo.utils.cleanInAppUpdateReferences
@@ -640,6 +641,7 @@ class MainActivity : MonetCompatActivity() {
         drmList.clear()
         detailedCodecInfos.clear()
         detailedDrmInfo.clear()
+        TextSizeCache.clear()
     }
 
     @Suppress("USELESS_CAST")

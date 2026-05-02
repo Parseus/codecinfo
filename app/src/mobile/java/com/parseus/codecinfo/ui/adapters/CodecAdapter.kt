@@ -32,6 +32,7 @@ import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
 import com.parseus.codecinfo.utils.getSelectedCodecInfoString
 import com.parseus.codecinfo.utils.isInTwoPaneMode
+import com.parseus.codecinfo.utils.setTextWithOptionalAutosizing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -91,7 +92,10 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
 
         fun updateHighlighting(codecInfo: CodecSimpleInfo, query: String) {
             codecId.text = getHighlightedText(codecInfo.codecId, query, primaryColor)
-            codecName.text = getHighlightedText(codecInfo.codecName, query, primaryColor)
+            codecName.setTextWithOptionalAutosizing(
+                text = getHighlightedText(codecInfo.codecName, query, primaryColor),
+                minSize = 8, maxSize = 16, step = 1
+            )
         }
 
         fun bindCodecInfo(codecInfo: CodecSimpleInfo, position: Int, query: String? = null) {
@@ -99,7 +103,10 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
                 updateHighlighting(codecInfo, query)
             } else {
                 codecId.text = codecInfo.codecId
-                codecName.text = codecInfo.codecName
+                codecName.setTextWithOptionalAutosizing(
+                    text = codecInfo.codecName,
+                    minSize = 8, maxSize = 16, step = 1
+                )
             }
             codecId.setTextColor(primaryColor)
             codecName.setTextColor(secondaryColor)

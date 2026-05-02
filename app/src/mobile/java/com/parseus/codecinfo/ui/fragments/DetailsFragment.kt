@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.content.ClipData
 import android.content.ClipDescription
 import android.os.Build
+import android.util.TypedValue
 import android.view.*
 import android.widget.TextView
 import androidx.core.net.toUri
@@ -43,6 +44,7 @@ import com.parseus.codecinfo.utils.getSurfaceColor
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
 import com.parseus.codecinfo.utils.isInTwoPaneMode
 import com.parseus.codecinfo.utils.isNativeMonetAvailable
+import com.parseus.codecinfo.utils.setTextWithOptionalAutosizing
 import com.parseus.codecinfo.utils.updateColors
 import com.parseus.codecinfo.viewmodels.ItemsViewModel
 import kotlinx.coroutines.Dispatchers
@@ -199,7 +201,10 @@ class DetailsFragment : MonetFragment() {
     }
 
     private fun showFullDetails() {
-        binding.fullCodecInfoName.text = codecName ?: drmName
+        binding.fullCodecInfoName.setTextWithOptionalAutosizing(
+            text = codecName ?: drmName ?: "",
+            minSize = 12, maxSize = 20, step = 1, unit = TypedValue.COMPLEX_UNIT_PX
+        )
         binding.fullCodecInfoName.setTextColor(getPrimaryColor(requireContext()))
 
         if (Build.VERSION.SDK_INT >= 24) {

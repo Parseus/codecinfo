@@ -28,6 +28,7 @@ import com.parseus.codecinfo.utils.getPrimaryColor
 import com.parseus.codecinfo.utils.getSecondaryColor
 import com.parseus.codecinfo.utils.getSelectedDrmInfoString
 import com.parseus.codecinfo.utils.isInTwoPaneMode
+import com.parseus.codecinfo.utils.setTextWithOptionalAutosizing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -81,14 +82,20 @@ class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmD
         }
 
         fun updateHighlighting(drmSimpleInfo: DrmSimpleInfo, query: String) {
-            drmName.text = getHighlightedText(drmSimpleInfo.drmName, query, primaryColor)
+            drmName.setTextWithOptionalAutosizing(
+                text = getHighlightedText(drmSimpleInfo.drmName, query, primaryColor),
+                minSize = 8, maxSize = 16, step = 1
+            )
         }
 
         fun bindDrmInfo(drmSimpleInfo: DrmSimpleInfo, position: Int, query: String? = null) {
             if (query != null) {
                 updateHighlighting(drmSimpleInfo, query)
             } else {
-                drmName.text = drmSimpleInfo.drmName
+                drmName.setTextWithOptionalAutosizing(
+                    text = drmSimpleInfo.drmName,
+                    minSize = 8, maxSize = 16, step = 1
+                )
             }
             drmId.setTextColor(primaryColor)
             drmName.setTextColor(secondaryColor)

@@ -5,7 +5,8 @@ data class CodecSimpleInfo(val id: Long,
                            val codecName: String,
                            val isAudio: Boolean,
                            val isEncoder: Boolean,
-                           val isHardwareAccelereated: Boolean) {
+                           val isHardwareAccelereated: Boolean,
+                           val hasKnownProblem: Boolean = false) {
 
     override fun toString(): String {
         return "$codecId ($codecName)"

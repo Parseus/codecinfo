@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
-import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.databinding.CodecAdapterRowBinding
 import com.parseus.codecinfo.ui.MainActivity
@@ -123,12 +122,7 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
                     && itemView.context.settingsRepository.getSettingsSync().showHwIcon
             hwIcon.imageTintList = ColorStateList.valueOf(onSurfaceVariantColor)
 
-            if (KNOWN_PROBLEMS_DB.isNotEmpty()) {
-                val knownProblems = KNOWN_PROBLEMS_DB.any {
-                    it.isAffected(itemView.context, codecInfo.codecName)
-                }
-                knownIssueIcon.isVisible = knownProblems
-            }
+            knownIssueIcon.isVisible = codecInfo.hasKnownProblem
 
             val codecTypeString = layout.context.getString(
                     if (codecInfo.isEncoder) R.string.encoder else R.string.decoder)

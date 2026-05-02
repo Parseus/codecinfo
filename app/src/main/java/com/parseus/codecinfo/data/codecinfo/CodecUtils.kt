@@ -20,6 +20,7 @@ import com.parseus.codecinfo.data.Settings
 import com.parseus.codecinfo.data.codecinfo.colorformats.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.VP9Levels.*
+import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.utils.*
 import java.util.*
@@ -230,8 +231,11 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
                 return@forEachIndexed
             }
 
+            val hasKnownProblem = if (KNOWN_PROBLEMS_DB.isNotEmpty()) {
+                KNOWN_PROBLEMS_DB.any { it.isAffected(context, mediaCodecInfo.name) }
+            } else false
             val codecSimpleInfo = CodecSimpleInfo((codecIndex * 100 + index).toLong(), codecId, mediaCodecInfo.name,
-                    isAudioCodec, mediaCodecInfo.isEncoder, isHardwareAccelerated(mediaCodecInfo))
+                    isAudioCodec, mediaCodecInfo.isEncoder, isHardwareAccelerated(mediaCodecInfo), hasKnownProblem)
             
             val targetList = if (isAudioCodec) audioList else videoList
             if (targetList.find {

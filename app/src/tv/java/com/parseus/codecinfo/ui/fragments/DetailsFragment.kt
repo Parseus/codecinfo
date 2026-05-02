@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.DividerItemDecoration
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
@@ -54,25 +53,28 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ItemDetailsFragmentLayoutBinding.inflate(inflater, container, false)
         binding.share.setOnClickListener {
-            val textToShare = when {
-                codecId != null && codecName != null -> getSelectedCodecInfoString(requireContext(),
-                    codecId!!, codecName!!)
-                drmName != null && drmUuid != null -> getSelectedDrmInfoString(requireContext(),
-                    drmName!!, drmUuid!!)
-                else -> ""
-            }
-            val shareIntent = Intent.createChooser(Intent().apply {
-                action = Intent.ACTION_SEND
-                type = "text/plain"
-                putExtra(Intent.EXTRA_TEXT, textToShare)
-                val title = if (codecId != null && codecName != null) {
-                    "${getString(R.string.codec_details)}: $codecName"
-                } else {
-                    "${getString(R.string.drm_details)}: $drmName"
+            viewLifecycleOwner.lifecycleScope.launch {
+                val (textToShare, title) = withContext(Dispatchers.IO) {
+                    when {
+                        codecId != null && codecName != null -> {
+                            getSelectedCodecInfoString(requireContext(), codecId!!, codecName!!) to "${getString(R.string.codec_details)}: $codecName"
+                        }
+                        drmName != null && drmUuid != null -> {
+                            getSelectedDrmInfoString(requireContext(), drmName!!, drmUuid!!) to "${getString(R.string.drm_details)}: $drmName"
+                        }
+                        else -> "" to ""
+                    }
                 }
-                putExtra(Intent.EXTRA_TITLE, title)
-            }, null)
-            startActivity(shareIntent)
+                if (textToShare.isNotEmpty()) {
+                    val shareIntent = Intent.createChooser(Intent().apply {
+                        action = Intent.ACTION_SEND
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_TEXT, textToShare)
+                        putExtra(Intent.EXTRA_TITLE, title)
+                    }, null)
+                    startActivity(shareIntent)
+                }
+            }
         }
         return binding.root
     }

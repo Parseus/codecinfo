@@ -33,6 +33,8 @@ val externalAppIntentFlags: Int
 private const val AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv"
 private const val GOOGLE_ANDROID_TV_INSTALLED = "com.google.android.tv.installed"
 
+private val WHITESPACE_REGEX = Regex("\\s+")
+
 // Workaround for a memory leak from https://issuetracker.google.com/issues/139738913
 fun Activity.getMemoryLeakFixBackDispatcher() = object : OnBackPressedCallback(false) {
     override fun handleOnBackPressed() {
@@ -97,9 +99,7 @@ fun Int.toHexHstring(): String {
     return "0x${this.toString(16).uppercase(Locale.getDefault())}"
 }
 
-fun ByteArray.toHexString(): String {
-    return this.joinToString("") { String.format("%02x", it) }
-}
+fun ByteArray.toHexString(): String = this.toHexString(HexFormat.Default)
 
 fun String.containsAny(vararg keywords: String): Boolean {
     return keywords.any { this.contains(it, ignoreCase = true) }
@@ -129,7 +129,7 @@ fun getHighlightedText(fullText: String, query: String, highlightColor: Int): Ch
         return fullText
     }
 
-    val words = query.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+    val words = query.trim().split(WHITESPACE_REGEX).filter { it.isNotEmpty() }
     if (words.isEmpty()) {
         return fullText
     }

@@ -201,7 +201,11 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
     val videoList = ArrayList<CodecSimpleInfo>()
 
     for ((codecIndex, mediaCodecInfo) in mediaCodecInfos.withIndex()) {
-        if (showHwCodecsOnly && !isHardwareAccelerated(mediaCodecInfo)) {
+        val types = mediaCodecInfo.supportedTypes
+        // Code for extension function is copied here to reduce the number of array allocations.
+        val isAudioCodec = types.any { it.contains("audio", true) }
+
+        if (showHwCodecsOnly && !isHardwareAccelerated(mediaCodecInfo, isAudioCodec)) {
             continue
         }
 
@@ -215,9 +219,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
             }
         }
 
-        val isAudioCodec = mediaCodecInfo.isAudioCodec()
-
-        mediaCodecInfo.supportedTypes.forEachIndexed{ index,  codecId ->
+        types.forEachIndexed { index,  codecId ->
             try {
                 mediaCodecInfo.getCapabilitiesForType(codecId)
             } catch (_: Exception) {
@@ -235,7 +237,7 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
                 KNOWN_PROBLEMS_DB.any { it.isAffected(context, mediaCodecInfo.name) }
             } else false
             val codecSimpleInfo = CodecSimpleInfo((codecIndex * 100 + index).toLong(), codecId, mediaCodecInfo.name,
-                    isAudioCodec, mediaCodecInfo.isEncoder, isHardwareAccelerated(mediaCodecInfo), hasKnownProblem)
+                    isAudioCodec, mediaCodecInfo.isEncoder, isHardwareAccelerated(mediaCodecInfo, isAudioCodec), hasKnownProblem)
             
             val targetList = if (isAudioCodec) audioList else videoList
             if (targetList.find {
@@ -305,11 +307,16 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
                 mediaCodecInfo.canonicalName))
     }
 
-    propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.hardware_acceleration),
-            isHardwareAccelerated(mediaCodecInfo).toString()))
-
+    val isSoftwareOnly = isSoftwareOnly(mediaCodecInfo, isAudio)
+    if (SDK_INT >= 29) {
+        propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.hardware_acceleration),
+            isHardwareAccelerated(mediaCodecInfo, isAudio).toString()))
+    } else {
+        propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.hardware_acceleration),
+            (!isSoftwareOnly).toString()))
+    }
     propertyList.add(DetailsProperty(propertyList.size.toLong(), context.getString(R.string.software_only),
-            isSoftwareOnly(mediaCodecInfo).toString()))
+        isSoftwareOnly.toString()))
 
     var codec: MediaCodec? = null
     fun getOrInitCodec(): MediaCodec? {
@@ -1159,13 +1166,13 @@ private fun isVendor(codecInfo: MediaCodecInfo): Boolean {
             && !codecName.startsWith("arc."))
 }
 
-private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {
+private fun isSoftwareOnly(codecInfo: MediaCodecInfo, isAudio: Boolean): Boolean {
     if (SDK_INT >= 29) {
         return codecInfo.isSoftwareOnly
     }
 
     // Hardware audio decoders aren't really a thing, particularly on older devices.
-    if (codecInfo.isAudioCodec()) {
+    if (isAudio) {
         return true
     }
 
@@ -1214,11 +1221,11 @@ private fun isSoftwareOnly(codecInfo: MediaCodecInfo): Boolean {
             || (!codecName.startsWith("omx.") && !codecName.startsWith("c2."))
 }
 
-private fun isHardwareAccelerated(codecInfo: MediaCodecInfo): Boolean {
+private fun isHardwareAccelerated(codecInfo: MediaCodecInfo, isAudio: Boolean): Boolean {
     return if (SDK_INT >= 29) {
         codecInfo.isHardwareAccelerated
     } else {
-        !isSoftwareOnly(codecInfo)
+        !isSoftwareOnly(codecInfo, isAudio)
     }
 }
 

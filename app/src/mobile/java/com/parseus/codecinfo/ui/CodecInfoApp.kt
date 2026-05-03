@@ -35,6 +35,7 @@ class CodecInfoApp : Application() {
                 it?.firstOrNull { color -> color == userPickedColor } ?: it?.firstOrNull()
             }
         }
+        MonetCompat.setup(this)
 
         enableSettingsIntentFilter()
     }

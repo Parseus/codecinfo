@@ -34,6 +34,7 @@ import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
 import com.parseus.codecinfo.ui.CustomLinearLayoutManager
+import com.parseus.codecinfo.ui.MainActivity
 import com.parseus.codecinfo.ui.adapters.DetailItem
 import com.parseus.codecinfo.ui.adapters.DetailsItemDecoration
 import com.parseus.codecinfo.ui.adapters.MobileDetailsAdapter
@@ -77,7 +78,24 @@ class DetailsFragment : MonetFragment() {
 
         if (!requireContext().isInTwoPaneMode()) {
             enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)
-            returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
+            returnTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false).apply {
+                addListener(object : Transition.TransitionListener {
+                    override fun onTransitionStart(transition: Transition) {
+                        (activity as? MainActivity)?.updateUIState(forceHideDetails = true)
+                    }
+
+                    override fun onTransitionCancel(transition: Transition) {
+                        (activity as? MainActivity)?.updateUIState(forceHideDetails = false)
+                    }
+
+                    override fun onTransitionEnd(transition: Transition) {
+                        (activity as? MainActivity)?.updateUIState(forceHideDetails = false)
+                    }
+
+                    override fun onTransitionPause(transition: Transition) {}
+                    override fun onTransitionResume(transition: Transition) {}
+                })
+            }
         }
 
         _binding = ItemDetailsFragmentLayoutBinding.inflate(inflater, container, false)

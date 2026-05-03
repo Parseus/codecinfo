@@ -308,28 +308,22 @@ class MainActivity : MonetCompatActivity() {
         }
     }
 
-    private fun updateUIState() {
+    fun updateUIState(forceHideDetails: Boolean = false) {
         if (!::binding.isInitialized) return
-        val isDetailsShown = supportFragmentManager.backStackEntryCount > 0
+
+        val detailsFragment = supportFragmentManager.findFragmentByTag(getString(R.string.details_fragment_tag))
+        val isDetailsShown = !forceHideDetails && supportFragmentManager.backStackEntryCount > 0 && detailsFragment?.isRemoving != true
         val isTwoPane = isInTwoPaneMode()
 
         binding.toolbar.updateToolBarColor(this)
 
         if (isTwoPane) {
-            binding.toolbar.isVisible = isDetailsShown
+            binding.toolbar.isVisible = false
             binding.searchBar.isVisible = true
             binding.searchBar.apply {
-                if (isDetailsShown) {
-                    setNavigationIcon(R.drawable.ic_close)
-                    setNavigationContentDescription(R.string.close_details)
-                    setNavigationOnClickListener {
-                        onBackPressedDispatcher.onBackPressed()
-                    }
-                } else {
-                    setNavigationIcon(R.drawable.ic_search)
-                    setNavigationContentDescription(R.string.action_search)
-                    setNavigationOnClickListener(null)
-                }
+                setNavigationIcon(R.drawable.ic_search)
+                setNavigationContentDescription(R.string.action_search)
+                setNavigationOnClickListener(null)
             }
         } else {
             binding.toolbar.isVisible = isDetailsShown

@@ -402,6 +402,16 @@ fun Window.updateStatusBarColor(context: Context) {
     }
 }
 
+fun Window.updateNavigationBarColor(context: Context) {
+    val color = getSurfaceColor(context)
+
+    if (Build.VERSION.SDK_INT < 35) {
+        @Suppress("DEPRECATION")
+        navigationBarColor = color
+    }
+    WindowCompat.getInsetsController(this, decorView).isAppearanceLightNavigationBars = isColorLight(color)
+}
+
 private fun getRippleColorForMaterialButton(context: Context): ColorStateList? {
     return if (isDynamicThemingEnabled(context)) {
         val colorPrimary = getPrimaryColor(context)

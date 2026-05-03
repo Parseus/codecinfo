@@ -106,6 +106,7 @@ import com.parseus.codecinfo.utils.updateBackgroundColor
 import com.parseus.codecinfo.utils.updateButtonColors
 import com.parseus.codecinfo.utils.updateColors
 import com.parseus.codecinfo.utils.updateIconColors
+import com.parseus.codecinfo.utils.updateNavigationBarColor
 import com.parseus.codecinfo.utils.updateStatusBarColor
 import com.parseus.codecinfo.utils.updateToolBarColor
 import com.parseus.codecinfo.viewmodels.ItemsViewModel
@@ -206,6 +207,7 @@ class MainActivity : MonetCompatActivity() {
                     initializeUI(savedInstanceState)
                     isUiReady = true
                     window.updateStatusBarColor(this@MainActivity)
+                    window.updateNavigationBarColor(this@MainActivity)
                 }
             }
         } else {
@@ -213,6 +215,7 @@ class MainActivity : MonetCompatActivity() {
             initializeUI(savedInstanceState)
             isUiReady = true
             window.updateStatusBarColor(this)
+            window.updateNavigationBarColor(this)
         }
 
         supportFragmentManager.addOnBackStackChangedListener {

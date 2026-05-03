@@ -140,6 +140,7 @@ class SettingsActivity : MonetCompatActivity() {
             supportFragmentManager.commit { replace(R.id.content, SettingsFragment::class.java, null) }
         }
         window.updateStatusBarColor(this)
+        window.updateNavigationBarColor(this)
         binding.toolbar.updateToolBarColor(this)
         binding.appBar.updateBackgroundColor(this)
         ViewGroupCompat.installCompatInsetsDispatch(binding.root)

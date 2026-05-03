@@ -41,6 +41,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type.displayCutout
 import androidx.core.view.WindowInsetsCompat.Type.systemBars
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.forEach
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
@@ -131,16 +132,9 @@ class MainActivity : MonetCompatActivity() {
         get() = settingsRepository.getSettingsSync().immersiveMode
 
     private val settingsContract = registerForActivityResult(SettingsContract()) { result ->
-        if (result.dynamicThemeChanged) {
+        if (result.dynamicThemeChanged || result.immersiveChanged) {
             ActivityCompat.recreate(this)
         } else {
-            if (result.immersiveChanged) {
-                if (useImmersiveMode) {
-                    enableImmersiveMode()
-                } else {
-                    disableImmersiveMode()
-                }
-            }
             if (result.shouldReloadLists() || result.saveDetailsToLogcatChanged) {
                 itemsViewModel.refreshData(this)
             }
@@ -373,6 +367,12 @@ class MainActivity : MonetCompatActivity() {
 
         setContentView(binding.root)
 
+        if (useImmersiveMode) {
+            enableImmersiveMode()
+        } else {
+            disableImmersiveMode()
+        }
+
         val settings = settingsRepository.getSettingsSync()
         val darkTheme = settings.darkTheme
         AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
@@ -404,10 +404,14 @@ class MainActivity : MonetCompatActivity() {
         binding.appBar.updateBackgroundColor(this)
         ViewCompat.setOnApplyWindowInsetsListener(binding.appBar) { v, windowInsets ->
             val insets = windowInsets.getInsets(systemBars() or displayCutout())
-            v.updatePadding(top = insets.top)
+
+            // Apply system bar height as top padding (and left/right respectively)
+            v.updatePadding(left = insets.left, top = insets.top, right = insets.right)
             windowInsets
         }
-        ViewCompat.setOnApplyWindowInsetsListener(binding.searchView) { _, windowInsets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.searchView) { v, windowInsets ->
+            val insets = windowInsets.getInsets(systemBars() or displayCutout())
+            v.updatePadding(left = insets.left, top = insets.top, right = insets.right, bottom = insets.bottom)
             windowInsets
         }
         ViewGroupCompat.installCompatInsetsDispatch(binding.root)
@@ -761,13 +765,17 @@ class MainActivity : MonetCompatActivity() {
     }
 
     private fun enableImmersiveMode() {
-        WindowCompat.getInsetsController(window, window.decorView).hide(systemBars())
-        WindowCompat.setDecorFitsSystemWindows(window, true)
-    }
+        val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+        insetsController.hide(systemBars())
+        insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE    }
 
     private fun disableImmersiveMode() {
-        WindowCompat.getInsetsController(window, window.decorView).show(systemBars())
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+        insetsController.show(systemBars())
+        insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
+        binding.root.post {
+            binding.root.requestApplyInsets()
+        }
     }
 
     @SuppressLint("InflateParams")

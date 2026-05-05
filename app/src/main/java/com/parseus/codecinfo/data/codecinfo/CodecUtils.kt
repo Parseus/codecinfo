@@ -21,8 +21,10 @@ import com.parseus.codecinfo.data.codecinfo.colorformats.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.VP9Levels.*
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
+import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.utils.*
+import java.util.Locale
 import java.util.*
 import kotlin.math.min
 
@@ -132,6 +134,8 @@ private val codecListLock = Any()
 private var mediaCodecInfos: Array<MediaCodecInfo> = emptyArray()
 private var mediaCodecInfoMap: Map<String, MediaCodecInfo> = emptyMap()
 
+private var knownProblemsMap: Map<String, List<KnownProblem>>? = null
+
 val audioCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
 val videoCodecList: MutableList<CodecSimpleInfo> = mutableListOf()
 
@@ -142,6 +146,9 @@ fun clearCodecCaches() {
         audioCodecList.clear()
         videoCodecList.clear()
         detailedCodecInfos.clear()
+        mediaCodecInfos = emptyArray()
+        mediaCodecInfoMap = emptyMap()
+        knownProblemsMap = null
     }
 }
 
@@ -200,12 +207,26 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
     val audioList = ArrayList<CodecSimpleInfo>()
     val videoList = ArrayList<CodecSimpleInfo>()
 
+    if (knownProblemsMap == null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
+        synchronized(codecListLock) {
+            if (knownProblemsMap == null) {
+                knownProblemsMap = KNOWN_PROBLEMS_DB
+                    .filter { it.codecName != null }
+                    .groupBy { it.codecName!!.lowercase(Locale.ENGLISH) }
+            }
+        }
+    }
+
+    val seenAudioCodecs = HashSet<String>()
+    val seenVideoCodecs = HashSet<String>()
+
     for ((codecIndex, mediaCodecInfo) in mediaCodecInfos.withIndex()) {
         val types = mediaCodecInfo.supportedTypes
         // Code for extension function is copied here to reduce the number of array allocations.
         val isAudioCodec = types.any { it.contains("audio", true) }
+        val isHardwareAccelerated = isHardwareAccelerated(mediaCodecInfo, isAudioCodec)
 
-        if (showHwCodecsOnly && !isHardwareAccelerated(mediaCodecInfo, isAudioCodec)) {
+        if (showHwCodecsOnly && !isHardwareAccelerated) {
             continue
         }
 
@@ -233,18 +254,21 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
                 return@forEachIndexed
             }
 
-            val hasKnownProblem = if (KNOWN_PROBLEMS_DB.isNotEmpty()) {
-                KNOWN_PROBLEMS_DB.any { it.isAffected(context, mediaCodecInfo.name) }
-            } else false
-            val codecSimpleInfo = CodecSimpleInfo((codecIndex * 100 + index).toLong(), codecId, mediaCodecInfo.name,
-                    isAudioCodec, mediaCodecInfo.isEncoder, isHardwareAccelerated(mediaCodecInfo, isAudioCodec), hasKnownProblem)
+            val codecName = mediaCodecInfo.name
+            val hasKnownProblem = knownProblemsMap?.get(codecName.lowercase(Locale.ENGLISH))?.any {
+                it.isAffected(context, codecName)
+            } ?: false
+
+            val codecSimpleInfo = CodecSimpleInfo((codecIndex * 100 + index).toLong(), codecId, codecName,
+                    isAudioCodec, mediaCodecInfo.isEncoder, isHardwareAccelerated, hasKnownProblem)
             
             val targetList = if (isAudioCodec) audioList else videoList
-            if (targetList.find {
-                it.codecId == codecSimpleInfo.codecId
-                        && it.codecName == codecSimpleInfo.codecName
-            } == null) {
+            val seenSet = if (isAudioCodec) seenAudioCodecs else seenVideoCodecs
+            val seenKey = "$codecId:$codecName"
+
+            if (seenKey !in seenSet) {
                 targetList.add(codecSimpleInfo)
+                seenSet.add(seenKey)
             }
         }
     }
@@ -332,7 +356,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
         if (SDK_INT >= 30) {
             if (!isEncoder && capabilities.isFeatureSupported(FEATURE_LowLatency)) {
                 propertyList.addFeature(context, capabilities, FEATURE_LowLatency, R.string.low_latency_decoder)
-            } else if (SDK_INT >= 31) {
+            } else if (SDK_INT >= 31 && isVendor(mediaCodecInfo)) {
                 val activeCodec = getOrInitCodec()
                 if (activeCodec != null) {
                     val vendorLowLatencyKey = activeCodec.supportedVendorParameters.find { it in knownVendorLowLatencyOptions }
@@ -445,7 +469,7 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             handleQualityRange(encoderCapabilities, defaultMediaFormat, propertyList, context)
         }
 
-        if (SDK_INT >= 31) {
+        if (SDK_INT >= 31 && isVendor(mediaCodecInfo)) {
             val vendorCodec = getOrInitCodec()
             if (vendorCodec != null) {
                 val vendorParams = vendorCodec.supportedVendorParameters

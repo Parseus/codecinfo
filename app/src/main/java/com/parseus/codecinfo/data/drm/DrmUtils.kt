@@ -35,7 +35,7 @@ fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
     if (Build.VERSION.SDK_INT >= 30) {
         val supported = MediaDrm.getSupportedCryptoSchemes()
         for (uuid in supported) {
-            val vendor = DrmVendor.entries.find { it.uuid == uuid }
+            val vendor = DrmVendor.getFromUuid(uuid)
             if (vendor != null) {
                 list.add(vendor.getSimpleInfo(context))
             } else {

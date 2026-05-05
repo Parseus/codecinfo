@@ -42,7 +42,9 @@ enum class DrmVendor(val uuid: UUID,
     open fun getVendorByteArrayProperties(): Map<Int, String>? = null
 
     companion object {
-        fun getFromUuid(uuid: UUID) = entries.find { uuid == it.uuid }
+        private val uuidMap by lazy { entries.associateBy { it.uuid } }
+
+        fun getFromUuid(uuid: UUID) = uuidMap[uuid]
 
         val STANDARD_STRING_PROPERTIES = mapOf(
                 R.string.drm_property_vendor to MediaDrm.PROPERTY_VENDOR,

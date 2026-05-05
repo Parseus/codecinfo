@@ -36,7 +36,7 @@
                         android:layout_height="@dimen/about_dialog_app_icon_size"
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
-                        android:contentDescription="@string/app_name" />
+                        android:importantForAccessibility="no" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -52,9 +52,10 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:labelFor="@id/appIcon"
+                            android:accessibilityHeading="true"
                             android:text="@string/app_name"
-                            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"/>
+                            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                            tools:ignore="UnusedAttribute"/>
 
                         <TextView
                             android:layout_width="match_parent"

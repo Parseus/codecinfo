@@ -29,6 +29,7 @@
         android:padding="12dp"
         android:fontFamily="monospace"
         android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="?attr/colorOnSurface"
         android:background="@drawable/license_text_background" />
 
 </LinearLayout>

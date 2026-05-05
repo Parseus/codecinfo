@@ -67,7 +67,7 @@
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
             android:visibility="gone"
-            android:contentDescription="@string/known_issue_detected"
+            android:importantForAccessibility="no"
             app:srcCompat="@drawable/mtrl_ic_error"
             app:tint="?attr/colorError"
             tools:visibility="visible" />
@@ -77,7 +77,7 @@
             android:layout_width="@dimen/icon_size"
             android:layout_height="@dimen/icon_size"
             android:layout_marginStart="4dp"
-            android:contentDescription="@string/hardware_acceleration"
+            android:importantForAccessibility="no"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/ic_hardware" />
     </LinearLayout>

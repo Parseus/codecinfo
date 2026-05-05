@@ -504,25 +504,19 @@ class MainActivity : MonetCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    searchViewModel.searchQuery.collect { query ->
-                        audioSearchAdapter.updateSearchQuery(query)
-                        videoSearchAdapter.updateSearchQuery(query)
-                        drmSearchAdapter.updateSearchQuery(query)
-                    }
-                }
+                searchViewModel.searchResultState.collect { state ->
+                    audioSearchAdapter.updateSearchQuery(state.query)
+                    videoSearchAdapter.updateSearchQuery(state.query)
+                    drmSearchAdapter.updateSearchQuery(state.query)
 
-                launch {
-                    searchViewModel.searchResultState.collect { state ->
-                        if (state.isQueryEmpty) {
-                            audioSearchAdapter.submitList(emptyList())
-                            videoSearchAdapter.submitList(emptyList())
-                            drmSearchAdapter.submitList(emptyList())
-                        } else {
-                            audioSearchAdapter.submitList(state.audioResults)
-                            videoSearchAdapter.submitList(state.videoResults)
-                            drmSearchAdapter.submitList(state.drmResults)
-                        }
+                    if (state.isQueryEmpty) {
+                        audioSearchAdapter.submitList(emptyList())
+                        videoSearchAdapter.submitList(emptyList())
+                        drmSearchAdapter.submitList(emptyList())
+                    } else {
+                        audioSearchAdapter.submitList(state.audioResults)
+                        videoSearchAdapter.submitList(state.videoResults)
+                        drmSearchAdapter.submitList(state.drmResults)
                     }
                 }
             }

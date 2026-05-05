@@ -19,14 +19,14 @@ data class SearchResultState(
     val audioResults: List<CodecSimpleInfo> = emptyList(),
     val videoResults: List<CodecSimpleInfo> = emptyList(),
     val drmResults: List<DrmSimpleInfo> = emptyList(),
-    val isQueryEmpty: Boolean = true
+    val isQueryEmpty: Boolean = true,
+    val query: String = ""
 )
 
 @OptIn(FlowPreview::class)
 class SearchViewModel : ViewModel() {
 
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+    private val searchQuery = MutableStateFlow("")
 
     private val _searchResultState = MutableStateFlow(SearchResultState())
     val searchResultState: StateFlow<SearchResultState> = _searchResultState.asStateFlow()
@@ -51,16 +51,17 @@ class SearchViewModel : ViewModel() {
                 allVideo = videoDeferred.await()
                 allDrms = drmDeferred.await()
 
-                _searchQuery
+                searchQuery
+                    .debounce(100L)
                     .map { query ->
                         if (query.isBlank()) {
-                            SearchResultState(isQueryEmpty = true)
+                            SearchResultState(isQueryEmpty = true, query = query)
                         } else {
                             val queryWords = query.trim().split(Regex("\\s+"))
                             val filteredAudio = allAudio.filter { it.matches(queryWords) }
                             val filteredVideo = allVideo.filter { it.matches(queryWords) }
                             val filteredDrms = allDrms.filter { it.matches(queryWords) }
-                            SearchResultState(filteredAudio, filteredVideo, filteredDrms, false)
+                            SearchResultState(filteredAudio, filteredVideo, filteredDrms, false, query)
                         }
                     }
                     .flowOn(Dispatchers.Default)
@@ -72,6 +73,6 @@ class SearchViewModel : ViewModel() {
     }
 
     fun setSearchQuery(query: String) {
-        _searchQuery.value = query
+        searchQuery.value = query
     }
 }

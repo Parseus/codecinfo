@@ -9,7 +9,9 @@
     android:paddingBottom="@dimen/details_row_bottom_padding"
     android:paddingLeft="@dimen/list_content_horizontal_padding"
     android:paddingRight="@dimen/list_content_horizontal_padding"
-    tools:ignore="SelectableText">
+    android:focusable="true"
+    android:screenReaderFocusable="true"
+    tools:ignore="SelectableText,UnusedAttribute">
 
     <TextView
         style="@style/Widget.Material3.TextView.ListItem.LabelText"

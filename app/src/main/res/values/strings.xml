@@ -191,4 +191,8 @@
     <string name="about_changelog">What\'s new</string>
     <string name="about_report_bugs">Report bugs</string>
     <string name="about_send_feedback">Send feedback</string>
+
+    <string name="state_expanded">Expanded</string>
+    <string name="state_collapsed">Collapsed</string>
+    <string name="state_selected">Selected</string>
 </resources>

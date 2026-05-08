@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.parseus.codecinfo.R
 import com.parseus.codecinfo.databinding.WallpaperColorsAdapterItemBinding
 import com.parseus.codecinfo.utils.isColorLight
 
@@ -30,7 +31,10 @@ class ColorPickerAdapter(context: Context,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val color = colors[position]
         with(holder.binding) {
-            val tooltipText = "#%02X".format(color and 0xFFFFFF)
+            var tooltipText = "#%02X".format(color and 0xFFFFFF)
+            if (color == selectedColor) {
+                tooltipText += " ${holder.binding.root.context.getString(R.string.state_selected)}"
+            }
             holder.binding.root.apply {
                 contentDescription = tooltipText
                 TooltipCompat.setTooltipText(this, tooltipText)

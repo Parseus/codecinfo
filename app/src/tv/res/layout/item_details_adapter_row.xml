@@ -7,9 +7,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusable="true"
+    android:screenReaderFocusable="true"
     android:paddingBottom="@dimen/details_row_bottom_padding"
     android:paddingLeft="@dimen/list_content_horizontal_padding"
-    android:paddingRight="@dimen/list_content_horizontal_padding">
+    android:paddingRight="@dimen/list_content_horizontal_padding"
+    tools:ignore="UnusedAttribute">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/codec_property"

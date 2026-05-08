@@ -8,16 +8,11 @@
     android:layout_marginLeft="@dimen/list_content_horizontal_padding"
     android:layout_marginRight="@dimen/list_content_horizontal_padding"
     android:layout_marginBottom="@dimen/list_content_horizontal_padding"
-    android:importantForAccessibility="yes"
-    android:focusable="true"
-    android:screenReaderFocusable="true"
     tools:ignore="UnusedAttribute">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="false"
-        android:importantForAccessibility="no"
         android:text="@string/known_issue_desc_header"
         android:textAppearance="?attr/textAppearanceTitleMedium"
         android:textStyle="bold"
@@ -27,8 +22,6 @@
         android:id="@+id/known_issue_item_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="false"
-        android:importantForAccessibility="no"
         android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textIsSelectable="true"
         app:firstBaselineToTopHeight="@dimen/list_baseline_secondary"
@@ -37,8 +30,6 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="false"
-        android:importantForAccessibility="no"
         android:text="@string/known_issue_sources_header"
         android:textAppearance="?attr/textAppearanceTitleMedium"
         android:textStyle="bold"
@@ -48,8 +39,6 @@
         android:id="@+id/known_issue_item_sources"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="false"
-        android:importantForAccessibility="no"
         android:autoLink="web"
         android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textIsSelectable="true"

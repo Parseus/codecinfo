@@ -80,7 +80,10 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:minHeight="48dp"
-                    android:background="@null">
+                    android:background="@null"
+                    android:focusable="true"
+                    android:screenReaderFocusable="true"
+                    tools:ignore="UnusedAttribute">
 
                     <androidx.appcompat.widget.AppCompatImageView
                         style="@style/Widget.CodecInfo.ItemLayout.ChildView"

@@ -18,6 +18,7 @@ import androidx.core.text.HtmlCompat
 import androidx.core.text.PrecomputedTextCompat
 import androidx.core.text.method.LinkMovementMethodCompat
 import androidx.core.text.util.LinkifyCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -63,7 +64,7 @@ open class DetailsAdapter(private val onHeaderClick: (Int) -> Unit = {}) : ListA
         val item = getItem(position)
         when (holder) {
             is HeaderViewHolder -> holder.bind((item as DetailItem.Header).isExpanded)
-            is KnownProblemViewHolder -> holder.bind((item as DetailItem.KnownProblemItem).problem, position)
+            is KnownProblemViewHolder -> holder.bind((item as DetailItem.KnownProblemItem).problem)
             is DetailsViewHolder -> {
                 val property = (item as DetailItem.PropertyItem).property
                 val nextItem = if (position + 1 < itemCount) getItem(position + 1) else null
@@ -85,6 +86,9 @@ open class DetailsAdapter(private val onHeaderClick: (Int) -> Unit = {}) : ListA
         fun bind(isExpanded: Boolean) {
             binding.expandIcon.rotation = if (isExpanded) 0f else 180f
             itemView.setOnClickListener { onHeaderClick(bindingAdapterPosition) }
+            ViewCompat.setStateDescription(itemView,
+                itemView.context.getString(if (isExpanded)
+                    R.string.state_expanded else R.string.state_collapsed))
         }
     }
 
@@ -93,11 +97,8 @@ open class DetailsAdapter(private val onHeaderClick: (Int) -> Unit = {}) : ListA
             binding.knownIssueItemSources.movementMethod = LinkMovementMethodCompat.getInstance()
         }
 
-        fun bind(knownProblem: KnownProblem, position: Int) {
+        fun bind(knownProblem: KnownProblem) {
             val text = HtmlCompat.fromHtml(knownProblem.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
-            binding.root.contentDescription = binding.root.context.getString(
-                R.string.known_issue_content_description, position, text,
-                knownProblem.urls.joinToString())
             binding.knownIssueItemDesc.text = text
             val spannableBuilder = SpannableStringBuilder()
             with (spannableBuilder) {

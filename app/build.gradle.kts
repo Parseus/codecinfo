@@ -21,13 +21,13 @@ android {
     buildTypes {
         getByName("debug") {
             versionNameSuffix = "-dev"
+            applicationIdSuffix = ".debug"
         }
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
-            @Suppress("UnstableApiUsage")
             optimization.keepRules {
                 ignoreFrom("androidx.core:core")
                 ignoreFrom("androidx.recyclerview:recyclerview")

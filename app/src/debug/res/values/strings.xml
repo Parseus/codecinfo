@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE resources [<!ENTITY app_name "Codec Info">]>
+
+<resources>
+    <string name="app_name" translatable="false">&app_name; DEBUG</string>
+</resources>

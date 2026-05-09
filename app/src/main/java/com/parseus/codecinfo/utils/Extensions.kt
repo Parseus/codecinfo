@@ -30,7 +30,7 @@ val externalAppIntentFlags: Int
         return flags or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
     }
 
-private const val AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv"
+const val AMAZON_FEATURE_FIRE_TV = "amazon.hardware.fire_tv"
 private const val GOOGLE_ANDROID_TV_INSTALLED = "com.google.android.tv.installed"
 
 private val WHITESPACE_REGEX = Regex("\\s+")

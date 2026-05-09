@@ -26,6 +26,7 @@ import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.utils.ToastCompat
 import com.parseus.codecinfo.utils.getHighlightedText
+import com.parseus.codecinfo.utils.isFireTv
 import com.parseus.codecinfo.utils.matches
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -59,19 +60,23 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
         setSearchResultProvider(this)
         setOnItemViewClickedListener(this)
 
-        setSpeechRecognitionCallback {
-            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH)
-                putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.search_hint))
-            }
-            try {
-                voiceSearchLauncher.launch(intent)
-            } catch (_: ActivityNotFoundException) {
-                ToastCompat.makeText(
-                    requireContext(),
-                    getString(R.string.no_apps_for_action),
-                    Toast.LENGTH_LONG
-                ).show()
+        // This is not supported on Fire TV:
+        // https://developer.amazon.com/docs/fire-tv/implementing-search.html#avoiding-speech-recognition-errors-from-leanback
+        if (!requireContext().isFireTv()) {
+            setSpeechRecognitionCallback {
+                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH)
+                    putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.search_hint))
+                }
+                try {
+                    voiceSearchLauncher.launch(intent)
+                } catch (_: ActivityNotFoundException) {
+                    ToastCompat.makeText(
+                        requireContext(),
+                        getString(R.string.no_apps_for_action),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
 

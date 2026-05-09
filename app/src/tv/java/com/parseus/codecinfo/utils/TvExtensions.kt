@@ -18,3 +18,13 @@ fun Context.copyToClipboard(label: String, text: String, view: View? = null) {
         ToastCompat.makeText(this, R.string.copied_to_clipboard, Toast.LENGTH_SHORT).show()
     }
 }
+
+private var isFireTvResult: Boolean? = null
+
+fun Context.isFireTv(): Boolean {
+    isFireTvResult?.let { return it }
+
+    val isFireTv = packageManager.hasSystemFeature(AMAZON_FEATURE_FIRE_TV)
+    isFireTvResult = isFireTv
+    return isFireTv
+}

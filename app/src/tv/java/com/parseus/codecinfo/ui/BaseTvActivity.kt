@@ -31,36 +31,42 @@ open class BaseTvActivity: FragmentActivity {
         onBackPressedDispatcher.addCallback(memoryFixBackDispatcher)
     }
 
-    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-        if (event.isCtrlPressed) {
-            when (keyCode) {
-                KeyEvent.KEYCODE_F -> {
-                    startActivity(Intent(this, TvSearchActivity::class.java))
-                    return true
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_MENU && event.repeatCount == 0) {
+            startActivity(Intent(this, TvSettingsActivity::class.java))
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onKeyShortcut(keyCode: Int, event: KeyEvent): Boolean {
+        when (keyCode) {
+            KeyEvent.KEYCODE_F -> {
+                startActivity(Intent(this, TvSearchActivity::class.java))
+                return true
+            }
+            KeyEvent.KEYCODE_S -> {
+                startActivity(Intent(this, TvShareActivity::class.java))
+                return true
+            }
+            KeyEvent.KEYCODE_COMMA -> {
+                startActivity(Intent(this, TvSettingsActivity::class.java))
+                return true
+            }
+            KeyEvent.KEYCODE_C -> {
+                val focusedView = window.currentFocus
+                val textToCopy = focusedView?.tag?.toString()
+                if (textToCopy != null) {
+                    copyToClipboard(getString(R.string.app_name), textToCopy)
                 }
-                KeyEvent.KEYCODE_S -> {
-                    startActivity(Intent(this, TvShareActivity::class.java))
-                    return true
-                }
-                KeyEvent.KEYCODE_COMMA -> {
-                    startActivity(Intent(this, TvSettingsActivity::class.java))
-                    return true
-                }
-                KeyEvent.KEYCODE_C -> {
-                    val focusedView = window.currentFocus
-                    val textToCopy = focusedView?.tag?.toString()
-                    if (textToCopy != null) {
-                        copyToClipboard(getString(R.string.app_name), textToCopy)
-                    }
-                    return true
-                }
-                KeyEvent.KEYCODE_V -> {
-                    handlePaste()
-                    return true
-                }
+                return true
+            }
+            KeyEvent.KEYCODE_V -> {
+                handlePaste()
+                return true
             }
         }
-        return super.onKeyUp(keyCode, event)
+        return super.onKeyShortcut(keyCode, event)
     }
 
     private fun handlePaste() {

@@ -1,37 +1,20 @@
 package com.parseus.codecinfo.utils
 
-import android.app.UiModeManager
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
-import android.util.TypedValue
 import android.view.View
-import androidx.annotation.AttrRes
 import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.parseus.codecinfo.R
-import com.parseus.codecinfo.data.settingsRepository
-import com.parseus.codecinfo.ui.settings.DarkTheme
 
 fun Context.isInTwoPaneMode(): Boolean {
     return resources.getBoolean(R.bool.twoPaneMode)
-}
-
-fun Context.getAttributeDimension(@AttrRes attrResId: Int): Int {
-    val typedValue = TypedValue()
-    theme.resolveAttribute(attrResId, typedValue, true)
-    return TypedValue.complexToDimensionPixelSize(typedValue.data, resources.displayMetrics)
-}
-
-fun Context.getAttributeResourceId(@AttrRes attrResId: Int): Int {
-    val typedValue = TypedValue()
-    theme.resolveAttribute(attrResId, typedValue, true)
-    return typedValue.resourceId
 }
 
 fun Context.isNightMode(): Boolean {

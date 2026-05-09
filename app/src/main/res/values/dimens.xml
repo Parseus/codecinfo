@@ -8,4 +8,5 @@
     <dimen name="details_row_bottom_padding">10dp</dimen>
     <dimen name="details_row_continuation_margin">4dp</dimen>
 
+    <dimen name="details_multi_column_breakpoint">1200dp</dimen>
 </resources>

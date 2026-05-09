@@ -20,8 +20,8 @@ class MobileDetailsAdapter(onHeaderClick: (Int) -> Unit) : DetailsAdapter(onHead
 
     class MobileDetailsViewHolder(binding: ItemDetailsAdapterRowBinding) : DetailsViewHolder(binding) {
         init {
-            codecName.setTextColor(getSecondaryColor(codecName.context))
-            codecInfo.setTextColor(getColorOnSurfaceVariant(codecInfo.context))
+            codecProperty.setTextColor(getSecondaryColor(codecProperty.context))
+            codecValue.setTextColor(getColorOnSurfaceVariant(codecValue.context))
         }
     }
 

@@ -18,6 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialSharedAxis
@@ -161,7 +162,6 @@ class DetailsFragment : MonetFragment() {
         }
 
         binding.itemDetailsRecyclerView.apply {
-            layoutManager = CustomLinearLayoutManager(context)
             adapter = detailsAdapter
             addItemDecoration(DetailsItemDecoration(context))
             itemAnimator = ExpandableItemAnimator()
@@ -240,19 +240,66 @@ class DetailsFragment : MonetFragment() {
     }
 
     private fun updateFullDetailsList() {
-        val fullList = mutableListOf<DetailItem>()
+        val flatList = mutableListOf<DetailItem>()
         if (knownProblems.isNotEmpty()) {
-            fullList.add(DetailItem.Header(0L, R.string.known_issue_warning, isKnownProblemsExpanded))
+            flatList.add(DetailItem.Header(0L, R.string.known_issue_warning, isKnownProblemsExpanded))
             if (isKnownProblemsExpanded) {
                 knownProblems.forEach {
-                    fullList.add(DetailItem.KnownProblemItem(it))
+                    flatList.add(DetailItem.KnownProblemItem(it))
                 }
             }
         }
         propertyList.forEach {
-            fullList.add(DetailItem.PropertyItem(it))
+            flatList.add(DetailItem.PropertyItem(it))
         }
-        detailsAdapter.submitList(fullList)
+
+        val multiColumnBreakpoint = resources.getDimensionPixelSize(R.dimen.details_multi_column_breakpoint)
+        val isMultiColumn = resources.displayMetrics.widthPixels >= multiColumnBreakpoint
+
+        val finalList = if (isMultiColumn) {
+            groupPropertiesIntoBlocks(flatList)
+        } else {
+            flatList
+        }
+
+        binding.itemDetailsRecyclerView.layoutManager = if (isMultiColumn) {
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        } else {
+            CustomLinearLayoutManager(requireContext())
+        }
+
+        detailsAdapter.submitList(finalList)
+    }
+
+    private fun groupPropertiesIntoBlocks(flatList: List<DetailItem>): List<DetailItem> {
+        val groupedList = mutableListOf<DetailItem>()
+        val propertiesToGroup = mutableListOf<DetailsProperty>()
+
+        flatList.forEach { item ->
+            when (item) {
+                is DetailItem.Header, is DetailItem.KnownProblemItem -> {
+                    if (propertiesToGroup.isNotEmpty()) {
+                        groupedList.add(DetailItem.PropertyBlock(propertiesToGroup.first().id, propertiesToGroup.toList()))
+                        propertiesToGroup.clear()
+                    }
+                    groupedList.add(item)
+                }
+                is DetailItem.PropertyItem -> {
+                    if (item.property.name.isNotEmpty() && propertiesToGroup.isNotEmpty()) {
+                        groupedList.add(DetailItem.PropertyBlock(propertiesToGroup.first().id, propertiesToGroup.toList()))
+                        propertiesToGroup.clear()
+                    }
+                    propertiesToGroup.add(item.property)
+                }
+                else -> {}
+            }
+        }
+
+        if (propertiesToGroup.isNotEmpty()) {
+            groupedList.add(DetailItem.PropertyBlock(propertiesToGroup.first().id, propertiesToGroup.toList()))
+        }
+
+        return groupedList
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -23,4 +23,9 @@ sealed class DetailItem {
     ) : DetailItem() {
         override val id: Long = property.id
     }
+
+    data class PropertyBlock(
+        override val id: Long,
+        val properties: List<DetailsProperty>
+    ) : DetailItem()
 }

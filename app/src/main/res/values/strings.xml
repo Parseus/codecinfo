@@ -195,4 +195,7 @@
     <string name="state_expanded">Expanded</string>
     <string name="state_collapsed">Collapsed</string>
     <string name="state_selected">Selected</string>
+
+    <string name="context_menu_copy_property_value">Copy property value</string>
+    <string name="context_menu_copy_property_full">Copy property name and value</string>
 </resources>

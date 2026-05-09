@@ -74,6 +74,17 @@ fun Context.isTv(): Boolean {
     isTvResult = isTv
     return isTv
 }
+fun Context.getAttributeResourceId(@AttrRes attrResId: Int): Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute(attrResId, typedValue, true)
+    return typedValue.resourceId
+}
+
+fun Context.getAttributeDimension(@AttrRes attrResId: Int): Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute(attrResId, typedValue, true)
+    return TypedValue.complexToDimensionPixelSize(typedValue.data, resources.displayMetrics)
+}
 
 fun Context.getAttributeColor(@AttrRes attrColor: Int): Int {
     val typedValue = TypedValue()

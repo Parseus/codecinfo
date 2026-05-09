@@ -579,7 +579,7 @@ private fun handleComplexityRange(encoderCapabilities: MediaCodecInfo.EncoderCap
 private fun getAudioCapabilities(context: Context, codecId: String, codecName: String,
                                  capabilities: MediaCodecInfo.CodecCapabilities,
                                  propertyList: MutableList<DetailsProperty>) {
-    val audioCapabilities = capabilities.audioCapabilities!!
+    val audioCapabilities = capabilities.audioCapabilities ?: return
 
     var minChannelCount = 1
     val maxChannelCount = adjustMaxInputChannelCount(codecId, codecName,
@@ -764,11 +764,13 @@ private fun adjustMaxInputChannelCount(codecId: String, codecName: String, maxCh
 private fun getVideoCapabilities(context: Context, codecId: String, codecName: String,
                                  capabilities: MediaCodecInfo.CodecCapabilities,
                                  propertyList: MutableList<DetailsProperty>) {
-    val videoCapabilities = capabilities.videoCapabilities!!
+    val videoCapabilities = capabilities.videoCapabilities ?: return
 
     val maxResolution = getMaxResolution(codecId, videoCapabilities)
-    propertyList.add(DetailsProperty(propertyList.size.toLong(),
+    if (maxResolution.isNotEmpty()) {
+        propertyList.add(DetailsProperty(propertyList.size.toLong(),
             context.getString(R.string.max_resolution), "${maxResolution[0]}x${maxResolution[1]}"))
+    }
 
     val bitrateRange = videoCapabilities.bitrateRange
     propertyList.add(DetailsProperty(propertyList.size.toLong(),
@@ -850,8 +852,8 @@ private fun getFormattedColorProfileString(settings: Settings, colorFormat: Stri
 }
 
 private fun getMaxResolution(codecId: String, videoCapabilities: MediaCodecInfo.VideoCapabilities): IntArray {
-    val maxWidth = videoCapabilities.supportedWidths.upper
-    val maxHeight = videoCapabilities.supportedHeights.upper
+    val maxWidth = videoCapabilities.supportedWidths?.upper ?: return intArrayOf()
+    val maxHeight = videoCapabilities.supportedHeights?.upper ?: return intArrayOf()
     val defaultResolution = intArrayOf(maxWidth, maxHeight)
 
     // Some devices (e.g. Samsung, Huawei, and Pixel 6) under-report their encoding
@@ -919,6 +921,7 @@ private fun getFrameRatePerResolutions(context: Context, codecId: String,
     val settings = context.settingsRepository.getSettingsSync()
     val option = settings.knownResolutions.toInt()
     val maxResolution = getMaxResolution(codecId, videoCapabilities)
+    if (maxResolution.isEmpty()) return ""
 
     framerateResolutions.forEachIndexed { index, resolution ->
         if (resolution[0] > maxResolution[0]) {

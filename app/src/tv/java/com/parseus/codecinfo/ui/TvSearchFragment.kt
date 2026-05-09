@@ -1,7 +1,12 @@
 package com.parseus.codecinfo.ui
 
+import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
+import android.speech.RecognizerIntent
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.leanback.app.SearchSupportFragment
@@ -19,6 +24,7 @@ import androidx.lifecycle.lifecycleScope
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
+import com.parseus.codecinfo.utils.ToastCompat
 import com.parseus.codecinfo.utils.getHighlightedText
 import com.parseus.codecinfo.utils.matches
 import kotlinx.coroutines.Dispatchers
@@ -36,12 +42,38 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
     private val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
     private var searchJob: Job? = null
 
+    private val voiceSearchLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val queries = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            if (!queries.isNullOrEmpty()) {
+                setSearchQuery(queries[0], true)
+            }
+        }
+    }
+
     override fun getResultsAdapter(): ObjectAdapter = rowsAdapter
 
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setSearchResultProvider(this)
         setOnItemViewClickedListener(this)
+
+        setSpeechRecognitionCallback {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH)
+                putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.search_hint))
+            }
+            try {
+                voiceSearchLauncher.launch(intent)
+            } catch (_: ActivityNotFoundException) {
+                ToastCompat.makeText(
+                    requireContext(),
+                    getString(R.string.no_apps_for_action),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
 
         requireActivity().intent?.getStringExtra("query")?.let {
             setSearchQuery(it, true)

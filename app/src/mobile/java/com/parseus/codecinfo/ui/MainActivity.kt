@@ -2,6 +2,7 @@ package com.parseus.codecinfo.ui
 
 import android.annotation.SuppressLint
 import android.app.SearchManager
+import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
@@ -11,6 +12,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.speech.RecognizerIntent
 import android.view.KeyEvent
 import android.view.KeyboardShortcutGroup
 import android.view.KeyboardShortcutInfo
@@ -21,6 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
@@ -61,6 +64,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.search.SearchView
 import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.snackbar.Snackbar
 import com.kieronquinn.monetcompat.app.MonetCompatActivity
 import com.kieronquinn.monetcompat.core.MonetCompat
 import com.kieronquinn.monetcompat.extensions.applyMonet
@@ -137,6 +141,18 @@ class MainActivity : MonetCompatActivity() {
         } else {
             if (result.shouldReloadLists() || result.saveDetailsToLogcatChanged) {
                 itemsViewModel.refreshData(this)
+            }
+        }
+    }
+
+    private val voiceSearchContract = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {
+            val queries = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            if (!queries.isNullOrEmpty()) {
+                val query = queries[0]
+                searchViewModel.setSearchQuery(query)
+                binding.searchView.setText(query)
+                binding.searchView.show()
             }
         }
     }
@@ -784,6 +800,24 @@ class MainActivity : MonetCompatActivity() {
                     dialog.applyMonet()
                 }
                 dialog.updateButtonColors(dialogBuilder.context)
+            }
+
+            R.id.menu_item_voice_search -> {
+                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH)
+                    putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.search_hint))
+                    putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+                }
+                try {
+                    voiceSearchContract.launch(intent)
+                } catch (_: ActivityNotFoundException) {
+                    Snackbar.make(
+                        this,
+                        findViewById(android.R.id.content),
+                        getString(R.string.no_apps_for_action),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
             }
 
             R.id.menu_item_share -> {

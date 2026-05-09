@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -43,14 +44,7 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
     private val rowsAdapter = ArrayObjectAdapter(ListRowPresenter())
     private var searchJob: Job? = null
 
-    private val voiceSearchLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val queries = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-            if (!queries.isNullOrEmpty()) {
-                setSearchQuery(queries[0], true)
-            }
-        }
-    }
+    private var voiceSearchLauncher: ActivityResultLauncher<Intent>? = null
 
     override fun getResultsAdapter(): ObjectAdapter = rowsAdapter
 
@@ -63,13 +57,21 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
         // This is not supported on Fire TV:
         // https://developer.amazon.com/docs/fire-tv/implementing-search.html#avoiding-speech-recognition-errors-from-leanback
         if (!requireContext().isFireTv()) {
+            voiceSearchLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val queries = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                    if (!queries.isNullOrEmpty()) {
+                        setSearchQuery(queries[0], true)
+                    }
+                }
+            }
             setSpeechRecognitionCallback {
                 val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                     putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH)
                     putExtra(RecognizerIntent.EXTRA_PROMPT, getString(R.string.search_hint))
                 }
                 try {
-                    voiceSearchLauncher.launch(intent)
+                    voiceSearchLauncher?.launch(intent)
                 } catch (_: ActivityNotFoundException) {
                     ToastCompat.makeText(
                         requireContext(),

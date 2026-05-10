@@ -9,6 +9,7 @@ import androidx.leanback.widget.*
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.tracing.trace
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.codecinfo.audioCodecList
@@ -42,7 +43,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
 
     private var isFullyDrawnReporterAdded = false
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?): Unit = trace("TvMainFragment.onViewCreated") {
         super.onViewCreated(view, savedInstanceState)
 
         addFullyDrawnReporter()

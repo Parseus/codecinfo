@@ -11,6 +11,7 @@ import androidx.core.text.method.LinkMovementMethodCompat
 import androidx.core.text.util.LinkifyCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.tracing.trace
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
 import com.parseus.codecinfo.databinding.ExpandableItemContentBinding
@@ -37,7 +38,7 @@ class DeviceIssuesAdapter(private val deviceIssuesList: List<KnownProblem>)
             binding.knownIssueItemSources.movementMethod = LinkMovementMethodCompat.getInstance()
         }
 
-        fun bind(knownProblem: KnownProblem, position: Int) {
+        fun bind(knownProblem: KnownProblem, position: Int) = trace("DeviceIssuesAdapter.bind") {
             val text = HtmlCompat.fromHtml(knownProblem.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
             binding.root.contentDescription = binding.root.context.getString(
                 R.string.known_issue_content_description, position, text,

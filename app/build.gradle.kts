@@ -149,6 +149,7 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.startup)
+    implementation(libs.androidx.tracing)
 
     implementation(libs.plumber.android)
     implementation(libs.okio)

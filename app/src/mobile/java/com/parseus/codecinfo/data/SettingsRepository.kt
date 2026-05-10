@@ -14,6 +14,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.preference.PreferenceDataStore
+import androidx.tracing.trace
 import com.parseus.codecinfo.ui.settings.DarkTheme
 import com.parseus.codecinfo.utils.getDefaultThemeOption
 import kotlinx.coroutines.CoroutineScope
@@ -104,7 +105,7 @@ class SettingsRepository(private val context: Context) : PreferenceDataStore() {
 
     fun getSettingsSync(): Settings = settingsStateFlow.value
 
-    private fun mapSettings(preferences: Preferences): Settings {
+    private fun mapSettings(preferences: Preferences): Settings = trace("Settings.map") {
         val defaultThemeValue = getDefaultThemeOption(context)
         val darkTheme = preferences[DARK_THEME]?.toIntOrNull() ?: defaultThemeValue
         val theme = DarkTheme.fromValue(darkTheme) ?: DarkTheme.fromValue(defaultThemeValue)!!

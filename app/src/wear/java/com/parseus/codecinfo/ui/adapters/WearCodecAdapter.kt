@@ -8,6 +8,7 @@ import androidx.fragment.app.commit
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.tracing.trace
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.databinding.WearCodecAdapterRowBinding
@@ -55,7 +56,7 @@ class WearCodecAdapter: ListAdapter<CodecSimpleInfo, WearCodecAdapter.ViewHolder
             }
         }
 
-        fun bindCodecInfo(codecInfo: CodecSimpleInfo, position: Int) {
+        fun bindCodecInfo(codecInfo: CodecSimpleInfo, position: Int) = trace("WearCodecAdapter.bindCodecInfo") {
             codecId.text = codecInfo.codecId
             codecName.setTextWithOptionalAutosizing(
                 text = codecInfo.codecName,

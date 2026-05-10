@@ -3,6 +3,7 @@ package com.parseus.codecinfo.viewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.tracing.trace
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.codecinfo.clearCodecCaches
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
@@ -54,13 +55,19 @@ class ItemsViewModel : ViewModel() {
         val appContext = context.applicationContext
         viewModelScope.launch {
             val audioJob = launch(Dispatchers.IO) {
-                _allAudioState.value = getSimpleCodecInfoList(appContext, true)
+                trace("loadAudioCodecs") {
+                    _allAudioState.value = getSimpleCodecInfoList(appContext, true)
+                }
             }
             val videoJob = launch(Dispatchers.IO) {
-                _allVideoState.value = getSimpleCodecInfoList(appContext, false)
+                trace("loadVideoCodecs") {
+                    _allVideoState.value = getSimpleCodecInfoList(appContext, false)
+                }
             }
             val drmJob = launch(Dispatchers.IO) {
-                _allDrmsState.value = getSimpleDrmInfoList(appContext)
+                trace("loadDrmInfo") {
+                    _allDrmsState.value = getSimpleDrmInfoList(appContext)
+                }
             }
 
             audioJob.join()
@@ -71,7 +78,7 @@ class ItemsViewModel : ViewModel() {
         }
     }
 
-    fun refreshData(context: Context) {
+    fun refreshData(context: Context) = trace("refreshData") {
         val appContext = context.applicationContext
         viewModelScope.launch {
             preCacheJob?.cancel()
@@ -107,56 +114,62 @@ class ItemsViewModel : ViewModel() {
         preCacheJob?.cancel()
         val appContext = context.applicationContext
         preCacheJob = viewModelScope.launch(Dispatchers.IO) {
-            val audio = _allAudioState.value ?: emptyList()
-            val video = _allVideoState.value ?: emptyList()
-            val drms = _allDrmsState.value ?: emptyList()
+            trace("preCacheDetails") {
+                val audio = _allAudioState.value ?: emptyList()
+                val video = _allVideoState.value ?: emptyList()
+                val drms = _allDrmsState.value ?: emptyList()
 
-            val highPriorityMimeTypes = listOf("avc", "hevc", "av01", "vp9", "aac", "mp3")
+                val highPriorityMimeTypes = listOf("avc", "hevc", "av01", "vp9", "aac", "mp3")
 
-            val prioritizedCodecs = (audio + video).sortedWith(
-                compareByDescending<CodecSimpleInfo> { it.isHardwareAccelereated }
-                .thenByDescending { info ->
-                    highPriorityMimeTypes.any { info.codecId.contains(it, ignoreCase = true) }
+                val prioritizedCodecs = (audio + video).sortedWith(
+                    compareByDescending<CodecSimpleInfo> { it.isHardwareAccelereated }
+                        .thenByDescending { info ->
+                            highPriorityMimeTypes.any { info.codecId.contains(it, ignoreCase = true) }
+                        }
+                )
+
+                val prioritizedDrms = drms.sortedByDescending {
+                    it.drmName.contains("Widevine", true) || it.drmName.contains("Clearkey", true)
                 }
-            )
 
-            val prioritizedDrms = drms.sortedByDescending {
-                it.drmName.contains("Widevine", true) || it.drmName.contains("Clearkey", true)
-            }
-
-            for (info in prioritizedCodecs) {
-                if (!isActive || _isAmbientMode.value) break
-                getDetailedCodecInfo(appContext, info.codecId, info.codecName)
-                yield()
-                delay(getPreCacheDelay(appContext))
-            }
-            for (info in prioritizedDrms) {
-                if (!isActive || _isAmbientMode.value) break
-                getDetailedDrmInfo(appContext, info.drmUuid, DrmVendor.getFromUuid(info.drmUuid))
-                yield()
-                delay(getPreCacheDelay(appContext))
+                for (info in prioritizedCodecs) {
+                    if (!isActive || _isAmbientMode.value) break
+                    trace("preCache: ${info.codecName}") {
+                        getDetailedCodecInfo(appContext, info.codecId, info.codecName)
+                    }
+                    yield()
+                    delay(getPreCacheDelay(appContext))
+                }
+                for (info in prioritizedDrms) {
+                    if (!isActive || _isAmbientMode.value) break
+                    trace("preCache: ${info.drmName}") {
+                        getDetailedDrmInfo(appContext, info.drmUuid, DrmVendor.getFromUuid(info.drmUuid))
+                    }
+                    yield()
+                    delay(getPreCacheDelay(appContext))
+                }
             }
         }
     }
 
-    fun updateAudioList(context: Context) {
-        if (_allAudioState.value != null) return
+    fun updateAudioList(context: Context) = trace("updateAudioList") {
+        if (_allAudioState.value != null) return@trace
         val appContext = context.applicationContext
         viewModelScope.launch(Dispatchers.IO) {
             _allAudioState.value = getSimpleCodecInfoList(appContext, true)
         }
     }
 
-    fun updateVideoList(context: Context) {
-        if (_allVideoState.value != null) return
+    fun updateVideoList(context: Context) = trace("updateVideoList") {
+        if (_allVideoState.value != null) return@trace
         val appContext = context.applicationContext
         viewModelScope.launch(Dispatchers.IO) {
             _allVideoState.value = getSimpleCodecInfoList(appContext, false)
         }
     }
 
-    fun updateDrmList(context: Context) {
-        if (_allDrmsState.value != null) return
+    fun updateDrmList(context: Context) = trace("updateDrmList") {
+        if (_allDrmsState.value != null) return@trace
         val appContext = context.applicationContext
         viewModelScope.launch(Dispatchers.IO) {
             _allDrmsState.value = getSimpleDrmInfoList(appContext)

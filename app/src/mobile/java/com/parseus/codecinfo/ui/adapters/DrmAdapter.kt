@@ -15,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.tracing.trace
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.databinding.DrmAdapterRowBinding
@@ -170,7 +171,7 @@ class DrmAdapter : ListAdapter<DrmSimpleInfo, DrmAdapter.DrmInfoViewHolder>(DrmD
             }
         }
 
-        fun updateHighlighting(drmSimpleInfo: DrmSimpleInfo, query: String) {
+        fun updateHighlighting(drmSimpleInfo: DrmSimpleInfo, query: String) = trace("DrmAdapter.updateHighlighting") {
             drmName.setTextWithOptionalAutosizing(
                 text = getHighlightedText(drmSimpleInfo.drmName, query, primaryColor),
                 minSize = 8, maxSize = 16, step = 1

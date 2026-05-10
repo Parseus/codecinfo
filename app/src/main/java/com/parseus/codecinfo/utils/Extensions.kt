@@ -20,6 +20,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.AttrRes
 import androidx.core.content.getSystemService
 import androidx.fragment.app.FragmentActivity
+import androidx.tracing.trace
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import java.util.Locale
@@ -146,7 +147,7 @@ fun DrmSimpleInfo.matches(queryWords: List<String>): Boolean {
 fun Context.getActivity(): Activity? = this as? Activity
     ?: (this as? ContextWrapper)?.baseContext?.getActivity()
 
-fun getHighlightedText(fullText: String, query: String, highlightColor: Int): CharSequence {
+fun getHighlightedText(fullText: String, query: String, highlightColor: Int): CharSequence = trace("getHighlightedText") {
     if (query.isBlank()) {
         return fullText
     }

@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.tracing.trace
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialSharedAxis
@@ -186,7 +187,7 @@ class DetailsFragment : MonetFragment() {
         }
     }
 
-    private suspend fun loadDetails() {
+    private suspend fun loadDetails() = trace("DetailsFragment.loadDetails") {
         binding.loadingProgress.isVisible = true
 
         propertyList = if (codecId != null && codecName != null && isDetailedCodecInfoCached(codecId!!, codecName!!)) {

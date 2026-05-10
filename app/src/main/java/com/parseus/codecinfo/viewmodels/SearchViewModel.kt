@@ -3,6 +3,7 @@ package com.parseus.codecinfo.viewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.tracing.trace
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
@@ -50,9 +51,9 @@ class SearchViewModel : ViewModel() {
 
         initJob = viewModelScope.launch(Dispatchers.IO) {
             try {
-                val audioDeferred = async { getSimpleCodecInfoList(appContext, true) }
-                val videoDeferred = async { getSimpleCodecInfoList(appContext, false) }
-                val drmDeferred = async { getSimpleDrmInfoList(appContext) }
+                val audioDeferred = async { trace("Search:loadAudio") { getSimpleCodecInfoList(appContext, true) } }
+                val videoDeferred = async { trace("Search:loadVideo") { getSimpleCodecInfoList(appContext, false) } }
+                val drmDeferred = async { trace("Search:loadDrm") { getSimpleDrmInfoList(appContext) } }
 
                 allAudio = audioDeferred.await()
                 allVideo = videoDeferred.await()
@@ -65,11 +66,13 @@ class SearchViewModel : ViewModel() {
                         if (query.isBlank()) {
                             SearchResultState(isQueryEmpty = true, query = query)
                         } else {
-                            val queryWords = query.trim().split(Regex("\\s+"))
-                            val filteredAudio = allAudio.filter { it.matches(queryWords) }
-                            val filteredVideo = allVideo.filter { it.matches(queryWords) }
-                            val filteredDrms = allDrms.filter { it.matches(queryWords) }
-                            SearchResultState(filteredAudio, filteredVideo, filteredDrms, false, query)
+                            trace("Search:filter") {
+                                val queryWords = query.trim().split(Regex("\\s+"))
+                                val filteredAudio = allAudio.filter { it.matches(queryWords) }
+                                val filteredVideo = allVideo.filter { it.matches(queryWords) }
+                                val filteredDrms = allDrms.filter { it.matches(queryWords) }
+                                SearchResultState(filteredAudio, filteredVideo, filteredDrms, false, query)
+                            }
                         }
                     }
                     .flowOn(Dispatchers.Default)

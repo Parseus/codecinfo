@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.tracing.trace
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.codecinfo.getDetailedCodecInfo
@@ -114,36 +115,38 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                binding.loadingProgress.isVisible = true
+                trace("DetailsFragment.loadDetails") {
+                    binding.loadingProgress.isVisible = true
 
-                propertyList = if (codecId != null && codecName != null && isDetailedCodecInfoCached(codecId!!, codecName!!)) {
-                    getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
-                } else if (drmName != null && drmUuid != null && isDetailedDrmInfoCached(drmUuid!!)) {
-                    getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
-                } else {
-                    withContext(Dispatchers.IO) {
-                        when {
-                            codecId != null && codecName != null ->
-                                getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+                    propertyList = if (codecId != null && codecName != null && isDetailedCodecInfoCached(codecId!!, codecName!!)) {
+                        getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
+                    } else if (drmName != null && drmUuid != null && isDetailedDrmInfoCached(drmUuid!!)) {
+                        getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
+                    } else {
+                        withContext(Dispatchers.IO) {
+                            when {
+                                codecId != null && codecName != null ->
+                                    getDetailedCodecInfo(requireContext(), codecId!!, codecName!!)
 
-                            drmName != null && drmUuid != null ->
-                                getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
+                                drmName != null && drmUuid != null ->
+                                    getDetailedDrmInfo(requireContext(), drmUuid!!, DrmVendor.getFromUuid(drmUuid!!))
 
-                            else -> emptyList()
+                                else -> emptyList()
+                            }
                         }
                     }
-                }
 
-                knownProblems = if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
-                    KNOWN_PROBLEMS_DB.filter {
-                        it.isAffected(requireContext(), codecName!!)
+                    knownProblems = if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
+                        KNOWN_PROBLEMS_DB.filter {
+                            it.isAffected(requireContext(), codecName!!)
+                        }
+                    } else {
+                        emptyList()
                     }
-                } else {
-                    emptyList()
-                }
 
-                binding.loadingProgress.isVisible = false
-                getFullDetails()
+                    binding.loadingProgress.isVisible = false
+                    getFullDetails()
+                }
             }
         }
     }

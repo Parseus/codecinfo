@@ -8,6 +8,7 @@ import androidx.fragment.app.commit
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.tracing.trace
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.databinding.WearDrmAdapterRowBinding
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
@@ -48,7 +49,7 @@ class WearDrmAdapter : ListAdapter<DrmSimpleInfo, WearDrmAdapter.ViewHolder>(Drm
             }
         }
 
-        fun bindDrmInfo(drmInfo: DrmSimpleInfo) {
+        fun bindDrmInfo(drmInfo: DrmSimpleInfo) = trace("WearDrmAdapter.bindDrmInfo") {
             binding.drmName.text = drmInfo.drmName
         }
     }

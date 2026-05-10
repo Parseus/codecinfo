@@ -2,6 +2,7 @@ package com.parseus.codecinfo.ui
 
 import android.content.Context
 import androidx.startup.Initializer
+import androidx.tracing.trace
 import com.parseus.codecinfo.BuildConfig
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.knownproblems.DATABASES_INITIALIZED
@@ -16,8 +17,8 @@ import kotlinx.serialization.json.decodeFromStream
 @OptIn(ExperimentalSerializationApi::class)
 class DatabaseInitializer : Initializer<Unit> {
 
-    override fun create(context: Context) {
-        if (DATABASES_INITIALIZED) return
+    override fun create(context: Context) = trace("DatabaseInitializer.create") {
+        if (DATABASES_INITIALIZED) return@trace
 
         try {
             context.resources.openRawResource(R.raw.known_problems_list).use {

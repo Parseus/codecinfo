@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.MediaDrm
 import android.os.Build
 import android.util.Log
+import androidx.tracing.trace
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.settingsRepository
@@ -24,7 +25,7 @@ fun clearDrmCaches() {
     }
 }
 
-fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> {
+fun getSimpleDrmInfoList(context: Context): List<DrmSimpleInfo> = trace("getSimpleDrmInfoList") {
     synchronized(drmListLock) {
         if (drmList.isNotEmpty()) {
             return drmList
@@ -82,7 +83,7 @@ fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): Lis
     }
 
     val mediaDrm = try {
-        MediaDrm(uuid)
+        trace("MediaDRM init") { MediaDrm(uuid) }
     } catch (_: Exception) {
         return emptyList()
     }
@@ -90,22 +91,26 @@ fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): Lis
     val drmPropertyList = mutableListOf<DetailsProperty>()
     drmPropertyList.add(DetailsProperty(0L, context.getString(R.string.drm_property_uuid), uuid.toString()))
 
-    drmPropertyList.addStringProperties(context, mediaDrm, DrmVendor.STANDARD_STRING_PROPERTIES)
-    drmPropertyList.addByteArrayProperties(context, mediaDrm, DrmVendor.STANDARD_BYTE_ARRAY_PROPERTIES)
+    trace("addStandardDrmProperties") {
+        drmPropertyList.addStringProperties(context, mediaDrm, DrmVendor.STANDARD_STRING_PROPERTIES)
+        drmPropertyList.addByteArrayProperties(context, mediaDrm, DrmVendor.STANDARD_BYTE_ARRAY_PROPERTIES)
+    }
 
     if (drmVendor != null) {
-        drmPropertyList.addStringProperties(context, mediaDrm, drmVendor.getVendorStringProperties())
-        if (drmVendor == DrmVendor.Widevine) {
-            try {
-                val decryptHashSupportString = context.getString(R.string.drm_property_decrypt_hash_support)
-                val propertyValue = mediaDrm.getPropertyString("decryptHashSupport")
-                if (propertyValue.isNotEmpty()) {
-                    drmPropertyList.add(DetailsProperty(drmPropertyList.size.toLong(),
-                        decryptHashSupportString, getHashFunctionDescriptionForWidevine(context, propertyValue)))
-                }
-            } catch (_: Throwable) {}
+        trace("addVendorDrmProperties") {
+            drmPropertyList.addStringProperties(context, mediaDrm, drmVendor.getVendorStringProperties())
+            if (drmVendor == DrmVendor.Widevine) {
+                try {
+                    val decryptHashSupportString = context.getString(R.string.drm_property_decrypt_hash_support)
+                    val propertyValue = mediaDrm.getPropertyString("decryptHashSupport")
+                    if (propertyValue.isNotEmpty()) {
+                        drmPropertyList.add(DetailsProperty(drmPropertyList.size.toLong(),
+                            decryptHashSupportString, getHashFunctionDescriptionForWidevine(context, propertyValue)))
+                    }
+                } catch (_: Throwable) {}
+            }
+            drmPropertyList.addByteArrayProperties(context, mediaDrm, drmVendor.getVendorByteArrayProperties())
         }
-        drmPropertyList.addByteArrayProperties(context, mediaDrm, drmVendor.getVendorByteArrayProperties())
     }
 
     // These can crash in native code if something goes wrong while querying it.

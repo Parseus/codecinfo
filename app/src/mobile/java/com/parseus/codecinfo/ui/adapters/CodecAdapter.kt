@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.tracing.trace
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.settingsRepository
@@ -178,7 +179,7 @@ class CodecAdapter : ListAdapter<CodecSimpleInfo, CodecAdapter.CodecInfoViewHold
             }
         }
 
-        fun updateHighlighting(codecInfo: CodecSimpleInfo, query: String) {
+        fun updateHighlighting(codecInfo: CodecSimpleInfo, query: String) = trace("CodecAdapter.updateHighlighting") {
             codecId.text = getHighlightedText(codecInfo.codecId, query, primaryColor)
             codecName.setTextWithOptionalAutosizing(
                 text = getHighlightedText(codecInfo.codecName, query, primaryColor),

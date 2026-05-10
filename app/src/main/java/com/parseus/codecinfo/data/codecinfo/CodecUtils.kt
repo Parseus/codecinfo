@@ -14,6 +14,7 @@ import android.util.Log
 import android.util.Range
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
+import androidx.tracing.trace
 import com.parseus.codecinfo.*
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.Settings
@@ -220,55 +221,57 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
     val seenAudioCodecs = HashSet<String>()
     val seenVideoCodecs = HashSet<String>()
 
-    for ((codecIndex, mediaCodecInfo) in mediaCodecInfos.withIndex()) {
-        val types = mediaCodecInfo.supportedTypes
-        // Code for extension function is copied here to reduce the number of array allocations.
-        val isAudioCodec = types.any { it.contains("audio", true) }
-        val isHardwareAccelerated = isHardwareAccelerated(mediaCodecInfo, isAudioCodec)
+    trace("iterateAndQueryCodecs") {
+        for ((codecIndex, mediaCodecInfo) in mediaCodecInfos.withIndex()) {
+            val types = mediaCodecInfo.supportedTypes
+            // Code for extension function is copied here to reduce the number of array allocations.
+            val isAudioCodec = types.any { it.contains("audio", true) }
+            val isHardwareAccelerated = isHardwareAccelerated(mediaCodecInfo, isAudioCodec)
 
-        if (showHwCodecsOnly && !isHardwareAccelerated) {
-            continue
-        }
-
-        if ((filteringOption == 0 && mediaCodecInfo.isEncoder) || (filteringOption == 1 && !mediaCodecInfo.isEncoder)) {
-            continue
-        }
-
-        if (SDK_INT >= 29) {
-            if (!showAliases && mediaCodecInfo.isAlias) {
+            if (showHwCodecsOnly && !isHardwareAccelerated) {
                 continue
             }
-        }
 
-        types.forEachIndexed { index,  codecId ->
-            try {
-                mediaCodecInfo.getCapabilitiesForType(codecId)
-            } catch (_: Exception) {
-                // Some devices (e.g. Kindle Fire HD) can report a codec in the supported list
-                // but don't really implement it (or it's buggy). In this case just skip this.
-                return@forEachIndexed
+            if ((filteringOption == 0 && mediaCodecInfo.isEncoder) || (filteringOption == 1 && !mediaCodecInfo.isEncoder)) {
+                continue
             }
 
-            if (codecId.startsWith("wfd")) {
-                // This type of video codecs can't be properly queried.
-                return@forEachIndexed
+            if (SDK_INT >= 29) {
+                if (!showAliases && mediaCodecInfo.isAlias) {
+                    continue
+                }
             }
 
-            val codecName = mediaCodecInfo.name
-            val hasKnownProblem = knownProblemsMap?.get(codecName.lowercase(Locale.ENGLISH))?.any {
-                it.isAffected(context, codecName)
-            } ?: false
+            types.forEachIndexed { index,  codecId ->
+                try {
+                    mediaCodecInfo.getCapabilitiesForType(codecId)
+                } catch (_: Exception) {
+                    // Some devices (e.g. Kindle Fire HD) can report a codec in the supported list
+                    // but don't really implement it (or it's buggy). In this case just skip this.
+                    return@forEachIndexed
+                }
 
-            val codecSimpleInfo = CodecSimpleInfo((codecIndex * 100 + index).toLong(), codecId, codecName,
+                if (codecId.startsWith("wfd")) {
+                    // This type of video codecs can't be properly queried.
+                    return@forEachIndexed
+                }
+
+                val codecName = mediaCodecInfo.name
+                val hasKnownProblem = knownProblemsMap?.get(codecName.lowercase(Locale.ENGLISH))?.any {
+                    it.isAffected(context, codecName)
+                } ?: false
+
+                val codecSimpleInfo = CodecSimpleInfo((codecIndex * 100 + index).toLong(), codecId, codecName,
                     isAudioCodec, mediaCodecInfo.isEncoder, isHardwareAccelerated, hasKnownProblem)
-            
-            val targetList = if (isAudioCodec) audioList else videoList
-            val seenSet = if (isAudioCodec) seenAudioCodecs else seenVideoCodecs
-            val seenKey = "$codecId:$codecName"
 
-            if (seenKey !in seenSet) {
-                targetList.add(codecSimpleInfo)
-                seenSet.add(seenKey)
+                val targetList = if (isAudioCodec) audioList else videoList
+                val seenSet = if (isAudioCodec) seenAudioCodecs else seenVideoCodecs
+                val seenKey = "$codecId:$codecName"
+
+                if (seenKey !in seenSet) {
+                    targetList.add(codecSimpleInfo)
+                    seenSet.add(seenKey)
+                }
             }
         }
     }
@@ -346,7 +349,9 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
     fun getOrInitCodec(): MediaCodec? {
         if (codec == null) {
             try {
-                codec = MediaCodec.createByCodecName(codecName)
+                codec = trace("MediaCodec.createByCodecName") {
+                    MediaCodec.createByCodecName(codecName)
+                }
             } catch (_: Exception) {}
         }
         return codec
@@ -486,7 +491,10 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             context.getString(R.string.profile_levels)
         }
 
-        propertyList.addMultiLineProperty(profileString, getProfileLevels(context, codecId, codecName, capabilities))
+        val profileLevelsString = trace("getProfileLevels") {
+            getProfileLevels(context, codecId, codecName, capabilities)
+        }
+        propertyList.addMultiLineProperty(profileString, profileLevelsString)
 
     } catch (_: Exception) {
     } finally {

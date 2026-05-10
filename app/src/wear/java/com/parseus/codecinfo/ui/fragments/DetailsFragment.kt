@@ -13,6 +13,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ConcatAdapter
+import androidx.tracing.trace
 import androidx.wear.widget.SwipeDismissFrameLayout
 import androidx.wear.widget.WearableLinearLayoutManager
 import com.parseus.codecinfo.R
@@ -124,7 +125,7 @@ class DetailsFragment : Fragment() {
         }
     }
 
-    private suspend fun loadDetails() {
+    private suspend fun loadDetails() = trace("DetailsFragment.loadDetails") {
         binding.loadingProgress.isVisible = true
 
         propertyList = if (codecId != null && codecName != null && isDetailedCodecInfoCached(codecId!!, codecName!!)) {

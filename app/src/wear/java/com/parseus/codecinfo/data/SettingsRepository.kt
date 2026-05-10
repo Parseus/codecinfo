@@ -13,6 +13,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.preference.PreferenceDataStore
+import androidx.tracing.trace
 import okio.FileSystem
 import okio.Path.Companion.toOkioPath
 import kotlinx.coroutines.CoroutineScope
@@ -90,7 +91,7 @@ class SettingsRepository(context: Context) : PreferenceDataStore() {
 
     fun getSettingsSync(): Settings = settingsStateFlow.value
 
-    private fun mapSettings(preferences: Preferences): Settings {
+    private fun mapSettings(preferences: Preferences): Settings = trace("Settings.map") {
         return Settings(
             knownValuesColorProfiles = preferences[KNOWN_VALUES_COLOR_PROFILES] ?: "1",
             knownValuesProfileLevels = preferences[KNOWN_VALUES_PROFILE_LEVELS] ?: "1",

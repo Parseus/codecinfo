@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.tracing.trace
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.DetailsProperty
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
@@ -72,25 +73,27 @@ open class DetailsAdapter(private val onHeaderClick: (Int) -> Unit = {}) : ListA
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val item = getItem(position)
+        trace("DetailsAdapter.onBindViewHolder:$position") {
+            val item = getItem(position)
 
-        val layoutParams = holder.itemView.layoutParams
-        if (layoutParams is StaggeredGridLayoutManager.LayoutParams) {
-            layoutParams.isFullSpan = item is DetailItem.Header || item is DetailItem.KnownProblemItem
-        }
+            val layoutParams = holder.itemView.layoutParams
+            if (layoutParams is StaggeredGridLayoutManager.LayoutParams) {
+                layoutParams.isFullSpan = item is DetailItem.Header || item is DetailItem.KnownProblemItem
+            }
 
-        when (holder) {
-            is HeaderViewHolder -> holder.bind((item as DetailItem.Header).isExpanded)
-            is KnownProblemViewHolder -> holder.bind((item as DetailItem.KnownProblemItem).problem)
-            is DetailsViewHolder -> {
-                if (holder is PropertyBlockViewHolder) {
-                    val properties = (item as DetailItem.PropertyBlock).properties
-                    holder.bindBlock(properties)
-                } else {
-                    val property = (item as DetailItem.PropertyItem).property
-                    val nextItem = if (position + 1 < itemCount) getItem(position + 1) else null
-                    val isFollowedByContinuation = nextItem is DetailItem.PropertyItem && nextItem.property.name.isEmpty()
-                    holder.bindDetails(property.name, property.value, isFollowedByContinuation)
+            when (holder) {
+                is HeaderViewHolder -> holder.bind((item as DetailItem.Header).isExpanded)
+                is KnownProblemViewHolder -> holder.bind((item as DetailItem.KnownProblemItem).problem)
+                is DetailsViewHolder -> {
+                    if (holder is PropertyBlockViewHolder) {
+                        val properties = (item as DetailItem.PropertyBlock).properties
+                        holder.bindBlock(properties)
+                    } else {
+                        val property = (item as DetailItem.PropertyItem).property
+                        val nextItem = if (position + 1 < itemCount) getItem(position + 1) else null
+                        val isFollowedByContinuation = nextItem is DetailItem.PropertyItem && nextItem.property.name.isEmpty()
+                        holder.bindDetails(property.name, property.value, isFollowedByContinuation)
+                    }
                 }
             }
         }

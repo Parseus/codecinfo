@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.tracing.trace
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import com.kieronquinn.monetcompat.core.MonetCompat
@@ -15,7 +16,7 @@ import kotlinx.coroutines.runBlocking
 
 class CodecInfoApp : Application() {
 
-    override fun onCreate() {
+    override fun onCreate() = trace("CodecInfoApp.onCreate") {
         super.onCreate()
 
         // Initialize DataStore and trigger migration if needed

@@ -13,6 +13,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.tracing.trace
 import androidx.viewpager2.widget.ViewPager2
 import androidx.wear.ambient.AmbientLifecycleObserver
 import androidx.wear.input.RemoteInputIntentHelper
@@ -63,7 +64,7 @@ class WearMainActivity : AppCompatActivity() {
 
     private val ambientObserver = AmbientLifecycleObserver(this, ambientCallback)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?): Unit = trace("WearMainActivity.onCreate") {
         installSplashScreen()
 
         super.onCreate(savedInstanceState)

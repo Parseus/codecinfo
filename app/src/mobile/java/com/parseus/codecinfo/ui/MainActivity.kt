@@ -57,6 +57,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.tracing.trace
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
 import androidx.window.layout.WindowMetricsCalculator
@@ -181,7 +182,7 @@ class MainActivity : MonetCompatActivity() {
         createInAppUpdateResultLauncher(this)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) = trace("MainActivity.onCreate") {
         setTheme(R.style.Theme_CodecInfo)
 
         val surfaceColor = getSurfaceColor(this)
@@ -363,7 +364,7 @@ class MainActivity : MonetCompatActivity() {
         homeAsUpBackDispatcher.isEnabled = binding.searchView.isShowing
     }
 
-    private fun initializeUI(savedInstanceState: Bundle?) {
+    private fun initializeUI(savedInstanceState: Bundle?) = trace("MainActivity.initializeUI") {
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         if (Build.VERSION.SDK_INT >= 24) {

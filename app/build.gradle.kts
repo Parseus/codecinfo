@@ -16,7 +16,7 @@ android {
         minSdk = 23
         targetSdk = 37
         versionCode = 29
-        versionName = "2.10.0"
+        versionName = "3.0.0"
     }
     buildTypes {
         getByName("debug") {

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.wear.widget.SwipeDismissFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeDismissRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragments.DetailsFragment"
+    tools:deviceIds="wear">
+
+    <androidx.wear.widget.BoxInsetLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black">
+
+        <androidx.wear.widget.WearableRecyclerView
+            android:id="@+id/item_details_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            app:layout_boxedEdges="all"
+            tools:listitem="@layout/item_details_adapter_row"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/share_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/action_share"
+            app:srcCompat="@drawable/ic_share"
+            app:fabSize="mini"
+            app:backgroundTint="?attr/colorPrimaryContainer"
+            app:tint="?attr/colorOnPrimaryContainer"
+            app:layout_boxedEdges="all" />
+
+        <ProgressBar
+            android:id="@+id/loading_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+    </androidx.wear.widget.BoxInsetLayout>
+
+</androidx.wear.widget.SwipeDismissFrameLayout>

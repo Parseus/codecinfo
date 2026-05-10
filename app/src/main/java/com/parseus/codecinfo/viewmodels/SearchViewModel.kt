@@ -31,6 +31,13 @@ class SearchViewModel : ViewModel() {
     private val _searchResultState = MutableStateFlow(SearchResultState())
     val searchResultState: StateFlow<SearchResultState> = _searchResultState.asStateFlow()
 
+    private val _isAmbientMode = MutableStateFlow(false)
+    val isAmbientMode: StateFlow<Boolean> = _isAmbientMode.asStateFlow()
+
+    fun setAmbientMode(isAmbient: Boolean) {
+        _isAmbientMode.value = isAmbient
+    }
+
     private var allAudio: List<CodecSimpleInfo> = emptyList()
     private var allVideo: List<CodecSimpleInfo> = emptyList()
     private var allDrms: List<DrmSimpleInfo> = emptyList()
@@ -53,6 +60,7 @@ class SearchViewModel : ViewModel() {
 
                 searchQuery
                     .debounce(100L)
+                    .filter { !_isAmbientMode.value }
                     .map { query ->
                         if (query.isBlank()) {
                             SearchResultState(isQueryEmpty = true, query = query)

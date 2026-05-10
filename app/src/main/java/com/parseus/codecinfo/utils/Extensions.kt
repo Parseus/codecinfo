@@ -48,6 +48,7 @@ fun FragmentActivity.canEnableMemoryLeakFixBackDispatcher() = Build.VERSION.SDK_
         && supportFragmentManager.backStackEntryCount == 0
 
 private var isTvResult: Boolean? = null
+private var isWearResult: Boolean? = null
 
 @Suppress("DEPRECATION")
 fun Context.isTv(): Boolean {
@@ -74,6 +75,16 @@ fun Context.isTv(): Boolean {
     isTvResult = isTv
     return isTv
 }
+
+fun Context.isWear(): Boolean {
+    isWearResult?.let { return it }
+
+    val isWear = packageManager.hasSystemFeature(PackageManager.FEATURE_WATCH)
+
+    isWearResult = isWear
+    return isWear
+}
+
 fun Context.getAttributeResourceId(@AttrRes attrResId: Int): Int {
     val typedValue = TypedValue()
     theme.resolveAttribute(attrResId, typedValue, true)

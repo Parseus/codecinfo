@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="16dp"
+    tools:gravity="center_vertical"
+    tools:ignore="UnusedAttribute">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/known_issue_desc_header"
+        android:textAppearance="?attr/textAppearanceTitleSmall"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/known_issue_item_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        tools:text="@tools:sample/lorem" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/known_issue_sources_header"
+        android:textAppearance="?attr/textAppearanceTitleSmall"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/known_issue_item_sources"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autoLink="web"
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        tools:text="@tools:sample/lorem" />
+
+</LinearLayout>

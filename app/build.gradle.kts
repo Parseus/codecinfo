@@ -76,6 +76,12 @@ android {
             dimension = "platform"
             versionCode = 20000 + (android.defaultConfig.versionCode ?: 0)
         }
+
+        create("wear") {
+            dimension = "platform"
+            versionCode = 30000 + (android.defaultConfig.versionCode ?: 0)
+            minSdk = 26
+        }
     }
 
     compileOptions {
@@ -105,7 +111,7 @@ baselineProfile {
 
 androidComponents {
     beforeVariants(selector().all()) { variantBuilder ->
-        if ("nonFreeTv" == variantBuilder.flavorName) {
+        if ("nonFreeTv" == variantBuilder.flavorName || "nonFreeWear" == variantBuilder.flavorName) {
             variantBuilder.enable = false
         }
     }
@@ -160,9 +166,20 @@ dependencies {
     "mobileImplementation"(libs.androidx.core.splashscreen)
     "mobileImplementation"(libs.androidx.draganddrop)
     "mobileImplementation"(libs.androidx.palette)
+    "mobileImplementation"(libs.androidx.viewpager2)
     "mobileImplementation"(libs.androidx.window)
     "mobileImplementation"(libs.monetcompat)
     "mobileImplementation"(libs.material)
+
+    "wearImplementation"(libs.androidx.constraintlayout)
+    "wearImplementation"(libs.androidx.core.splashscreen)
+    "wearImplementation"(libs.androidx.viewpager2)
+    "wearImplementation"(libs.androidx.wear)
+    "wearImplementation"(libs.androidx.wear.input)
+    "wearImplementation"(libs.androidx.wear.protolayout)
+    "wearImplementation"(libs.androidx.wear.protolayout.material3)
+    "wearImplementation"(libs.androidx.wear.tiles)
+    "wearImplementation"(libs.material)
 
     nonFreeMobileImplementation(libs.app.update)
     nonFreeMobileImplementation(libs.app.update.ktx)

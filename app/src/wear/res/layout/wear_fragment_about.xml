@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.wear.widget.SwipeDismissFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeDismissRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragments.WearAboutFragment">
+
+    <androidx.wear.widget.BoxInsetLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorSurface">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_boxedEdges="all">
+
+            <TextView
+                android:id="@+id/version_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="8dp"
+                android:textAppearance="?attr/textAppearanceLabelSmall" />
+
+            <androidx.wear.widget.WearableRecyclerView
+                android:id="@+id/wearable_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scrollbars="vertical"
+                tools:listitem="@layout/wear_more_adapter_row"/>
+        </LinearLayout>
+
+    </androidx.wear.widget.BoxInsetLayout>
+
+</androidx.wear.widget.SwipeDismissFrameLayout>

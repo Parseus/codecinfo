@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="purple_200">#cfbdff</color>
     <color name="purple_600">#6d23f9</color>
     <color name="purple_700">#5300cd</color>
@@ -9,8 +9,8 @@
     <color name="teal_700">#005048</color>
     <color name="red_200">#ffb4ab</color>
     <color name="red_600">#ba1a1a</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="black" tools:override="true">#FF000000</color>
+    <color name="white" tools:override="true">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>     <!--  Never trust OEMs.  -->
 
 </resources>

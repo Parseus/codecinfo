@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.wear.widget.BoxInsetLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface">
+
+    <androidx.wear.widget.WearableRecyclerView
+        android:id="@+id/wearableRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        app:layout_boxedEdges="all"
+        tools:listitem="@layout/item_details_adapter_row"/>
+
+    <TextView
+        android:id="@+id/noItemsAvailable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="16dp"
+        android:accessibilityLiveRegion="polite"
+        android:textAppearance="?attr/textAppearanceLabelMedium"
+        android:visibility="gone"
+        app:layout_boxedEdges="all"
+        tools:text="No codecs available"
+        tools:visibility="visible" />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/loadingProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_boxedEdges="all"
+        tools:visibility="visible" />
+
+
+</androidx.wear.widget.BoxInsetLayout>

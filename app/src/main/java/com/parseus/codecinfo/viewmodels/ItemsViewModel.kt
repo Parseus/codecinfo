@@ -13,6 +13,7 @@ import com.parseus.codecinfo.data.drm.clearDrmCaches
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.utils.isTv
+import com.parseus.codecinfo.utils.isWear
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -40,10 +41,13 @@ class ItemsViewModel : ViewModel() {
     private val _refreshDetailsTrigger = MutableSharedFlow<Unit>()
     val refreshDetailsTrigger: SharedFlow<Unit> = _refreshDetailsTrigger.asSharedFlow()
 
+    private val _isAmbientMode = MutableStateFlow(false)
+    val isAmbientMode: StateFlow<Boolean> = _isAmbientMode.asStateFlow()
+
     private var preCacheJob: Job? = null
 
     private fun getPreCacheDelay(context: Context) =
-        if (context.isTv()) PRECACHE_DELAY_TV else PRECACHE_DELAY
+        if (context.isTv() || context.isWear()) PRECACHE_DELAY_TV else PRECACHE_DELAY
 
     fun loadData(context: Context) {
         if (_allAudioState.value != null) return
@@ -121,13 +125,13 @@ class ItemsViewModel : ViewModel() {
             }
 
             for (info in prioritizedCodecs) {
-                if (!isActive) break
+                if (!isActive || _isAmbientMode.value) break
                 getDetailedCodecInfo(appContext, info.codecId, info.codecName)
                 yield()
                 delay(getPreCacheDelay(appContext))
             }
             for (info in prioritizedDrms) {
-                if (!isActive) break
+                if (!isActive || _isAmbientMode.value) break
                 getDetailedDrmInfo(appContext, info.drmUuid, DrmVendor.getFromUuid(info.drmUuid))
                 yield()
                 delay(getPreCacheDelay(appContext))
@@ -159,11 +163,15 @@ class ItemsViewModel : ViewModel() {
         }
     }
 
+    fun setAmbientMode(isAmbient: Boolean) {
+        _isAmbientMode.value = isAmbient
+    }
+
     companion object {
         // Precaching all details could potentially cause CPU spikes on lower-end devices,
         // so a small delay like that should (at least partially) avoid them.
         private const val PRECACHE_DELAY = 50L
-        // Typically TV devices feature an underpowered hardware, so I'm not confident
+        // Typically TV and wear devices feature an underpowered hardware, so I'm not confident
         // that mobile's 50 ms delay would be enough here.
         private const val PRECACHE_DELAY_TV = 100L
     }

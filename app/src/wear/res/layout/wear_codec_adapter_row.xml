@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/wearCodecRow"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:focusable="true"
+    android:importantForAccessibility="yes"
+    android:screenReaderFocusable="true"
+    tools:ignore="UnusedAttribute">
+
+    <TextView
+        android:id="@+id/codec_id"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="no"
+        android:textAppearance="?attr/textAppearanceLabelMedium"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintEnd_toStartOf="@+id/icon_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="video/avc" />
+
+    <TextView
+        android:id="@+id/codec_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="no"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        app:layout_constraintEnd_toStartOf="@+id/icon_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/codec_id"
+        tools:text="c2.android.avc.decoder" />
+
+    <LinearLayout
+        android:id="@+id/icon_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/known_problem_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_warning"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/hw_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="4dp"
+            android:scaleType="centerInside"
+            android:visibility="gone"
+            app:srcCompat="@drawable/ic_hardware"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="details_fragment_tag" translatable="false">item_details</string>
+
+    <string name="codec_row_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s</string>
+    <string name="codec_row_hw_accelerated_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s. Hardware acceleration supported.</string>
+    <string name="codec_row_with_issue_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s. Known issue detected!</string>
+    <string name="codec_row_hw_accelerated_with_issue_content_description">%1$s codec %2$d - %3$s: %4$s for %5$s. Hardware acceleration supported. Known issue detected!</string>
+
+    <string name="tile_codec_count">Codecs: %d</string>
+    <string name="tile_drm_count">DRMs: %d</string>
+    <string name="tile_launch_app">Launch app</string>
+</resources>

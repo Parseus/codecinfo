@@ -32,6 +32,8 @@ class WearSearchActivity : AppCompatActivity() {
     private lateinit var binding: WearActivitySearchBinding
     private val viewModel: SearchViewModel by viewModels()
 
+    private var isFullyDrawnReporterAdded = false
+
     private val ambientCallback = object : AmbientLifecycleObserver.AmbientLifecycleCallback {
         override fun onEnterAmbient(ambientDetails: AmbientLifecycleObserver.AmbientDetails) {
             val insetsController = WindowInsetsControllerCompat(window, window.decorView)
@@ -61,6 +63,7 @@ class WearSearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        addFullyDrawnReporter()
         lifecycle.addObserver(ambientObserver)
         binding = WearActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -122,6 +125,7 @@ class WearSearchActivity : AppCompatActivity() {
                         videoAdapter.submitList(state.videoResults)
                         drmAdapter.submitList(state.drmResults)
                     }
+                    removeFullyDrawnReporter()
                 }
             }
         }
@@ -154,8 +158,23 @@ class WearSearchActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        removeFullyDrawnReporter()
         binding.wearableRecyclerView.adapter = null
         super.onDestroy()
+    }
+
+    private fun addFullyDrawnReporter() {
+        if (!isFullyDrawnReporterAdded) {
+            fullyDrawnReporter.addReporter()
+            isFullyDrawnReporterAdded = true
+        }
+    }
+
+    private fun removeFullyDrawnReporter() {
+        if (isFullyDrawnReporterAdded) {
+            fullyDrawnReporter.removeReporter()
+            isFullyDrawnReporterAdded = false
+        }
     }
 
     companion object {

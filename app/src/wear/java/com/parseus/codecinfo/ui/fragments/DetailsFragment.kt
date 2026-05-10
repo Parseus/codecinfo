@@ -53,6 +53,8 @@ class DetailsFragment : Fragment() {
     private var drmName: String? = null
     private var drmUuid: UUID? = null
 
+    private var isFullyDrawnReporterAdded = false
+
     private val viewModel: ItemsViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -62,6 +64,8 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        addFullyDrawnReporter()
 
         val bundle = savedInstanceState ?: arguments
         bundle?.let {
@@ -141,6 +145,7 @@ class DetailsFragment : Fragment() {
 
         binding.loadingProgress.isVisible = false
         updateFullDetailsList()
+        removeFullyDrawnReporter()
     }
 
     private fun updateFullDetailsList() {
@@ -184,7 +189,22 @@ class DetailsFragment : Fragment() {
         }
     }
 
+    private fun addFullyDrawnReporter() {
+        if (!isFullyDrawnReporterAdded) {
+            requireActivity().fullyDrawnReporter.addReporter()
+            isFullyDrawnReporterAdded = true
+        }
+    }
+
+    private fun removeFullyDrawnReporter() {
+        if (isFullyDrawnReporterAdded) {
+            activity?.fullyDrawnReporter?.removeReporter()
+            isFullyDrawnReporterAdded = false
+        }
+    }
+
     override fun onDestroyView() {
+        removeFullyDrawnReporter()
         binding.itemDetailsRecyclerView.adapter = null
         _binding = null
         super.onDestroyView()

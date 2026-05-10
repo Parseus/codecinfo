@@ -50,6 +50,8 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     private var drmName: String? = null
     private var drmUuid: UUID? = null
 
+    private var isFullyDrawnReporterAdded = false
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = ItemDetailsFragmentLayoutBinding.inflate(inflater, container, false)
         binding.share.setOnClickListener {
@@ -80,6 +82,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     }
 
     override fun onDestroyView() {
+        removeFullyDrawnReporter()
         binding.itemDetailsRecyclerView.adapter = null
         _binding = null
         super.onDestroyView()
@@ -87,6 +90,8 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        addFullyDrawnReporter()
 
         requireActivity().intent?.let {
             codecId = it.getStringExtra("codecId")
@@ -146,6 +151,7 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun getFullDetails() {
         binding.fullCodecInfoName.text = codecName ?: drmName
         updateFullDetailsList()
+        removeFullyDrawnReporter()
     }
 
     private fun updateFullDetailsList(filteredProperties: List<DetailsProperty>? = null) {
@@ -189,6 +195,20 @@ class DetailsFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun filterProperties(query: String): List<DetailsProperty> {
         return propertyList.filter { (_, name, value) ->
             name.contains(query, true) || value.contains(query, true)
+        }
+    }
+
+    private fun addFullyDrawnReporter() {
+        if (!isFullyDrawnReporterAdded) {
+            requireActivity().fullyDrawnReporter.addReporter()
+            isFullyDrawnReporterAdded = true
+        }
+    }
+
+    private fun removeFullyDrawnReporter() {
+        if (isFullyDrawnReporterAdded) {
+            activity?.fullyDrawnReporter?.removeReporter()
+            isFullyDrawnReporterAdded = false
         }
     }
 

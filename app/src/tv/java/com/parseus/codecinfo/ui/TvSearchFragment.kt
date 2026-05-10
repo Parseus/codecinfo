@@ -46,11 +46,14 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
 
     private var voiceSearchLauncher: ActivityResultLauncher<Intent>? = null
 
+    private var isFullyDrawnReporterAdded = false
+
     override fun getResultsAdapter(): ObjectAdapter = rowsAdapter
 
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        addFullyDrawnReporter()
         setSearchResultProvider(this)
         setOnItemViewClickedListener(this)
 
@@ -122,6 +125,7 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
                             && oldItem.adapter.size() == newItem.adapter.size()
                 }
             })
+            removeFullyDrawnReporter()
         }
     }
 
@@ -200,6 +204,25 @@ class TvSearchFragment : SearchSupportFragment(), SearchSupportFragment.SearchRe
             }
             startActivity(intent)
         }
+    }
+
+    private fun addFullyDrawnReporter() {
+        if (!isFullyDrawnReporterAdded) {
+            requireActivity().fullyDrawnReporter.addReporter()
+            isFullyDrawnReporterAdded = true
+        }
+    }
+
+    private fun removeFullyDrawnReporter() {
+        if (isFullyDrawnReporterAdded) {
+            activity?.fullyDrawnReporter?.removeReporter()
+            isFullyDrawnReporterAdded = false
+        }
+    }
+
+    override fun onDestroyView() {
+        removeFullyDrawnReporter()
+        super.onDestroyView()
     }
 
     companion object {

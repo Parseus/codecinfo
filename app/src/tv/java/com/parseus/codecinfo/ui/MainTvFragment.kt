@@ -40,10 +40,12 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
 
     private lateinit var adapter: ArrayObjectAdapter
 
+    private var isFullyDrawnReporterAdded = false
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        requireActivity().fullyDrawnReporter.addReporter()
+        addFullyDrawnReporter()
 
         setupUI()
         setupAdapter()
@@ -104,7 +106,7 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
     private fun checkIfFullyDrawn() {
         if (viewModel.allAudioState.value != null && viewModel.allVideoState.value != null
             && viewModel.allDrmsState.value != null) {
-            requireActivity().fullyDrawnReporter.removeReporter()
+            removeFullyDrawnReporter()
         }
     }
 
@@ -221,6 +223,25 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
                 }
             }
         }
+    }
+
+    private fun addFullyDrawnReporter() {
+        if (!isFullyDrawnReporterAdded) {
+            requireActivity().fullyDrawnReporter.addReporter()
+            isFullyDrawnReporterAdded = true
+        }
+    }
+
+    private fun removeFullyDrawnReporter() {
+        if (isFullyDrawnReporterAdded) {
+            activity?.fullyDrawnReporter?.removeReporter()
+            isFullyDrawnReporterAdded = false
+        }
+    }
+
+    override fun onDestroyView() {
+        removeFullyDrawnReporter()
+        super.onDestroyView()
     }
 
     companion object {

@@ -72,6 +72,8 @@ class DetailsFragment : MonetFragment() {
     var drmName: String? = null
     var drmUuid: UUID? = null
 
+    private var isFullyDrawnReporterAdded = false
+
     private val viewModel: ItemsViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -105,6 +107,8 @@ class DetailsFragment : MonetFragment() {
     }
 
     override fun onDestroyView() {
+        removeFullyDrawnReporter()
+
         val container = (view?.parent as? ViewGroup)
             ?: activity?.findViewById(R.id.content_fragment)
         container?.let { TransitionManager.endTransitions(it) }
@@ -120,6 +124,8 @@ class DetailsFragment : MonetFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        addFullyDrawnReporter()
 
         if (isDynamicThemingEnabled(requireContext()) && !isNativeMonetAvailable()) {
             view.applyMonetRecursively()
@@ -216,6 +222,7 @@ class DetailsFragment : MonetFragment() {
 
         binding.loadingProgress.isVisible = false
         showFullDetails()
+        removeFullyDrawnReporter()
     }
 
     private fun showFullDetails() {
@@ -300,6 +307,20 @@ class DetailsFragment : MonetFragment() {
         }
 
         return groupedList
+    }
+
+    private fun addFullyDrawnReporter() {
+        if (!isFullyDrawnReporterAdded) {
+            requireActivity().fullyDrawnReporter.addReporter()
+            isFullyDrawnReporterAdded = true
+        }
+    }
+
+    private fun removeFullyDrawnReporter() {
+        if (isFullyDrawnReporterAdded) {
+            activity?.fullyDrawnReporter?.removeReporter()
+            isFullyDrawnReporterAdded = false
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

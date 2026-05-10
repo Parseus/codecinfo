@@ -93,6 +93,7 @@ import com.parseus.codecinfo.ui.externalLinks.ExternalLinksViewModel
 import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.ui.settings.DarkTheme
 import com.parseus.codecinfo.ui.settings.SettingsContract
+import com.parseus.codecinfo.ui.utils.MaterialTooltipHelper
 import com.parseus.codecinfo.utils.ExternalLinksHelper
 import com.parseus.codecinfo.utils.TextSizeCache
 import com.parseus.codecinfo.utils.canEnableMemoryLeakFixBackDispatcher
@@ -339,6 +340,9 @@ class MainActivity : MonetCompatActivity() {
 
         binding.toolbar.updateToolBarColor(this)
 
+        val searchNavigationIconTooltip = getString(R.string.action_search)
+        MaterialTooltipHelper.applyTooltip(binding.searchBar, searchNavigationIconTooltip)
+
         if (isTwoPane) {
             binding.toolbar.isVisible = false
             binding.searchBar.isVisible = true
@@ -346,6 +350,7 @@ class MainActivity : MonetCompatActivity() {
                 setNavigationIcon(R.drawable.ic_search)
                 setNavigationContentDescription(R.string.action_search)
                 setNavigationOnClickListener(null)
+                MaterialTooltipHelper.applyTooltip(this, getString(R.string.action_search))
             }
         } else {
             binding.toolbar.isVisible = isDetailsShown
@@ -355,11 +360,13 @@ class MainActivity : MonetCompatActivity() {
                 binding.toolbar.setNavigationOnClickListener {
                     onBackPressedDispatcher.onBackPressed()
                 }
+                MaterialTooltipHelper.applyTooltip(binding.toolbar, getString(R.string.action_close))
             } else {
                 binding.searchBar.apply {
                     setNavigationIcon(R.drawable.ic_search)
                     setNavigationContentDescription(R.string.action_search)
                     setNavigationOnClickListener(null)
+                    MaterialTooltipHelper.applyTooltip(this, getString(R.string.action_search))
                 }
             }
         }
@@ -958,6 +965,10 @@ class MainActivity : MonetCompatActivity() {
         }
         if (affectedByKnownProblems) {
             menu.findItem(R.id.menu_item_warning).isVisible = true
+        }
+
+        menu.forEach {
+            it.title?.let { title -> MaterialTooltipHelper.applyTooltip(it, title) }
         }
 
         return super.onCreateOptionsMenu(menu)

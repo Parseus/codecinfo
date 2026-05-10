@@ -1,21 +1,37 @@
 package com.parseus.codecinfo.ui.tiles
 
 import android.content.Context
+import android.graphics.Color
 import androidx.wear.protolayout.ActionBuilders
 import androidx.wear.protolayout.LayoutElementBuilders
 import androidx.wear.protolayout.ModifiersBuilders
 import androidx.wear.protolayout.TimelineBuilders
 import androidx.wear.protolayout.material3.*
+import androidx.wear.protolayout.types.argb
 import androidx.wear.protolayout.types.layoutString
 import androidx.wear.tiles.Material3TileService
 import androidx.wear.tiles.RequestBuilders
 import androidx.wear.tiles.TileBuilders
+import com.parseus.codecinfo.BuildConfig
 import com.parseus.codecinfo.R
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import com.parseus.codecinfo.ui.WearMainActivity
 
-class CodecInfoTileService : Material3TileService() {
+@Suppress("KotlinConstantConditions")
+private val colorScheme = if (BuildConfig.DEBUG) {
+    ColorScheme(
+        primary = Color.rgb(0, 107, 90).argb,
+        onPrimary = Color.WHITE.argb
+    )
+} else {
+    ColorScheme(
+        primary = Color.rgb(109, 35, 249).argb,
+        onPrimary = Color.WHITE.argb
+    )
+}
+
+class CodecInfoTileService : Material3TileService(defaultColorScheme = colorScheme) {
 
     override suspend fun MaterialScope.tileResponse(requestParams: RequestBuilders.TileRequest): TileBuilders.Tile {
         val codecCount = (getSimpleCodecInfoList(context, true).size

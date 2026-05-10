@@ -50,7 +50,7 @@
             </intent-filter>
             <meta-data
                 android:name="androidx.wear.tiles.PREVIEW"
-                android:resource="@mipmap/ic_launcher_round" />
+                android:resource="@drawable/tile_preview" />
         </service>
 
     </application>

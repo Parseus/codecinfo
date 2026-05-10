@@ -13,6 +13,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.KeyboardShortcutGroup
 import android.view.KeyboardShortcutInfo
@@ -22,12 +23,14 @@ import android.view.PointerIcon
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
@@ -48,6 +51,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.forEach
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.core.widget.addTextChangedListener
 import androidx.draganddrop.DropHelper
@@ -57,6 +61,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.tracing.trace
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
@@ -393,6 +398,52 @@ class MainActivity : MonetCompatActivity() {
         binding.searchBar.setOnMenuItemClickListener {
             onOptionsItemSelected(it)
         }
+
+        val searchBarMaxWidth = resources.getDimensionPixelSize(R.dimen.search_bar_max_width)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.appBar) { v, windowInsets ->
+            val insets = windowInsets.getInsets(systemBars() or displayCutout())
+            val windowWidth = WindowMetricsCalculator.getOrCreate()
+                .computeCurrentWindowMetrics(this@MainActivity).bounds.width()
+            
+            var horizontalPadding = 0
+            if (windowWidth > searchBarMaxWidth) {
+                horizontalPadding = (windowWidth - searchBarMaxWidth) / 2
+            }
+
+            // Pad the AppBarLayout itself. This centers the children while keeping the teal background full-width.
+            v.updatePadding(
+                left = insets.left + horizontalPadding, 
+                top = insets.top, 
+                right = insets.right + horizontalPadding
+            )
+
+            // Ensure no margins are applied to the containers (they shouldn't be, but jus in case)..
+            v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = 0
+                rightMargin = 0
+            }
+            binding.toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = 0
+                rightMargin = 0
+            }
+            binding.searchBar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = 0
+                rightMargin = 0
+            }
+            binding.updateProgressBar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                leftMargin = 0
+                rightMargin = 0
+            }
+
+            // Expressive Search: Center search bar text on large screens
+            binding.searchBar.forEach { child ->
+                if (child is TextView) {
+                    child.gravity = if (windowWidth > searchBarMaxWidth) Gravity.CENTER else Gravity.START
+                }
+            }
+
+            windowInsets
+        }
         updateUIState()
 
         binding.updateProgressBar.updateColors(this)
@@ -413,16 +464,44 @@ class MainActivity : MonetCompatActivity() {
         setupSearch()
 
         binding.appBar.updateBackgroundColor(this)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.appBar) { v, windowInsets ->
-            val insets = windowInsets.getInsets(systemBars() or displayCutout())
-
-            // Apply system bar height as top padding (and left/right respectively)
-            v.updatePadding(left = insets.left, top = insets.top, right = insets.right)
-            windowInsets
-        }
         ViewCompat.setOnApplyWindowInsetsListener(binding.searchView) { v, windowInsets ->
             val insets = windowInsets.getInsets(systemBars() or displayCutout())
-            v.updatePadding(left = insets.left, top = insets.top, right = insets.right, bottom = insets.bottom)
+            val windowWidth = WindowMetricsCalculator.getOrCreate()
+                .computeCurrentWindowMetrics(this@MainActivity).bounds.width()
+            
+            var horizontalPadding = 0
+            if (windowWidth > searchBarMaxWidth) {
+                horizontalPadding = (windowWidth - searchBarMaxWidth) / 2
+            }
+
+            // Keep SearchView container full-screen to maintain background integrity.
+            v.updatePadding(0, 0, 0, 0)
+
+            // Pad the internal components manually to achieve centering.
+            (v as? ViewGroup)?.forEach { child ->
+                if (child.id == R.id.search_results_recycler_view) {
+                    (child as? RecyclerView)?.clipToPadding = false
+                    child.updatePadding(
+                        left = horizontalPadding + insets.left, 
+                        right = horizontalPadding + insets.right, 
+                        bottom = insets.bottom
+                    )
+                } else if (child is Toolbar || child.javaClass.simpleName.contains("Toolbar")) {
+                    child.updatePadding(
+                        top = insets.top,
+                        left = horizontalPadding + insets.left,
+                        right = horizontalPadding + insets.right
+                    )
+                    
+                    // Expressive Search: Center search view toolbar content
+                    (child as? ViewGroup)?.forEach { toolbarChild ->
+                        if (toolbarChild is android.widget.EditText) {
+                            toolbarChild.gravity = if (windowWidth > searchBarMaxWidth) Gravity.CENTER else Gravity.START
+                        }
+                    }
+                }
+            }
+
             windowInsets
         }
         ViewGroupCompat.installCompatInsetsDispatch(binding.root)

@@ -127,6 +127,7 @@ import dev.kdrag0n.monet.theme.ColorScheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -189,13 +190,7 @@ class MainActivity : MonetCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) = trace("MainActivity.onCreate") {
-        setTheme(R.style.Theme_CodecInfo)
-
-        val surfaceColor = getSurfaceColor(this)
-        window.setBackgroundDrawable(surfaceColor.toDrawable())
-
-        var isUiReady = false
-        installSplashScreen().setKeepOnScreenCondition { !isUiReady }
+        val splashScreen = installSplashScreen()
 
         disableApiBlacklistOnPie()
 
@@ -210,29 +205,46 @@ class MainActivity : MonetCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
+        var isUiReady = false
+        var isSettingsLoaded = false
+        splashScreen.setKeepOnScreenCondition { !isUiReady || !isSettingsLoaded }
+
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                settingsRepository.isLoaded.first { it }
+                isSettingsLoaded = true
+
+                val settings = settingsRepository.getSettingsSync()
+                val darkTheme = settings.darkTheme
+                AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
+
+                if (!isNativeMonetAvailable()) {
+                    MonetCompat.wallpaperSource = settings.dynamicThemeWallpaperSource.toInt()
+                    MonetCompat.wallpaperColorPicker = {
+                        val userPickedColor = settings.selectedColor
+                        it?.firstOrNull { color -> color == userPickedColor } ?: it?.firstOrNull()
+                    }
+                    monet.awaitMonetReady()
+                } else {
+                    monet.removeMonetColorsChangedListener(this@MainActivity)
+                }
+
+                setTheme(R.style.Theme_CodecInfo)
+                val surfaceColor = getSurfaceColor(this@MainActivity)
+                window.setBackgroundDrawable(surfaceColor.toDrawable())
+
+                initializeUI(savedInstanceState)
+                isUiReady = true
+                window.updateStatusBarColor(this@MainActivity)
+                window.updateNavigationBarColor(this@MainActivity)
+            }
+        }
+
         externalLinksHelper = ExternalLinksHelper(this, lifecycle)
         externalLinksViewModel.prefetchExternalLink.observe(this) {
             if (it != null) {
                 externalLinksHelper.prefetchUrl(it)
             }
-        }
-
-        if (!isNativeMonetAvailable()) {
-            lifecycleScope.launch {
-                repeatOnLifecycle(Lifecycle.State.CREATED) {
-                    monet.awaitMonetReady()
-                    initializeUI(savedInstanceState)
-                    isUiReady = true
-                    window.updateStatusBarColor(this@MainActivity)
-                    window.updateNavigationBarColor(this@MainActivity)
-                }
-            }
-        } else {
-            monet.removeMonetColorsChangedListener(this)
-            initializeUI(savedInstanceState)
-            isUiReady = true
-            window.updateStatusBarColor(this)
-            window.updateNavigationBarColor(this)
         }
 
         supportFragmentManager.addOnBackStackChangedListener {
@@ -395,10 +407,6 @@ class MainActivity : MonetCompatActivity() {
         } else {
             disableImmersiveMode()
         }
-
-        val settings = settingsRepository.getSettingsSync()
-        val darkTheme = settings.darkTheme
-        AppCompatDelegate.setDefaultNightMode(DarkTheme.getAppCompatValue(darkTheme))
 
         binding.searchBar.setHint(R.string.search_hint)
         binding.searchBar.inflateMenu(R.menu.app_bar_menu)

@@ -10,15 +10,25 @@ import android.view.Menu
 import androidx.annotation.LayoutRes
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.parseus.codecinfo.R
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.ui.settings.TvSettingsActivity
 import com.parseus.codecinfo.utils.copyToClipboard
 import com.parseus.codecinfo.utils.canEnableMemoryLeakFixBackDispatcher
 import com.parseus.codecinfo.utils.getMemoryLeakFixBackDispatcher
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 open class BaseTvActivity: FragmentActivity {
+    private var layoutId: Int = -1
+
     constructor() : super()
-    constructor(@LayoutRes contentLayoutId: Int) : super(contentLayoutId)
+    constructor(@LayoutRes contentLayoutId: Int) : super() {
+        layoutId = contentLayoutId
+    }
 
     private val memoryFixBackDispatcher = getMemoryLeakFixBackDispatcher()
 
@@ -29,6 +39,15 @@ open class BaseTvActivity: FragmentActivity {
             memoryFixBackDispatcher.isEnabled = canEnableMemoryLeakFixBackDispatcher()
         }
         onBackPressedDispatcher.addCallback(memoryFixBackDispatcher)
+
+        if (layoutId != -1) {
+            lifecycleScope.launch {
+                lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                    settingsRepository.isLoaded.first { it }
+                    setContentView(layoutId)
+                }
+            }
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {

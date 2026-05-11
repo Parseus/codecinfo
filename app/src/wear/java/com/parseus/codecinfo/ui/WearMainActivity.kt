@@ -25,6 +25,7 @@ import com.parseus.codecinfo.data.codecinfo.detailedCodecInfos
 import com.parseus.codecinfo.data.codecinfo.videoCodecList
 import com.parseus.codecinfo.data.drm.detailedDrmInfo
 import com.parseus.codecinfo.data.drm.drmList
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.databinding.WearActivityMainBinding
 import com.parseus.codecinfo.ui.WearSearchActivity.Companion.EXTRA_QUERY
 import com.parseus.codecinfo.ui.adapters.WearPagerAdapter
@@ -32,6 +33,7 @@ import com.parseus.codecinfo.ui.fragments.DetailsFragment
 import com.parseus.codecinfo.ui.fragments.WearItemFragment
 import com.parseus.codecinfo.utils.TextSizeCache
 import com.parseus.codecinfo.viewmodels.ItemsViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class WearMainActivity : AppCompatActivity() {
@@ -65,46 +67,56 @@ class WearMainActivity : AppCompatActivity() {
     private val ambientObserver = AmbientLifecycleObserver(this, ambientCallback)
 
     override fun onCreate(savedInstanceState: Bundle?): Unit = trace("WearMainActivity.onCreate") {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
 
         lifecycle.addObserver(ambientObserver)
 
-        binding = WearActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        var isSettingsLoaded = false
+        splashScreen.setKeepOnScreenCondition { !isSettingsLoaded }
 
-        binding.swipeDismissRoot.addCallback(object : SwipeDismissFrameLayout.Callback() {
-            override fun onDismissed(layout: SwipeDismissFrameLayout) {
-                finish()
-            }
-        })
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                settingsRepository.isLoaded.first { it }
+                isSettingsLoaded = true
 
-        val pagerBackCallback = object : OnBackPressedCallback(false) {
-            override fun handleOnBackPressed() {
-                binding.pager.currentItem--
-            }
-        }
-        onBackPressedDispatcher.addCallback(this, pagerBackCallback)
+                binding = WearActivityMainBinding.inflate(layoutInflater)
+                setContentView(binding.root)
 
-        val pagerAdapter = WearPagerAdapter(this)
-        binding.pager.run {
-            adapter = pagerAdapter
-            offscreenPageLimit = 1
+                binding.swipeDismissRoot.addCallback(object : SwipeDismissFrameLayout.Callback() {
+                    override fun onDismissed(layout: SwipeDismissFrameLayout) {
+                        finish()
+                    }
+                })
 
-            registerOnPageChangeCallback( object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    binding.swipeDismissRoot.isSwipeable = position == 0
-                    pagerBackCallback.isEnabled = position > 0
-                    // Ensure InfoType is in sync with the last viewed tab
-                    if (position < InfoType.INFO_TYPE_COUNT) {
-                        InfoType.currentInfoType = InfoType.fromInt(position)
+                val pagerBackCallback = object : OnBackPressedCallback(false) {
+                    override fun handleOnBackPressed() {
+                        binding.pager.currentItem--
                     }
                 }
-            })
-        }
+                onBackPressedDispatcher.addCallback(this@WearMainActivity, pagerBackCallback)
 
-        viewModel.loadData(this)
+                val pagerAdapter = WearPagerAdapter(this@WearMainActivity)
+                binding.pager.run {
+                    adapter = pagerAdapter
+                    offscreenPageLimit = 1
+
+                    registerOnPageChangeCallback( object : ViewPager2.OnPageChangeCallback() {
+                        override fun onPageSelected(position: Int) {
+                            binding.swipeDismissRoot.isSwipeable = position == 0
+                            pagerBackCallback.isEnabled = position > 0
+                            // Ensure InfoType is in sync with the last viewed tab
+                            if (position < InfoType.INFO_TYPE_COUNT) {
+                                InfoType.currentInfoType = InfoType.fromInt(position)
+                            }
+                        }
+                    })
+                }
+
+                viewModel.loadData(this@WearMainActivity)
+            }
+        }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

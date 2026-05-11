@@ -8,6 +8,7 @@ import com.parseus.codecinfo.data.codecinfo.CodecSimpleInfo
 import com.parseus.codecinfo.data.codecinfo.getSimpleCodecInfoList
 import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.utils.matches
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -50,6 +51,7 @@ class SearchViewModel : ViewModel() {
         val appContext = context.applicationContext
 
         initJob = viewModelScope.launch(Dispatchers.IO) {
+            appContext.settingsRepository.isLoaded.first { it }
             try {
                 val audioDeferred = async { trace("Search:loadAudio") { getSimpleCodecInfoList(appContext, true) } }
                 val videoDeferred = async { trace("Search:loadVideo") { getSimpleCodecInfoList(appContext, false) } }

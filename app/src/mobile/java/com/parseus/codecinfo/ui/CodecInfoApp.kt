@@ -11,16 +11,14 @@ import com.kieronquinn.monetcompat.core.MonetCompat
 import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.utils.isDynamicThemingEnabled
 import com.parseus.codecinfo.utils.isNativeMonetAvailable
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 
 class CodecInfoApp : Application() {
 
     override fun onCreate() = trace("CodecInfoApp.onCreate") {
         super.onCreate()
 
-        // Initialize DataStore and trigger migration if needed
-        val settings = runBlocking { settingsRepository.settingsFlow.first() }
+        // Trigger DataStore initialization early
+        settingsRepository
 
         if (isNativeMonetAvailable()) {
             DynamicColors.applyToActivitiesIfAvailable(this,
@@ -30,11 +28,6 @@ class CodecInfoApp : Application() {
                 MonetCompat.enablePaletteCompat()
             }
             MonetCompat.useSystemColorsOnAndroid12 = false
-            MonetCompat.wallpaperSource = settings.dynamicThemeWallpaperSource.toInt()
-            MonetCompat.wallpaperColorPicker = {
-                val userPickedColor = settings.selectedColor
-                it?.firstOrNull { color -> color == userPickedColor } ?: it?.firstOrNull()
-            }
         }
         MonetCompat.setup(this)
 

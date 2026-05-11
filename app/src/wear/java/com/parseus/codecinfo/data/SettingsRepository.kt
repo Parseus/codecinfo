@@ -21,12 +21,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.io.IOException
 
 private val dataStoreLock = Any()
@@ -69,16 +71,18 @@ class SettingsRepository(context: Context) : PreferenceDataStore() {
     private val dataStore = context.dataStore
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
+    private val _isLoaded = MutableStateFlow(false)
+    val isLoaded: StateFlow<Boolean> = _isLoaded.asStateFlow()
+
     private val preferencesStateFlow: StateFlow<Preferences> = dataStore.data
+        .onEach { _isLoaded.value = true }
         .catch { exception ->
             if (exception is IOException) emit(emptyPreferences()) else throw exception
         }
         .stateIn(
             scope = scope,
             started = SharingStarted.Eagerly,
-            initialValue = runBlocking {
-                try { dataStore.data.first() } catch (_: Exception) { emptyPreferences() }
-            }
+            initialValue = emptyPreferences()
         )
 
     val settingsStateFlow: StateFlow<Settings> = preferencesStateFlow

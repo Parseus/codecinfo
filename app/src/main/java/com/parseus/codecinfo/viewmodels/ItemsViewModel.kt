@@ -13,6 +13,7 @@ import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.clearDrmCaches
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
+import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.utils.isTv
 import com.parseus.codecinfo.utils.isWear
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -54,6 +56,8 @@ class ItemsViewModel : ViewModel() {
         if (_allAudioState.value != null) return
         val appContext = context.applicationContext
         viewModelScope.launch {
+            appContext.settingsRepository.isLoaded.first { it }
+
             val audioJob = launch(Dispatchers.IO) {
                 trace("loadAudioCodecs") {
                     _allAudioState.value = getSimpleCodecInfoList(appContext, true)
@@ -81,6 +85,8 @@ class ItemsViewModel : ViewModel() {
     fun refreshData(context: Context) = trace("refreshData") {
         val appContext = context.applicationContext
         viewModelScope.launch {
+            appContext.settingsRepository.isLoaded.first { it }
+
             preCacheJob?.cancel()
             clearCodecCaches()
             clearDrmCaches()
@@ -156,6 +162,7 @@ class ItemsViewModel : ViewModel() {
         if (_allAudioState.value != null) return@trace
         val appContext = context.applicationContext
         viewModelScope.launch(Dispatchers.IO) {
+            appContext.settingsRepository.isLoaded.first { it }
             _allAudioState.value = getSimpleCodecInfoList(appContext, true)
         }
     }
@@ -164,6 +171,7 @@ class ItemsViewModel : ViewModel() {
         if (_allVideoState.value != null) return@trace
         val appContext = context.applicationContext
         viewModelScope.launch(Dispatchers.IO) {
+            appContext.settingsRepository.isLoaded.first { it }
             _allVideoState.value = getSimpleCodecInfoList(appContext, false)
         }
     }
@@ -172,6 +180,7 @@ class ItemsViewModel : ViewModel() {
         if (_allDrmsState.value != null) return@trace
         val appContext = context.applicationContext
         viewModelScope.launch(Dispatchers.IO) {
+            appContext.settingsRepository.isLoaded.first { it }
             _allDrmsState.value = getSimpleDrmInfoList(appContext)
         }
     }

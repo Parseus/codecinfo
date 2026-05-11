@@ -1,3 +1,5 @@
+# NOTE: This project's source code has migrated to Codeberg and all future changes and releases will be done there: https://codeberg.org/Parseus/codecinfo
+
 # Codec Info
 Detailed listing of multimedia codecs on your Android device - with no ads!
 

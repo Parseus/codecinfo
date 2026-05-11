@@ -10,7 +10,7 @@ import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.getSimpleDrmInfoList
 import java.util.*
 
-fun getItemListString(context: Context): String = buildString {
+suspend fun getItemListString(context: Context): String = buildString {
     val infoType = InfoType.currentInfoType
     val isDrm = infoType == InfoType.DRM
 
@@ -26,7 +26,7 @@ fun getItemListString(context: Context): String = buildString {
     }
 }
 
-fun getAllInfoString(context: Context): String = buildString {
+suspend fun getAllInfoString(context: Context): String = buildString {
     appendLine("${context.getString(R.string.codec_list)}:")
 
     // Use + to create a new list instead of addAll to avoid mutating the internal cache
@@ -45,12 +45,12 @@ fun getAllInfoString(context: Context): String = buildString {
     }
 }
 
-fun getSelectedCodecInfoString(context: Context, codecId: String, codecName: String): String = buildString {
+suspend fun getSelectedCodecInfoString(context: Context, codecId: String, codecName: String): String = buildString {
     appendLine("${context.getString(R.string.codec_details)}: $codecName\n")
     getDetailedCodecInfo(context, codecId, codecName).forEach { appendLine(it) }
 }
 
-fun getSelectedDrmInfoString(context: Context, drmName: String, drmUuid: UUID): String = buildString {
+suspend fun getSelectedDrmInfoString(context: Context, drmName: String, drmUuid: UUID): String = buildString {
     appendLine("${context.getString(R.string.drm_details)}: $drmName\n")
     getDetailedDrmInfo(context, drmUuid, DrmVendor.getFromUuid(drmUuid)).forEach { appendLine(it) }
 }

@@ -3,13 +3,51 @@ package com.parseus.codecinfo.data.knownproblems
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import com.parseus.codecinfo.BuildConfig
+import com.parseus.codecinfo.R
 import com.parseus.codecinfo.utils.isTv
+import com.parseus.codecinfo.utils.jsonInstance
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.decodeFromStream
 
 var KNOWN_PROBLEMS_DB: List<KnownProblem> = emptyList()
 var DEVICE_PROBLEMS_DB: List<KnownProblem> = emptyList()
 var DATABASES_INITIALIZED = false
+
+private val databaseMutex = Mutex()
+
+@OptIn(ExperimentalSerializationApi::class)
+suspend fun loadDatabases(context: Context) {
+    if (DATABASES_INITIALIZED) return
+
+    databaseMutex.withLock {
+        if (DATABASES_INITIALIZED) return@withLock
+
+        try {
+            context.resources.openRawResource(R.raw.known_problems_list).use {
+                KNOWN_PROBLEMS_DB = jsonInstance.decodeFromStream(it) ?: emptyList()
+            }
+        } catch (e: Exception) {
+            KNOWN_PROBLEMS_DB = emptyList()
+            if (BuildConfig.DEBUG) e.printStackTrace()
+        }
+
+        try {
+            context.resources.openRawResource(R.raw.device_problem_list).use {
+                DEVICE_PROBLEMS_DB = jsonInstance.decodeFromStream(it) ?: emptyList()
+            }
+        } catch (e: Exception) {
+            DEVICE_PROBLEMS_DB = emptyList()
+            if (BuildConfig.DEBUG) e.printStackTrace()
+        }
+
+        DATABASES_INITIALIZED = true
+    }
+}
 
 private var sdkVersion: Int = -1
 private var device: String? = null

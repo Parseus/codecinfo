@@ -34,6 +34,7 @@ import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.isDetailedDrmInfoCached
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
+import com.parseus.codecinfo.data.knownproblems.loadDatabases
 import com.parseus.codecinfo.databinding.ItemDetailsFragmentLayoutBinding
 import com.parseus.codecinfo.ui.CustomLinearLayoutManager
 import com.parseus.codecinfo.ui.MainActivity
@@ -208,6 +209,9 @@ class DetailsFragment : MonetFragment() {
             }
         }
 
+        if (codecName != null) {
+            loadDatabases(requireContext())
+        }
         knownProblems = if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
             KNOWN_PROBLEMS_DB.filter {
                 it.isAffected(requireContext(), codecName!!)

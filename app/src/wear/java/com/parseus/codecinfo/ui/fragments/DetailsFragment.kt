@@ -23,7 +23,9 @@ import com.parseus.codecinfo.data.codecinfo.isDetailedCodecInfoCached
 import com.parseus.codecinfo.data.drm.DrmVendor
 import com.parseus.codecinfo.data.drm.getDetailedDrmInfo
 import com.parseus.codecinfo.data.drm.isDetailedDrmInfoCached
+import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
+import com.parseus.codecinfo.data.knownproblems.loadDatabases
 import com.parseus.codecinfo.databinding.WearItemDetailsFragmentLayoutBinding
 import com.parseus.codecinfo.ui.adapters.DetailItem
 import com.parseus.codecinfo.ui.adapters.WearDetailsAdapter
@@ -142,6 +144,17 @@ class DetailsFragment : Fragment() {
                     else -> emptyList()
                 }
             }
+        }
+
+        if (codecName != null) {
+            loadDatabases(requireContext())
+        }
+        knownProblems = if (codecName != null && KNOWN_PROBLEMS_DB.isNotEmpty()) {
+            KNOWN_PROBLEMS_DB.filter {
+                it.isAffected(requireContext(), codecName!!)
+            }
+        } else {
+            emptyList()
         }
 
         binding.loadingProgress.isVisible = false

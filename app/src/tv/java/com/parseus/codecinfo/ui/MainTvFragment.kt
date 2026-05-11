@@ -19,6 +19,7 @@ import com.parseus.codecinfo.data.drm.DrmSimpleInfo
 import com.parseus.codecinfo.data.drm.detailedDrmInfo
 import com.parseus.codecinfo.data.drm.drmList
 import com.parseus.codecinfo.data.knownproblems.DEVICE_PROBLEMS_DB
+import com.parseus.codecinfo.data.knownproblems.loadDatabases
 import com.parseus.codecinfo.ui.settings.SettingsContract
 import com.parseus.codecinfo.viewmodels.ItemsViewModel
 import kotlinx.coroutines.launch
@@ -49,11 +50,14 @@ class MainTvFragment : BrowseSupportFragment(), OnItemViewClickedListener {
         addFullyDrawnReporter()
 
         setupUI()
-        setupAdapter()
-
-        viewModel.loadData(requireContext())
 
         viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                loadDatabases(requireContext())
+                setupAdapter()
+                viewModel.loadData(requireContext())
+            }
+
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     viewModel.allAudioState.collect {

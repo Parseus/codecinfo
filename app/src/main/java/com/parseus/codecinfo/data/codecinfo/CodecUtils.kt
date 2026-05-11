@@ -23,6 +23,7 @@ import com.parseus.codecinfo.data.codecinfo.profilelevels.*
 import com.parseus.codecinfo.data.codecinfo.profilelevels.VP9Levels.*
 import com.parseus.codecinfo.data.knownproblems.KNOWN_PROBLEMS_DB
 import com.parseus.codecinfo.data.knownproblems.KnownProblem
+import com.parseus.codecinfo.data.knownproblems.loadDatabases
 import com.parseus.codecinfo.data.settingsRepository
 import com.parseus.codecinfo.utils.*
 import java.util.Locale
@@ -153,7 +154,7 @@ fun clearCodecCaches() {
     }
 }
 
-fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<CodecSimpleInfo> {
+suspend fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<CodecSimpleInfo> {
     synchronized(codecListLock) {
         if (isAudio && audioCodecList.isNotEmpty()) {
             return audioCodecList
@@ -200,6 +201,8 @@ fun getSimpleCodecInfoList(context: Context, isAudio: Boolean): MutableList<Code
             }
         }
     }
+
+    loadDatabases(context)
 
     val settings = context.settingsRepository.getSettingsSync()
     val showHwCodecsOnly = settings.showHwCodecsOnly
@@ -302,7 +305,7 @@ fun isDetailedCodecInfoCached(codecId: String, codecName: String): Boolean {
     }
 }
 
-fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): List<DetailsProperty> {
+suspend fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): List<DetailsProperty> {
     val combinedCodecName = "$codecId/$codecName"
     synchronized(detailedCodecInfos) {
         if (detailedCodecInfos[combinedCodecName] != null) {
@@ -311,6 +314,8 @@ fun getDetailedCodecInfo(context: Context, codecId: String, codecName: String): 
             }
         }
     }
+
+    loadDatabases(context)
 
     val mediaCodecInfo = mediaCodecInfoMap[codecName] ?: return emptyList()
 

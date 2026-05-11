@@ -73,7 +73,7 @@ fun isDetailedDrmInfoCached(uuid: UUID): Boolean {
     }
 }
 
-fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): List<DetailsProperty> {
+suspend fun getDetailedDrmInfo(context: Context, uuid: UUID, drmVendor: DrmVendor?): List<DetailsProperty> {
     synchronized(detailedDrmInfo) {
         if (detailedDrmInfo[uuid] != null) {
             return detailedDrmInfo[uuid]!!.also {
